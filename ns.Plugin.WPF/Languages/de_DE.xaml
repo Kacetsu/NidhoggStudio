@@ -1,0 +1,10 @@
+﻿<ResourceDictionary
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Statistic-->
+    <system:String x:Key="Statistic">Statistik</system:String>
+    
+
+</ResourceDictionary>

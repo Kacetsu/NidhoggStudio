@@ -1,0 +1,58 @@
+﻿<ns:BaseWindow x:Class="ns.GUI.WPF.Windows.AddNewElementDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ns="clr-namespace:ns.GUI.WPF"
+             Title="{DynamicResource S_T_Add_new_Element}" Height="600" Width="800" MinHeight="300" MinWidth="400" Style="{DynamicResource Window}" WindowStyle="None" ResizeMode="NoResize" ShowMinimizeButton="False" ShowMaximizeButton="False" Topmost="False">
+    <ns:BaseWindow.Resources>
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource EditAreaBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource EditAreaBackgroundBrush}" />
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Border BorderBrush="Transparent" BorderThickness="0,0,0,2" CornerRadius="0" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <Grid Focusable="False">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" MinHeight="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Foreground="{DynamicResource Foreground}" Content="{Binding Path=DisplayName}" Focusable="False" Margin="0" Padding="0" />
+                                <Border Grid.Row="1" Name="InfoGrid" Visibility="Collapsed" BorderThickness="0" Margin="0" >
+                                    <TextBlock Foreground="{DynamicResource Foreground}" Focusable="False" Text="{Binding Path=Description}" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                <Setter TargetName="InfoGrid" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ns:BaseWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <TabControl Name="AnyTabs">
+            <TabItem Name="MainToolsTab" Header="Tools">
+                <TabControl Name="ToolTabs">
+                    <TabItem Name="TabItemAll" Header="All">
+                        <ListBox Name="ListViewAll" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Name="MainOperationsTabs" Header="Operations">
+                <ListBox Name="ListViewAllOperations" />
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Button Name="AddButton" Height="30" Click="HandleButtonClick">
+                <TextBlock Text="Add" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</ns:BaseWindow>

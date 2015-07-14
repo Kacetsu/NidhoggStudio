@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.ResultsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <DataGrid Name="DataControl" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="{DynamicResource Monitored}" Binding="{Binding Path=IsMonitored}" MinWidth="20" />
+                    <DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Path=Name}" MinWidth="100" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{DynamicResource Value}" Binding="{Binding Path=Value}" MinWidth="100" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>  
+    </Grid>
+</UserControl>

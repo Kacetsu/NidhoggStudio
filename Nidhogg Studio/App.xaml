@@ -1,0 +1,14 @@
+﻿<Application x:Class="Nidhogg_Studio.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Languages/en_US.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Accents/Dark.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Styles/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

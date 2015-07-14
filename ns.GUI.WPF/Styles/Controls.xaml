@@ -1,0 +1,21 @@
+﻿<ResourceDictionary
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="FlatButton.xaml" />
+        <ResourceDictionary Source="TitleButton.xaml" />
+        <ResourceDictionary Source="Window.xaml" />
+        <ResourceDictionary Source="Menu.xaml" />
+        <ResourceDictionary Source="TreeView.xaml" />
+        <ResourceDictionary Source="GridSplitter.xaml" />
+        <ResourceDictionary Source="TabControlTop.xaml" />
+        <ResourceDictionary Source="ListView.xaml" />
+        <ResourceDictionary Source="ScrollBar.xaml" />
+        <ResourceDictionary Source="TextBox.xaml" />
+        <ResourceDictionary Source="GroupBox.xaml" />
+        <ResourceDictionary Source="ComboBox.xaml" />
+        <ResourceDictionary Source="ShellComboBox.xaml" />
+        <ResourceDictionary Source="NumberUpDownButton.xaml" />
+        <ResourceDictionary Source="DataGrid.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

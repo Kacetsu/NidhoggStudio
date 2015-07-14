@@ -1,0 +1,19 @@
+ns.Core/obj/
+ns.Base/obj/
+ns.Core/bin/
+ns.Unit.Test/bin/
+ns.Base/bin/
+ns.Unit.Test/obj/
+TestResults/
+*.suo
+ns.Console/obj/
+bin/
+doxy/html/
+ns.GUI.WPF/obj/
+Nidhogg Studio/obj/
+ns.Plugin.Base/obj/
+ns.Plugin.AForge/obj/
+ns.Plugin.WPF/obj/
+packages/
+ns.Plugin.Web/obj/
+ns.Plugin.Web/obj/

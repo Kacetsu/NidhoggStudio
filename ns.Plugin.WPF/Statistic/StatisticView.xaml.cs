@@ -1,0 +1,83 @@
+﻿using ns.Base;
+using ns.Base.Plugins.Properties;
+using ns.Core;
+using ns.Core.Manager;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace ns.Plugin.WPF.Statistic {
+    /// <summary>
+    /// Interaction logic for StatisticView.xaml
+    /// </summary>
+    public partial class StatisticView : UserControl {
+
+        private bool _dispatcherCompleted = true;
+
+        public StatisticView() {
+            InitializeComponent();
+            this.Loaded += StatisticView_Loaded;
+        }
+
+        private void StatisticView_Loaded(object sender, RoutedEventArgs e) {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+            DataStorageManager dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+            dataStorageManager.ContainerAddedEvent += DataStorageManagerContainerAddedEvent;
+            dataStorageManager.ContainerChangedEvent += DataStorageManagerContainerChangedEvent;
+        }
+
+        private void DataStorageManagerContainerChangedEvent(object sender, Base.Event.DataStorageContainerChangedEventArgs e) {
+            if (!_dispatcherCompleted || !(e.Property is NumberProperty)) return;
+            this.Dispatcher.BeginInvoke(new Action(() => {
+                _dispatcherCompleted = false;
+                foreach (TabItem item in this.Control.Items) {
+                    if (item is StatisticPage) {
+                        StatisticPage page = item as StatisticPage;
+                        if (page.Property == e.Property) {
+                            // Update Container
+                            page.UpdateContainer(e.Container);
+                        }
+                    }
+                }
+                _dispatcherCompleted = true;
+            }));
+        }
+
+        private void DataStorageManagerContainerAddedEvent(object sender, Base.Event.DataStorageContainerChangedEventArgs e) {
+            if (!(e.Property is NumberProperty)) return;
+            this.Dispatcher.BeginInvoke(new Action(() => {
+                bool contains = false;
+                foreach (TabItem item in this.Control.Items) {
+                    if (item is StatisticPage) {
+                        StatisticPage page = item as StatisticPage;
+                        if (page.Property == e.Property)
+                            contains = true;
+                    }
+                }
+
+                Property property = e.Property;
+
+                if (property != null) {
+                    if (!contains) {
+                        this.Control.Items.Add(new StatisticPage(e.Property, e.Container));
+                        if (this.Control.Items.Count == 1)
+                            this.Control.SelectedIndex = 0;
+                    }
+                }
+            }));
+        }
+    }
+}

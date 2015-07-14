@@ -1,0 +1,12 @@
+Nidhogg Studio
+http://
+==================================
+
+License agreement
+
+Nidhogg Studio is LGPL v3 licensed.
+Due to the external dependencies that some plugins may have the license terms of them may differ from Nidhogg Studio.
+
+The LGPL v3 license can be found on http://www.gnu.org/licenses/lgpl.html.
+
+Copyright © Nidhogg Studio, 2015

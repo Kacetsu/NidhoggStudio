@@ -15,6 +15,7 @@ namespace ns.Core.Manager {
         private List<Property> _properties = new List<Property>();
         private DeviceManager _deviceManager;
         private DisplayManager _displayManager;
+        private DataStorageManager _dataStorageManager;
 
         /// <summary>
         /// Gets or sets the properties.
@@ -81,10 +82,33 @@ namespace ns.Core.Manager {
                     deviceProperty.AddDeviceList(devices, _deviceManager);
                 }
 
+                if (node is Property) {
+                    Property property = node as Property;
+                    property.PropertyChanged += PropertyPropertyChanged;
+                    if (property.IsMonitored) {
+                        if (_dataStorageManager == null)
+                            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+                        _dataStorageManager.Add(property);
+                    }
+                }
+
                 _displayManager.Add(node);
                 Nodes.Add(node);
                 Trace.WriteLine("Property added: " + node.ToString(), LogCategory.Debug);
                 OnNodeAdded(node);
+            }
+        }
+
+        private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "IsMonitored") {
+                if(_dataStorageManager == null)
+                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+
+                Property property = sender as Property;
+                if(property.IsMonitored)
+                    _dataStorageManager.Add(property);
+                else
+                    _dataStorageManager.Remove(property);
             }
         }
 

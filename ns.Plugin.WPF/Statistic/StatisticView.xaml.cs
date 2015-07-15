@@ -36,6 +36,7 @@ namespace ns.Plugin.WPF.Statistic {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
             DataStorageManager dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
             dataStorageManager.ContainerAddedEvent += DataStorageManagerContainerAddedEvent;
+            dataStorageManager.ContainerRemovedEvent += DataStorageManagerContainerRemovedEvent;
             dataStorageManager.ContainerChangedEvent += DataStorageManagerContainerChangedEvent;
         }
 
@@ -77,6 +78,23 @@ namespace ns.Plugin.WPF.Statistic {
                             this.Control.SelectedIndex = 0;
                     }
                 }
+            }));
+        }
+
+        private void DataStorageManagerContainerRemovedEvent(object sender, Base.Event.DataStorageContainerChangedEventArgs e) {
+            this.Dispatcher.BeginInvoke(new Action(() => {
+                StatisticPage targetPage = null;
+                foreach (TabItem item in this.Control.Items) {
+                    if (item is StatisticPage) {
+                        StatisticPage page = item as StatisticPage;
+                        if (page.Property == e.Property)
+                            targetPage = page;
+                    }
+                }
+
+                if(targetPage != null)
+                    this.Control.Items.Remove(targetPage);
+
             }));
         }
     }

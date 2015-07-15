@@ -26,6 +26,11 @@ namespace ns.Core.Manager {
         public event ContainerCollectionChangedHandler ContainerAddedEvent;
 
         /// <summary>
+        /// Occurs when [container removed event].
+        /// </summary>
+        public event ContainerCollectionChangedHandler ContainerRemovedEvent;
+
+        /// <summary>
         /// Occurs when [container changed event].
         /// </summary>
         public event ContainerCollectionChangedHandler ContainerChangedEvent;
@@ -88,6 +93,7 @@ namespace ns.Core.Manager {
             if(node is Property){
                 Property property = node as Property;
                 DataStorageContainer container;
+
                 lock (_dataStorage.Containers) {
                     try {
                         container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
@@ -98,13 +104,37 @@ namespace ns.Core.Manager {
                             this.ContainerChangedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
                         }
                     } catch {
-                        container = new DataStorageContainer(property.Name, property.TreeName, property.UID, property.Value);
+                        container = new DataStorageContainer(property.Name, property.TreeName, property.UID);
                         _dataStorage.Containers.Add(container);
                         if (this.ContainerAddedEvent != null) {
                             this.ContainerAddedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Removes the specified node.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        public override void Remove(Node node) {
+            if (node is Property) {
+                Property property = node as Property;
+                DataStorageContainer container;
+
+                lock (_dataStorage.Containers) {
+                    try {
+                        container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
+                        if (this.ContainerRemovedEvent != null) {
+                            this.ContainerRemovedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
+                        }
+                        _dataStorage.Containers.Remove(container);
+                    } catch(Exception ex) {
+                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    }
+                }
+
             }
         }
     }

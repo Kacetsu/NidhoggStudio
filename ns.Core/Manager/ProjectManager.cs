@@ -344,6 +344,7 @@ namespace ns.Core.Manager {
                 propertyClone.Name = p.Name;
                 propertyClone.UID = p.UID;
                 propertyClone.IsOutput = p.IsOutput;
+                propertyClone.IsMonitored = p.IsMonitored;
                 propertyClone.ConnectedToUID = p.ConnectedToUID;
                 propertyClone.Childs = new List<object>(p.Childs);
 

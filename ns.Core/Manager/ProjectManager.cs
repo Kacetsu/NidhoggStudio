@@ -1,6 +1,5 @@
 ﻿using ns.Base;
 using ns.Base.Event;
-using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;

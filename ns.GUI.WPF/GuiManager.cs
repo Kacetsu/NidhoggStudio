@@ -2,11 +2,7 @@
 using ns.Base.Event;
 using ns.Base.Manager;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ns.GUI.WPF {
@@ -42,7 +38,7 @@ namespace ns.GUI.WPF {
         /// Sets the language dictionary.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
-        public static void SetLanguageDictionary(ResourceDictionary dictionary) {
+        public static void SetLanguageDictionary() {
             ResourceDictionary dict = new ResourceDictionary();
             switch (Thread.CurrentThread.CurrentCulture.ToString()) {
                 case "de-DE":
@@ -52,7 +48,7 @@ namespace ns.GUI.WPF {
                     dict.Source = new Uri("/ns.GUI.WPF;component/Languages/en_US.xaml", UriKind.Relative);
                     break;
             }
-            dictionary.MergedDictionaries.Add(dict);
+            Application.Current.Resources.MergedDictionaries.Add(dict);
         }
     }
 }

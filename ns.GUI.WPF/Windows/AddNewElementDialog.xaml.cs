@@ -22,7 +22,6 @@ namespace ns.GUI.WPF.Windows {
         /// Initializes a new instance of the <see cref="AddNewElementDialog"/> class.
         /// </summary>
         public AddNewElementDialog() {
-            GuiManager.SetLanguageDictionary(this.Resources);
             InitializeComponent();
             _listBoxes = new List<KeyValuePair<string, ListBox>>();
             this.Loaded += HandleLoaded;

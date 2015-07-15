@@ -1,23 +1,10 @@
-﻿using ns.Base;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using ns.Core;
 using ns.Core.Manager;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.Plugin.WPF.Statistic {
     /// <summary>
@@ -27,6 +14,9 @@ namespace ns.Plugin.WPF.Statistic {
 
         private bool _dispatcherCompleted = true;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatisticView"/> class.
+        /// </summary>
         public StatisticView() {
             InitializeComponent();
             this.Loaded += StatisticView_Loaded;

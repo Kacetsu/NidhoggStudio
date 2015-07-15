@@ -3,11 +3,8 @@ using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
     public class PropertyManager : BaseManager {

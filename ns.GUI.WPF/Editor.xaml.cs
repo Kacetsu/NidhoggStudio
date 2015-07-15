@@ -18,7 +18,6 @@ namespace ns.GUI.WPF {
         /// </summary>
         public Editor() {
             try {
-                GuiManager.SetLanguageDictionary(this.Resources);
                 InitializeComponent();
                 this.Loaded += EditorLoaded;
             } catch (Exception ex) {

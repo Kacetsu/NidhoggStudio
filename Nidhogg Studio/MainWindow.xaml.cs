@@ -10,7 +10,7 @@ namespace Nidhogg_Studio {
     public partial class MainWindow : ns.GUI.WPF.BaseWindow {
 
        public MainWindow() {
-           GuiManager.SetLanguageDictionary(this.Resources);
+           GuiManager.SetLanguageDictionary();
             InitializeComponent();
             this.Loaded += HandleLoaded;
             this.Closing += HandleClosing;

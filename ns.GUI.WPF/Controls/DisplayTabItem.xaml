@@ -4,15 +4,50 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
-        <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="{DynamicResource Fit_to_screen}" IsCheckable="True" IsChecked="{Binding Path=IsFitToScreen, Mode=TwoWay}" />
-            </ContextMenu>
-        </Grid.ContextMenu>
-        <ScrollViewer Name="ImageScrollArea" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-            <Image Name="ImageDisplay" Stretch="None" />
-        </ScrollViewer>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="40*" />
+        </Grid.ColumnDefinitions>
+        <Grid Name="DisplayGrid">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{DynamicResource Fit_to_screen}" IsCheckable="True" IsChecked="{Binding Path=IsFitToScreen, Mode=TwoWay}" />
+                </ContextMenu>
+            </Grid.ContextMenu>
+            <ScrollViewer Name="ImageScrollArea" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                <Image Name="ImageDisplay" Stretch="None" />
+            </ScrollViewer>
+        </Grid>
+        <GridSplitter Width="2" Grid.Column="1" HorizontalAlignment="Stretch" />
+        <Grid Name="HistogramGrid" Grid.Column="2" Background="{DynamicResource EditAreaBackgroundBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10*" Name="HistoRow1" />
+                <RowDefinition Height="20*" Name="HistoRow2" />
+                <RowDefinition Height="20*" Name="HistoRow3" />
+                <RowDefinition Height="20*" Name="HistoRow4" />
+                <RowDefinition Height="20*" Name="HistoRow5" />
+            </Grid.RowDefinitions>
+            <Grid Name="HistrogramAllGrid" Grid.Row="0">
+                <Polygon Name="HistogramAllRed" Points="{Binding Path=RedPoints}" Stretch="Fill" Fill="Red" Opacity="0.8" />
+                <Polygon Name="HistogramAllGreen" Points="{Binding Path=GreenPoints}" Stretch="Fill" Fill="Green" Opacity="0.8" />
+                <Polygon Name="HistogramAllBlue" Points="{Binding Path=BluePoints}" Stretch="Fill" Fill="Blue" Opacity="0.8" />
+                <Polygon Name="HistogramAllGray" Points="{Binding Path=GrayPoints}" Stretch="Fill" Fill="Black" Opacity="0.8" />
+            </Grid>
+            <Grid Grid.Row="1" Name="HistogramRedGrid">
+                <Polygon Name="HistogramRed" Points="{Binding Path=RedPoints}" Stretch="Fill" Fill="Red" Opacity="1.0" />
+            </Grid>
+            <Grid Grid.Row="2" Name="HistogramGreenGrid">
+                <Polygon Name="HistogramGreen" Points="{Binding Path=GreenPoints}" Stretch="Fill" Fill="Green" Opacity="1.0" />
+            </Grid>
+            <Grid Grid.Row="3" Name="HistogramBlueGrid">
+                <Polygon Name="HistogramBlue" Points="{Binding Path=BluePoints}" Stretch="Fill" Fill="Blue" Opacity="1.0" />
+            </Grid>
+            <Grid Grid.Row="4" Name="HistogramGrayLuminanceGrid">
+                <Polygon Name="HistogramGray" Points="{Binding Path=GrayPoints}" Stretch="Fill" Fill="Black" Opacity="1.0" />
+            </Grid>
+        </Grid>
     </Grid>
 </TabItem>

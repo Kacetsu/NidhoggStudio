@@ -92,6 +92,7 @@ namespace ns.GUI.WPF {
                 if (oitem.Operation == parentOperation) {
                     TabControl control = oitem.Content as TabControl;
                     control.Items.Add(item);
+                    item.SetParent(control);
                 }
             }
         }

@@ -28,6 +28,7 @@ namespace ns.GUI.WPF.Controls {
 
         private ImageProperty _imageProperty;
         private bool _isFitToScreen = true;
+        private TabControl _parentControl;
 
         /// <summary>
         /// Gets the operation.
@@ -37,6 +38,22 @@ namespace ns.GUI.WPF.Controls {
         /// </value>
         public ImageProperty ImageProperty {
             get { return _imageProperty; }
+        }
+
+        public Histogram Histogram {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is update histogram enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is update histogram enabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsUpdateHistogramEnabled {
+            get;
+            set;
         }
 
         /// <summary>
@@ -75,7 +92,25 @@ namespace ns.GUI.WPF.Controls {
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
             _imageProperty.ParentTool.NodeChanged += ImageParentPropertyChanged;
             this.DataContext = this;
+            this.HistogramGray.DataContext = Histogram;
+            this.HistogramAllGray.DataContext = Histogram;
+            this.HistogramRed.DataContext = Histogram;
+            this.HistogramAllRed.DataContext = Histogram;
+            this.HistogramGreen.DataContext = Histogram;
+            this.HistogramAllGreen.DataContext = Histogram;
+            this.HistogramBlue.DataContext = Histogram;
+            this.HistogramAllBlue.DataContext = Histogram;
             this.IsFitToScreen = true;
+            this.IsUpdateHistogramEnabled = false;
+        }
+
+        public void SetParent(TabControl control) {
+            _parentControl = control;
+            _parentControl.SelectionChanged += ParentSelectionChanged;
+        }
+
+        private void ParentSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            this.IsUpdateHistogramEnabled = (_parentControl.SelectedItem == this);
         }
 
         /// <summary>
@@ -117,6 +152,45 @@ namespace ns.GUI.WPF.Controls {
 
             if (bytesPerPixel == 1)
                 pixelFormat = PixelFormats.Gray8;
+
+            if (this.IsUpdateHistogramEnabled) {
+                if (Histogram == null) {
+                    Histogram = new Histogram(imageData, width, height, stride, bytesPerPixel);
+                    this.HistogramGray.DataContext = Histogram;
+                    this.HistogramAllGray.DataContext = Histogram;
+                    this.HistogramRed.DataContext = Histogram;
+                    this.HistogramAllRed.DataContext = Histogram;
+                    this.HistogramGreen.DataContext = Histogram;
+                    this.HistogramAllGreen.DataContext = Histogram;
+                    this.HistogramBlue.DataContext = Histogram;
+                    this.HistogramAllBlue.DataContext = Histogram;
+                } else
+                    Histogram.Update(imageData, width, height, stride, bytesPerPixel);
+
+                if (bytesPerPixel == 1) {
+                    this.HistrogramAllGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    this.HistogramRedGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    this.HistogramBlueGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    this.HistogramGreenGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    this.HistogramGrayLuminanceGrid.Visibility = System.Windows.Visibility.Visible;
+                    this.HistoRow1.Height = new GridLength(0);
+                    this.HistoRow2.Height = new GridLength(0);
+                    this.HistoRow3.Height = new GridLength(0);
+                    this.HistoRow4.Height = new GridLength(0);
+                    this.HistoRow5.Height = new GridLength(100, GridUnitType.Star);
+                } else {
+                    this.HistrogramAllGrid.Visibility = System.Windows.Visibility.Visible;
+                    this.HistogramRedGrid.Visibility = System.Windows.Visibility.Visible;
+                    this.HistogramBlueGrid.Visibility = System.Windows.Visibility.Visible;
+                    this.HistogramGreenGrid.Visibility = System.Windows.Visibility.Visible;
+                    this.HistogramGrayLuminanceGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    this.HistoRow1.Height = new GridLength(10, GridUnitType.Star);
+                    this.HistoRow2.Height = new GridLength(20, GridUnitType.Star);
+                    this.HistoRow3.Height = new GridLength(20, GridUnitType.Star);
+                    this.HistoRow4.Height = new GridLength(20, GridUnitType.Star);
+                    this.HistoRow5.Height = new GridLength(0);
+                }
+            }
 
             return BitmapSource.Create(
                 width,

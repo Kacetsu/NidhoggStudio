@@ -118,7 +118,7 @@ namespace ns.Plugin.AForge.Imaging {
                 _medianBlue.Value = blueHistogram.Median;
                 _meanBlue.Value = blueHistogram.Mean;
                 _stdDevBlue.Value = blueHistogram.StdDev;
-
+                
                 global::AForge.Math.Histogram greenHistogram = statistics.Green;
                 _maxGreen.Value = greenHistogram.Max;
                 _minGreen.Value = greenHistogram.Min;

@@ -67,9 +67,16 @@ namespace ns.Plugin.Base {
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;
             Bitmap bitmap = _bitmaps[_imageIndex];
+
+            int bpp = 1;
+
+            if (bitmap.PixelFormat != PixelFormat.Format8bppIndexed) {
+                bpp = (bitmap.PixelFormat == PixelFormat.Format24bppRgb) ? 3 : 4;
+            }
+
             int stride = 0;
-            byte[] data = ImageToByteArray(bitmap, out stride);
-            _imageProperty.SetValue(data, bitmap.Width, bitmap.Height, stride, 3);
+            byte[] data = ImageToByteArray(bitmap, bpp, out stride);
+            _imageProperty.SetValue(data, bitmap.Width, bitmap.Height, stride, (byte)bpp);
             _imageIndex++;
 
             //System.Threading.Thread.Sleep(500);
@@ -82,14 +89,11 @@ namespace ns.Plugin.Base {
         /// </summary>
         /// <param name="img">The img.</param>
         /// <returns></returns>
-        private byte[] ImageToByteArray(Bitmap img, out int stride) {
+        private byte[] ImageToByteArray(Bitmap img, int bpp, out int stride) {
 #if STOPWATCH
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 #endif
-            int bpp = 3;
-            if (img.PixelFormat == PixelFormat.Format32bppRgb)
-                bpp = 4;
 
             int size = img.Width * img.Height * bpp;
             byte[] byteArray = new byte[size];

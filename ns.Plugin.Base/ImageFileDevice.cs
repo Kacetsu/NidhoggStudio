@@ -31,6 +31,12 @@ namespace ns.Plugin.Base {
             AddChild(new ImageProperty("Image", true));
         }
 
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             _bitmaps = new List<Bitmap>();
             _directory = GetProperty("Directory").Value as string;
@@ -59,6 +65,10 @@ namespace ns.Plugin.Base {
             return true;
         }
 
+        /// <summary>
+        /// Finalizes this instance.
+        /// </summary>
+        /// <returns></returns>
         public override bool Finalize() {
             if (_bitmaps != null) {
                 foreach (Bitmap bitmap in _bitmaps)
@@ -71,6 +81,12 @@ namespace ns.Plugin.Base {
             return true;
         }
 
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Run() {
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;

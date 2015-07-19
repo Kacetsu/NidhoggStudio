@@ -127,14 +127,17 @@ namespace ns.Base.Plugins {
             lock (this.Childs) {
                 foreach (Plugin child in this.Childs.Where(p => p is Plugin)) {
                     if (child.PreRun() == false) {
+                        Trace.WriteLine("Plugin " + child.Name + " pre run failed!", LogCategory.Error);
                         result = false;
                         break;
                     }
                     if (child.Run() == false) {
+                        Trace.WriteLine("Plugin " + child.Name + " run failed!", LogCategory.Error);
                         result = false;
                         break;
                     }
                     if (child.PostRun() == false) {
+                        Trace.WriteLine("Plugin " + child.Name + " post run failed!", LogCategory.Error);
                         result = false;
                         break;
                     }

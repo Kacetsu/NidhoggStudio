@@ -10,6 +10,9 @@ namespace ns.Plugin.Base {
     public class GetImage : Tool {
         private ImageDevice _device;
         private ImageProperty _imageProperty;
+        private DeviceProperty _deviceProperty;
+        private bool _isRunning = false;
+
 
         /// <summary>
         /// Gets the category.
@@ -29,7 +32,7 @@ namespace ns.Plugin.Base {
         /// </summary>
         public override string Description {
             get {
-                return "Configurates the device and acquires an image.";
+                return "Configurates the device and acquires a images.";
             }
         }
 
@@ -52,7 +55,18 @@ namespace ns.Plugin.Base {
             base.Initialize();
 
             bool result = false;
-            _device = (ImageDevice)((DeviceProperty)GetProperty("Interface")).Value;
+            _deviceProperty = GetProperty("Interface") as DeviceProperty;
+            if (_deviceProperty == null) {
+                Trace.WriteLine("Device interface is null!", LogCategory.Error);
+                return false;
+            }
+            _deviceProperty.PropertyChanged -= DeviceProperty_PropertyChanged;
+            _deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
+            _device = _deviceProperty.Value as ImageDevice;
+            if (_device == null) {
+                Trace.WriteLine("Device is null!", LogCategory.Error);
+                return false;
+            }
             _imageProperty = GetProperty(typeof(ImageProperty)) as ImageProperty;
 
             if (_device == null) {
@@ -61,7 +75,15 @@ namespace ns.Plugin.Base {
                 result = _device.Initialize();
             }
 
+            _isRunning = result;
             return result;
+        }
+
+        private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Device" && _isRunning) {
+                this.Finalize();
+                this.Initialize();
+            }
         }
 
         /// <summary>
@@ -69,9 +91,9 @@ namespace ns.Plugin.Base {
         /// </summary>
         /// <returns></returns>
         public override bool PreRun() {
-            base.PreRun();
-
-            return _device.PreRun();
+            bool result = true;
+            result = base.PreRun() && _device.PreRun();
+            return result;
         }
 
         /// <summary>
@@ -82,6 +104,9 @@ namespace ns.Plugin.Base {
         /// </returns>
         public override bool Run() {
             bool result = false;
+
+            if (!_isRunning) 
+                return true;
 
             if (result = _device.Run()) {
                 ImageProperty deviceImage = _device.GetProperty(typeof(ImageProperty)) as ImageProperty;
@@ -97,13 +122,24 @@ namespace ns.Plugin.Base {
         /// </summary>
         /// <returns></returns>
         public override bool PostRun() {
-            base.PostRun();
-
-            if (_device != null)
-                return _device.PostRun();
-            else
-                return false;
+            bool result = true;
+            result = base.PostRun() && _device.PostRun();
+            return result;
         }
 
+        /// <summary>
+        /// Finalize the Node.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Finalize() {
+            _isRunning = false;
+            if (_device != null)
+                _device.Finalize();
+            if (_imageProperty != null)
+                _imageProperty = null;
+            return base.Finalize();
+        }
     }
 }

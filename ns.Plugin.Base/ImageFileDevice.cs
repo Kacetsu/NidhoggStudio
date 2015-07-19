@@ -8,11 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace ns.Plugin.Base {
     [Visible, Serializable]
@@ -103,8 +99,6 @@ namespace ns.Plugin.Base {
             _imageProperty.SetValue(data, bitmap.Width, bitmap.Height, stride, (byte)bpp);
             _imageIndex++;
 
-            //System.Threading.Thread.Sleep(500);
-
             return true;
         }
 
@@ -114,22 +108,12 @@ namespace ns.Plugin.Base {
         /// <param name="img">The img.</param>
         /// <returns></returns>
         private byte[] ImageToByteArray(Bitmap img, int bpp, out int stride) {
-#if STOPWATCH
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-#endif
-
             int size = img.Width * img.Height * bpp;
             byte[] byteArray = new byte[size];
             BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, img.PixelFormat);
             stride = data.Stride;
             Marshal.Copy(data.Scan0, byteArray, 0, size);
             img.UnlockBits(data);
-
-#if STOPWATCH
-            stopwatch.Stop();
-            Trace.WriteLine("Stopwatch: ImageToByteArray: " + stopwatch.ElapsedMilliseconds.ToString(), LogCategory.Debug);
-#endif
             return byteArray;
         }
     }

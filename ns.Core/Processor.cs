@@ -201,7 +201,13 @@ namespace ns.Core {
                 while (!_isStoped) {
                     if (operation.PreRun() == true) {
                         if ((executionContext.Result = operation.Run()) == true)
-                            operation.PostRun();
+                            if(!operation.PostRun())
+                                Trace.WriteLine("Operation post run failed!", LogCategory.Error);
+                        else {
+                            Trace.WriteLine("Operation run failed!", LogCategory.Error);
+                        }
+                    } else {
+                        Trace.WriteLine("Operation pre run failed!", LogCategory.Error);
                     }
 
                     ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
@@ -246,9 +252,6 @@ namespace ns.Core {
                     if (_nexuses.Count > 0) {
                         ExecutionContext executionContext = _nexuses.Find(o => o != null && o.Plugin == operation) as ExecutionContext;
                         if (executionContext != null && _nexuses.Contains(executionContext)) {
-#if STOPWATCH
-                            Trace.WriteLine("Stopwatch: Processor Context: " + operation.Name + ": " + executionContext.Stopwatch.ElapsedMilliseconds.ToString(), LogCategory.Debug);
-#endif
                             ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
                             string trigger = triggerList.Value.ToString();
 
@@ -287,6 +290,10 @@ namespace ns.Core {
             }
         }
 
+        /// <summary>
+        /// Adds the operation context to data storage.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
         private void AddOperationContextToDataStorage(Node parent) {
             foreach (Node child in parent.Childs) {
                 if (child is Property) {

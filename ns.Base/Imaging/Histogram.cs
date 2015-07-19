@@ -77,19 +77,14 @@ namespace ns.Base.Imaging {
             BlueValues = null;
             GrayValues = null;
 
-            byte bpp = 1;
+            byte bpp = bytesPerPixel;
 
-            switch (bytesPerPixel) {
-                case 3:
-                    bpp = 3;
-                    RedValues = new int[256];
-                    GreenValues = new int[256];
-                    BlueValues = new int[256];
-                    break;
-                default:
-                    bpp = 1;
-                    GrayValues = new int[256];
-                    break;
+            if (bytesPerPixel >= 3) {
+                RedValues = new int[256];
+                GreenValues = new int[256];
+                BlueValues = new int[256];
+            } else if (bytesPerPixel == 1) {
+                GrayValues = new int[256];
             }
 
             unsafe {
@@ -102,7 +97,7 @@ namespace ns.Base.Imaging {
                             }
                             c += stride - width;
                         }
-                    } else if (bpp == 3) {
+                    } else if (bpp >= 3) {
                         for (int y = 0, p = 0; y < height; y++) {
                             for (int x = 0; x < width; x++, p += bpp) {
                                 byte r = ptr[p + 2];

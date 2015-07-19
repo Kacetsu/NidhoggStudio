@@ -38,14 +38,22 @@ namespace ns.Plugin.Base {
 
             string[] filenames = Directory.GetFiles(_directory);
             List<string> imageFiles = new List<string>();
+            int imageCount = 0;
 
             foreach (string filename in filenames) {
                 if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)
-                    || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)) {
+                    || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)
+                    || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)) {
                     imageFiles.Add(filename);
                     Bitmap bitmap = new Bitmap(filename);
                     _bitmaps.Add(bitmap);
+                    imageCount++;
                 }
+            }
+
+            if (imageCount == 0) {
+                Trace.WriteLine("No images found in " + _directory, LogCategory.Error);
+                return false;
             }
 
             return true;

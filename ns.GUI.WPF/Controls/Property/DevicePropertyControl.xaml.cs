@@ -65,7 +65,8 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         private void SelectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _property.SetDevice(this.SelectionBox.SelectedItem as Device);
+            if(_property.Value != this.SelectionBox.SelectedItem as Device)
+                _property.SetDevice(this.SelectionBox.SelectedItem as Device);
         }
     }
 }

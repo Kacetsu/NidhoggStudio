@@ -19,6 +19,7 @@ namespace ns.Plugin.AForge {
         private ImageProperty _imageProperty;
         private ListProperty _deviceListProperty;
         private ListProperty _resolutionListProperty;
+        private bool _isTerminated = true;
 
         [NonSerialized]
         VideoCaptureDevice _videoDevice = null;
@@ -101,6 +102,7 @@ namespace ns.Plugin.AForge {
 
                 _videoDevice.NewFrame += _videoDevice_NewFrame;
                 _videoDevice.Start();
+                _isTerminated = false;
                 return true;
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
@@ -118,7 +120,10 @@ namespace ns.Plugin.AForge {
         /// </returns>
         public override bool Run() {
 
-            while (_imageAcquired == false) Thread.Sleep(1);
+            while (!_imageAcquired && !_isTerminated) 
+                Thread.Sleep(1);
+            if (_isTerminated)
+                return true;
 
             int stride = 0;
             byte[] data = ImageToByteArray(_bitmap, out stride);
@@ -138,6 +143,7 @@ namespace ns.Plugin.AForge {
             _videoDevice.SignalToStop();
             _videoDevice.WaitForStop();
             base.Finalize();
+            _isTerminated = true;
             return true;
         }
 

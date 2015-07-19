@@ -7,6 +7,7 @@ using ns.Base.Plugins.Properties;
 using ns.Core;
 using ns.Core.Manager;
 using ns.Plugin.Web.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -88,12 +89,15 @@ namespace ns.Plugin.Web {
         /// Success of the Operation.
         /// </returns>
         public override bool Run() {
-
-            ImageProperty property = _propertyManager.Nodes.FindLast(i => i is ImageProperty) as ImageProperty;
-            if (_imageQueue.Count > 2)
-                _imageQueue.Dequeue();
-            _imageQueue.Enqueue(property.Clone() as ImageProperty);
-
+            try {
+                ImageProperty property = _propertyManager.Nodes.FindLast(i => i is ImageProperty) as ImageProperty;
+                if (_imageQueue.Count > 2)
+                    _imageQueue.Dequeue();
+                _imageQueue.Enqueue(property.Clone() as ImageProperty);
+            } catch (Exception ex) {
+                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                return false;
+            }
             return true;
         }
 

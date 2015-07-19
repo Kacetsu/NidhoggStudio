@@ -108,13 +108,21 @@ namespace ns.Plugin.Base {
         /// <param name="img">The img.</param>
         /// <returns></returns>
         private byte[] ImageToByteArray(Bitmap img, int bpp, out int stride) {
-            int size = img.Width * img.Height * bpp;
-            byte[] byteArray = new byte[size];
-            BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, img.PixelFormat);
-            stride = data.Stride;
-            Marshal.Copy(data.Scan0, byteArray, 0, size);
-            img.UnlockBits(data);
-            return byteArray;
+            try {
+                int size = img.Width * img.Height * bpp;
+                byte[] byteArray = new byte[size];
+                lock (img) {
+                    BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, img.PixelFormat);
+                    stride = data.Stride;
+                    Marshal.Copy(data.Scan0, byteArray, 0, size);
+                    img.UnlockBits(data);
+                }
+                return byteArray;
+            } catch (Exception ex) {
+                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                stride = 0;
+                return new byte[0];
+            }
         }
     }
 }

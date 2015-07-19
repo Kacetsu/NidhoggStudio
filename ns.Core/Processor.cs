@@ -209,7 +209,6 @@ namespace ns.Core {
                     } else {
                         Trace.WriteLine("Operation pre run failed!", LogCategory.Error);
                     }
-
                     ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
                     string trigger = triggerList.Value.ToString();
 

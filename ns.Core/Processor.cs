@@ -200,10 +200,10 @@ namespace ns.Core {
 
                 while (!_isStoped) {
                     if (operation.PreRun() == true) {
-                        if ((executionContext.Result = operation.Run()) == true)
-                            if(!operation.PostRun())
+                        if ((executionContext.Result = operation.Run()) == true) {
+                            if (!operation.PostRun())
                                 Trace.WriteLine("Operation post run failed!", LogCategory.Error);
-                        else {
+                        } else {
                             Trace.WriteLine("Operation run failed!", LogCategory.Error);
                         }
                     } else {

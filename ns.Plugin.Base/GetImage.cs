@@ -73,6 +73,8 @@ namespace ns.Plugin.Base {
                 Trace.WriteLine("Device interface is null!", LogCategory.Error);
             } else {
                 result = _device.Initialize();
+                if (!result)
+                    Trace.WriteLine("Could not initialize device!", LogCategory.Error);
             }
 
             _isRunning = result;

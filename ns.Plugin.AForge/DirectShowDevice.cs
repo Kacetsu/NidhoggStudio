@@ -7,11 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ns.Plugin.AForge {
     [Visible, Serializable]
@@ -46,9 +44,7 @@ namespace ns.Plugin.AForge {
                 if (videoDevices.Count > 0)
                     _videoDevice = new VideoCaptureDevice(videoDevices[0].MonikerString);
 
-                _deviceListProperty = new ListProperty("Selected", values);
-                _deviceListProperty.NodeChanged += _deviceListProperty_PropertyChangedEvent;
-                AddChild(_deviceListProperty);
+                AddChild(new ListProperty("Selected", values));
 
                 List<object> resolutions = new List<object>();
 
@@ -59,17 +55,16 @@ namespace ns.Plugin.AForge {
                     }
                 }
 
-                _resolutionListProperty = new ListProperty("Resolution", resolutions);
-                AddChild(_resolutionListProperty);
+                AddChild(new ListProperty("Resolution", resolutions));
 
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
             }
         }
 
-        private void _deviceListProperty_PropertyChangedEvent(object sender, Base.Event.NodeChangedEventArgs e) {
+        private void DeviceListProperty_PropertyChangedEvent(object sender, Base.Event.NodeChangedEventArgs e) {
             if (sender == _deviceListProperty && e.Name == "Value") {
-                Trace.WriteLine("_deviceListProperty_PropertyChangedEvent not implemented!", LogCategory.Error);
+                Trace.WriteLine(MethodInfo.GetCurrentMethod().Name + " not implemented!", LogCategory.Warning);
             }
         }
 
@@ -84,6 +79,9 @@ namespace ns.Plugin.AForge {
                 _imageProperty = GetProperty("Image") as ImageProperty;
                 _deviceListProperty = GetProperty("Selected") as ListProperty;
                 _resolutionListProperty = GetProperty("Resolution") as ListProperty;
+
+                _deviceListProperty.NodeChanged += DeviceListProperty_PropertyChangedEvent;
+                _resolutionListProperty.PropertyChanged += ResolutionListProperty_PropertyChanged;
 
                 FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
                 VideoCapabilities[] videoCapabilities;
@@ -107,6 +105,14 @@ namespace ns.Plugin.AForge {
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 return false;
+            }
+        }
+
+        private void ResolutionListProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Value" && !_isTerminated) {
+                _videoDevice.Stop();
+                _videoDevice.VideoResolution = _videoDevice.VideoCapabilities[_resolutionListProperty.Index];
+                _videoDevice.Start();
             }
         }
 

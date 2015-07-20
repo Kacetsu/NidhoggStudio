@@ -40,6 +40,12 @@ namespace ns.GUI.WPF.Controls {
             get { return _imageProperty; }
         }
 
+        /// <summary>
+        /// Gets the histogram.
+        /// </summary>
+        /// <value>
+        /// The histogram.
+        /// </value>
         public Histogram Histogram {
             get;
             private set;
@@ -90,6 +96,7 @@ namespace ns.GUI.WPF.Controls {
                 _imageProperty = imageProperty;
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
+            this.Unloaded += DisplayTabItem_Unloaded;
             _imageProperty.ParentTool.NodeChanged += ImageParentPropertyChanged;
             this.DataContext = this;
             this.HistogramGray.DataContext = Histogram;
@@ -104,6 +111,29 @@ namespace ns.GUI.WPF.Controls {
             this.IsUpdateHistogramEnabled = false;
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close() {
+            if (_imageProperty != null) {
+                _imageProperty.ParentTool.NodeChanged -= ImageParentPropertyChanged;
+                _imageProperty = null;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Unloaded event of the DisplayTabItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void DisplayTabItem_Unloaded(object sender, RoutedEventArgs e) {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Sets the parent.
+        /// </summary>
+        /// <param name="control">The control.</param>
         public void SetParent(TabControl control) {
             _parentControl = control;
             _parentControl.SelectionChanged += ParentSelectionChanged;

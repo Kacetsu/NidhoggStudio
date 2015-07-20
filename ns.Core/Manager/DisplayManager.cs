@@ -54,6 +54,10 @@ namespace ns.Core.Manager {
         /// Clears this instance.
         /// </summary>
         public void Clear() {
+            foreach(Node node in this.Nodes)
+                node.NodeChanged -= ImageChangedEventHandle;
+            this.Nodes.Clear();
+
             if (this.ClearEvent != null)
                 this.ClearEvent(this, new EventArgs());
         }

@@ -66,8 +66,20 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
+        private void ProjectManagerLoading() {
+            foreach (NodeTreeItem item in this.ProjectTree.Items) {
+                if (item is OperationTreeItem) {
+                    ((OperationTreeItem)item).Close();
+                }
+            }
+            this.ProjectTree.Items.Clear();
+        }
+
         private void GenerateTree() {
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            if (_projectManager != null) {
+                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+                _projectManager.Loading += ProjectManagerLoading;
+            }
             if (_projectManager != null) {
 
                 this.ProjectTree.Items.Clear();

@@ -69,7 +69,8 @@ namespace ns.GUI.WPF.Controls.Property {
 
         private void ContentBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ComboBox box = sender as ComboBox;
-            _property.Value = box.SelectedItem;
+            if(_property.Value != box.SelectedItem)
+                _property.Value = box.SelectedItem;
         }
     }
 }

@@ -30,6 +30,7 @@ namespace ns.GUI.WPF {
         private bool _isDispatcherInactive = true;
         private Mutex _mutex = new Mutex();
         private GuiManager _guiManager;
+        private ProjectManager _projectManager;
 
 
         public DisplayArea() {
@@ -42,6 +43,8 @@ namespace ns.GUI.WPF {
 
             _displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
             _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            _projectManager.Loading += ProjectManagerLoading;
             foreach (Operation operation in _displayManager.Nodes) {
                 AddTabParent(operation);
             }
@@ -52,6 +55,12 @@ namespace ns.GUI.WPF {
             _displayManager.NodeRemovedEvent += DisplayManagerNodeRemovedEvent;
             _displayManager.ClearEvent += ClearEvent;
             _guiManager.SelectedItemChanged += GuiManagerSelectedItemChanged;
+        }
+
+        private void ProjectManagerLoading() {
+            foreach (OperationDisplayTabItem item in this.DisplayTabControl.Items)
+                item.Close();
+            this.DisplayTabControl.Items.Clear();
         }
 
         private void GuiManagerSelectedItemChanged(object sender, NodeSelectionChangedEventArgs e) {

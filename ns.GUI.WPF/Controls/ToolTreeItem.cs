@@ -23,10 +23,25 @@ namespace ns.GUI.WPF.Controls {
             get { return _tool; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToolTreeItem"/> class.
+        /// </summary>
+        /// <param name="tool">The tool.</param>
         public ToolTreeItem(Tool tool)
             : base(tool) {
             _tool = tool;
             _tool.NodeChanged += HandlePropertyChanged;
+        }
+
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public override void Close() {
+            base.Close();
+            if (_tool != null) {
+                _tool.NodeChanged -= HandlePropertyChanged;
+                _tool = null;
+            }
         }
 
         private void HandlePropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {

@@ -57,11 +57,36 @@ namespace ns.GUI.WPF.Controls {
             : base() {
                 _textBlock = new TextBlock();
             this.Loaded += HandleLoaded;
+            this.Unloaded += HandleUnloaded;
             this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
             _node = node;
             CreateHeaderPanel(node, additionalFormat);
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public virtual void Close() {
+            if (_node != null) {
+                _node.NodeChanged -= HandlePropertyChanged;
+                _node = null;
+            }
+        }
+
+        /// <summary>
+        /// Handles the unloaded.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void HandleUnloaded(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
+        /// <summary>
+        /// Creates the header panel.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="additionalFormat">The additional format.</param>
         private void CreateHeaderPanel(Node node, string additionalFormat) {
             string name = node.Name;
             string iconUrl = string.Empty;

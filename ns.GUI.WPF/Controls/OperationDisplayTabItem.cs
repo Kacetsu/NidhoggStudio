@@ -25,11 +25,19 @@ namespace ns.GUI.WPF.Controls {
             get { return _operation; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationDisplayTabItem"/> class.
+        /// </summary>
         public OperationDisplayTabItem() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationDisplayTabItem"/> class.
+        /// </summary>
+        /// <param name="operation">The operation.</param>
         public OperationDisplayTabItem(Operation operation) {
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = operation.Name;
+            this.Unloaded += OperationDisplayTabItem_Unloaded;
             _operation = operation;
             operation.NodeChanged += OperationPropertyChanged;
             TabControl tabControl = new TabControl();
@@ -47,6 +55,28 @@ namespace ns.GUI.WPF.Controls {
             }
 
             this.Content = tabControl;
+        }
+
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close() {
+            if (_operation != null) {
+                _operation.NodeChanged -= OperationPropertyChanged;
+                _operation = null;
+            }
+            foreach (DisplayTabItem item in ((TabControl)this.Content).Items)
+                item.Close();
+            ((TabControl)this.Content).Items.Clear();
+        }
+
+        /// <summary>
+        /// Handles the Unloaded event of the OperationDisplayTabItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void OperationDisplayTabItem_Unloaded(object sender, RoutedEventArgs e) {
+            Close();
         }
 
         /// <summary>

@@ -1,15 +1,10 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
@@ -61,14 +56,14 @@ namespace ns.Plugin.AForge.Filters {
                 if (inputContainer.BytesPerPixel == 1)
                     pixelFormat = PixelFormat.Format8bppIndexed;
 
-                Bitmap source = ns.Plugin.AForge.Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
 
-                global::AForge.Imaging.Filters.Blur filter = new AFilter.Blur();
+                AFilter.Blur filter = new AFilter.Blur();
                 filter.Divisor = (int)_divisor.Value;
                 filter.Threshold = (int)_threshold.Value;
                 Bitmap destination = filter.Apply(source);
                 
-                _imageOutput.Value = ns.Plugin.AForge.Converter.ToImageContainer(destination as Bitmap);
+                _imageOutput.Value = Converter.ToImageContainer(destination as Bitmap);
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
             }

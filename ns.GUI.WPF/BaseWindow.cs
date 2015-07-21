@@ -10,9 +10,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ns.GUI.WPF {
-    public class BaseWindow : System.Windows.Window {
+    public class BaseWindow : System.Windows.Window, INotifyPropertyChanged {
         private const Int32 WM_SYSCOMMAND = 0x112;
         private HwndSource m_hwndSource;
         private DateTime _lastTitlebarClick;
@@ -50,22 +52,39 @@ namespace ns.GUI.WPF {
             typeof(Window),
             new FrameworkPropertyMetadata(true));
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary>
         /// Gets or sets if the Window is maximized.
         /// </summary>
         public bool Maximized {
             get { return (bool)GetValue(MaximizedProperty); }
-            set { SetValue(MaximizedProperty, value); }
+            set {
+                SetValue(MaximizedProperty, value);
+                OnPropertyChanged("Maximized");
+            }
         }
 
         public bool ShowMinimizeButton {
             get { return (bool)GetValue(ShowMinimizeButtonProperty); }
-            set { SetValue(ShowMinimizeButtonProperty, value); }
+            set {
+                SetValue(ShowMinimizeButtonProperty, value);
+                OnPropertyChanged("ShowMinimizeButton");
+            }
         }
 
         public bool ShowMaximizeButton {
             get { return (bool)GetValue(ShowMaximizeButtonProperty); }
-            set { SetValue(ShowMaximizeButtonProperty, value); }
+            set {
+                SetValue(ShowMaximizeButtonProperty, value);
+                OnPropertyChanged("ShowMaximizeButton");
+            }
+        }
+
+        private void OnPropertyChanged(string name) {
+            if(this.PropertyChanged != null) {
+                this.PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {

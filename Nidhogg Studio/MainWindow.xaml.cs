@@ -14,6 +14,8 @@ namespace Nidhogg_Studio {
             InitializeComponent();
             this.Loaded += HandleLoaded;
             this.Closing += HandleClosing;
+            if (this.WindowState == WindowState.Maximized)
+                this.Maximized = true;
         }
 
         private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {

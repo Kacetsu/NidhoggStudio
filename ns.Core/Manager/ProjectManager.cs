@@ -4,6 +4,7 @@ using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using ns.Base.Extensions;
 using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
@@ -233,21 +234,33 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         /// <param name="parent">The parent.</param>
         private void AddChildNodes(Node node, Node parent) {
-            parent.AddChild(node);
+            List<Node> nodes = new List<Node>();
             foreach (Node child in node.Childs) {
+                Node childNode = child;
                 if (child is Property) {
-                    Property property = child as Property;
+                    Property originalProperty = child as Property;
+                    Property property = originalProperty.DeepClone() as Property;
                     property.UID = Node.GenerateUID();
+                    property.SetParent(parent);
 
                     if (property.CanAutoConnect && !property.IsOutput) {
                         List<Property> connectableProperties = _propertyManager.GetConnectableProperties(property);
                         if (connectableProperties != null && connectableProperties.Count > 0)
                             property.Connect(connectableProperties[connectableProperties.Count - 1]);
                     }
-
-                    _propertyManager.Add(property);
+                    childNode = property;
                 }
+                nodes.Add(childNode);
+            }
+
+            node.Childs.Clear();
+            parent.AddChild(node);
+            node.SetParent(parent);
+
+            foreach (Node child in nodes) {
+                node.Childs.Add(child);
                 AddChildNodes(child, node);
+                _propertyManager.Add(child);
             }
         }
 

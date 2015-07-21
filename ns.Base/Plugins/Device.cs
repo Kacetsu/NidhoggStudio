@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ns.Base.Extensions;
-using System.Xml.Serialization;
+﻿using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Plugins.Properties;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 
-namespace ns.Base.Plugins {
+namespace ns.Base.Plugins
+{
     [Serializable]
     public class Device : Plugin, IXmlSerializable {
         /// <summary>

@@ -1,13 +1,9 @@
 ﻿using ns.Base.Manager;
-using ns.Base.Plugins;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
-namespace ns.Base.Plugins.Properties {
+namespace ns.Base.Plugins.Properties
+{
     [Serializable]
     public class DeviceProperty : Property {
         [NonSerialized]

@@ -3,6 +3,7 @@ using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using ns.Base.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -74,7 +75,7 @@ namespace ns.Core.Manager {
                         if (plugin is Device)
                             devices.Add(plugin as Device);
                     }
-
+                    
                     DeviceProperty deviceProperty = node as DeviceProperty;
                     deviceProperty.AddDeviceList(devices, _deviceManager);
                 }

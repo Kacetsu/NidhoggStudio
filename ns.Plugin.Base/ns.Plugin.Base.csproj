@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckIntensity.cs" />
     <Compile Include="GetImage.cs" />
     <Compile Include="ImageFileDevice.cs" />
     <Compile Include="IterationCounter.cs" />

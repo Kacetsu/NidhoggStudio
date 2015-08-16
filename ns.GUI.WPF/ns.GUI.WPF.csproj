@@ -79,6 +79,9 @@
     <Compile Include="Controls\DisplayTabItem.xaml.cs">
       <DependentUpon>DisplayTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
+      <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Histogram.cs" />
     <Compile Include="Controls\LibraryInformationMenuItem.cs" />
     <Compile Include="Controls\LogView.xaml.cs">
@@ -171,6 +174,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Property\NumberPropertyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Property\RectanglePropertyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -300,6 +300,20 @@ namespace ns.Base.Plugins.Properties {
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                     }
+                } else if(reader.Name == "ArrayOfDouble") {
+                    try {
+                        XmlSerializer ser = new XmlSerializer(typeof(List<double>));
+                        this.Value = ser.Deserialize(reader);
+                    } catch (Exception ex) {
+                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    }
+                } else if (reader.Name == "ArrayOfInteger") {
+                    try {
+                        XmlSerializer ser = new XmlSerializer(typeof(List<int>));
+                        this.Value = ser.Deserialize(reader);
+                    } catch (Exception ex) {
+                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    }
                 }
             }
 
@@ -350,9 +364,12 @@ namespace ns.Base.Plugins.Properties {
                     XmlSerializer ser = new XmlSerializer(typeof(object));
                     if (this is DeviceProperty)
                         ser.Serialize(writer, ((DeviceProperty)this).DeviceUID);
-                    else if(this is ListProperty)
+                    else if (this is ListProperty)
                         ser.Serialize(writer, this.Value.ToString());
-                    else
+                    else if (this is RectangleProperty) {
+                        ser = new XmlSerializer(typeof(List<double>));
+                        ser.Serialize(writer, this.Value);
+                    } else
                         ser.Serialize(writer, this.Value);
                     if (this.Cache.Childs.Count > 0) {
                         ser = new XmlSerializer(this.Cache.GetType());

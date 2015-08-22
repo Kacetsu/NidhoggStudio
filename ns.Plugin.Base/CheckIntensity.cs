@@ -13,6 +13,7 @@ namespace ns.Plugin.Base {
     public class CheckIntensity : Tool {
         private RectangleProperty _aoiProperty;
         private ImageProperty _inputImage;
+        private ImageProperty _outputImage;
         private DoubleProperty _intensityProperty;
 
         public override string Category {
@@ -29,8 +30,9 @@ namespace ns.Plugin.Base {
 
         public CheckIntensity() {
             DisplayName = "Check Intensity";
-            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 0.0, 0.0));
+            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             AddChild(new ImageProperty("InputImage", false));
+            AddChild(new ImageProperty("OuputImage", true));
             AddChild(new DoubleProperty("Intensity", true));
         }
 
@@ -39,8 +41,10 @@ namespace ns.Plugin.Base {
 
             _aoiProperty = GetProperty("AOI") as RectangleProperty;
             _inputImage = GetProperty("InputImage") as ImageProperty;
+            _outputImage = GetProperty("Intensity") as ImageProperty;
             _intensityProperty = GetProperty("Intensity") as DoubleProperty;
             return true;
         }
     }
 }
+

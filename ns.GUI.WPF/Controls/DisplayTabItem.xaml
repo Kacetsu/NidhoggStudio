@@ -18,7 +18,10 @@
                 </ContextMenu>
             </Grid.ContextMenu>
             <ScrollViewer Name="ImageScrollArea" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                <Image Name="ImageDisplay" Stretch="None" />
+                <Grid Width="{Binding Path=ImageDisplay.ActualWidth}" Height="{Binding Path=ImageDisplay.ActualHeight}">
+                    <Image Name="ImageDisplay" Stretch="None" />
+                    <Canvas Name="ImageCanvas" Width="{Binding Path=ImageDisplay.ActualWidth}" Height="{Binding Path=ImageDisplay.ActualHeight}" />
+                </Grid>
             </ScrollViewer>
         </Grid>
         <GridSplitter Width="2" Grid.Column="1" HorizontalAlignment="Stretch" />

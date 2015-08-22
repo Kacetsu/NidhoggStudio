@@ -79,6 +79,7 @@
     <Compile Include="Controls\DisplayTabItem.xaml.cs">
       <DependentUpon>DisplayTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\OverlayRectangle.cs" />
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
     </Compile>

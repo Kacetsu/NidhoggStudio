@@ -27,6 +27,7 @@ namespace ns.GUI.WPF.Controls {
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ImageProperty _imageProperty;
+        private List<OverlayRectangle> _rectangles;
         private bool _isFitToScreen = true;
         private TabControl _parentControl;
 
@@ -109,6 +110,7 @@ namespace ns.GUI.WPF.Controls {
             this.HistogramAllBlue.DataContext = Histogram;
             this.IsFitToScreen = true;
             this.IsUpdateHistogramEnabled = false;
+            SetOverlayProperties(imageProperty);
         }
 
         /// <summary>
@@ -231,6 +233,20 @@ namespace ns.GUI.WPF.Controls {
                 null,
                 imageData,
                 stride);
+        }
+
+        private void SetOverlayProperties(ImageProperty imageProperty) {
+            if(imageProperty.Parent is Tool) {
+                Tool parent = imageProperty.Parent as Tool;
+                foreach(ns.Base.Plugins.Properties.Property child in parent.Childs.Where(c => c is ns.Base.Plugins.Properties.Property)) {
+                    if(child is RectangleProperty && !child.IsOutput) {
+                        if (_rectangles == null) _rectangles = new List<OverlayRectangle>();
+                        OverlayRectangle overlay = new OverlayRectangle(child as RectangleProperty, this.ImageCanvas);
+                        _rectangles.Add(overlay);
+                        this.ImageCanvas.Children.Add(overlay.Rectangle);
+                    }
+                }
+            }
         }
 
         /// <summary>

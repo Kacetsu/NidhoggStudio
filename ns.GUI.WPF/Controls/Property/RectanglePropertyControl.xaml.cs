@@ -38,6 +38,7 @@ namespace ns.GUI.WPF.Controls.Property {
             IsConnectable = isConnectable;
             this.NameLabel.Content = property.Name;
             _property = property;
+            property.PropertyChanged += Property_PropertyChanged;
 
             if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
                 ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
@@ -52,6 +53,16 @@ namespace ns.GUI.WPF.Controls.Property {
                 } else { 
                     Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodInfo.GetCurrentMethod() + "!", LogCategory.Error);
                 }
+            }
+        }
+
+        private void Property_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if(sender is RectangleProperty) {
+                RectangleProperty property = sender as RectangleProperty;
+                this.XNumberBox.Text = property.X.ToString();
+                this.YNumberBox.Text = property.Y.ToString();
+                this.WidthNumberBox.Text = property.Width.ToString();
+                this.HeightNumberBox.Text = property.Height.ToString();
             }
         }
 

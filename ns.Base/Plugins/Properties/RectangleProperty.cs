@@ -23,7 +23,12 @@ namespace ns.Base.Plugins.Properties {
         /// Gets or sets x offset.
         /// </summary>
         public double X {
-            get { return ((List<double>)Value)[0]; }
+            get {
+                if(Value != null)
+                    return ((List<double>)Value)[0];
+                else
+                    return 0;
+            }
             set {
                 ((List<double>)Value)[0] = value;
                 OnPropertyChanged("X");
@@ -34,7 +39,12 @@ namespace ns.Base.Plugins.Properties {
         /// Gets or sets y offset.
         /// </summary>
         public double Y {
-            get { return ((List<double>)Value)[1]; }
+            get {
+                if(Value != null)
+                    return ((List<double>)Value)[1];
+                else
+                    return 0;
+            }
             set {
                 ((List<double>)Value)[1] = value;
                 OnPropertyChanged("Y");
@@ -45,7 +55,12 @@ namespace ns.Base.Plugins.Properties {
         /// Gets or sets width.
         /// </summary>
         public double Width {
-            get { return ((List<double>)Value)[2]; }
+            get {
+                if (Value != null)
+                    return ((List<double>)Value)[2];
+                else
+                    return 0;
+            }
             set {
                 ((List<double>)Value)[2] = value;
                 OnPropertyChanged("Width");
@@ -56,7 +71,12 @@ namespace ns.Base.Plugins.Properties {
         /// Gets or sets height.
         /// </summary>
         public double Height {
-            get { return ((List<double>)Value)[3]; }
+            get {
+                if (Value != null)
+                    return ((List<double>)Value)[3];
+                else
+                    return 0;
+            }
             set {
                 ((List<double>)Value)[3] = value;
                 OnPropertyChanged("Height");

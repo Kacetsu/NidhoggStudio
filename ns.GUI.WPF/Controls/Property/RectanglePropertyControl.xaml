@@ -1,0 +1,71 @@
+﻿<control:PropertyControl x:Class="ns.GUI.WPF.Controls.Property.RectanglePropertyControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls.Property"
+             xmlns:control="clr-namespace:ns.GUI.WPF.Controls.Property"
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="600" Margin="0,2">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="*" MinWidth="240" />
+            <ColumnDefinition Width="30" MinWidth="30" />
+        </Grid.ColumnDefinitions>
+        <Label Name="NameLabel" Foreground="{DynamicResource Foreground}" />
+        <Grid Name="ContentGrid" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40*" MinWidth="60" />
+                <ColumnDefinition Width="40*" MinWidth="60" />
+                <ColumnDefinition Width="40*" MinWidth="60" />
+                <ColumnDefinition Width="40*" MinWidth="60" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Name="XGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="20" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="XNumberBox" Grid.Column="0" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+                <RepeatButton Name="XNegButton" Delay="500" Interval="100" Grid.Column="1" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                <RepeatButton Name="XPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+            </Grid>
+            <Grid Grid.Column="1" Name="YGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="20" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="YNumberBox" Grid.Column="0" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+                <RepeatButton Name="YNegButton" Delay="500" Interval="100" Grid.Column="1" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                <RepeatButton Name="YPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+            </Grid>
+            <Grid Grid.Column="2" Name="WidthGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="20" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="WidthNumberBox" Grid.Column="0" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+                <RepeatButton Name="WidthNegButton" Delay="500" Interval="100" Grid.Column="1" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                <RepeatButton Name="WidthPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+            </Grid>
+            <Grid Grid.Column="3" Name="HeightGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="20" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="HeightNumberBox" Grid.Column="0" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+                <RepeatButton Name="HeightNegButton" Delay="500" Interval="100" Grid.Column="1" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                <RepeatButton Name="HeightPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+            </Grid>
+        </Grid>
+        <Button Name="ConnectButton" Grid.Column="2" Height="25" Click="Button_Click">
+            <Button.Content>
+                <Image Name="ConnectImage" Source="/ns.GUI.WPF;component/Images/Connect.png" Margin="0" Height="20" />
+            </Button.Content>
+        </Button>
+    </Grid>
+</control:PropertyControl>

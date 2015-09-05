@@ -109,6 +109,8 @@ namespace ns.GUI.WPF.Controls {
                     AddComboBoxProperty(parentGrid, property, true);
                 } else if (property is ImageProperty) {
                     AddComboBoxProperty(parentGrid, property, true);
+                }else if (property is RectangleProperty) {
+                    AddRectangleProperty(parentGrid, property, true);
                 }
             }
         }
@@ -130,6 +132,12 @@ namespace ns.GUI.WPF.Controls {
 
         private NumberPropertyControl AddNumberProperty(Grid grid, Node property, bool isConnectable) {
             NumberPropertyControl control = new NumberPropertyControl(property as ns.Base.Plugins.Properties.Property, isConnectable);
+            SetControlGridPosition(control, grid);
+            return control;
+        }
+
+        private RectanglePropertyControl AddRectangleProperty(Grid grid, Node property, bool isConnectable) {
+            RectanglePropertyControl control = new RectanglePropertyControl(property as ns.Base.Plugins.Properties.Property, isConnectable);
             SetControlGridPosition(control, grid);
             return control;
         }

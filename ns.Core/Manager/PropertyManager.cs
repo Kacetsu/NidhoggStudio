@@ -37,6 +37,7 @@ namespace ns.Core.Manager {
             AddType(new DeviceProperty());
             AddType(new ImageProperty());
             AddType(new ListProperty());
+            AddType(new RectangleProperty());
             AddType(new OperationSelectionProperty());
             AddType(new Property());
             return true;

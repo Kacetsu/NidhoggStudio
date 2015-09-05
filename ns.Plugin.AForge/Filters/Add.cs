@@ -75,6 +75,7 @@ namespace ns.Plugin.AForge.Filters {
                 _imageOutput.Value = inputContainer;
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                return false;
             }
 
             return true;

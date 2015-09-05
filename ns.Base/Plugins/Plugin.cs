@@ -2,13 +2,9 @@
 using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins {
@@ -16,7 +12,7 @@ namespace ns.Base.Plugins {
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
     /// </summary>
     [Serializable]
-    public class Plugin : Node,  ICloneable {
+    public class Plugin : Node, IPlugin, ICloneable {
 
         private string _version = string.Empty;
         private string _assemblyFile = string.Empty;

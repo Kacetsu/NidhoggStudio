@@ -53,12 +53,44 @@ namespace ns.Plugin.Base {
                 byte[] data = inputContainer.Data;
                 byte bpp = inputContainer.BytesPerPixel;
 
+                int width = inputContainer.Width;
+                int height = inputContainer.Height;
+
+                int yOffset = (int)_aoiProperty.Y;
+                int xOffset = (int)_aoiProperty.X;
+                int aoiWidth = (int)_aoiProperty.Width;
+                int aoiHeight = (int)_aoiProperty.Height;
+
+                int sum = 0;
+                int count = 0;
+
                 unsafe {
                     fixed(byte* ptr = data) {
-
+                        if (bpp == 1) {
+                            for (int y = yOffset; y < (yOffset + aoiHeight); y++) {
+                                for (int x = xOffset; x < (xOffset + aoiWidth); x++) {
+                                    byte b = ptr[(y * width + x) * bpp];
+                                    sum += b;
+                                    count++;
+                                }
+                            }
+                        }else if (bpp >= 3) {
+                            for (int y = yOffset; y < (yOffset + aoiHeight); y++) {
+                                for (int x = xOffset; x < (xOffset + aoiWidth); x += bpp) {
+                                    byte r = ptr[(y * width + x) * bpp];
+                                    byte g = ptr[(y * width + x) * bpp + 1];
+                                    byte b = ptr[(y * width + x) * bpp + 2];
+                                    sum += r;
+                                    sum += g;
+                                    sum += b;
+                                    count += bpp;
+                                }
+                            }
+                        }
                     }
                 }
 
+                _intensityProperty.Value = Math.Round((100.0 / 255.0) * (double)(sum / count), 2);
                 _outputImage.Value = _inputImage.Value;
             } catch(Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);

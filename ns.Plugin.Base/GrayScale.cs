@@ -43,7 +43,7 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Calculates the intensity from the given aoi.
+        /// Converts a RGB image into grayscale 8 bit.
         /// </summary>
         /// <returns></returns>
         public override bool Run() {

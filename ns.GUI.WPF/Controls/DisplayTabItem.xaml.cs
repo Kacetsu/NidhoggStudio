@@ -1,23 +1,13 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Core;
-using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
@@ -28,8 +18,10 @@ namespace ns.GUI.WPF.Controls {
 
         private ImageProperty _imageProperty;
         private List<OverlayRectangle> _rectangles;
-        private bool _isFitToScreen = true;
         private TabControl _parentControl;
+        
+        private double _scalingFactor = 1.0;
+        private string _scalingFactorString = string.Empty;
 
         /// <summary>
         /// Gets the operation.
@@ -39,6 +31,30 @@ namespace ns.GUI.WPF.Controls {
         /// </value>
         public ImageProperty ImageProperty {
             get { return _imageProperty; }
+        }
+
+        /// <summary>
+        /// Gets or sets the scaling factor.
+        /// </summary>
+        public double ScalingFactor {
+            get { return _scalingFactor; }
+            set {
+                _scalingFactor = value;
+                ScalingFactorString = (_scalingFactor * 100).ToString() + "%";
+                OnPropertyChanged("ScalingFactor");
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets the scaling factor as string.
+        /// @Warning: Should only be used as binding.
+        /// </summary>
+        public string ScalingFactorString {
+            get { return _scalingFactorString; }
+            set {
+                _scalingFactorString = value;
+                OnPropertyChanged("ScalingFactorString");
+            }
         }
 
         /// <summary>
@@ -64,37 +80,14 @@ namespace ns.GUI.WPF.Controls {
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is fit to screen.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is fit to screen; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsFitToScreen {
-            get { return _isFitToScreen; }
-            set { 
-                _isFitToScreen = value;
-                this.ImageDisplay.StretchDirection = StretchDirection.Both;
-                if (_isFitToScreen) {
-                    this.ImageDisplay.Stretch = Stretch.Uniform;
-                    this.ImageScrollArea.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-                    this.ImageScrollArea.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
-                } else {
-                    this.ImageDisplay.Stretch = Stretch.None;
-                    this.ImageScrollArea.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-                    this.ImageScrollArea.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                }
-                OnPropertyChanged("IsFitToScreen");
-            }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DisplayTabItem"/> class.
         /// </summary>
         /// <param name="imageProperty">The image property.</param>
         public DisplayTabItem(ImageProperty imageProperty)
             : base() {
-                InitializeComponent();
-                _imageProperty = imageProperty;
+            ScalingFactor = 1.0;
+            InitializeComponent();
+            _imageProperty = imageProperty;
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
             this.Unloaded += DisplayTabItem_Unloaded;
@@ -108,7 +101,6 @@ namespace ns.GUI.WPF.Controls {
             this.HistogramAllGreen.DataContext = Histogram;
             this.HistogramBlue.DataContext = Histogram;
             this.HistogramAllBlue.DataContext = Histogram;
-            this.IsFitToScreen = true;
             this.IsUpdateHistogramEnabled = false;
             SetOverlayProperties(imageProperty);
         }
@@ -153,6 +145,11 @@ namespace ns.GUI.WPF.Controls {
             if (image.Value != null) {
                 ImageContainer container = (ImageContainer)image.Value;
                 this.ImageDisplay.Source = LoadImage(container.Data, container.Width, container.Height, container.Stride, container.BytesPerPixel);
+
+                this.ImageDisplay.Width = container.Width;
+                this.ImageDisplay.Height = container.Height;
+                this.ImageCanvas.Width = container.Width;
+                this.ImageCanvas.Height = container.Height;
             }
         }
 
@@ -256,6 +253,28 @@ namespace ns.GUI.WPF.Controls {
         private void OnPropertyChanged(string propertyName) {
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            double newScalingFactor = _scalingFactor;
+            if(sender == this.ZoomInButton) {
+                if (newScalingFactor < 2.0) {
+                    newScalingFactor += 0.1;
+                } else {
+                    newScalingFactor += 1.0;
+                }
+            }else if(sender == this.ZoomOutButton) {
+                if(_scalingFactor <= 2.1) {
+                    newScalingFactor -= 0.1;
+                } else {
+                    newScalingFactor -= 1.0;
+                }
+
+                if(newScalingFactor < 0.1) {
+                    newScalingFactor = 0.1;
+                }
+            }
+            ScalingFactor = newScalingFactor;
         }
     }
 }

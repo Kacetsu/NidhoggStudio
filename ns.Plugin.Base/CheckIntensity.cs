@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ns.Base.Extensions;
 using ns.Base.Plugins.Properties;
+using ns.Base.Log;
 
 namespace ns.Plugin.Base {
     [Visible, Serializable]
@@ -41,8 +42,28 @@ namespace ns.Plugin.Base {
 
             _aoiProperty = GetProperty("AOI") as RectangleProperty;
             _inputImage = GetProperty("InputImage") as ImageProperty;
-            _outputImage = GetProperty("Intensity") as ImageProperty;
+            _outputImage = GetProperty("OuputImage") as ImageProperty;
             _intensityProperty = GetProperty("Intensity") as DoubleProperty;
+            return true;
+        }
+
+        public override bool Run() {
+            try {
+                ImageContainer inputContainer = (ImageContainer)_inputImage.Value;
+                byte[] data = inputContainer.Data;
+                byte bpp = inputContainer.BytesPerPixel;
+
+                unsafe {
+                    fixed(byte* ptr = data) {
+
+                    }
+                }
+
+                _outputImage.Value = _inputImage.Value;
+            } catch(Exception ex) {
+                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                return false;
+            }
             return true;
         }
     }

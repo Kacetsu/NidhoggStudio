@@ -12,7 +12,7 @@
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Margin="0" Padding="0">
                         <Grid Name="Grid" Background="{TemplateBinding Background}" Margin="0">
-                            <ContentPresenter Margin="0" Height="{TemplateBinding Height}" HorizontalAlignment="Center" />
+                            <ContentPresenter Margin="0"  HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

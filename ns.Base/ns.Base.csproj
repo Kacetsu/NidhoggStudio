@@ -85,6 +85,8 @@
     <Compile Include="Manager\BaseManager.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Plugins\ImageDevice.cs" />
+    <Compile Include="Plugins\INode.cs" />
+    <Compile Include="Plugins\IPlugin.cs" />
     <Compile Include="Plugins\Plugin.cs" />
     <Compile Include="Plugins\Device.cs" />
     <Compile Include="Plugins\Extension.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="Plugins\Properties\KeyValuePairListProperty.cs" />
     <Compile Include="Plugins\Properties\NumberProperty.cs" />
     <Compile Include="Plugins\Properties\OperationSelectionProperty.cs" />
+    <Compile Include="Plugins\Properties\RectangleProperty.cs" />
     <Compile Include="Plugins\Tool.cs" />
     <Compile Include="Plugins\Operation.cs" />
     <Compile Include="Plugins\OperationTrigger.cs" />

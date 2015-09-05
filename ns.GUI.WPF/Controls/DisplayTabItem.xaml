@@ -12,13 +12,26 @@
             <ColumnDefinition Width="40*" />
         </Grid.ColumnDefinitions>
         <Grid Name="DisplayGrid">
-            <Grid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="{DynamicResource Fit_to_screen}" IsCheckable="True" IsChecked="{Binding Path=IsFitToScreen, Mode=TwoWay}" />
-                </ContextMenu>
-            </Grid.ContextMenu>
-            <ScrollViewer Name="ImageScrollArea" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                <Image Name="ImageDisplay" Stretch="None" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="100*" />
+            </Grid.RowDefinitions>
+            <Grid Background="{DynamicResource StandardBackgroundBrush}" Height="30">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Name="ZoomLevelBox" Text="{Binding Path=ScalingFactorString}" TextAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Width="60" />
+                    <RepeatButton Name="ZoomOutButton" Content="-" Width="30" Height="30" Delay="500" Interval="100" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                    <RepeatButton Name="ZoomInButton" Content="+" Width="30" Height="30" Delay="500" Interval="100" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
+                </StackPanel>
+            </Grid>
+            <ScrollViewer Name="ImageScrollArea" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                <Grid Width="{Binding Path=ImageCanvas.ActualWidth}" Height="{Binding Path=ImageCanvas.ActualHeight}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Canvas Name="ImageCanvas">
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Path=ScalingFactor}" ScaleY="{Binding Path=ScalingFactor}" />
+                        </Canvas.LayoutTransform>
+                        <Image Name="ImageDisplay" Stretch="None" />
+                    </Canvas>
+                </Grid>
             </ScrollViewer>
         </Grid>
         <GridSplitter Width="2" Grid.Column="1" HorizontalAlignment="Stretch" />

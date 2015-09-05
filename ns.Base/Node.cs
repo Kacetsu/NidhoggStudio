@@ -18,7 +18,7 @@ namespace ns.Base {
     XmlInclude(typeof(Plugin)),
     XmlInclude(typeof(Tool)),
     XmlInclude(typeof(Property))]
-    public class Node : ICloneable, IXmlSerializable, INotifyPropertyChanged {
+    public class Node : ICloneable, INode, IXmlSerializable, INotifyPropertyChanged {
 
         private bool _isInitialized = false;
 

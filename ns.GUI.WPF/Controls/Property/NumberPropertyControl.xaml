@@ -15,12 +15,12 @@
         <Label Name="NameLabel" Foreground="{DynamicResource Foreground}" />
         <Grid Grid.Column="1" Name="ContentGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="*" MinWidth="30" />
                 <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <RepeatButton Name="NegButton" Delay="500" Interval="100" Grid.Column="0" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
-            <TextBox Name="NumberBox" Grid.Column="1" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+            <TextBox Name="NumberBox" Grid.Column="0" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" />
+            <RepeatButton Name="NegButton" Delay="500" Interval="100" Grid.Column="1" Content="-" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
             <RepeatButton Name="PosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpDownButton}" Click="Button_Click" />
         </Grid>
         <Button Name="ConnectButton" Grid.Column="2" Height="25" Click="Button_Click">

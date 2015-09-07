@@ -1,12 +1,8 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Plugins;
 using ns.Base.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using System;
 
 namespace ns.Plugin.Base {
     /// <summary>

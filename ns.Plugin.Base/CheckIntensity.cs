@@ -67,8 +67,10 @@ namespace ns.Plugin.Base {
                 int sum = 0;
                 int count = 0;
 
-                unsafe {
-                    fixed (byte* ptr = data) {
+                unsafe
+                {
+                    fixed (byte* ptr = data)
+                    {
                         if (bpp == 1) {
                             for (int y = yOffset; y < (yOffset + aoiHeight) && y < height; y++) {
                                 for (int x = xOffset; x < (xOffset + aoiWidth) && x < width; x++) {
@@ -77,7 +79,7 @@ namespace ns.Plugin.Base {
                                     count++;
                                 }
                             }
-                        }else if (bpp >= 3) {
+                        } else if (bpp >= 3) {
                             for (int y = yOffset; y < (yOffset + aoiHeight) && y < height; y++) {
                                 for (int x = xOffset; x < (xOffset + aoiWidth) && x < width; x++) {
                                     byte r = ptr[(y * width + x) * bpp];
@@ -94,7 +96,7 @@ namespace ns.Plugin.Base {
                 }
 
                 _intensityProperty.Value = Math.Round((100.0 / 255.0) * (double)(sum / count), 2);
-                _outputImage.Value = _inputImage.Value;
+                _outputImage.Value = inputContainer.DeepClone();
             } catch(Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 return false;

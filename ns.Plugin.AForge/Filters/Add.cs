@@ -1,4 +1,5 @@
 ﻿using ns.Base.Attribute;
+using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
@@ -50,8 +51,8 @@ namespace ns.Plugin.AForge.Filters {
         public override bool Run() {
 
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value;
-                ImageContainer overlayContainer = (ImageContainer)_imageOverlay.Value;
+                ImageContainer inputContainer = (ImageContainer)_imageInput.Value.DeepClone();
+                ImageContainer overlayContainer = (ImageContainer)_imageOverlay.Value.DeepClone();
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 

@@ -144,7 +144,6 @@ namespace ns.Plugin.WPF.Statistic {
             _property = property;
             this.Header = _property.TreeName;
             _property.PropertyChanged += PropertyChanged;
-            _property.NodeChanged += NodeChanged;
             _container = container;
         }
 
@@ -183,12 +182,6 @@ namespace ns.Plugin.WPF.Statistic {
             _statisticModel.Replace("Max", max);
             _statisticModel.Replace("Mean", mean);
             _statisticModel.Replace("Median", median);
-        }
-
-        private void NodeChanged(object sender, Base.Event.NodeChangedEventArgs e) {
-            if (e.Name == "Name" || e.Name == "TreeName") {
-                this.Header = _property.TreeName;
-            }
         }
 
         private void PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {

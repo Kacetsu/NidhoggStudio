@@ -32,7 +32,7 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         public override void Add(Node node) {
             if (node is ImageProperty && node.Parent is Tool && ((ImageProperty)node).IsOutput) {
-                node.NodeChanged += ImageChangedEventHandle;
+                node.PropertyChanged += ImageChangedEventHandle;
                 base.Add(node);
             } else if (node is Operation)
                 base.Add(node);
@@ -44,7 +44,7 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         public override void Remove(Node node) {
             if (node is ImageProperty) {
-                node.NodeChanged -= ImageChangedEventHandle;
+                node.PropertyChanged -= ImageChangedEventHandle;
                 base.Remove(node);
             } else if (node is Operation)
                 base.Remove(node);
@@ -55,7 +55,7 @@ namespace ns.Core.Manager {
         /// </summary>
         public void Clear() {
             foreach(Node node in this.Nodes)
-                node.NodeChanged -= ImageChangedEventHandle;
+                node.PropertyChanged -= ImageChangedEventHandle;
             this.Nodes.Clear();
 
             if (this.ClearEvent != null)
@@ -63,8 +63,8 @@ namespace ns.Core.Manager {
         }
 
 
-        private void ImageChangedEventHandle(object sender, NodeChangedEventArgs e) {
-            if (e.Name == "Value") {
+        private void ImageChangedEventHandle(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Value") {
                 if (this.ImageChangedEvent != null) {
                     this.ImageChangedEvent(sender, new NodeCollectionChangedEventArgs(sender as ImageProperty));
                 }

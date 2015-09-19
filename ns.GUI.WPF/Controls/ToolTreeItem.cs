@@ -1,12 +1,5 @@
 ﻿using ns.Base.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
+using System.ComponentModel;
 
 namespace ns.GUI.WPF.Controls {
     public class ToolTreeItem : NodeTreeItem {
@@ -30,7 +23,7 @@ namespace ns.GUI.WPF.Controls {
         public ToolTreeItem(Tool tool)
             : base(tool) {
             _tool = tool;
-            _tool.NodeChanged += HandlePropertyChanged;
+            _tool.PropertyChanged += HandlePropertyChanged;
         }
 
         /// <summary>
@@ -39,18 +32,14 @@ namespace ns.GUI.WPF.Controls {
         public override void Close() {
             base.Close();
             if (_tool != null) {
-                _tool.NodeChanged -= HandlePropertyChanged;
+                _tool.PropertyChanged -= HandlePropertyChanged;
                 _tool = null;
             }
         }
 
-        private void HandlePropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {
-            if (e.Value != null && !(e.Value is ns.Base.Plugins.Properties.Property)) {
-                if (string.IsNullOrEmpty(e.Name) == false) {
-                    if (e.Name == "Name") {
-                        this.TextControl.Text = _tool.Name;
-                    }
-                }
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Name") {
+                this.TextControl.Text = _tool.Name;
             }
         }
 

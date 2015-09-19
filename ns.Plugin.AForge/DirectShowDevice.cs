@@ -79,8 +79,7 @@ namespace ns.Plugin.AForge {
                 _imageProperty = GetProperty("Image") as ImageProperty;
                 _deviceListProperty = GetProperty("Selected") as ListProperty;
                 _resolutionListProperty = GetProperty("Resolution") as ListProperty;
-
-                _deviceListProperty.NodeChanged += DeviceListProperty_PropertyChangedEvent;
+                
                 _resolutionListProperty.PropertyChanged += ResolutionListProperty_PropertyChanged;
 
                 FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);

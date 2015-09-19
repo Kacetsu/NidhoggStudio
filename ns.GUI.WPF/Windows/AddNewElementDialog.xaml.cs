@@ -17,6 +17,7 @@ namespace ns.GUI.WPF.Windows {
         private GuiManager _guiManager;
         private ProjectManager _projectManager;
         private List<KeyValuePair<string, ListBox>> _listBoxes;
+        private Node _lastAddedNode = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddNewElementDialog"/> class.
@@ -25,6 +26,12 @@ namespace ns.GUI.WPF.Windows {
             InitializeComponent();
             _listBoxes = new List<KeyValuePair<string, ListBox>>();
             this.Loaded += HandleLoaded;
+            this.Closing += HandleClosing;
+        }
+
+        private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (_lastAddedNode != null)
+                _guiManager.SelectNode(_lastAddedNode);
         }
 
         /// <summary>
@@ -57,7 +64,8 @@ namespace ns.GUI.WPF.Windows {
                             _guiManager.SelectNode(manager.Configuration.Operations[0]);
                     }
                     if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Operation) {
-                        _projectManager.Add(tool.Clone() as Node, _guiManager.SelectedNode);
+                        _lastAddedNode = tool.Clone() as Node;
+                        _projectManager.Add(_lastAddedNode, _guiManager.SelectedNode);
                     }
                 }
             }
@@ -69,7 +77,8 @@ namespace ns.GUI.WPF.Windows {
                 if (operation == null)
                     throw new Exception("Selected operation is NULL!");
 
-                _projectManager.Add(operation.Clone() as Operation);
+                _lastAddedNode = operation.Clone() as Operation;
+                _projectManager.Add(_lastAddedNode);
             }
         }
 

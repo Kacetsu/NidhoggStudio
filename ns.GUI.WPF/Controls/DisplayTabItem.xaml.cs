@@ -119,7 +119,7 @@ namespace ns.GUI.WPF.Controls {
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
             this.Unloaded += DisplayTabItem_Unloaded;
-            _imageProperty.ParentTool.NodeChanged += ImageParentPropertyChanged;
+            _imageProperty.ParentTool.PropertyChanged += HandleParentPropertyChanged;
             this.DataContext = this;
             this.HistogramGray.DataContext = Histogram;
             this.HistogramAllGray.DataContext = Histogram;
@@ -138,7 +138,7 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         public void Close() {
             if (_imageProperty != null) {
-                _imageProperty.ParentTool.NodeChanged -= ImageParentPropertyChanged;
+                _imageProperty.ParentTool.PropertyChanged -= HandleParentPropertyChanged;
                 _imageProperty = null;
             }
         }
@@ -181,14 +181,9 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        /// <summary>
-        /// Operations the property changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void ImageParentPropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {
+        private void HandleParentPropertyChanged(object sender, PropertyChangedEventArgs e) {
             this.Dispatcher.BeginInvoke(new Action(() => {
-                if (e.Name == "Name") {
+                if (e.PropertyName == "Name") {
                     this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
                 }
             }));

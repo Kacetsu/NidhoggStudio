@@ -1,15 +1,11 @@
 ﻿using ns.Base.Log;
 using ns.Base.Plugins;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace ns.GUI.WPF.Controls {
     public class OperationDisplayTabItem : TabItem {
@@ -39,7 +35,7 @@ namespace ns.GUI.WPF.Controls {
             this.Header = operation.Name;
             this.Unloaded += OperationDisplayTabItem_Unloaded;
             _operation = operation;
-            operation.NodeChanged += OperationPropertyChanged;
+            operation.PropertyChanged += HandlePropertyChanged;
             TabControl tabControl = new TabControl();
 
             try {
@@ -62,7 +58,7 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         public void Close() {
             if (_operation != null) {
-                _operation.NodeChanged -= OperationPropertyChanged;
+                _operation.PropertyChanged -= HandlePropertyChanged;
                 _operation = null;
             }
             foreach (DisplayTabItem item in ((TabControl)this.Content).Items)
@@ -79,13 +75,8 @@ namespace ns.GUI.WPF.Controls {
             Close();
         }
 
-        /// <summary>
-        /// Operations the property changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void OperationPropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {
-            if (e.Name == "Name") {
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Name") {
                 this.Header = _operation.Name;
             }
         }

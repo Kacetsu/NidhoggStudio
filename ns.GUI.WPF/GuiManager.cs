@@ -30,6 +30,8 @@ namespace ns.GUI.WPF {
         /// <param name="node">The node.</param>
         public void SelectNode(Node node) {
             _selectedNode = node;
+            if(node != null)
+                _selectedNode.IsSelected = true;
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this, new NodeSelectionChangedEventArgs(node));
         }

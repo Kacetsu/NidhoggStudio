@@ -54,8 +54,8 @@ namespace ns.Plugin.AForge.Filters {
         public override bool Run() {
 
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value;
-                ImageContainer overlayContainer = (ImageContainer)_imageMask.Value;
+                ImageContainer inputContainer = (ImageContainer)_imageInput.Value.DeepClone();
+                ImageContainer overlayContainer = (ImageContainer)_imageMask.Value.DeepClone();
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 

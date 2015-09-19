@@ -2,6 +2,7 @@
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -68,7 +69,7 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         public virtual void Close() {
             if (_node != null) {
-                _node.NodeChanged -= HandlePropertyChanged;
+                _node.PropertyChanged -= HandlePropertyChanged;
                 _node = null;
             }
         }
@@ -93,9 +94,10 @@ namespace ns.GUI.WPF.Controls {
 
             _additionFormat = additionalFormat;
 
+            node.PropertyChanged += HandlePropertyChanged;
+
             if (node is StringProperty) {
                 if (!string.IsNullOrEmpty(additionalFormat)) {
-                    _node.NodeChanged += HandlePropertyChanged;
                     name = string.Format(additionalFormat, ((StringProperty)node).Value as string);
                 } else
                     name = ((StringProperty)node).Value as string;
@@ -159,20 +161,13 @@ namespace ns.GUI.WPF.Controls {
             UpdateChilds();
         }
 
-        /// <summary>
-        /// Handles the property changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void HandlePropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {
-            if (e.Value != null && !(e.Value is ns.Base.Plugins.Properties.Property)) {
-                if (string.IsNullOrEmpty(e.Name) == false) {
-                    if (e.Name == "Name") {
-                        _textBlock.Text = string.Format(_additionFormat, _node.Name);
-                    } else if (e.Name == "Value" && _node is StringProperty) {
-                        _textBlock.Text = string.Format(_additionFormat, ((StringProperty)_node).Value);
-                    }
-                }
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Name") {
+                _textBlock.Text = string.Format(_additionFormat, _node.Name);
+            } else if (e.PropertyName == "Value" && _node is StringProperty) {
+                _textBlock.Text = string.Format(_additionFormat, ((StringProperty)_node).Value);
+            } else if (e.PropertyName == "IsSelected") {
+                this.IsSelected = _node.IsSelected;
             }
         }
     }

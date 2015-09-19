@@ -6,6 +6,8 @@
     <system:String x:Key="Name">Name</system:String>
     <system:String x:Key="Value">Wert</system:String>
     <system:String x:Key="Monitored">Überwacht</system:String>
+    <system:String x:Key="Add">Hinzufügen</system:String>
+    <system:String x:Key="Histogram">Histogramm</system:String>
     
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Schließen</system:String>
@@ -41,7 +43,7 @@
 
     <!--Add new Element Dialog-->
     <system:String x:Key="S_T_Add_new_Element">Neues Element hinzufügen</system:String>
-    
+
     <!--Analytics-->
     <system:String x:Key="Output">Ausgabe</system:String>
     <system:String x:Key="Results">Ergebnisse</system:String>

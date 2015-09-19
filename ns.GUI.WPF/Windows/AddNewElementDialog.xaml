@@ -51,7 +51,7 @@
         </TabControl>
         <StackPanel Grid.Row="1" Orientation="Vertical">
             <Button Name="AddButton" Height="30" Click="HandleButtonClick">
-                <TextBlock Text="Add" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Text="{DynamicResource Add}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </StackPanel>
     </Grid>

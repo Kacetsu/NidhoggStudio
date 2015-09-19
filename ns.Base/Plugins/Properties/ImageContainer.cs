@@ -8,6 +8,7 @@ namespace ns.Base.Plugins.Properties {
     /// <summary>
     /// Data structur containing image informations.
     /// </summary>
+    [Serializable]
     public struct ImageContainer {
         /// <summary>
         /// The data

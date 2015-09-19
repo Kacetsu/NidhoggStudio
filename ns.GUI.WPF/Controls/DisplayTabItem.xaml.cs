@@ -22,6 +22,7 @@ namespace ns.GUI.WPF.Controls {
         
         private double _scalingFactor = 1.0;
         private string _scalingFactorString = string.Empty;
+        private bool _isHistogramEnabled = false;
 
         /// <summary>
         /// Gets the operation.
@@ -54,6 +55,33 @@ namespace ns.GUI.WPF.Controls {
             set {
                 _scalingFactorString = value;
                 OnPropertyChanged("ScalingFactorString");
+            }
+        }
+
+        public bool IsHistogramEnabled {
+            get { return _isHistogramEnabled; }
+            set {
+                _isHistogramEnabled = value;
+
+                string iconUrl = "/ns.GUI.WPF;component/Images/Histogram_Enabled.png";
+                if (!_isHistogramEnabled)
+                    iconUrl = "/ns.GUI.WPF;component/Images/Histogram.png";
+
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(iconUrl, UriKind.Relative);
+                image.EndInit();
+
+                HistogramToggleButtonImage.Source = image;
+
+                OnPropertyChanged("IsHistogramEnabled");
+                OnPropertyChanged("HistogramVisibility");
+            }
+        }
+
+        public Visibility HistogramVisibility {
+            get {
+                return IsHistogramEnabled ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -91,7 +119,7 @@ namespace ns.GUI.WPF.Controls {
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
             this.Unloaded += DisplayTabItem_Unloaded;
-            _imageProperty.ParentTool.NodeChanged += ImageParentPropertyChanged;
+            _imageProperty.ParentTool.PropertyChanged += HandleParentPropertyChanged;
             this.DataContext = this;
             this.HistogramGray.DataContext = Histogram;
             this.HistogramAllGray.DataContext = Histogram;
@@ -110,7 +138,7 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         public void Close() {
             if (_imageProperty != null) {
-                _imageProperty.ParentTool.NodeChanged -= ImageParentPropertyChanged;
+                _imageProperty.ParentTool.PropertyChanged -= HandleParentPropertyChanged;
                 _imageProperty = null;
             }
         }
@@ -153,14 +181,9 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        /// <summary>
-        /// Operations the property changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void ImageParentPropertyChanged(object sender, Base.Event.NodeChangedEventArgs e) {
+        private void HandleParentPropertyChanged(object sender, PropertyChangedEventArgs e) {
             this.Dispatcher.BeginInvoke(new Action(() => {
-                if (e.Name == "Name") {
+                if (e.PropertyName == "Name") {
                     this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
                 }
             }));
@@ -182,7 +205,7 @@ namespace ns.GUI.WPF.Controls {
             if (bytesPerPixel == 1)
                 pixelFormat = PixelFormats.Gray8;
 
-            if (this.IsUpdateHistogramEnabled) {
+            if (this.IsHistogramEnabled && this.IsUpdateHistogramEnabled) {
                 if (Histogram == null) {
                     Histogram = new Histogram(imageData, width, height, stride, bytesPerPixel);
                     this.HistogramGray.DataContext = Histogram;
@@ -263,7 +286,7 @@ namespace ns.GUI.WPF.Controls {
                 } else {
                     newScalingFactor += 1.0;
                 }
-            }else if(sender == this.ZoomOutButton) {
+            } else if(sender == this.ZoomOutButton) {
                 if(_scalingFactor <= 2.1) {
                     newScalingFactor -= 0.1;
                 } else {
@@ -273,6 +296,8 @@ namespace ns.GUI.WPF.Controls {
                 if(newScalingFactor < 0.1) {
                     newScalingFactor = 0.1;
                 }
+            } else if(sender == this.HistogramToggleButton) {
+                IsHistogramEnabled = !IsHistogramEnabled;
             }
             ScalingFactor = newScalingFactor;
         }

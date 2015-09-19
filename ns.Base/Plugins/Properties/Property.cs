@@ -2,9 +2,6 @@
 using ns.Base.Log;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -54,7 +51,6 @@ namespace ns.Base.Plugins.Properties {
             get { return _value; }
             set { 
                 _value = value;
-                OnNodeChanged("Value", _value);
                 OnPropertyChanged("Value");
             }
         }
@@ -201,12 +197,12 @@ namespace ns.Base.Plugins.Properties {
 
             _initialValue = this.Value;
             if (_connectedProperty != null) {
-                _connectedProperty.NodeChanged -= ConnectedPropertyChangedHandle;
+                _connectedProperty.PropertyChanged -= ConnectedPropertyChangedHandle;
                 _connectedProperty.PropertyUnconnectEvent -= ConnectedPropertyUnconnectEvent;
             }
             _connectedProperty = property;
             this.ConnectedToUID = _connectedProperty.UID;
-            _connectedProperty.NodeChanged += ConnectedPropertyChangedHandle;
+            _connectedProperty.PropertyChanged += ConnectedPropertyChangedHandle;
             _connectedProperty.PropertyUnconnectEvent += ConnectedPropertyUnconnectEvent;
         }
 
@@ -228,7 +224,7 @@ namespace ns.Base.Plugins.Properties {
                 this.PropertyUnconnectEvent(this, new NodeChangedEventArgs(this));
 
             if (_connectedProperty != null) {
-                _connectedProperty.NodeChanged -= ConnectedPropertyChangedHandle;
+                _connectedProperty.PropertyChanged -= ConnectedPropertyChangedHandle;
                 _connectedProperty.PropertyUnconnectEvent -= ConnectedPropertyUnconnectEvent;
             }
             this.Value = _initialValue;
@@ -240,10 +236,10 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void ConnectedPropertyChangedHandle(object sender, NodeChangedEventArgs e) {
-            if (e.Name == "Value") {
+        private void ConnectedPropertyChangedHandle(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Value") {
                 if (_initialValue == null) _initialValue = _value;
-                _value = e.Value;
+                _value = _connectedProperty.Value;
             }
         }
 

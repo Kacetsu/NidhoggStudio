@@ -21,6 +21,7 @@ namespace ns.Base {
     public class Node : ICloneable, INode, IXmlSerializable, INotifyPropertyChanged {
 
         private bool _isInitialized = false;
+        private bool _isSelected = false;
 
         /// <summary>
         /// Will be trickered if a new Node is added.
@@ -46,11 +47,6 @@ namespace ns.Base {
         /// <param name="sender">The object that this changed.</param>
         /// <param name="e">The Informations about the changed Property.</param>
         public delegate void NodeChangedEventHandler(object sender, NodeChangedEventArgs e);
-
-        /// <summary>
-        /// Will be triggered if the Property did changed.
-        /// </summary>
-        public event NodeChangedEventHandler NodeChanged;
 
         protected string _name = string.Empty;
         private string _fullname = string.Empty;
@@ -104,7 +100,6 @@ namespace ns.Base {
             }
             set {
                 _name = value;
-                OnNodeChanged("Name", _name);
                 OnPropertyChanged("Name");
             }
         }
@@ -168,6 +163,17 @@ namespace ns.Base {
         /// </summary>
         /// <returns></returns>
         public bool IsInitialized { get { return _isInitialized; } }
+
+        /// <summary>
+        /// Gets or sets if the Node is selected;
+        /// </summary>
+        public bool IsSelected {
+            get { return _isSelected; }
+            set {
+                _isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
 
         /// <summary>
         /// Initialze the Plugin.
@@ -264,9 +270,9 @@ namespace ns.Base {
         /// <param name="parent">The parent.</param>
         public void SetParent(Node parent) {
             if(_parent != null)
-                _parent.NodeChanged -= ParentPropertyChangedEvent;
+                _parent.PropertyChanged -= ParentPropertyChangedEvent;
             _parent = parent;
-            _parent.NodeChanged += ParentPropertyChangedEvent;
+            _parent.PropertyChanged += ParentPropertyChangedEvent;
         }
 
         /// <summary>
@@ -274,10 +280,9 @@ namespace ns.Base {
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void ParentPropertyChangedEvent(object sender, NodeChangedEventArgs e) {
-            if (e.Name == "Name" || e.Name == "TreeName") {
-                this.OnPropertyChanged(e.Name);
-                this.OnNodeChanged(e.Name);
+        private void ParentPropertyChangedEvent(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Name" || e.PropertyName == "TreeName") {
+                this.OnPropertyChanged(e.PropertyName);
             }
         }
 
@@ -288,33 +293,6 @@ namespace ns.Base {
         public void OnChildCollectionChanged(List<Node> nodes) {
             if (this.ChildCollectionChanged != null)
                 this.ChildCollectionChanged(this, new ChildCollectionChangedEventArgs(nodes));
-        }
-
-        /// <summary>
-        /// Called when [node changed].
-        /// </summary>
-        public void OnNodeChanged() {
-            if (this.NodeChanged != null)
-                this.NodeChanged(this, new NodeChangedEventArgs(this));
-        }
-
-        /// <summary>
-        /// Called when [node changed].
-        /// </summary>
-        /// <param name="name">The name.</param>
-        public void OnNodeChanged(string name) {
-            if (this.NodeChanged != null)
-                this.NodeChanged(this, new NodeChangedEventArgs(name, this));
-        }
-
-        /// <summary>
-        /// Called when [node changed].
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="content">The content.</param>
-        public void OnNodeChanged(string name, object content) {
-            if (NodeChanged != null)
-                NodeChanged(this, new NodeChangedEventArgs(name, content));
         }
 
         /// <summary>

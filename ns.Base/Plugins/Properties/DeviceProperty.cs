@@ -126,7 +126,6 @@ namespace ns.Base.Plugins.Properties
             else
                 AddChild(device);
             _tmpDeviceUID = device.UID;
-            OnNodeChanged("Device", oldValue);
             OnPropertyChanged("Device");
         }
 

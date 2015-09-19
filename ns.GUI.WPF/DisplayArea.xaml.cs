@@ -173,7 +173,7 @@ namespace ns.GUI.WPF {
                     }
                 }
                 _mutex.ReleaseMutex();
-            }), System.Windows.Threading.DispatcherPriority.Background);
+            }), System.Windows.Threading.DispatcherPriority.Normal);
         }
 
         private void Hooks_DispatcherInactive(object sender, EventArgs e) {

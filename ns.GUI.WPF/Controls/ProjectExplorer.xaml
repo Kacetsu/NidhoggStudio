@@ -9,6 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="37" />
+            <RowDefinition Height="37" />
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TreeView Name="ProjectTree">
@@ -27,7 +28,12 @@
                 </TreeViewItem>
             </TreeView>
         </ScrollViewer>
-        <Border Grid.Row="1" Margin="1" Padding="0,2,0,0" BorderThickness="0" BorderBrush="Transparent" Background="{StaticResource StandardBackgroundBrush}">
+        <Button Name="AddToolButton" Grid.Row="1" Height="33" Margin="2,2" Style="{DynamicResource AddToolButton}" ToolTip="{DynamicResource S_T_Add_new_Element}" Click="Button_Click">
+            <Button.Content>
+                <TextBlock Text="+" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center" />
+            </Button.Content>
+        </Button>
+        <Border Grid.Row="2" Margin="1" Padding="0,2,0,0" BorderThickness="0" BorderBrush="Transparent" Background="{StaticResource StandardBackgroundBrush}">
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
                 <Button Name="DeleteButton" Width="30" ToolTip="{DynamicResource Delete}" Click="Button_Click">
                     <Image Source="/ns.GUI.WPF;component/Images/Trash.png" Height="20" />

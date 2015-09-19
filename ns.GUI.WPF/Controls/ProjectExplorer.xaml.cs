@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using ns.Base;
 using System.ComponentModel;
 using ns.Base.Plugins;
+using ns.GUI.WPF.Windows;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
@@ -122,6 +123,9 @@ namespace ns.GUI.WPF.Controls {
             if(sender == this.DeleteButton) {
                 Node selectedNode = _guiManager.SelectedNode;
                 _projectManager.Remove(selectedNode);
+            }else if(sender == this.AddToolButton) {
+                AddNewElementDialog dialog = new AddNewElementDialog();
+                dialog.ShowDialog();
             }
         }
     }

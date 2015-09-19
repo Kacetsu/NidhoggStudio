@@ -35,7 +35,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="37" />
         </Grid.RowDefinitions>
         <TabControl Name="AnyTabs">
             <TabItem Name="MainToolsTab" Header="Tools">
@@ -50,8 +50,8 @@
             </TabItem>
         </TabControl>
         <StackPanel Grid.Row="1" Orientation="Vertical">
-            <Button Name="AddButton" Height="30" Click="HandleButtonClick">
-                <TextBlock Text="{DynamicResource Add}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Name="AddButton" Height="33" Margin="2,2" Click="HandleButtonClick" Style="{DynamicResource AddToolButton}" ToolTip="{DynamicResource S_T_Add_new_Element}">
+                <TextBlock Text="{DynamicResource Add}" FontSize="17" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </StackPanel>
     </Grid>

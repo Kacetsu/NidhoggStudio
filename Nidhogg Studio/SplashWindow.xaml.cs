@@ -9,7 +9,11 @@ namespace Nidhogg_Studio {
     /// Interaction logic for SplashWindow.xaml
     /// </summary>
     public partial class SplashWindow : Window {
+#if DEBUG
+        private const long MIN_STARTUP_TIME = 500;
+#else
         private const long MIN_STARTUP_TIME = 2000;
+#endif
         private Stopwatch _stopwatch = new Stopwatch();
 
         public SplashWindow() {

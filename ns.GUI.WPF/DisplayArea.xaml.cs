@@ -45,8 +45,11 @@ namespace ns.GUI.WPF {
             _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
             _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
             _projectManager.Loading += ProjectManagerLoading;
-            foreach (Operation operation in _displayManager.Nodes) {
+            foreach (Operation operation in _displayManager.Nodes.Where(o => o is Operation)) {
                 AddTabParent(operation);
+            }
+            foreach(ImageProperty imageProperty in _displayManager.Nodes.Where(i => i is ImageProperty)) {
+                AddTabItem(imageProperty);
             }
             if (this.DisplayTabControl.Items.Count > 0)
                 this.DisplayTabControl.SelectedIndex = 0;

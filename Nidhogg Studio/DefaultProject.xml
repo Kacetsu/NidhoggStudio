@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ProjectManager xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Nodes />
+  <HasSavedProject>false</HasSavedProject>
+  <Configuration>
+    <Name Name="Name" Fullname="ns.Base.Plugins.Properties.StringProperty" UID="231f670c-c985-4c75-86d1-3d31cddf6dca">
+      <anyType xsi:type="xsd:string">Unnamed Project</anyType>
+    </Name>
+    <LogConfiguration>
+      <Categories>
+        <string>DEBUG</string>
+        <string>INFO</string>
+        <string>WARNING</string>
+        <string>ERROR</string>
+      </Categories>
+    </LogConfiguration>
+    <Operations>
+      <Operation Name="Unnamed Operation" Fullname="ns.Base.Plugins.Operation" UID="16a7188c-afad-42db-890d-aec3f1363cec">
+        <Cache>
+          <Property Name="LinkedOperation" Fullname="ns.Base.Plugins.Properties.OperationSelectionProperty" UID="7c1ef071-f6f5-409e-b1d1-56d583abf7e9" />
+          <ListProperty Name="Trigger" Fullname="ns.Base.Plugins.Properties.ListProperty" UID="953f5c70-a8ad-45de-843f-4c8be99b444f">
+            <anyType xsi:type="xsd:string">Continuous</anyType>
+          </ListProperty>
+        </Cache>
+      </Operation>
+    </Operations>
+    <Devices />
+  </Configuration>
+</ProjectManager>

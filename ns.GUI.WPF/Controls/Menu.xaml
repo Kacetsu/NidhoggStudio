@@ -6,13 +6,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="600" Height="30" Style="{DynamicResource Menu}">
     <MenuItem Header="{DynamicResource S_M_FILE}">
-        <MenuItem Header="{DynamicResource S_M_New_Project}" IsEnabled="False" />
+        <MenuItem Header="{DynamicResource S_M_New_Project}" Name="NewProjectMenuItem" Click="MenuItem_Click" IsEnabled="{Binding Path=IsNotRunning}" />
         <Separator />
-        <MenuItem Header="{DynamicResource S_M_Open_Project}" Name="OpenProjectMenuItem" Click="MenuItem_Click" />
-        <MenuItem Header="{DynamicResource S_M_Close}" IsEnabled="False" />
+        <MenuItem Header="{DynamicResource S_M_Open_Project}" Name="OpenProjectMenuItem" Click="MenuItem_Click" IsEnabled="{Binding Path=IsNotRunning}" />
         <Separator />
-        <MenuItem Header="{DynamicResource S_M_Save_Project}" Name="SaveProjectMenuItem" Click="MenuItem_Click" IsEnabled="False" />
-        <MenuItem Header="{DynamicResource S_M_Save_Project_as}" Name="SaveProjectAsMenuItem" Click="MenuItem_Click" />
+        <MenuItem Header="{DynamicResource S_M_Save_Project}" Name="SaveProjectMenuItem" Click="MenuItem_Click" IsEnabled="{Binding Path=IsNotRunning}" />
+        <MenuItem Header="{DynamicResource S_M_Save_Project_as}" Name="SaveProjectAsMenuItem" Click="MenuItem_Click" IsEnabled="{Binding Path=IsNotRunning}" />
         <Separator />
         <MenuItem Header="{DynamicResource S_M_Exit}" Name="ExitMenuItem" InputGestureText="Alt+F4" Click="MenuItem_Click" />
     </MenuItem>

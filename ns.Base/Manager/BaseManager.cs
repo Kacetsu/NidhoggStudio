@@ -3,6 +3,7 @@ using ns.Base.Log;
 using ns.Base.Plugins;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,10 +11,11 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ns.Base.Manager {
-    public class BaseManager {
+    public class BaseManager : INotifyPropertyChanged {
         public delegate void NodeCollectionChangedHandler(object sender, NodeCollectionChangedEventArgs e);
         public event NodeCollectionChangedHandler NodeAddedEvent;
         public event NodeCollectionChangedHandler NodeRemovedEvent;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private const string APPLICATION_NAME = "Nidhogg Studio";
         private static string _assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -245,5 +247,13 @@ namespace ns.Base.Manager {
             throw new NotImplementedException("[Load] must be implemented!");
         }
 
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public void OnPropertyChanged(string name) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

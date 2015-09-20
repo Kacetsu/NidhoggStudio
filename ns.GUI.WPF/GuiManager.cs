@@ -1,6 +1,7 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Manager;
+using ns.Core;
 using System;
 using System.Threading;
 using System.Windows;
@@ -13,6 +14,30 @@ namespace ns.GUI.WPF {
         public virtual event SelectionChangedHandler SelectedItemChanged;
 
         private Node _selectedNode;
+
+        private bool _isRunning = false;
+
+        /// <summary>
+        /// Gets or sets if the Processor is running.
+        /// </summary>
+        public bool IsRunning {
+            get { return _isRunning; }
+            set {
+                _isRunning = value;
+                OnPropertyChanged("IsRunning");
+            }
+        }
+
+        /// <summary>
+        /// Used to simplify GUI binding usage.
+        /// </summary>
+        public bool IsNotRunning {
+            get { return !_isRunning; }
+            set {
+                _isRunning = !value;
+                OnPropertyChanged("IsNotRunning");
+            }
+        }
 
         /// <summary>
         /// Gets the selected node.
@@ -51,6 +76,25 @@ namespace ns.GUI.WPF {
                     break;
             }
             Application.Current.Resources.MergedDictionaries.Add(dict);
+        }
+
+        public override bool Initialize() {
+            base.Initialize();
+
+            CoreSystem.Processor.Started += ProcessorStarted;
+            CoreSystem.Processor.Stopped += ProcessorStopped;
+
+            return true;
+        }
+
+        private void ProcessorStarted() {
+            IsRunning = true;
+            IsNotRunning = !IsRunning;
+        }
+
+        private void ProcessorStopped() {
+            IsRunning = false;
+            IsNotRunning = !IsRunning;
         }
     }
 }

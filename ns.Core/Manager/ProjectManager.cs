@@ -9,20 +9,23 @@ using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace ns.Core.Manager {
     public class ProjectManager : BaseManager {
-
-        private static string _filePath = string.Empty;
+        
         private static string _fileName = string.Empty;
         private const string EXTENSION_ZIP = ".nsproj";
         private const string EXTENSION_XML = ".xml";
+        private const string DEFAULT_PROJECT_FILE = "DefaultProject" + EXTENSION_XML;
 
         private ProjectConfiguration _configuration = new ProjectConfiguration();
         private PluginManager _pluginManager;
         private PropertyManager _propertyManager;
         private DeviceManager _deviceManager;
         private DisplayManager _displayManager;
+
+        private bool _hasSavedProject = false;
 
         /// <summary>
         /// Will be trickered if a new BaseOperation is added.
@@ -47,6 +50,14 @@ namespace ns.Core.Manager {
             return _configuration.Initialize();
         }
 
+        public bool HasSavedProject {
+            get { return _hasSavedProject; }
+            set {
+                _hasSavedProject = value;
+                OnPropertyChanged("HasSavedProject");
+            }
+        }
+
         /// <summary>
         /// Gets or sets the configuration.
         /// </summary>
@@ -55,28 +66,9 @@ namespace ns.Core.Manager {
         /// </value>
         public ProjectConfiguration Configuration {
             get { return _configuration; }
-            set { _configuration = value; }
-        }
-
-        /// <summary>
-        /// Will be invoked when the File Path did changed.
-        /// </summary>
-        [XmlIgnore]
-        public Action FilePathChangedAction;
-
-        /// <summary>
-        /// Gets or sets the FilePath.
-        /// </summary>
-        [XmlIgnore]
-        public string FilePath {
-            get {
-                if (string.IsNullOrEmpty(_filePath) == true)
-                    _filePath = ProjectManager.DocumentsPath;
-                return _filePath; 
-            }
             set {
-                _filePath = value;
-                FilePathChanged();
+                _configuration = value;
+                OnPropertyChanged("Configuration");
             }
         }
 
@@ -87,20 +79,13 @@ namespace ns.Core.Manager {
         public string FileName {
             get {
                 if (string.IsNullOrEmpty(_fileName) == true)
-                    _fileName = "new" + EXTENSION_ZIP;
+                    _fileName = DEFAULT_PROJECT_FILE;
                 return _fileName;
             }
             set {
                 _fileName = value;
-                FilePathChanged();
+                OnPropertyChanged("FileName");
             }
-        }
-
-        /// <summary>
-        /// Gets the File FullName
-        /// </summary>
-        public string FileFullName {
-            get { return FilePath + FileName; }
         }
 
         /// <summary>
@@ -110,23 +95,12 @@ namespace ns.Core.Manager {
             get { return EXTENSION_ZIP; }
         }
 
-        /// <summary>
-        /// Creates the FullName with the path and name.
-        /// </summary>
-        /// <param name="path">Path to the file.</param>
-        /// <param name="name">The File Name.</param>
-        public void UpdateFileFullName(string path, string name) {
-            _filePath = path;
-            _fileName = name;
-            FilePathChanged();
+        public static string FileFilter {
+            get { return "Project File (*.xml) | *.xml"; }
         }
 
-        /// <summary>
-        /// Files the path changed.
-        /// </summary>
-        private void FilePathChanged() {
-            if (FilePathChangedAction != null)
-                FilePathChangedAction();
+        public static string DefaultProjectFile {
+            get { return DEFAULT_PROJECT_FILE; }
         }
 
         /// <summary>
@@ -276,7 +250,7 @@ namespace ns.Core.Manager {
 
             ProjectManager manager = base.Load(path) as ProjectManager;
             this.Configuration.Name = manager.Configuration.Name;
-
+            
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
             _deviceManager = CoreSystem.Managers.Find(m => m.Name.Contains("DeviceManager")) as DeviceManager;
             _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
@@ -284,6 +258,7 @@ namespace ns.Core.Manager {
 
             _displayManager.Clear();
 
+            
             this.Configuration.Operations.Clear();
             _propertyManager.Nodes.Clear();
 
@@ -309,7 +284,7 @@ namespace ns.Core.Manager {
             List<Device> devices = new List<Device>();
             foreach (Device d in configuratedDevices)
                 devices.Add(d);
-
+            
             this.Configuration.Devices.AddRange(devices);
             _deviceManager.AddRange(configuratedDevices);
 
@@ -335,7 +310,25 @@ namespace ns.Core.Manager {
             if (this.Loaded != null)
                 this.Loaded();
 
+            FileName = path;
+            HasSavedProject = true;
+
             return this;
+        }
+
+        public override bool Save(string path) {
+            if (base.Save(path)) {
+                FileName = path;
+                HasSavedProject = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool CreateEmptyProject() {
+            Load(AssemblyPath + Path.DirectorySeparatorChar + DefaultProjectFile);
+            return true;
         }
 
         /// <summary>

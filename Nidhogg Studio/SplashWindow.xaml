@@ -8,12 +8,12 @@
         Title="SplashWindow" Height="455" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Background="{DynamicResource StandardBackgroundBrush}" ShowInTaskbar="False" Loaded="Window_Loaded" BorderBrush="{DynamicResource SplashBorderBrush}" BorderThickness="1">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="92" />
+            <RowDefinition Height="116" />
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
         </Grid.RowDefinitions>
-        <Image Width="80" Height="80" HorizontalAlignment="Left" Margin="10,0" />
-        <TextBlock Text="Nidhogg Studio" Foreground="{DynamicResource Foreground}" FontWeight="DemiBold" FontSize="32" VerticalAlignment="Center" Margin="100,0" />
+        <Image Width="96" Height="96" HorizontalAlignment="Left" Margin="10,10" Source="/ns.GUI.WPF;component/Images/NidhoggStudioIcon_96x96.png" />
+        <TextBlock Text="Nidhogg Studio" Foreground="{DynamicResource Foreground}" FontWeight="DemiBold" FontSize="32" VerticalAlignment="Center" Margin="110,10" />
         <TextBlock Text="© 2015 Nidhogg Studio Levent Tasdemir" Grid.Row="2" VerticalAlignment="Center" Foreground="{DynamicResource TitelbarForegroundBrush}" Margin="40,0" />
     </Grid>
 </Window>

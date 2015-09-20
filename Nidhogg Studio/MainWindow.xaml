@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ns="clr-namespace:ns.GUI.WPF;assembly=ns.GUI.WPF"
         xmlns:nsc="clr-namespace:ns.GUI.WPF.Controls;assembly=ns.GUI.WPF"
-        Title="Nidhogg Studio" Height="960" Width="1280" Style="{DynamicResource Window}" WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize">
+        Title="Nidhogg Studio" Height="960" Width="1280" Style="{DynamicResource Window}" WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize" Icon="NidhoggStudioDesktopIcon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />

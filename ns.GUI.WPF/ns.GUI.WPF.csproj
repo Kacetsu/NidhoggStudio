@@ -347,6 +347,11 @@
   <ItemGroup>
     <Resource Include="Images\Histogram_Enabled.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\NidhoggStudioIcon_128x128.png" />
+    <Resource Include="Images\NidhoggStudioIcon_64x64.png" />
+    <Resource Include="Images\NidhoggStudioIcon_96x96.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

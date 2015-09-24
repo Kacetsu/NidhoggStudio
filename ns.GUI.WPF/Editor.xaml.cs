@@ -13,6 +13,8 @@ namespace ns.GUI.WPF {
     /// </summary>
     public partial class Editor : UserControl {
 
+        private GuiManager _guiManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Editor"/> class.
         /// </summary>
@@ -26,7 +28,14 @@ namespace ns.GUI.WPF {
         }
 
         private void EditorLoaded(object sender, RoutedEventArgs e) {
-            CoreSystem.Managers.Add(new GuiManager());
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+
+            if (_guiManager == null) {
+                _guiManager = new GuiManager();
+                _guiManager.Initialize();
+                CoreSystem.Managers.Add(_guiManager);
+            }
+
             CoreSystem.Processor.Started += ProcessorStarted;
             CoreSystem.Processor.Stopped += ProcessorStopped;
         }

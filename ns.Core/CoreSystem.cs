@@ -142,24 +142,24 @@ namespace ns.Core {
                 _managers.Add(displayManager);
                 _managers.Add(dataStorageManager);
 
+                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+
+                if (pluginManager.Initialize() == false)
+                    throw new Exception("Could not initialize PluginManager!");
+
+                if (propertyManager.Initialize() == false)
+                    throw new Exception("Could not initialize PropertyManager!");
+
                 if (projectManager.Initialize() == false)
                     throw new Exception("Could not initialize ConfigurationManager!");
 
                 _traceListener.SetLoggingCategoties(projectManager.Configuration.LogConfiguration.Categories);
-
-                if(propertyManager.Initialize() == false)
-                    throw new Exception("Could not initialize PropertyManager!");
-
-                if(pluginManager.Initialize() == false)
-                    throw new Exception("Could not initialize PluginManager!");
 
                 if (displayManager.Initialize() == false)
                     throw new Exception("Could not initialize DisplayManager!");
 
                 if (dataStorageManager.Initialize() == false)
                     throw new Exception("Could not initialize DataStorageManager!");
-
-                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
                 ExtensionManager extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
 

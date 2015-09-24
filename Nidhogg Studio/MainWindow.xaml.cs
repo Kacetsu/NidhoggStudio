@@ -34,9 +34,6 @@ namespace Nidhogg_Studio {
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
-            if (CoreSystem.Initialize(false) == false)
-                throw new Exception("Fatal error while loading CoreSystem!");
-
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             this.Title = this.Title + " (" + version.ToString() + ")";
         }

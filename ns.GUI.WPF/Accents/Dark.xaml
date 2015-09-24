@@ -25,6 +25,7 @@
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#888" />
     <SolidColorBrush x:Key="HoverBorderBrush" Color="#007acc" />
     <SolidColorBrush x:Key="HorizontalNormalBorderBrush" Color="#888" />
+    <SolidColorBrush x:Key="SplashBorderBrush" Color="#1b1b1c" />
     
     <SolidColorBrush x:Key="FlatButtonHoverBackgroundBrush" Color="#3f3f41" />
     <SolidColorBrush x:Key="FlatButtonPressedBackgroundBrush" Color="#007acc" />

@@ -5,25 +5,17 @@ using ns.Core;
 using ns.Core.Manager;
 using ns.GUI.WPF.Windows;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für Menu.xaml
     /// </summary>
     public partial class Menu : System.Windows.Controls.Menu {
+
+        private GuiManager _guiManager;
+
         public Menu() {
             InitializeComponent();
             this.Loaded += MenuLoaded;
@@ -32,6 +24,15 @@ namespace ns.GUI.WPF.Controls {
         private void MenuLoaded(object sender, RoutedEventArgs e) {
             try {
                 PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
+                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+
+                if(_guiManager == null) {
+                    _guiManager = new GuiManager();
+                    _guiManager.Initialize();
+                    CoreSystem.Managers.Add(_guiManager);
+                }
+
+                this.DataContext = _guiManager;
 
                 foreach (LibraryInformation libraryInformation in pluginManager.LibraryInformations) {
                     bool contains = false;
@@ -55,15 +56,19 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e) {
-            if(sender == this.ExitMenuItem)
+            if (sender == this.ExitMenuItem)
                 Application.Current.Shutdown();
             else if (sender == this.AddElementMenuItem) {
                 AddNewElementDialog dialog = new AddNewElementDialog();
                 dialog.ShowDialog();
             } else if (sender == this.SaveProjectAsMenuItem) {
-                ShowSaveDialog();
+                ShowSaveProjectDialog();
+            } else if (sender == this.SaveProjectMenuItem) {
+                SaveProject();
             } else if (sender == this.OpenProjectMenuItem) {
-                Load();
+                LoadProject();
+            } else if (sender == this.NewProjectMenuItem) {
+                CreateEmptyProject();
             } else if (sender is LibraryInformationMenuItem) {
                 LibraryInformationMenuItem item = sender as LibraryInformationMenuItem;
                 if (item.Information.DocumentationLink.StartsWith("http")) {
@@ -72,30 +77,50 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        private void ShowSaveDialog() {
+        private void ShowSaveProjectDialog() {
             SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "Project File (*.xml)|*.xml";
+            dialog.Filter = ProjectManager.FileFilter;
             if (dialog.ShowDialog() == true) {
                 ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
                 manager.Save(dialog.FileName);
-                this.SaveProjectMenuItem.IsEnabled = true;
             }
         }
 
-        private void Load(){
+        private void SaveProject() {
+            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            if (!manager.HasSavedProject) {
+                ShowSaveProjectDialog();
+            } else {
+                manager.Save(manager.FileName);
+            }
+        }
+
+        private void LoadProject(){
             MessageBoxResult result = MessageBox.Show("Do you want to save your changes?", "Loading Project", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes) {
-                //Save();
+                SaveProject();
             } else if (result == MessageBoxResult.Cancel) {
                 return;
             }
 
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Project File (*.xml)|*.xml";
+            dialog.Filter = ProjectManager.FileFilter;
             if (dialog.ShowDialog() == true) {
                 ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
                 manager.Load(dialog.FileName);
             }
+        }
+
+        public void CreateEmptyProject() {
+            MessageBoxResult result = MessageBox.Show("Do you want to save your changes?", "New Project", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes) {
+                SaveProject();
+            } else if (result == MessageBoxResult.Cancel) {
+                return;
+            }
+
+            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            manager.CreateEmptyProject();
         }
     }
 }

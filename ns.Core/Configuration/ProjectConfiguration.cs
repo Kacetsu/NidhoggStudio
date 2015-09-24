@@ -23,10 +23,7 @@ namespace ns.Core.Configuration {
             _name = new StringProperty("Name", "Unnamed Project");
             _operations = new List<Operation>();
             _devices = new List<Device>();
-            if (_operations.Count == 0) {
-                Operation operation = new Operation("Unnamed Operation");
-                _projectManager.Add(operation);
-            }
+
             if (_logConfiguration == null) {
                 _logConfiguration = new LogConfiguration();
 #if DEBUG
@@ -35,6 +32,16 @@ namespace ns.Core.Configuration {
                 _logConfiguration.Categories.Add(LogCategory.Info.GetDescription());
                 _logConfiguration.Categories.Add(LogCategory.Warning.GetDescription());
                 _logConfiguration.Categories.Add(LogCategory.Error.GetDescription());
+            }
+
+            if (_projectManager.CreateEmptyProject() == false) {
+                _name = new StringProperty("Name", "Unnamed Project");
+                _operations = new List<Operation>();
+                _devices = new List<Device>();
+                if (_operations.Count == 0) {
+                    Operation operation = new Operation("Unnamed Operation");
+                    _projectManager.Add(operation);
+                }
             }
 
             return true;

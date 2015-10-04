@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace ns.Base.Plugins {
     [Serializable]
     public class Tolerance<T> : INotifyPropertyChanged {
-        T _min;
-        T _max;
+        private T _min;
+        private T _max;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -17,6 +17,7 @@ namespace ns.Base.Plugins {
         private string _version = string.Empty;
         private string _assemblyFile = string.Empty;
         private string _displayName = string.Empty;
+        private PluginStatus _status = PluginStatus.Unknown;
 
         public delegate void StatusChangedEventHandler(object sender, PluginStatusChangedEventArgs e);
         public event StatusChangedEventHandler StatusChangedEvent = delegate { };
@@ -80,6 +81,14 @@ namespace ns.Base.Plugins {
             get { return string.Empty; }
         }
 
+        public PluginStatus Status {
+            get { return _status; }
+            set {
+                _status = value;
+                OnPropertyChanged("Status");
+            }
+        }
+
         /// <summary>
         /// Pres the run.
         /// </summary>
@@ -125,18 +134,35 @@ namespace ns.Base.Plugins {
                     if (child.PreRun() == false) {
                         Trace.WriteLine("Plugin " + child.Name + " pre run failed!", LogCategory.Error);
                         result = false;
-                        break;
-                    }
-                    if (child.Run() == false) {
+                    }else if (child.Run() == false) {
                         Trace.WriteLine("Plugin " + child.Name + " run failed!", LogCategory.Error);
                         result = false;
-                        break;
-                    }
-                    if (child.PostRun() == false) {
+                    }else if (child.PostRun() == false) {
                         Trace.WriteLine("Plugin " + child.Name + " post run failed!", LogCategory.Error);
                         result = false;
-                        break;
                     }
+
+                    foreach (Property property in child.Childs) {
+                        if (property.IsToleranceDisabled) continue;
+                        if (property is DoubleProperty) {
+                            DoubleProperty targetProperty = property as DoubleProperty;
+                            if (Convert.ToDouble(targetProperty.Value) > targetProperty.Tolerance.Max || Convert.ToDouble(targetProperty.Value) < targetProperty.Tolerance.Min) {
+                                result = false;
+                            }
+                        } else if (property is IntegerProperty) {
+                            IntegerProperty targetProperty = property as IntegerProperty;
+                            if (Convert.ToDouble(targetProperty.Value) > targetProperty.Tolerance.Max || Convert.ToDouble(targetProperty.Value) < targetProperty.Tolerance.Min) {
+                                result = false;
+                            }
+                        }
+                    }
+
+                    if (!result) break;
+                }
+
+                if(!result) {
+                    // Set Status flag.
+                    Status = PluginStatus.Failed;
                 }
             }
             return result;
@@ -182,6 +208,7 @@ namespace ns.Base.Plugins {
         /// Called when [started].
         /// </summary>
         public void OnStarted() {
+            this.Status = PluginStatus.Started;
             if (this.StatusChangedEvent != null)
                 this.StatusChangedEvent(this, new PluginStatusChangedEventArgs(this, PluginStatus.Started));
         }
@@ -190,6 +217,7 @@ namespace ns.Base.Plugins {
         /// Called when [finished].
         /// </summary>
         public void OnFinished() {
+            if(this.Status != PluginStatus.Failed) this.Status = PluginStatus.Finished;
             if (this.StatusChangedEvent != null)
                 this.StatusChangedEvent(this, new PluginStatusChangedEventArgs(this, PluginStatus.Finished));
         }

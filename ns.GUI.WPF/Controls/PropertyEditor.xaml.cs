@@ -73,6 +73,14 @@ namespace ns.GUI.WPF.Controls {
             GeneratePropertyControls(baseGrid, selectedNode);
         }
 
+        private bool CheckPropertyIsNumberType(ns.Base.Plugins.Properties.Property property) {
+            if(property is NumberProperty<object> || property is DoubleProperty || property is IntegerProperty) {
+                return true;
+            }
+
+            return false;
+        }
+
         private void GeneratePropertyControls(Grid parentGrid, Node node) {
             foreach (ns.Base.Plugins.Properties.Property property in node.Childs.Where(c => c is ns.Base.Plugins.Properties.Property && !((ns.Base.Plugins.Properties.Property)c).IsOutput)) {
                 if (property.IsOutput) continue;
@@ -81,9 +89,7 @@ namespace ns.GUI.WPF.Controls {
                     || property.GetType().IsAssignableFrom(typeof(StringProperty)) 
                     || property.GetType().IsSubclassOf(typeof(StringProperty))) {
                     AddStringProperty(parentGrid, property, true);
-                } else if (property is NumberProperty<object>
-                    || property.GetType().IsAssignableFrom(typeof(NumberProperty<object>))
-                    || property.GetType().IsSubclassOf(typeof(NumberProperty<object>))) {
+                } else if (CheckPropertyIsNumberType(property)) {
                     AddNumberProperty(parentGrid, property, true);
                 } else if (property is DeviceProperty) {
                     AddDeviceProperty(parentGrid, property, true);

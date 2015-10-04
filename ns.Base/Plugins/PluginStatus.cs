@@ -8,6 +8,8 @@ namespace ns.Base.Plugins {
     public enum PluginStatus {
         Started,
         Finished,
-        Aborted
+        Failed,
+        Aborted,
+        Unknown
     }
 }

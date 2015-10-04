@@ -81,9 +81,9 @@ namespace ns.GUI.WPF.Controls {
                     || property.GetType().IsAssignableFrom(typeof(StringProperty)) 
                     || property.GetType().IsSubclassOf(typeof(StringProperty))) {
                     AddStringProperty(parentGrid, property, true);
-                } else if (property is NumberProperty
-                    || property.GetType().IsAssignableFrom(typeof(NumberProperty))
-                    || property.GetType().IsSubclassOf(typeof(NumberProperty))) {
+                } else if (property is NumberProperty<object>
+                    || property.GetType().IsAssignableFrom(typeof(NumberProperty<object>))
+                    || property.GetType().IsSubclassOf(typeof(NumberProperty<object>))) {
                     AddNumberProperty(parentGrid, property, true);
                 } else if (property is DeviceProperty) {
                     AddDeviceProperty(parentGrid, property, true);

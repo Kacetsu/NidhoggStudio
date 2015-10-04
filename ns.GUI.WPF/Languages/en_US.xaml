@@ -47,7 +47,7 @@
     <!--Analytics-->
     <system:String x:Key="Output">Output</system:String>
     <system:String x:Key="Results">Results</system:String>
-    <system:String x:Key="Statistic">Statistics</system:String>
+    <system:String x:Key="Statistic">Statistic</system:String>
 
     <!--Project Explorer-->
     <system:String x:Key="Project_Explorer">Project Explorer</system:String>
@@ -59,4 +59,8 @@
     <!--Display Area-->
     <system:String x:Key="Fit_to_screen">Fit to Screen</system:String>
 
+    <!--Tolerance-->
+    <system:String x:Key="Min_Tolerance">Min. Tolerance</system:String>
+    <system:String x:Key="Max_Tolerance">Max. Tolerance</system:String>
+    
 </ResourceDictionary>

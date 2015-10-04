@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ns.Base.Plugins.Properties {
     [Serializable]
-    public class IntegerProperty : NumberProperty {
+    public class IntegerProperty : NumberProperty<int> {
         public IntegerProperty() : base() {
             Max = int.MaxValue;
             Min = int.MinValue;

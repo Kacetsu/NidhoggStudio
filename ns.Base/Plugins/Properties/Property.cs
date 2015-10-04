@@ -2,6 +2,7 @@
 using ns.Base.Log;
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -24,6 +25,9 @@ namespace ns.Base.Plugins.Properties {
         private string _groupName = string.Empty;
         private bool _isMonitored = false;
         private bool _canAutoConnect = false;
+        private bool _isToleranceDisabled = true;
+        private Tolerance<object> _tolerance;
+        
 
         /// <summary>
         /// Gets or sets the name of the group.
@@ -136,6 +140,19 @@ namespace ns.Base.Plugins.Properties {
         [XmlAttribute("Type")]
         public virtual Type Type {
             get { return typeof(object); }
+        }
+
+        public virtual bool IsToleranceDisabled {
+            get { return _isToleranceDisabled; }
+            set {
+                _isToleranceDisabled = value;
+                OnPropertyChanged("IsToleranceDisabled");
+            }
+        }
+
+        public virtual Tolerance<object> Tolerance {
+            get { return _tolerance; }
+            set { _tolerance = value; }
         }
 
         /// <summary>
@@ -265,6 +282,14 @@ namespace ns.Base.Plugins.Properties {
             return clone;
         }
 
+        public virtual void Save(XmlWriter writer) {
+            WriteXml(writer);
+        }
+
+        public virtual void Load(XmlReader reader) {
+            ReadXml(reader);
+        }
+
         /// <summary>
         /// Gets the XML Shema.
         /// @warning Leave this always null. See also: https://msdn.microsoft.com/de-de/library/system.xml.serialization.ixmlserializable.getschema%28v=vs.110%29.aspx
@@ -324,6 +349,15 @@ namespace ns.Base.Plugins.Properties {
                 this.Childs = new List<object>(this.Cache.Childs);
             }
 
+            if(reader.Name.Contains("ToleranceOf") && reader.IsStartElement()) {
+                reader.ReadStartElement();
+                this.Tolerance = new Tolerance<object>();
+                string min = reader.ReadInnerXml();
+                string max = reader.ReadInnerXml();
+                this.Tolerance.Min = min;
+                this.Tolerance.Max = max;
+            }
+
             while (!reader.IsStartElement()) {
                 if (reader.Name == "Cache") {
                     reader.ReadEndElement();
@@ -374,6 +408,10 @@ namespace ns.Base.Plugins.Properties {
                 } catch (Exception ex) {
                     Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 }
+            }
+
+            if(!this.IsToleranceDisabled) {
+                this.Save(writer);
             }
 
         }

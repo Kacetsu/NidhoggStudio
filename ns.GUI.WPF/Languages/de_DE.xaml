@@ -59,4 +59,8 @@
     <!--Display Area-->
     <system:String x:Key="Fit_to_screen">An Fenstergröße angepasst</system:String>
 
+    <!--Tolerance-->
+    <system:String x:Key="Min_Tolerance">Min. Toleranz</system:String>
+    <system:String x:Key="Max_Tolerance">Max. Toleranz</system:String>
+    
 </ResourceDictionary>

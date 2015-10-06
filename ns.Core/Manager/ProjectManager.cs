@@ -338,7 +338,7 @@ namespace ns.Core.Manager {
         /// <param name="destination">The destination.</param>
         private void CloneProperties(Node source, Node destination) {
             List<object> listProperties = destination.Childs.FindAll(c => c is ListProperty);
-            List<object> numberProperties = destination.Childs.FindAll(c => c is NumberProperty);
+            List<object> numberProperties = destination.Childs.DeepClone();
 
             destination.Childs.Clear();
 
@@ -352,6 +352,7 @@ namespace ns.Core.Manager {
                 propertyClone.IsMonitored = p.IsMonitored;
                 propertyClone.ConnectedToUID = p.ConnectedToUID;
                 propertyClone.Childs = new List<object>(p.Childs);
+                propertyClone.Tolerance = p.Tolerance;
 
                 foreach (Node childNode in propertyClone.Childs)
                     childNode.SetParent(propertyClone);
@@ -370,17 +371,31 @@ namespace ns.Core.Manager {
                 } else if (propertyClone is ImageProperty) {
                     _displayManager.Add(propertyClone);
                 } else if (propertyClone is ListProperty) {
-                    ListProperty originalListProperty = listProperties.Find(o => ((ListProperty)o).Name == propertyClone.Name) as ListProperty;
+                    ListProperty originalListProperty = listProperties.Find(c => ((Property)c).Name == propertyClone.Name) as ListProperty;
                     ((ListProperty)propertyClone).List = originalListProperty.List;
-                } else if (propertyClone is NumberProperty) {
-                    NumberProperty numberPropertyClone = propertyClone as NumberProperty;
-                    NumberProperty numberProperty = numberProperties.Find(c => ((NumberProperty)c).Name == numberPropertyClone.Name) as NumberProperty;
-                    numberPropertyClone.Min = numberProperty.Min;
-                    numberPropertyClone.Max = numberProperty.Max;
-
+                } else if (propertyClone is NumberProperty<object>) {
+                    NumberProperty<object> targetPropertyClone = propertyClone as NumberProperty<object>;
+                    NumberProperty<object> propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as NumberProperty<object>;
+                    targetPropertyClone.Min = propertyModel.Min;
+                    targetPropertyClone.Max = propertyModel.Max;
+                } else if (propertyClone is DoubleProperty) {
+                    DoubleProperty targetPropertyClone = propertyClone as DoubleProperty;
+                    DoubleProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as DoubleProperty;
+                    targetPropertyClone.Min = propertyModel.Min;
+                    targetPropertyClone.Max = targetPropertyClone.Max;
+                    if(propertyClone.Tolerance != null)
+                        targetPropertyClone.Tolerance = new Tolerance<double>(Convert.ToDouble(propertyClone.Tolerance.Min), Convert.ToDouble(propertyClone.Tolerance.Max));
+                } else if (propertyClone is IntegerProperty) {
+                    IntegerProperty targetPropertyClone = propertyClone as IntegerProperty;
+                    IntegerProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as IntegerProperty;
+                    targetPropertyClone.Min = propertyModel.Min;
+                    targetPropertyClone.Max = targetPropertyClone.Max;
+                    if (propertyClone.Tolerance != null)
+                        targetPropertyClone.Tolerance = new Tolerance<int>(Convert.ToInt32(propertyClone.Tolerance.Min), Convert.ToInt32(propertyClone.Tolerance.Max));
                 }
 
-                _propertyManager.Add(propertyClone);
+
+                    _propertyManager.Add(propertyClone);
                 destination.Childs.Add(propertyClone);
             }
         }

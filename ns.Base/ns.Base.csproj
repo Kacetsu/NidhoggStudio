@@ -95,6 +95,7 @@
     <Compile Include="Plugins\Properties\NumberProperty.cs" />
     <Compile Include="Plugins\Properties\OperationSelectionProperty.cs" />
     <Compile Include="Plugins\Properties\RectangleProperty.cs" />
+    <Compile Include="Plugins\Tolerance.cs" />
     <Compile Include="Plugins\Tool.cs" />
     <Compile Include="Plugins\Operation.cs" />
     <Compile Include="Plugins\OperationTrigger.cs" />

@@ -31,7 +31,7 @@ namespace ns.Plugin.WPF.Statistic {
         }
 
         private void DataStorageManagerContainerChangedEvent(object sender, Base.Event.DataStorageContainerChangedEventArgs e) {
-            if (!_dispatcherCompleted || !(e.Property is NumberProperty)) return;
+            if (!_dispatcherCompleted || !(e.Property is NumberProperty<object>)) return;
             this.Dispatcher.BeginInvoke(new Action(() => {
                 _dispatcherCompleted = false;
                 foreach (TabItem item in this.Control.Items) {
@@ -48,7 +48,7 @@ namespace ns.Plugin.WPF.Statistic {
         }
 
         private void DataStorageManagerContainerAddedEvent(object sender, Base.Event.DataStorageContainerChangedEventArgs e) {
-            if (!(e.Property is NumberProperty)) return;
+            if (!(e.Property is NumberProperty<object>)) return;
             this.Dispatcher.BeginInvoke(new Action(() => {
                 bool contains = false;
                 foreach (TabItem item in this.Control.Items) {

@@ -17,7 +17,7 @@
     <Grid>
         <chart:ClusteredBarChart Name="Chart" Style="{StaticResource MinimalChartStyle}" ChartTitleVisibility="Collapsed" SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}">
             <chart:ClusteredBarChart.Series>
-                <chart:ChartSeries SeriesTitle="Statistics" DisplayMember="Name" ValueMember="Value" ItemsSource="{Binding Path=Statistics}" />
+                <chart:ChartSeries SeriesTitle="Statistic" DisplayMember="Name" ValueMember="Value" ItemsSource="{Binding Path=Statistics}" />
             </chart:ClusteredBarChart.Series>
         </chart:ClusteredBarChart>
     </Grid>

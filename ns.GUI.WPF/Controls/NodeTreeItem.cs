@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF.Controls {
@@ -123,7 +124,7 @@ namespace ns.GUI.WPF.Controls {
                 _imageContainer.Source = image;
                 _imageContainer.Width = 24;
                 _imageContainer.Height = 23;
-                _imageContainer.Margin = new Thickness(0, 0, 2, 0);
+                _imageContainer.Margin = new Thickness(2, 0, 2, 0);
 
                 panel.Children.Add(_imageContainer);
             }
@@ -168,6 +169,29 @@ namespace ns.GUI.WPF.Controls {
                 _textBlock.Text = string.Format(_additionFormat, ((StringProperty)_node).Value);
             } else if (e.PropertyName == "IsSelected") {
                 this.IsSelected = _node.IsSelected;
+            } else if (e.PropertyName == "Status") {
+                Plugin plugin = sender as Plugin;
+                this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, new Action(() => {
+                    switch (plugin.Status) {
+                        case PluginStatus.Aborted:
+                            this.BorderBrush = Brushes.Yellow;
+                            break;
+                        case PluginStatus.Failed:
+                            this.BorderBrush = Brushes.Red;
+                            break;
+                        case PluginStatus.Finished:
+                            this.BorderBrush = Brushes.Green;
+                            break;
+                        case PluginStatus.Started:
+                            this.BorderBrush = Brushes.SteelBlue;
+                            break;
+                        case PluginStatus.Unknown:
+                            this.BorderBrush = Brushes.Gray;
+                            break;
+                        default:
+                            break;
+                    }
+                }));
             }
         }
     }

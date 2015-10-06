@@ -21,7 +21,9 @@ namespace ns.Base.Plugins {
         /// Creates the field: Properties.
         /// </summary>
         public Tool() : base() {
-            AddChild(new DoubleProperty("ExecutionTimeMs", true));
+            DoubleProperty executionTimeMs = new DoubleProperty("ExecutionTimeMs", true);
+            executionTimeMs.Tolerance = new Tolerance<double>(0, 1000);
+            AddChild(executionTimeMs);
         }
 
         public override string Name {

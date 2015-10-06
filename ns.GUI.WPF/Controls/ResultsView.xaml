@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <DataGrid Name="DataControl" AutoGenerateColumns="False">
@@ -12,6 +12,20 @@
                     <DataGridCheckBoxColumn Header="{DynamicResource Monitored}" Binding="{Binding Path=IsMonitored}" MinWidth="20" />
                     <DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Path=Name}" MinWidth="100" IsReadOnly="True"/>
                     <DataGridTextColumn Header="{DynamicResource Value}" Binding="{Binding Path=Value}" MinWidth="100" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="{DynamicResource Min_Tolerance}"  MinWidth="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Tolerance.Min,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=IsToleranceDisabled,FallbackValue=True}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{DynamicResource Max_Tolerance}"  MinWidth="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Tolerance.Max,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=IsToleranceDisabled,FallbackValue=True}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>  

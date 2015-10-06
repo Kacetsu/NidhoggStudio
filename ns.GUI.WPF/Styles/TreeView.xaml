@@ -93,6 +93,8 @@
         <Setter Property="Padding" Value="1,0,0,0" />
         <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource TreeViewItemFocusVisual}" />
+        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="BorderThickness" Value="4,0,0,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TreeViewItem}">
@@ -141,21 +143,19 @@
                                 <VisualState x:Name="Collapsed" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}"
-                    ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"/>
                         <Border x:Name="Bd" Grid.Column="1" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                            Padding="{TemplateBinding Padding}">
+                            Padding="{TemplateBinding Padding}" Margin="0,1">
                             <ContentPresenter x:Name="PART_Header"
                             ContentSource="Header"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                         </Border>
                         <Border x:Name="ItemsSpace" Grid.Row="1" Grid.Column="0" Visibility="Collapsed" BorderThickness="0" BorderBrush="Transparent" Background="{DynamicResource EditAreaBackgroundBrush}" />
-                        <Border x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Collapsed" BorderThickness="0" BorderBrush="Transparent" Background="{DynamicResource EditAreaBackgroundBrush}">
+                        <Border x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Collapsed" BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}" Background="{DynamicResource EditAreaBackgroundBrush}">
                             <ItemsPresenter />
                         </Border>
                     </Grid>
-                    
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasItems" Value="false">
                             <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />

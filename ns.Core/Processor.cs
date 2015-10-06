@@ -246,6 +246,7 @@ namespace ns.Core {
             }
 
             switch (status) {
+                case PluginStatus.Failed:
                 case PluginStatus.Finished:
                     AddOperationContextToDataStorage(operation);
                     if (_nexuses.Count > 0) {

@@ -134,18 +134,10 @@ xcopy /Y /S "$(ProjectDir)Style" "$(TargetDir)Style\"
 
 xcopy /Y "$(TargetDir)Microsoft.*" "$(TargetDir)..\Libs\"
 del /Q "$(TargetDir)Microsoft.*"
-xcopy /Y "$(TargetDir)EntityFramework*" "$(TargetDir)..\Libs\"
-del /Q "$(TargetDir)EntityFramework*"
-xcopy /Y "$(TargetDir)System.*" "$(TargetDir)..\Libs\"
-del /Q "$(TargetDir)System.*"
 xcopy /Y "$(TargetDir)Owin*" "$(TargetDir)\..\Libs\"
 del /Q "$(TargetDir)Owin*"
 xcopy /Y "$(TargetDir)Newtonsoft.Json*" "$(TargetDir)\..\Libs\"
-del /Q "$(TargetDir)Newtonsoft.Json*"
-xcopy /Y "$(TargetDir)Antlr3.Runtime*" "$(TargetDir)\..\Libs\"
-del /Q "$(TargetDir)Antlr3.Runtime*"
-xcopy /Y "$(TargetDir)WebGrease*" "$(TargetDir)\..\Libs\"
-del /Q "$(TargetDir)WebGrease*"</PostBuildEvent>
+del /Q "$(TargetDir)Newtonsoft.Json*"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

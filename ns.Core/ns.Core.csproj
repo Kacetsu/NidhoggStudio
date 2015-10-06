@@ -71,6 +71,7 @@
     <Compile Include="Manager\ExtensionManager.cs" />
     <Compile Include="Manager\ToolManager.cs" />
     <Compile Include="Manager\PluginManager.cs" />
+    <Compile Include="NanoProcessor.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Manager\PropertyManager.cs" />

@@ -6,6 +6,7 @@ using ns.Base.Plugins.Properties;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -196,7 +197,7 @@ namespace ns.Core {
             Thread t = new Thread(new ThreadStart(() => {
                 if (_isFinalize) return;
 
-                operation.StatusChangedEvent += OperationStatusChangedHandle;
+                operation.PropertyChanged += OperationPropertyChangedHandle;
 
                 while (!_isStoped) {
                     if (operation.PreRun() == true) {
@@ -215,7 +216,7 @@ namespace ns.Core {
                     if (trigger != OperationTrigger.Continuous.GetDescription()) break;
                 }
 
-                operation.StatusChangedEvent -= OperationStatusChangedHandle;
+                operation.PropertyChanged -= OperationPropertyChangedHandle;
             }));
             executionContext.Thread = t;
             _nexuses.Add(executionContext);
@@ -226,13 +227,15 @@ namespace ns.Core {
         /// Operations the status changed handle.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.PluginStatusChangedEventArgs"/> instance containing the event data.</param>
-        private void OperationStatusChangedHandle(object sender, Base.Event.PluginStatusChangedEventArgs e) {
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void OperationPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
             // TODO: Start Operations that are configurated to start after this Operation did finished.
             // TODO: Start Operations that are configurated to start after this Operation did started.
 
+            if (e.PropertyName != "Status") return;
+
             Operation operation = sender as Operation;
-            PluginStatus status = e.Status;
+            PluginStatus status = operation.Status;
 
             if (_isFinalize == true)
                 return;

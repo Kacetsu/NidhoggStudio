@@ -1,5 +1,6 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using ns.Base.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +20,9 @@ namespace ns.GUI.WPF.Controls {
         private ImageProperty _imageProperty;
         private List<OverlayRectangle> _rectangles;
         private TabControl _parentControl;
-        
+        private BitmapSource _image;
+        private ImageContainer _storedImageContainer;
+
         private double _scalingFactor = 1.0;
         private string _scalingFactorString = string.Empty;
         private bool _isHistogramEnabled = false;
@@ -32,6 +35,14 @@ namespace ns.GUI.WPF.Controls {
         /// </value>
         public ImageProperty ImageProperty {
             get { return _imageProperty; }
+        }
+
+        public BitmapSource Image {
+            get { return _image; }
+            set {
+                _image = value;
+                OnPropertyChanged("Image");
+            }
         }
 
         /// <summary>
@@ -130,6 +141,7 @@ namespace ns.GUI.WPF.Controls {
             this.HistogramAllBlue.DataContext = Histogram;
             this.IsUpdateHistogramEnabled = false;
             SetOverlayProperties(imageProperty);
+            this.DataContext = this;
         }
 
         /// <summary>
@@ -152,7 +164,11 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void ParentSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            this.IsUpdateHistogramEnabled = (_parentControl.SelectedItem == this);
+            bool isSelected = _parentControl.SelectedItem == this;
+            if (isSelected && _storedImageContainer.Data != null)
+                Image = LoadImage(_storedImageContainer.Data, _storedImageContainer.Width, _storedImageContainer.Height, _storedImageContainer.Stride, _storedImageContainer.BytesPerPixel);
+
+            this.IsUpdateHistogramEnabled = isSelected;
         }
 
         /// <summary>
@@ -161,13 +177,24 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="image">The image.</param>
         public void UpdateImage(ImageProperty image) {
             if (image.Value != null) {
-                ImageContainer container = (ImageContainer)image.Value;
-                this.ImageDisplay.Source = LoadImage(container.Data, container.Width, container.Height, container.Stride, container.BytesPerPixel);
+                BitmapSource imageSource = null;
 
-                this.ImageDisplay.Width = container.Width;
-                this.ImageDisplay.Height = container.Height;
-                this.ImageCanvas.Width = container.Width;
-                this.ImageCanvas.Height = container.Height;
+                if (!image.ParentTool.IsSelected)
+                    _storedImageContainer = (ImageContainer)image.Value;
+                else {
+                    _storedImageContainer = (ImageContainer)image.Value;
+                    imageSource = LoadImage(_storedImageContainer.Data, _storedImageContainer.Width, _storedImageContainer.Height, _storedImageContainer.Stride, _storedImageContainer.BytesPerPixel);
+                }
+
+                this.ImageDisplay.Width = _storedImageContainer.Width;
+                this.ImageDisplay.Height = _storedImageContainer.Height;
+                this.ImageCanvas.Width = _storedImageContainer.Width;
+                this.ImageCanvas.Height = _storedImageContainer.Height;
+
+                if (!image.ParentTool.IsSelected)
+                    return;
+
+                this.Image = imageSource;
             }
         }
 

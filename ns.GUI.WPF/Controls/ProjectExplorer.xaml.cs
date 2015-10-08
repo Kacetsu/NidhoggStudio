@@ -92,6 +92,9 @@ namespace ns.GUI.WPF.Controls {
                     OperationTreeItem operationItem = new OperationTreeItem(operation);
                     operationItem.IsExpanded = true;
                     this.ProjectTree.Items.Add(operationItem);
+                    foreach(Tool tool in operation.Childs.Where(c => c is Tool)) {
+                        _guiManager.SelectNode(tool);
+                    }
                 }
             }
         }

@@ -21,7 +21,6 @@ namespace ns.Core {
         private PropertyManager _propertyManager;
         private ExtensionManager _extensionManager;
         private List<AsyncNanoProcessor> _nexuses;
-        private bool _isStoped = false;
         private bool _isFinalize = false;
         private bool _isRunning = false;
 
@@ -57,7 +56,6 @@ namespace ns.Core {
         /// </summary>
         /// <returns>Success of the operation.</returns>
         public bool Start() {
-            _isStoped = false;
             bool initializeResult = InitializeOperations();
             if(initializeResult == true)
                 StartOperations();
@@ -81,8 +79,6 @@ namespace ns.Core {
         public bool Stop() {
             bool resultFinalize = false;
             bool resultTerminate = false;
-
-            _isStoped = true;
 
             resultTerminate = TerminateOperations();
             resultFinalize = FinalizeOperations();

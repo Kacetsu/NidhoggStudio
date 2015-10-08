@@ -37,7 +37,7 @@
                         <Canvas.LayoutTransform>
                             <ScaleTransform ScaleX="{Binding Path=ScalingFactor}" ScaleY="{Binding Path=ScalingFactor}" />
                         </Canvas.LayoutTransform>
-                        <Image Name="ImageDisplay" Stretch="None" />
+                        <Image Name="ImageDisplay" Stretch="None" Source="{Binding Image}" />
                     </Canvas>
                 </Grid>
             </ScrollViewer>

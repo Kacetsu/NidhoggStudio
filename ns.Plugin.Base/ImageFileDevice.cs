@@ -38,6 +38,10 @@ namespace ns.Plugin.Base {
             _directory = GetProperty("Directory").Value as string;
             _imageProperty = GetProperty("Image") as ImageProperty;
 
+            if (!Directory.Exists(_directory)) {
+                Trace.WriteLine("[" + this.Name + "] directory " + _directory + " does not exist!", LogCategory.Error);
+                return false;
+            }
             string[] filenames = Directory.GetFiles(_directory);
             List<string> imageFiles = new List<string>();
             int imageCount = 0;

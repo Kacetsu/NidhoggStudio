@@ -65,6 +65,8 @@ namespace ns.Core {
             if (initializeResult) {
                 if (this.Started != null)
                     this.Started();
+            } else {
+                FinalizeOperations();
             }
 
             _isRunning = initializeResult;
@@ -175,7 +177,7 @@ namespace ns.Core {
                 string trigger = triggerList.Value.ToString();
 
                 if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
-                StartOperation(operation);
+                    StartOperation(operation);
             }
         }
 

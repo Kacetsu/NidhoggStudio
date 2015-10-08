@@ -71,10 +71,12 @@
     <Compile Include="Manager\ExtensionManager.cs" />
     <Compile Include="Manager\ToolManager.cs" />
     <Compile Include="Manager\PluginManager.cs" />
+    <Compile Include="AsyncNanoProcessor.cs" />
     <Compile Include="Processor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Manager\PropertyManager.cs" />
     <Compile Include="Shell.cs" />
+    <Compile Include="NanoProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">

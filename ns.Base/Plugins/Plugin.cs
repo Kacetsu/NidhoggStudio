@@ -19,9 +19,6 @@ namespace ns.Base.Plugins {
         private string _displayName = string.Empty;
         private PluginStatus _status = PluginStatus.Unknown;
 
-        public delegate void StatusChangedEventHandler(object sender, PluginStatusChangedEventArgs e);
-        public event StatusChangedEventHandler StatusChangedEvent = delegate { };
-
         /// <summary>
         /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
         /// Creates additional to the BaseNode the following fields: AssemblyFile and Version.
@@ -209,8 +206,6 @@ namespace ns.Base.Plugins {
         /// </summary>
         public void OnStarted() {
             this.Status = PluginStatus.Started;
-            if (this.StatusChangedEvent != null)
-                this.StatusChangedEvent(this, new PluginStatusChangedEventArgs(this, PluginStatus.Started));
         }
 
         /// <summary>
@@ -218,8 +213,6 @@ namespace ns.Base.Plugins {
         /// </summary>
         public void OnFinished() {
             if(this.Status != PluginStatus.Failed) this.Status = PluginStatus.Finished;
-            if (this.StatusChangedEvent != null)
-                this.StatusChangedEvent(this, new PluginStatusChangedEventArgs(this, PluginStatus.Finished));
         }
     }
 }

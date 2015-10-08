@@ -78,7 +78,7 @@ namespace ns.Core.Manager {
                     }
                     
                     DeviceProperty deviceProperty = node as DeviceProperty;
-                    deviceProperty.AddDeviceList(devices, _deviceManager);
+                    deviceProperty.AddDeviceList(devices.DeepClone(), _deviceManager);
                 }
 
                 if (node is Property) {

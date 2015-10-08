@@ -6,9 +6,7 @@ using ns.Base.Plugins.Properties;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -22,7 +20,7 @@ namespace ns.Core {
         private DataStorageManager _dataStorageManager;
         private PropertyManager _propertyManager;
         private ExtensionManager _extensionManager;
-        private List<ExecutionContext> _nexuses;
+        private List<AsyncNanoProcessor> _nexuses;
         private bool _isStoped = false;
         private bool _isFinalize = false;
         private bool _isRunning = false;
@@ -51,7 +49,7 @@ namespace ns.Core {
             _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
             _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
             _extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
-            _nexuses = new List<ExecutionContext>();
+            _nexuses = new List<AsyncNanoProcessor>();
         }
 
         /// <summary>
@@ -67,6 +65,8 @@ namespace ns.Core {
             if (initializeResult) {
                 if (this.Started != null)
                     this.Started();
+            } else {
+                FinalizeOperations();
             }
 
             _isRunning = initializeResult;
@@ -139,19 +139,18 @@ namespace ns.Core {
         /// <returns>Success of the operation.</returns>
         private bool FinalizeOperations() {
             _isFinalize = true;
+            bool result = false;
             foreach (Operation operation in _projectManager.Configuration.Operations) {
-                ExecutionContext context = _nexuses.Find(o => o != null && o.Plugin == operation) as ExecutionContext;
+                AsyncNanoProcessor context = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
                 if (context != null) {
-                    if(context.Thread.Join(1000) == true)
-                        if (operation.Finalize() == false)
-                            return false;
+                    context.Wait();
+                    result = context.Operation.Finalize();
                 } else {
-                    if (operation.Finalize() == false)
-                        return false;
+                    result = operation.Finalize();
                 }
             }
             _nexuses.Clear();
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -159,12 +158,14 @@ namespace ns.Core {
         /// </summary>
         /// <returns>Success of the operation.</returns>
         private bool TerminateOperations() {
-            foreach (Operation operation in _projectManager.Configuration.Operations) {
-                if (operation.Terminate() == false)
-                    return false;
+            bool result = true;
+            foreach(AsyncNanoProcessor nanoProcessor in _nexuses) {
+                nanoProcessor.Operation.PropertyChanged -= OperationPropertyChangedHandle;
+                bool tmpResult = false;
+                tmpResult = nanoProcessor.Stop();
+                result = !tmpResult ? false : true;
             }
-
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -176,7 +177,7 @@ namespace ns.Core {
                 string trigger = triggerList.Value.ToString();
 
                 if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
-                StartOperation(operation, null);
+                    StartOperation(operation);
             }
         }
 
@@ -185,54 +186,29 @@ namespace ns.Core {
         /// </summary>
         /// <param name="operation">The operation.</param>
         /// <param name="context">The context.</param>
-        private void StartOperation(Operation operation, ExecutionContext context) {
-            ExecutionContext executionContext = context;
+        private void StartOperation(Operation operation) {
+            AsyncNanoProcessor nanoProcessor = _nexuses.Find(n => n.Operation == operation);
+            operation.PropertyChanged += OperationPropertyChangedHandle;
 
-            if (executionContext == null) {
-                executionContext = new ExecutionContext();
-                executionContext.Plugin = operation;
+            if (nanoProcessor == null) {
+                nanoProcessor = new AsyncNanoProcessor(operation);
+                _nexuses.Add(nanoProcessor);
             }
-
-            Thread t = new Thread(new ThreadStart(() => {
-                if (_isFinalize) return;
-
-                operation.StatusChangedEvent += OperationStatusChangedHandle;
-
-                while (!_isStoped) {
-                    if (operation.PreRun() == true) {
-                        if ((executionContext.Result = operation.Run()) == true) {
-                            if (!operation.PostRun())
-                                Trace.WriteLine("Operation post run failed!", LogCategory.Error);
-                        } else {
-                            Trace.WriteLine("Operation run failed!", LogCategory.Error);
-                        }
-                    } else {
-                        Trace.WriteLine("Operation pre run failed!", LogCategory.Error);
-                    }
-                    ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
-                    string trigger = triggerList.Value.ToString();
-
-                    if (trigger != OperationTrigger.Continuous.GetDescription()) break;
-                }
-
-                operation.StatusChangedEvent -= OperationStatusChangedHandle;
-            }));
-            executionContext.Thread = t;
-            _nexuses.Add(executionContext);
-            t.Start();
+            
+            if(nanoProcessor.Status != TaskStatus.Running)
+                nanoProcessor.Start();
         }
 
         /// <summary>
         /// Operations the status changed handle.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.PluginStatusChangedEventArgs"/> instance containing the event data.</param>
-        private void OperationStatusChangedHandle(object sender, Base.Event.PluginStatusChangedEventArgs e) {
-            // TODO: Start Operations that are configurated to start after this Operation did finished.
-            // TODO: Start Operations that are configurated to start after this Operation did started.
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void OperationPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName != "Status") return;
 
             Operation operation = sender as Operation;
-            PluginStatus status = e.Status;
+            PluginStatus status = operation.Status;
 
             if (_isFinalize == true)
                 return;
@@ -248,23 +224,17 @@ namespace ns.Core {
             switch (status) {
                 case PluginStatus.Failed:
                 case PluginStatus.Finished:
-                    AddOperationContextToDataStorage(operation);
                     if (_nexuses.Count > 0) {
-                        ExecutionContext executionContext = _nexuses.Find(o => o != null && o.Plugin == operation) as ExecutionContext;
+                        AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
                         if (executionContext != null && _nexuses.Contains(executionContext)) {
                             ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
                             string trigger = triggerList.Value.ToString();
 
-                            if (_isStoped || trigger != OperationTrigger.Continuous.GetDescription())
-                                _nexuses.Remove(executionContext);
-
                             foreach (Operation o in connectedOperations) {
                                 Property triggerProperty = o.GetProperty("Trigger");
                                 if (triggerProperty.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
-                                    if (o.PreRun()) {
-                                        o.Run();
-                                        o.PostRun();
-                                    }
+                                    NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                                    nanoProcessor.Start();
                                 }
                             }
                         } else
@@ -277,32 +247,14 @@ namespace ns.Core {
                     foreach (Operation o in connectedOperations) {
                         Property triggerProperty = o.GetProperty("Trigger");
                         if (triggerProperty.Value.ToString() == OperationTrigger.Started.GetDescription()) {
-                            if (o.PreRun()) {
-                                o.Run();
-                                o.PostRun();
-                            }
+                            NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                            nanoProcessor.Start();
                         }
                     }
                     break;
 
                 default:
                     break;
-            }
-        }
-
-        /// <summary>
-        /// Adds the operation context to data storage.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
-        private void AddOperationContextToDataStorage(Node parent) {
-            foreach (Node child in parent.Childs) {
-                if (child is Property) {
-                    Property property = child as Property;
-                    if (property.IsOutput && property.IsMonitored) {
-                        _dataStorageManager.Add(property);
-                    }
-                }
-                AddOperationContextToDataStorage(child);
             }
         }
     }

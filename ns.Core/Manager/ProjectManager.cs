@@ -395,7 +395,7 @@ namespace ns.Core.Manager {
                 }
 
 
-                    _propertyManager.Add(propertyClone);
+                _propertyManager.Add(propertyClone);
                 destination.Childs.Add(propertyClone);
             }
         }

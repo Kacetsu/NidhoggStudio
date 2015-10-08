@@ -5,21 +5,11 @@ using ns.Core;
 using ns.Core.Manager;
 using ns.GUI.WPF.Controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
     /// <summary>
@@ -76,7 +66,14 @@ namespace ns.GUI.WPF {
                 foreach (OperationDisplayTabItem oItem in this.DisplayTabControl.Items) {
                     if (oItem.Operation == operationParent) {
                         foreach (DisplayTabItem dItem in ((TabControl)oItem.Content).Items) {
+#if DEBUG
+                            if (dItem.ImageProperty == null)
+                                throw new NullReferenceException("DisplayTabItem ImageProperty");
+#else
+                            if (dItem.ImageProperty == null) continue;
+#endif
                             if (dItem.ImageProperty.ParentTool == e.SelectedNode) {
+                                this.DisplayTabControl.SelectedItem = oItem;
                                 ((TabControl)oItem.Content).SelectedItem = dItem;
                             }
                         }
@@ -169,6 +166,7 @@ namespace ns.GUI.WPF {
                 foreach (OperationDisplayTabItem item in this.DisplayTabControl.Items) {
                     if (item.Operation == parentOperation) {
                         foreach (DisplayTabItem display in (item.Content as TabControl).Items) {
+                            if (display.ImageProperty == null) continue;
                             if (display.ImageProperty.UID == propertyClone.UID) {
                                 display.UpdateImage(propertyClone);
                             }

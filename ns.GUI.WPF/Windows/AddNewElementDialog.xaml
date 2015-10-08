@@ -45,7 +45,7 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Name="MainOperationsTabs" Header="Operations" Visibility="Hidden">
+            <TabItem Name="MainOperationsTabs" Header="Operations" Visibility="Visible">
                 <ListBox Name="ListViewAllOperations" />
             </TabItem>
         </TabControl>

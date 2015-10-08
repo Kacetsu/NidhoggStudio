@@ -113,8 +113,8 @@ namespace ns.Core {
                             return null;
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                        throw ex;
                     }
-                    return null; // load failure
                 };
 
                 _traceListener = new TraceListener(BaseManager.LogPath, BaseManager.DaysToKeepLogFiles);
@@ -172,6 +172,7 @@ namespace ns.Core {
                 result = true;
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                throw ex;
             }
 
             return result;

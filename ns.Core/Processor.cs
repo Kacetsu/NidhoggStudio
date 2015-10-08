@@ -230,9 +230,6 @@ namespace ns.Core {
                             ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
                             string trigger = triggerList.Value.ToString();
 
-                            if (_isStoped || trigger != OperationTrigger.Continuous.GetDescription())
-                                _nexuses.Remove(executionContext);
-
                             foreach (Operation o in connectedOperations) {
                                 Property triggerProperty = o.GetProperty("Trigger");
                                 if (triggerProperty.Value.ToString() == OperationTrigger.Finished.GetDescription()) {

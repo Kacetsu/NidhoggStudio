@@ -118,7 +118,6 @@ namespace ns.GUI.WPF.Controls {
             _imageProperty = imageProperty;
             this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
             this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
-            this.Unloaded += DisplayTabItem_Unloaded;
             _imageProperty.ParentTool.PropertyChanged += HandleParentPropertyChanged;
             this.DataContext = this;
             this.HistogramGray.DataContext = Histogram;
@@ -141,15 +140,6 @@ namespace ns.GUI.WPF.Controls {
                 _imageProperty.ParentTool.PropertyChanged -= HandleParentPropertyChanged;
                 _imageProperty = null;
             }
-        }
-
-        /// <summary>
-        /// Handles the Unloaded event of the DisplayTabItem control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void DisplayTabItem_Unloaded(object sender, RoutedEventArgs e) {
-            this.Close();
         }
 
         /// <summary>

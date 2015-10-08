@@ -33,7 +33,9 @@ namespace ns.Plugin.Base {
             AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             AddChild(new ImageProperty("InputImage", false));
             AddChild(new ImageProperty("OuputImage", true));
-            AddChild(new DoubleProperty("Intensity", true));
+            DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
+            intensityProperty.Tolerance = new Tolerance<double>(0, 100);
+            AddChild(intensityProperty);
         }
 
         public override bool Initialize() {

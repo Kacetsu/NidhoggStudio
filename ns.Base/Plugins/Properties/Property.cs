@@ -109,6 +109,13 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
+        /// Gets if the Property has a numeric value.
+        /// </summary>
+        public virtual bool IsNumeric {
+            get { return false; }
+        }
+
+        /// <summary>
         /// Gets or sets the UID of the property that is connected to this one.
         /// </summary>
         [XmlAttribute("ConnectedToUID")]

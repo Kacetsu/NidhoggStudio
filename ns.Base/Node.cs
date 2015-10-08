@@ -18,7 +18,7 @@ namespace ns.Base {
     XmlInclude(typeof(Plugin)),
     XmlInclude(typeof(Tool)),
     XmlInclude(typeof(Property))]
-    public class Node : ICloneable, INode, IXmlSerializable, INotifyPropertyChanged {
+    public class Node : NotifyObject, ICloneable, INode, IXmlSerializable {
 
         private bool _isInitialized = false;
         private bool _isSelected = false;
@@ -34,12 +34,6 @@ namespace ns.Base {
         /// Will be triggered if a new Node is added.
         /// </summary>
         public event ChildCollectionChangedHandler ChildCollectionChanged;
-
-        /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        [field: NonSerializedAttribute()] 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Will be triggered if the Property did changed.
@@ -293,15 +287,6 @@ namespace ns.Base {
         public void OnChildCollectionChanged(List<Node> nodes) {
             if (this.ChildCollectionChanged != null)
                 this.ChildCollectionChanged(this, new ChildCollectionChangedEventArgs(nodes));
-        }
-
-        /// <summary>
-        /// Called when [property changed].
-        /// </summary>
-        /// <param name="name">The name.</param>
-        public void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
 
         /// <summary>

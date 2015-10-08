@@ -118,6 +118,8 @@ namespace ns.Base.Plugins.Properties
         /// </summary>
         /// <param name="device">The device.</param>
         public void SetDevice(Node device) {
+            if (this.Value != null && this.Value is Device)
+                _deviceManager.Remove(this.Value as Device);
             _deviceManager.Add(device);
             object oldValue = this.Value;
             this.Value = device;

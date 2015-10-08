@@ -26,6 +26,13 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
+        /// Gets if the Property has a numeric value.
+        /// </summary>
+        public override bool IsNumeric {
+            get { return true; }
+        }
+
+        /// <summary>
         /// Gets the maximum.
         /// </summary>
         /// <value>

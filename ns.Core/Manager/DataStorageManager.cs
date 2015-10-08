@@ -137,5 +137,21 @@ namespace ns.Core.Manager {
 
             }
         }
+
+        /// <summary>
+        /// Adds the Node context to DataStorage.
+        /// </summary>
+        /// <param name="node">The Node containing the needed context.</param>
+        public void AddContext(Node node) {
+            foreach (Node child in node.Childs) {
+                if (child is Property) {
+                    Property property = child as Property;
+                    if (property.IsOutput && property.IsMonitored) {
+                        this.Add(property);
+                    }
+                }
+                AddContext(child);
+            }
+        }
     }
 }

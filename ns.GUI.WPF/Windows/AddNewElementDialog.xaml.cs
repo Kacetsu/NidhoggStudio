@@ -53,17 +53,19 @@ namespace ns.GUI.WPF.Windows {
                     Tool tool = view.SelectedItem as Tool;
 
                     if (tool == null)
-                        throw new Exception("Selected tool is NULL!");
+                        return;
 
-                    if (!(_guiManager.SelectedNode is Operation))
-                        _guiManager.SelectNode(null);
+                   if(_guiManager.SelectedNode != null && _guiManager.SelectedNode is Tool) {
+                        _guiManager.SelectNode(_guiManager.SelectedNode.Parent);
+                    }
 
                     if (_guiManager.SelectedNode == null) {
                         ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
                         if (manager.Configuration.Operations.Count > 0)
                             _guiManager.SelectNode(manager.Configuration.Operations[0]);
                     }
-                    if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Operation) {
+
+                    if (_guiManager.SelectedNode != null &&  _guiManager.SelectedNode is Operation) {
                         _lastAddedNode = tool.Clone() as Node;
                         _projectManager.Add(_lastAddedNode, _guiManager.SelectedNode);
                     }
@@ -75,10 +77,11 @@ namespace ns.GUI.WPF.Windows {
                 Operation operation = view.SelectedItem as Operation;
 
                 if (operation == null)
-                    throw new Exception("Selected operation is NULL!");
+                    return;
 
                 _lastAddedNode = operation.Clone() as Operation;
                 _projectManager.Add(_lastAddedNode);
+                _guiManager.SelectNode(_lastAddedNode);
             }
         }
 

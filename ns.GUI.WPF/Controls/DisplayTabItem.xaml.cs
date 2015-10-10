@@ -1,6 +1,5 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Base.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,7 +27,7 @@ namespace ns.GUI.WPF.Controls {
         private bool _isHistogramEnabled = false;
 
         /// <summary>
-        /// Gets the operation.
+        /// Gets the image property.
         /// </summary>
         /// <value>
         /// The operation.
@@ -37,6 +36,9 @@ namespace ns.GUI.WPF.Controls {
             get { return _imageProperty; }
         }
 
+        /// <summary>
+        /// Gets or sets the image.
+        /// </summary>
         public BitmapSource Image {
             get { return _image; }
             set {
@@ -69,6 +71,9 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
+        /// <summary>
+        /// Gets or sets if the histogram is enabled.
+        /// </summary>
         public bool IsHistogramEnabled {
             get { return _isHistogramEnabled; }
             set {
@@ -90,6 +95,9 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
+        /// <summary>
+        /// Gets the visibility of the histogram.
+        /// </summary>
         public Visibility HistogramVisibility {
             get {
                 return IsHistogramEnabled ? Visibility.Visible : Visibility.Collapsed;

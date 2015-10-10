@@ -43,11 +43,16 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="node">The node.</param>
         public NodeTreeItem(Node node)
             : base() {
-                _textBlock = new TextBlock();
-                this.Loaded += HandleLoaded;
-                this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
-                _node = node;
-                CreateHeaderPanel(node, string.Empty);
+            this.AllowDrop = true;
+            _textBlock = new TextBlock();
+            this.Loaded += HandleLoaded;
+            this.DragOver += NodeTreeItem_DragOver;
+            this.Drop += NodeTreeItem_Drop;
+            this.MouseMove += NodeTreeItem_MouseMove;
+            this.MouseDown += NodeTreeItem_MouseDown;
+            this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
+            _node = node;
+            CreateHeaderPanel(node, string.Empty);
         }
 
         /// <summary>
@@ -57,9 +62,13 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="additionalFormat">The additional format.</param>
         public NodeTreeItem(Node node, string additionalFormat) 
             : base() {
-                _textBlock = new TextBlock();
+            this.AllowDrop = true;
+            _textBlock = new TextBlock();
             this.Loaded += HandleLoaded;
-            this.Unloaded += HandleUnloaded;
+            this.DragOver += NodeTreeItem_DragOver;
+            this.Drop += NodeTreeItem_Drop;
+            this.MouseMove += NodeTreeItem_MouseMove;
+            this.MouseDown += NodeTreeItem_MouseDown;
             this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
             _node = node;
             CreateHeaderPanel(node, additionalFormat);
@@ -193,6 +202,22 @@ namespace ns.GUI.WPF.Controls {
                     }
                 }));
             }
+        }
+
+        private void NodeTreeItem_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+
+        }
+
+        private void NodeTreeItem_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+
+        }
+
+        private void NodeTreeItem_Drop(object sender, DragEventArgs e) {
+
+        }
+
+        private void NodeTreeItem_DragOver(object sender, DragEventArgs e) {
+
         }
     }
 }

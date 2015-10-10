@@ -54,12 +54,14 @@ namespace ns.GUI.WPF {
         /// </summary>
         /// <param name="node">The node.</param>
         public void SelectNode(Node node) {
-            if (node == null) return;
-
+            if (node == _selectedNode) return;
             if (_selectedNode != null)
                 _selectedNode.IsSelected = false;
 
             _selectedNode = node;
+
+            if (_selectedNode == null) return;
+            
             _selectedNode.IsSelected = true;
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this, new NodeSelectionChangedEventArgs(node));

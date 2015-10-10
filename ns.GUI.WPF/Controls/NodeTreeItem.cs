@@ -46,10 +46,11 @@ namespace ns.GUI.WPF.Controls {
             this.AllowDrop = true;
             _textBlock = new TextBlock();
             this.Loaded += HandleLoaded;
+            this.Unloaded += HandleUnloaded;
             this.DragOver += NodeTreeItem_DragOver;
             this.Drop += NodeTreeItem_Drop;
             this.MouseMove += NodeTreeItem_MouseMove;
-            this.MouseDown += NodeTreeItem_MouseDown;
+            this.PreviewMouseDown += NodeTreeItem_PreviewMouseDown;
             this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
             _node = node;
             CreateHeaderPanel(node, string.Empty);
@@ -65,10 +66,11 @@ namespace ns.GUI.WPF.Controls {
             this.AllowDrop = true;
             _textBlock = new TextBlock();
             this.Loaded += HandleLoaded;
+            this.Unloaded += HandleUnloaded;
             this.DragOver += NodeTreeItem_DragOver;
             this.Drop += NodeTreeItem_Drop;
             this.MouseMove += NodeTreeItem_MouseMove;
-            this.MouseDown += NodeTreeItem_MouseDown;
+            this.PreviewMouseDown += NodeTreeItem_PreviewMouseDown;
             this.Style = new Style(GetType(), this.FindResource(typeof(TreeViewItem)) as Style);
             _node = node;
             CreateHeaderPanel(node, additionalFormat);
@@ -204,20 +206,71 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        private void NodeTreeItem_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+        private Point _lasMouseDownPoistion;
 
+        private void NodeTreeItem_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left) {
+                UIElement parent = GetParentElement();
+                if(parent != null)
+                    _lasMouseDownPoistion = e.GetPosition(parent);
+            }
         }
 
         private void NodeTreeItem_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-
+            try {
+                UIElement parent = GetParentElement();
+                if (parent == null || !(this.Node is Operation || this.Node is Tool)) return;
+                if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed) {
+                    Point currentPosition = e.GetPosition(parent);
+                    if((Math.Abs(currentPosition.X - _lasMouseDownPoistion.X) > 10.0) || (Math.Abs(currentPosition.Y - _lasMouseDownPoistion.Y) > 10.0)) {
+                        DragDropEffects finalDropEffect = DragDrop.DoDragDrop(this.Parent, this, DragDropEffects.Move);
+                    }
+                }
+            } catch (Exception ex) {
+                throw ex;
+            }
         }
 
         private void NodeTreeItem_Drop(object sender, DragEventArgs e) {
-
+            int a = 0;
         }
 
         private void NodeTreeItem_DragOver(object sender, DragEventArgs e) {
+            try {
+                UIElement parent = GetParentElement();
+                if (parent == null) return;
+                Point currentPosition = e.GetPosition(parent);
+                if ((Math.Abs(currentPosition.X - _lasMouseDownPoistion.X) > 10.0) || (Math.Abs(currentPosition.Y - _lasMouseDownPoistion.Y) > 10.0)) {
+                    NodeTreeItem item = GetNearestContainer(e.OriginalSource as UIElement);
+                    if (CheckDropTarget(item))
+                        e.Effects = DragDropEffects.Move;
+                    else
+                        e.Effects = DragDropEffects.None;
+                }
+                e.Handled = true;
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
 
+        private NodeTreeItem GetNearestContainer(UIElement element) {
+            NodeTreeItem container = element as NodeTreeItem;
+            while((container == null) && (element != null)) {
+                element = VisualTreeHelper.GetParent(element) as UIElement;
+                container = element as NodeTreeItem;
+            }
+            return container;
+        }
+
+        private bool CheckDropTarget(UIElement targetItem) {
+            bool isEqual = false;
+            if ((this != targetItem) && (targetItem is NodeTreeItem) && (((NodeTreeItem)targetItem).Node is Tool || ((NodeTreeItem)targetItem).Node is Operation))
+                isEqual = true;
+            return isEqual;
+        }
+
+        private UIElement GetParentElement() {
+            return this.Parent as UIElement;
         }
     }
 }

@@ -12,7 +12,7 @@
             <RowDefinition Height="37" />
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <TreeView Name="ProjectTree">
+            <TreeView Name="ProjectTree" AllowDrop="True">
                 <TreeViewItem Header="Test1">
                     <TreeViewItem Header="SubTest1" />
                     <TreeViewItem Header="SubTest2">

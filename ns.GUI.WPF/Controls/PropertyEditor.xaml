@@ -3,9 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Background="{DynamicResource EditAreaBackgroundBrush}">
-    <Grid Name="PropertyGrid" Height="Auto">
-
+             d:DesignHeight="620" d:DesignWidth="300" Background="{DynamicResource StandardBackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Background="{DynamicResource PropertyEditorHeaderBackgroundBrush}" MinWidth="240">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Name="CloseButton">
+                <Button.Content>
+                    <TextBlock Text="x" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="36" Margin="0,-1,0,0" />
+                </Button.Content>
+            </Button>
+            <TextBlock Text="{Binding Path=DisplayName}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid Name="ContentGrid" />
+        </ScrollViewer>
+        <local:RemoveButton Grid.Row="2" x:Name="RemoveToolButton" />
     </Grid>
 </UserControl>

@@ -21,15 +21,20 @@ namespace ns.GUI.WPF.Controls.Property {
     public partial class ComboBoxPropertyControl : PropertyControl  {
         private ns.Base.Plugins.Properties.Property _property;
 
+        public string DisplayName {
+            get { return _property.Name; }
+        }
+
         public ComboBoxPropertyControl() {
             InitializeComponent();
+            DataContext = this;
         }
 
         public ComboBoxPropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             _property = property;
-            this.NameLabel.Content = property.Name;
+            DataContext = this;
 
             if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
                 ConnectClicked(this.ContentBox as Control, this.ConnectImage);

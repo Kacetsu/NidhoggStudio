@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.RemoveButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="102" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Button Name="RmButton" Grid.Row="0" Style="{DynamicResource RemoveToolNodeButton}" Height="34" Click="Button_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2">
+                    <Image Source="/ns.GUI.WPF;component/Images/Trash.png" Opacity="0.5" />
+                    <TextBlock Text="{DynamicResource Remove}" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Grid Grid.Row="1" Name="ConfirmGrid">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="34" />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" Text="{DynamicResource RB_ConfirmRemove}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Name="YesButton" Click="Button_Click">
+                        <Button.Content>
+                            <TextBlock Text="{DynamicResource Yes}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button.Content>
+                    </Button>
+                    <Button Grid.Column="1" Name="NoButton" Click="Button_Click">
+                        <Button.Content>
+                            <TextBlock Text="{DynamicResource No}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button.Content>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

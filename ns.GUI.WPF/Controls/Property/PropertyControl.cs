@@ -6,20 +6,25 @@ using ns.Core;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF.Controls.Property {
-    public class PropertyControl : UserControl {
-
+    public class PropertyControl : UserControl, INotifyPropertyChanged {
+        private static Brush DEFAULT_BACKGROUNDBRUSH = Brushes.White;
         private ns.Base.Plugins.Properties.Property _property;
         private bool _isConnectable = false;
         private ComboBox _selectionComboBox = null;
+        private Brush _backgroundBrush;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Gets the property.
@@ -42,10 +47,21 @@ namespace ns.GUI.WPF.Controls.Property {
             set { _isConnectable = value; }
         }
 
+        public Brush BackgroundBrush {
+            get { return _backgroundBrush; }
+            set {
+                _backgroundBrush = value;
+                OnPropertyChanged("BackgroundBrush");
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyControl"/> class.
         /// </summary>
-        public PropertyControl() : base() { }
+        public PropertyControl() : base() {
+            this.MouseEnter += Control_MouseEnter;
+            this.MouseLeave += Control_MouseLeave;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyControl"/> class.
@@ -54,6 +70,8 @@ namespace ns.GUI.WPF.Controls.Property {
         public PropertyControl(ns.Base.Plugins.Properties.Property property)
             : base() {
             _property = property;
+            this.MouseEnter += Control_MouseEnter;
+            this.MouseLeave += Control_MouseLeave;
         }
 
         /// <summary>
@@ -104,6 +122,11 @@ namespace ns.GUI.WPF.Controls.Property {
             }
 
             imageContainer.Source = image;
+        }
+
+        protected void OnPropertyChanged(string name) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
 
         /// <summary>
@@ -185,6 +208,14 @@ namespace ns.GUI.WPF.Controls.Property {
                         _selectionComboBox.SelectedItem = targetProperty;
                 }
             }
+        }
+
+        private void Control_MouseLeave(object sender, MouseEventArgs e) {
+            BackgroundBrush = DEFAULT_BACKGROUNDBRUSH;
+        }
+
+        private void Control_MouseEnter(object sender, MouseEventArgs e) {
+            BackgroundBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
         }
     }
 }

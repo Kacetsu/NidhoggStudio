@@ -6,7 +6,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{DynamicResource ResultsHeaderBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image />
+            <TextBlock Grid.Column="1" Text="{DynamicResource Results}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <DataGrid Name="DataControl" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="{DynamicResource Monitored}" Binding="{Binding Path=IsMonitored}" MinWidth="20" />

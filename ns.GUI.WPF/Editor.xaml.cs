@@ -1,97 +1,122 @@
-﻿using ns.Base.Log;
-using ns.Base.Plugins;
+﻿using ns.Base;
 using ns.Core;
 using ns.Core.Manager;
 using System;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
     /// <summary>
     /// Interaktionslogik für Editor.xaml
     /// </summary>
     public partial class Editor : UserControl {
+        private ProjectManager _projectManager;
+        private Controls.ProjectExplorer _projectExplorer;
+        private Controls.AddToolControl _addToolControl;
+        private Controls.PropertyEditor _propertyEditor;
 
-        private GuiManager _guiManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Editor"/> class.
-        /// </summary>
         public Editor() {
-            try {
-                InitializeComponent();
-                this.Loaded += EditorLoaded;
-            } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
-            }
+            InitializeComponent();
+            HeaderGrid.Height = 0;
+            Loaded += Editor_Loaded;
+            _projectExplorer = this.ProjectExplorer;
+            _projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
+            this.ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
         }
 
-        private void EditorLoaded(object sender, RoutedEventArgs e) {
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
-
-            if (_guiManager == null) {
-                _guiManager = new GuiManager();
-                _guiManager.Initialize();
-                CoreSystem.Managers.Add(_guiManager);
-            }
-
-            CoreSystem.Processor.Started += ProcessorStarted;
-            CoreSystem.Processor.Stopped += ProcessorStopped;
-        }
-
-        private void ProcessorStarted() {
-            this.StopButton.IsEnabled = true;
-            this.StartButton.IsEnabled = false;
-        }
-
-        private void ProcessorStopped() {
-            this.StopButton.IsEnabled = false;
-            this.StartButton.IsEnabled = true;
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e) {
-            Button button = sender as Button;
-
-            if (button == this.StartButton)
-                CoreSystem.Processor.Start();
-            else if (button == this.StopButton)
-                CoreSystem.Processor.Stop();
-            else if (button == this.PauseButton)
-                CoreSystem.Processor.Pause();
-
-        }
-
-        private void AnalyticsTabControl_Loaded(object sender, RoutedEventArgs e) {
-            if (DesignerProperties.GetIsInDesignMode(this)) return;
-
-            ExtensionManager extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
-
-            foreach (Plugin plugin in extensionManager.Plugins) {
-                if (plugin is UIExtension) {
-                    UIExtension extension = plugin as UIExtension;
-
-                    switch (extension.Position) {
-                        case UIExtensionPosition.Bottom:
-                            AddExtensionToAnalyticsTabControl(extension);
-                            break;
-                        case UIExtensionPosition.Top:
-                        default:
-                            break;
-                    }
+        private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                if (_propertyEditor == null) {
+                    _propertyEditor = new Controls.PropertyEditor(e.SelectedNode);
+                    _propertyEditor.CloseButton.Click += CloseButton_Click;
+                    _propertyEditor.RemoveToolButton.YesButton.Click += YesButton_Click;
                 }
+                ControlGrid.Children.Add(_propertyEditor);
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+            };
+            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+        }
+
+        private void YesButton_Click(object sender, RoutedEventArgs e) {
+            if(_propertyEditor != null && sender == _propertyEditor.RemoveToolButton.YesButton) {
+                Node nodeToRemove = _propertyEditor.Node;
+                if(_projectManager == null)
+                    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+                RemoveControl(_propertyEditor);
+                _propertyEditor = null;
+                _projectManager.Remove(nodeToRemove);
             }
         }
 
-        private void AddExtensionToAnalyticsTabControl(UIExtension extension) {
-            string displayName = extension.DisplayName;
-            TabItem tabItem = new TabItem();
-            tabItem.Header = displayName;
+        private void CloseButton_Click(object sender, RoutedEventArgs e) {
+            if (_addToolControl != null && sender == _addToolControl.CloseButton) {
+                RemoveControl(_addToolControl);
+                _addToolControl = null;
+            } else if (_propertyEditor != null && sender == _propertyEditor.CloseButton) {
+                RemoveControl(_propertyEditor);
+                _propertyEditor = null;
+            }
+        }
 
-            if(extension.Control is UserControl)
-                tabItem.Content = extension.Control as UserControl;
+        private void RemoveControl(UIElement control) {
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                ControlGrid.Children.Remove(control);
+                if (!ControlGrid.Children.Contains(_projectExplorer))
+                    ControlGrid.Children.Add(_projectExplorer);
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+            };
+            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+        }
 
-            this.AnalyticsTabControl.Items.Add(tabItem);
+        private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                if(_addToolControl == null) {
+                    _addToolControl = new Controls.AddToolControl();
+                    _addToolControl.CloseButton.Click += CloseButton_Click;
+                }
+                ControlGrid.Children.Add(_addToolControl);
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+            };
+            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+        }
+
+        private void Editor_Loaded(object sender, RoutedEventArgs e) {
+            GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty);
+            GuiHelper.DoubleAnimateControl(60, HeaderGrid, Rectangle.HeightProperty, TimeSpan.FromSeconds(0.3));
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
+            if(sender == ResultsViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, ResultsView, Rectangle.HeightProperty);
+            } else if(sender == HistogramViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, HistogramView, Rectangle.HeightProperty);
+            } else if(sender == LockContentToggleButton) {
+                BitmapImage logo = new BitmapImage();
+                logo.BeginInit();
+                logo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Lock_closed.png");
+                logo.EndInit();
+                LockContentToggleButtonImage.Source = logo;
+            }
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
+            if (sender == ResultsViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(0, ResultsView, Rectangle.HeightProperty);
+            } else if (sender == HistogramViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(0, HistogramView, Rectangle.HeightProperty);
+            } else if (sender == LockContentToggleButton) {
+                BitmapImage logo = new BitmapImage();
+                logo.BeginInit();
+                logo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Lock_open.png");
+                logo.EndInit();
+                LockContentToggleButtonImage.Source = logo;
+            }
         }
     }
 }

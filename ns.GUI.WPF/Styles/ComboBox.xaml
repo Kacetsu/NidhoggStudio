@@ -11,14 +11,14 @@
               x:Name="Border" 
               Grid.ColumnSpan="2"
               CornerRadius="0"
-              Background="{StaticResource EditBackgroundBrush}"
+              Background="{DynamicResource ComboBoxPopUpBrush}"
               BorderBrush="{StaticResource StandardBorderBrush}"
               BorderThickness="1" />
             <Border 
               Grid.Column="0"
               CornerRadius="0" 
               Margin="1" 
-              Background="{StaticResource EditBackgroundBrush}" 
+              Background="{DynamicResource ControlBackgroundBrush}" 
               BorderBrush="Transparent"
               BorderThickness="0" />
             <Path 
@@ -47,7 +47,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
-        <Border x:Name="PART_ContentHost" Focusable="False" Background="{StaticResource EditBackgroundBrush}" Height="26" />
+        <Border x:Name="PART_ContentHost" Focusable="False" Background="{DynamicResource ControlBackgroundBrush}" Height="26" />
     </ControlTemplate>
 
     <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
@@ -58,11 +58,12 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
         <Setter Property="MinWidth" Value="120"/>
         <Setter Property="MinHeight" Value="25"/>
-        <Setter Property="Background" Value="{StaticResource EditBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
-                    <Grid Background="{StaticResource EditBackgroundBrush}">
+                    <Grid Background="{TemplateBinding Background}">
                         <ToggleButton 
                             Name="ToggleButton" 
                             Template="{StaticResource ComboBoxToggleButton}" 
@@ -85,9 +86,10 @@
                             Template="{StaticResource ComboBoxTextBox}" 
                             Margin="3,3,23,3"
                             Focusable="True" 
-                            Background="{StaticResource EditBackgroundBrush}"
-                            Foreground="{StaticResource Foreground}"
+                            Background="{TemplateBinding Background}"
+                            Foreground="{TemplateBinding Foreground}"
                             Visibility="Hidden"
+                            FontWeight="Bold"
                             IsReadOnly="{TemplateBinding IsReadOnly}"/>
                         <Popup 
                             Name="Popup"
@@ -131,7 +133,7 @@
                             <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
                             <Setter TargetName="DropDownBorder" Property="Margin" Value="0"/>
                             <Setter TargetName="DropDown" Property="Margin" Value="0,0,20,20"/>
-                            <Setter Property="Foreground" Value="{StaticResource Foreground}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlForeground}"/>
                         </Trigger>
                         <Trigger Property="IsEditable" Value="true">
                             <Setter Property="IsTabStop" Value="false"/>

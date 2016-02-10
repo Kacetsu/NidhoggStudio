@@ -30,8 +30,8 @@ namespace ns.Plugin.Base {
 
         public CheckIntensity() {
             DisplayName = "Check Intensity";
-            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             AddChild(new ImageProperty("InputImage", false));
+            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             AddChild(new ImageProperty("OuputImage", true));
             DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
             intensityProperty.Tolerance = new Tolerance<double>(0, 100);

@@ -1,18 +1,18 @@
-﻿<ns:BaseWindow x:Class="Nidhogg_Studio.MainWindow"
+﻿<Window xmlns:Controls="clr-namespace:ns.GUI.WPF.Controls;assembly=ns.GUI.WPF"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ns="clr-namespace:ns.GUI.WPF;assembly=ns.GUI.WPF"
-        xmlns:nsc="clr-namespace:ns.GUI.WPF.Controls;assembly=ns.GUI.WPF"
-        Title="Nidhogg Studio" Height="960" Width="1280" Style="{DynamicResource Window}" WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize" Icon="NidhoggStudioDesktopIcon.ico">
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nidhogg_Studio"
+        xmlns:WPF="clr-namespace:ns.GUI.WPF;assembly=ns.GUI.WPF"  x:Class="Nidhogg_Studio.MainWindow"
+        mc:Ignorable="d"
+        Title="Nidhogg Studio" Height="720" Width="1280" MinHeight="720" MinWidth="1280">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="2" />
-            <RowDefinition Height="20" />
-        </Grid.RowDefinitions>
-        <nsc:Menu Name="MainMenu" Grid.Row="0" />
-        <ns:Editor Grid.Row="1" />
-        <Border Grid.Row="2" BorderThickness="0" BorderBrush="Transparent" />
+        <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="NavigationColumn" Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Controls:NavigationMenu x:Name="Navigation" Width="60" />
+        <WPF:Editor Grid.Column="1"/>
     </Grid>
-</ns:BaseWindow>
+</Window>

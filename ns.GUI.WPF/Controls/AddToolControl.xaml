@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.AddToolControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="620" d:DesignWidth="300" Background="{DynamicResource StandardBackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Background="{DynamicResource AddToolHeaderBackgroundBrush}" MinWidth="240">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Name="CloseButton">
+                <Button.Content>
+                    <TextBlock Text="x" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="36" Margin="0,-1,0,0" />
+                </Button.Content>
+            </Button>
+            <TextBlock Text="{DynamicResource S_T_Add_new_Element}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />
+        </Grid>
+        <ComboBox Name="CategoryComboBox" Grid.Row="1" SelectionChanged="CategoryComboBox_SelectionChanged" />
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource AddToolBackgroundBrush}">
+            <Grid Name="ToolGrid" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

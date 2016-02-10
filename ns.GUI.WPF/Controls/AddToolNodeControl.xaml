@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.AddToolNodeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="300" MinHeight="50" MinWidth="280">
+    <Grid>
+        <Border CornerRadius="3" Background="{DynamicResource StandardBackgroundBrush}" Margin="4,6">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.2" />
+            </Border.Effect>
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="44" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="44" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <Button Name="AddButton" Style="{DynamicResource AddToolNodeButton}" Click="AddButton_Click" />
+                    <TextBlock Grid.Column="1" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" Margin="10,0" TextWrapping="Wrap" />
+                    <ToggleButton Name="DescriptionToggleButton" Grid.Column="2" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Style="{DynamicResource ContentToggleButton}" />
+                </Grid>
+                <TextBlock Name="DescriptionTextBlock" Text="{Binding Path=Description,FallbackValue=-}" Grid.Row="1" TextWrapping="Wrap" Foreground="{DynamicResource HalfTransparentForegroundBrush}" Height="Auto" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

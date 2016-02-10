@@ -20,9 +20,14 @@ namespace ns.GUI.WPF.Controls.Property {
     /// Interaktionslogik für StringPropertyControl.xaml
     /// </summary>
     public partial class StringPropertyControl : PropertyControl {
+        private ns.Base.Plugins.Properties.Property _property;
 
         public delegate void TextChangedEventHandler(object sender, TextChangedEventArgs e);
         public event TextChangedEventHandler TextChanged = delegate { };
+
+        public string DisplayName {
+            get { return _property.Name; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is connectable.
@@ -48,6 +53,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// </summary>
         public StringPropertyControl() {
             InitializeComponent();
+            DataContext = this;
         }
 
         /// <summary>
@@ -58,7 +64,8 @@ namespace ns.GUI.WPF.Controls.Property {
         public StringPropertyControl(ns.Base.Plugins.Properties.Property property)
             : base(property) {
             InitializeComponent();
-            this.NameLabel.Content = property.Name;
+            DataContext = this;
+            _property = property;
             StringProperty stringProperty = property as StringProperty;
 
             if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
@@ -78,7 +85,8 @@ namespace ns.GUI.WPF.Controls.Property {
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
-            this.NameLabel.Content = property.Name;
+            DataContext = this;
+            _property = property;
             StringProperty stringProperty = property as StringProperty;
 
             if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
@@ -96,7 +104,6 @@ namespace ns.GUI.WPF.Controls.Property {
         public StringPropertyControl(string name, string content) {
             InitializeComponent();
             IsConnectable = false;
-            this.NameLabel.Content = name;
             this.ContentBox.Text = content;
         }
 

@@ -110,6 +110,12 @@
     <Compile Include="Controls\RemoveButton.xaml.cs">
       <DependentUpon>RemoveButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ResultsView.xaml.cs">
+      <DependentUpon>ResultsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ResultViewContainer.xaml.cs">
+      <DependentUpon>ResultViewContainer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ToolNodeControl.xaml.cs">
       <DependentUpon>ToolNodeControl.xaml</DependentUpon>
     </Compile>
@@ -150,8 +156,8 @@
       <DependentUpon>NumberPropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Property\PropertyControl.cs" />
-    <Compile Include="Controls\ResultsView.xaml.cs">
-      <DependentUpon>ResultsView.xaml</DependentUpon>
+    <Compile Include="Controls\ResultsView2.xaml.cs">
+      <DependentUpon>ResultsView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
@@ -257,6 +263,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ResultsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ResultsView2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ResultViewContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

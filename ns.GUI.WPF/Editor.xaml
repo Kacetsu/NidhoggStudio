@@ -20,7 +20,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="33*" MinWidth="100" />
                     <ColumnDefinition Width="33*" />
-                    <ColumnDefinition Width="33*" MinWidth="400" />
+                    <ColumnDefinition Width="33*" MinWidth="300" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="0,10">
                     <ToggleButton Name="LoopExecutionToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked">
@@ -36,7 +36,7 @@
                         </ToggleButton.Content>
                     </ToggleButton>
                 </StackPanel>
-                <TextBlock Grid.Column="1" Text="{Binding Path=LockedToolName, FallbackValue=UNKNOWN}" Foreground="{DynamicResource HeaderForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16" />
+                <TextBlock Grid.Column="1" Text="{Binding Path=LockedToolName, FallbackValue=UNKNOWN}" Foreground="{DynamicResource HeaderForegroundBrush}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="4,0" />
                 <StackPanel Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,10">
                     <ToggleButton Name="ResultsViewToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight">
                         <ToggleButton.Content>
@@ -59,17 +59,6 @@
                                 </Grid.ColumnDefinitions>
                                 <Image Source="Images/Histogram.png" />
                                 <TextBlock Grid.Column="1" Text="{DynamicResource Histogram}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0" />
-                            </Grid>
-                        </ToggleButton.Content>
-                    </ToggleButton>
-                    <ToggleButton Name="LockContentToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight">
-                        <ToggleButton.Content>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Image Name="LockContentToggleButtonImage" Source="Images/Lock_open.png" />
                             </Grid>
                         </ToggleButton.Content>
                     </ToggleButton>

@@ -1,7 +1,9 @@
 ﻿using ns.Base;
+using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -12,19 +14,48 @@ namespace ns.GUI.WPF {
     /// <summary>
     /// Interaktionslogik für Editor.xaml
     /// </summary>
-    public partial class Editor : UserControl {
+    public partial class Editor : UserControl, INotifyPropertyChanged {
         private ProjectManager _projectManager;
+        private GuiManager _guiManager;
         private Controls.ProjectExplorer _projectExplorer;
         private Controls.AddToolControl _addToolControl;
         private Controls.PropertyEditor _propertyEditor;
+        private string _lockedToolName = string.Empty;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string LockedToolName {
+            get { return _lockedToolName; }
+            set {
+                if (!_lockedToolName.Equals(value)) {
+                    _lockedToolName = value;
+                    OnPropertyChanged("LockedToolName");
+                }
+
+            }
+        }
 
         public Editor() {
             InitializeComponent();
+            DataContext = this;
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = this.ProjectExplorer;
             _projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
             this.ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
+        }
+
+        private void OnPropertyChanged(string name) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+            if(e.SelectedNode is Tool) {
+                LockedToolName = (e.SelectedNode as Tool).DisplayName;
+            }else if(e.SelectedNode is Operation) {
+                LockedToolName = (e.SelectedNode as Operation).DisplayName;
+            }
         }
 
         private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
@@ -35,7 +66,8 @@ namespace ns.GUI.WPF {
                     _propertyEditor.CloseButton.Click += CloseButton_Click;
                     _propertyEditor.RemoveToolButton.YesButton.Click += YesButton_Click;
                 }
-                ControlGrid.Children.Add(_propertyEditor);
+                if(!ControlGrid.Children.Contains(_propertyEditor))
+                    ControlGrid.Children.Add(_propertyEditor);
                 GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
             };
             ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
@@ -89,6 +121,10 @@ namespace ns.GUI.WPF {
         private void Editor_Loaded(object sender, RoutedEventArgs e) {
             GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty);
             GuiHelper.DoubleAnimateControl(60, HeaderGrid, Rectangle.HeightProperty, TimeSpan.FromSeconds(0.3));
+
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            if (_guiManager != null)
+                _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
@@ -96,13 +132,7 @@ namespace ns.GUI.WPF {
                 GuiHelper.DoubleAnimateControl(200, ResultsView, Rectangle.HeightProperty);
             } else if(sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(200, HistogramView, Rectangle.HeightProperty);
-            } else if(sender == LockContentToggleButton) {
-                BitmapImage logo = new BitmapImage();
-                logo.BeginInit();
-                logo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Lock_closed.png");
-                logo.EndInit();
-                LockContentToggleButtonImage.Source = logo;
-            }
+            } 
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
@@ -110,12 +140,6 @@ namespace ns.GUI.WPF {
                 GuiHelper.DoubleAnimateControl(0, ResultsView, Rectangle.HeightProperty);
             } else if (sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(0, HistogramView, Rectangle.HeightProperty);
-            } else if (sender == LockContentToggleButton) {
-                BitmapImage logo = new BitmapImage();
-                logo.BeginInit();
-                logo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Lock_open.png");
-                logo.EndInit();
-                LockContentToggleButtonImage.Source = logo;
             }
         }
     }

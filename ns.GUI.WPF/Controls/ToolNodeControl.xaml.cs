@@ -24,6 +24,10 @@ namespace ns.GUI.WPF.Controls {
             get { return _tool.DisplayName; }
         }
 
+        public Tool Tool {
+            get { return _tool; }
+        }
+
         public ToolNodeControl(Tool tool) {
             InitializeComponent();
             _tool = tool;

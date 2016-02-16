@@ -1,42 +1,29 @@
 ﻿using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
-    /// Interaktionslogik für ResultsView.xaml
+    /// Interaction logic for ResultsView.xaml
     /// </summary>
-    public partial class ResultsView : UserControl {
-        private LockedObservableCollection<ResultViewContainer> _collection = new LockedObservableCollection<ResultViewContainer>();
+    public partial class ResultsView2 : UserControl {
+        private LockedObservableCollection<ns.Base.Plugins.Properties.Property> _collection = new LockedObservableCollection<ns.Base.Plugins.Properties.Property>();
+
         private PropertyManager _propertyManager;
         private GuiManager _guiManager;
 
-        public ResultsView() {
+        public ResultsView2() {
             InitializeComponent();
-            ContenList.ItemsSource = _collection;
-            Loaded += ResultsView_Loaded;
+            this.Loaded += ResultsView_Loaded;
         }
-
-        public object DataControl { get; private set; }
 
         private void ResultsView_Loaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
-            
+            DataControl.ItemsSource = _collection;
             _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
             _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
@@ -47,26 +34,13 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-            if (e.SelectedNode == null) {
-                _collection.Clear();
-                return;
-            }
-
+            if (e.SelectedNode == null) return;
             List<object> properties = e.SelectedNode.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
             _collection.Clear();
             foreach (ns.Base.Plugins.Properties.Property property in properties) {
-                if (!property.IsOutput || !(property.Parent is Tool)) continue;
-
-                bool contains = false;
-                foreach(ResultViewContainer container in _collection) {
-                    if(container.Property == property) {
-                        contains = true;
-                        break;
-                    }
+                if (property.IsOutput && !_collection.Contains(property) && property.Parent is Tool) {
+                    _collection.Add(property);
                 }
-
-                if(!contains)
-                    _collection.Add(new ResultViewContainer(property));
             }
         }
 
@@ -80,18 +54,9 @@ namespace ns.GUI.WPF.Controls {
 
                 if (property.Parent != _guiManager.SelectedNode) return;
 
-                if (!property.IsOutput || !(property.Parent is Tool)) return;
-
-                bool contains = false;
-                foreach (ResultViewContainer container in _collection) {
-                    if (container.Property != property) {
-                        contains = true;
-                        break;
-                    }
+                if (property.IsOutput && !_collection.Contains(property) && property.Parent is Tool) {
+                    _collection.Add(property);
                 }
-
-                if (!contains)
-                    _collection.Add(new ResultViewContainer(property));
             }
         }
 
@@ -101,18 +66,8 @@ namespace ns.GUI.WPF.Controls {
 
                 if (property.Parent != _guiManager.SelectedNode) return;
 
-                if (!property.IsOutput || !(property.Parent is Tool)) return;
-
-                ResultViewContainer containerToRemove = null;
-                foreach (ResultViewContainer container in _collection) {
-                    if (container.Property == property) {
-                        containerToRemove = container;
-                        break;
-                    }
-                }
-
-                if(containerToRemove != null)
-                    _collection.Remove(containerToRemove);
+                if (_collection.Contains(property))
+                    _collection.Remove(property);
             }
         }
     }

@@ -9,7 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="44" />
-            <RowDefinition Height="4" />
+            <RowDefinition Height="3" />
         </Grid.RowDefinitions>
         <Grid Name="HeaderGrid" Background="Transparent">
             <Grid.ColumnDefinitions>
@@ -22,6 +22,8 @@
             </Button>
             <TextBlock Grid.Column="2" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0" />
         </Grid>
-        <Grid Name="StatusGrid" Grid.Row="1" Background="Transparent" />
+        <Grid Grid.Row="1" Background="{DynamicResource SecondaryBackgroundBrush}">
+            <Border Name="StatusBorder" Background="Transparent" BorderThickness="0" />
+        </Grid>
     </Grid>
 </UserControl>

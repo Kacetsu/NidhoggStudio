@@ -1,6 +1,7 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Plugins;
+using ns.Core;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace ns.GUI.WPF.Controls {
     public partial class OperationNodeControl : UserControl {
         private Operation _operation;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
+        private GuiManager _guiManager;
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
@@ -28,6 +30,22 @@ namespace ns.GUI.WPF.Controls {
             _toolControls = new LockedObservableCollection<ToolNodeControl>();
             ContentList.ItemsSource = _toolControls;
             _operation.ChildCollectionChanged += _operation_ChildCollectionChanged;
+            ContentList.SelectionChanged += ContentList_SelectionChanged;
+
+            if (_guiManager == null)
+                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+
+            _guiManager.SelectNode(operation);
+        }
+
+        private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if(_guiManager == null)
+                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+
+            if(ContentList.SelectedItem is ToolNodeControl && (ContentList.SelectedItem as ToolNodeControl).Tool != null) {
+                _guiManager.SelectNode((ContentList.SelectedItem as ToolNodeControl).Tool);
+            }
+            
         }
 
         private void OnConfigNode(Node node) {

@@ -11,6 +11,8 @@
     <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76"/>
     <SolidColorBrush x:Key="NormalBrush" Color="White" />
     <SolidColorBrush x:Key="StandardBackgroundBrush" Color="White" />
+    <Color x:Key="StandardBackgroundColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <SolidColorBrush x:Key="StandardBorderBrush" Color="#FFEAEAEA" />
     <SolidColorBrush x:Key="HalfTransparentForegroundBrush" Color="#7F000000" />
     <SolidColorBrush x:Key="QuarterTransparentForegroundBrush" Color="#BF000000" />
 
@@ -49,6 +51,10 @@
     <SolidColorBrush x:Key="ComboBoxForegroundBrush" Color="#7FFFFFFF" />
     <SolidColorBrush x:Key="ComboBoxPopUpBrush" Color="#252526" />
 
+    <!-- TextBox -->
+    <SolidColorBrush x:Key="TextBoxReadonlyBackgroundBrush" Color="#FFE2E0E0" />
+    <Color x:Key="TextBoxReadonlyBackgroundColor" A="#FF" R="226" G="224" B="224"/>
+    
     <!-- Editor -->
     <SolidColorBrush x:Key="HeaderForegroundBrush" Color="#FF858E96" />
     
@@ -86,7 +92,6 @@
     <Color x:Key="EditBoxBackgroundColor" A="#FF" R="#51" G="#51" B="#55"/>
 
     <!-- Border -->
-    <SolidColorBrush x:Key="StandardBorderBrush" Color="#888" />
     <Color x:Key="StandardBorderColor" A="#FF" R="#62" G="#62" B="#66"/>
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#888" />
     <SolidColorBrush x:Key="HoverBorderBrush" Color="#007acc" />

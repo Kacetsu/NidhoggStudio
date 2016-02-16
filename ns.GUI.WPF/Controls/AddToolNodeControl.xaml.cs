@@ -110,6 +110,9 @@ namespace ns.GUI.WPF.Controls {
                 Plugin clone = _plugin.Clone() as Plugin;
                 projectManager.Add(clone, guiManager.SelectedNode);
 
+                if (clone is Tool)
+                    guiManager.SelectNode(clone);
+
             } else if(_plugin is Operation) {
                 throw new NotSupportedException("Operations are not supperted yet!");
             }

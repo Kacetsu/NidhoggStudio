@@ -13,11 +13,11 @@
               CornerRadius="0"
               Background="{DynamicResource ComboBoxPopUpBrush}"
               BorderBrush="{StaticResource StandardBorderBrush}"
-              BorderThickness="1" />
+              BorderThickness="0" />
             <Border 
               Grid.Column="0"
               CornerRadius="0" 
-              Margin="1" 
+              Margin="0" 
               Background="{DynamicResource ControlBackgroundBrush}" 
               BorderBrush="Transparent"
               BorderThickness="0" />

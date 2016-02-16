@@ -8,6 +8,8 @@ namespace ns.Base.Plugins.Properties {
     [Serializable]
     public class ImageProperty : Property {
 
+        private bool _isVisible = false;
+
         public ImageProperty() : base() { CanAutoConnect = true; }
         public ImageProperty(string name, byte[] value) : base(name, value) { CanAutoConnect = true; }
         public ImageProperty(string name, bool isOutput) : base(name, isOutput) { CanAutoConnect = true; }
@@ -15,6 +17,16 @@ namespace ns.Base.Plugins.Properties {
         public override Type Type {
             get {
                 return typeof(byte[]);
+            }
+        }
+
+        public bool IsVisible {
+            get { return _isVisible; }
+            set {
+                if(_isVisible != value) {
+                    _isVisible = value;
+                    OnPropertyChanged("IsVisible");
+                }
             }
         }
 

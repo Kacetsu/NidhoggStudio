@@ -10,5 +10,6 @@
         <Grid.Background>
             <ImageBrush ImageSource="/ns.GUI.WPF;component/Images/Blank_Background.png" Stretch="None" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,16,16"/>
         </Grid.Background>
+        <Image Name="ImageDisplay" Source="{Binding Path=Bitmap,Mode=OneWay}" />
     </Grid>
 </UserControl>

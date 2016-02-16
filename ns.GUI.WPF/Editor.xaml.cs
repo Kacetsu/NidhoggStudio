@@ -38,6 +38,7 @@ namespace ns.GUI.WPF {
         public Editor() {
             InitializeComponent();
             DataContext = this;
+            LoopExecutionToggleButton.DataContext = CoreSystem.Processor;
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = this.ProjectExplorer;
@@ -132,7 +133,9 @@ namespace ns.GUI.WPF {
                 GuiHelper.DoubleAnimateControl(200, ResultsView, Rectangle.HeightProperty);
             } else if(sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(200, HistogramView, Rectangle.HeightProperty);
-            } 
+            } else if(sender == LoopExecutionToggleButton) {
+                CoreSystem.Processor.Start();
+            }
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
@@ -140,6 +143,8 @@ namespace ns.GUI.WPF {
                 GuiHelper.DoubleAnimateControl(0, ResultsView, Rectangle.HeightProperty);
             } else if (sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(0, HistogramView, Rectangle.HeightProperty);
+            } else if (sender == LoopExecutionToggleButton) {
+                CoreSystem.Processor.Stop();
             }
         }
     }

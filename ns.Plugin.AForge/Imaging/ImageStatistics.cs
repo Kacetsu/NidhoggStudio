@@ -77,6 +77,7 @@ namespace ns.Plugin.AForge.Imaging {
             base.Initialize();
 
             _imageInput = GetProperty("ImageInput") as ImageProperty;
+            _imageInput.IsVisible = true;
 
             _maxBlue = GetProperty("MaxBlue") as IntegerProperty;
             _minBlue = GetProperty("MinBlue") as IntegerProperty;

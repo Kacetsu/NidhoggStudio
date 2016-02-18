@@ -56,6 +56,7 @@ namespace ns.Core {
         /// </summary>
         /// <returns>Success of the operation.</returns>
         public bool Start() {
+            if (IsRunning) return true;
             bool initializeResult = InitializeOperations();
             if(initializeResult == true)
                 StartOperations();

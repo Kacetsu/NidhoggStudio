@@ -10,11 +10,9 @@ namespace ns.GUI.WPF {
     public class GuiManager : BaseManager {
 
         public delegate void SelectionChangedHandler(object sender, NodeSelectionChangedEventArgs e);
-
         public virtual event SelectionChangedHandler SelectedItemChanged;
 
         private Node _selectedNode;
-
         private bool _isRunning = false;
 
         /// <summary>

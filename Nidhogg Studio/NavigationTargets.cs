@@ -1,9 +1,4 @@
 ﻿using ns.GUI.WPF;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace Nidhogg_Studio {
@@ -13,6 +8,7 @@ namespace Nidhogg_Studio {
 
         public override void CallAction() {
             base.CallAction();
+            Menu.PageName = "Editor";
         }
     }
 
@@ -22,6 +18,7 @@ namespace Nidhogg_Studio {
 
         public override void CallAction() {
             base.CallAction();
+            Menu.PageName = "Monitor";
         }
     }
 
@@ -31,6 +28,7 @@ namespace Nidhogg_Studio {
 
         public override void CallAction() {
             base.CallAction();
+            Menu.PageName = "Statistic";
         }
     }
 
@@ -40,6 +38,7 @@ namespace Nidhogg_Studio {
 
         public override void CallAction() {
             base.CallAction();
+            Menu.PageName = "Log";
         }
     }
 }

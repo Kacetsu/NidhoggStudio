@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für NavigationMenu.xaml
     /// </summary>
-    public partial class NavigationMenu : UserControl {
+    public partial class NavigationMenu : UserControl, INotifyPropertyChanged {
         private bool _navigationVisible = false;
+        private string _pageName = string.Empty;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string PageName {
+            get { return _pageName; }
+            set {
+                if(_pageName != value) {
+                    _pageName = value;
+                    OnPropertyChanged("PageName");
+                }
+            }
+        }
 
         public NavigationMenu() {
             InitializeComponent();
@@ -29,15 +34,23 @@ namespace ns.GUI.WPF.Controls {
 
             RowDefinitionCollection rowDefinitions = NavigationTargetsGrid.RowDefinitions;
 
-            for(int index = 0; index < targets.Count; index++) { 
+            int index = 0;
+            foreach(NavigationTarget target in targets) { 
                 RowDefinition rowDefinition = new RowDefinition();
                 rowDefinition.Height = new GridLength(60);
                 rowDefinitions.Add(rowDefinition);
 
-                NavigationTargetControl targetControl = new NavigationTargetControl(targets[index]);
+                NavigationTargetControl targetControl = new NavigationTargetControl(target);
+                target.Menu = this;
                 Grid.SetRow(targetControl, index);
                 NavigationTargetsGrid.Children.Add(targetControl);
+                index++;
             }
+        }
+
+        private void OnPropertyChanged(string name) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
 
         private void ControlNavigation() {

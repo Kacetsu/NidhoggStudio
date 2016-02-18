@@ -50,7 +50,7 @@
                             </Grid>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton Name="HistogramViewToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight">
+                    <ToggleButton Name="HistogramViewToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight" Visibility="Hidden">
                         <ToggleButton.Content>
                             <Grid>
                                 <Grid.ColumnDefinitions>

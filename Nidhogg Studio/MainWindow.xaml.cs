@@ -39,6 +39,7 @@ namespace Nidhogg_Studio {
         }
 
         private void CreateNavigation() {
+            this.Navigation.PropertyChanged += Navigation_PropertyChanged;
             _mainNavigationTargtes = new List<NavigationTarget>();
 
             BitmapImage editorLogo = new BitmapImage();
@@ -72,6 +73,27 @@ namespace Nidhogg_Studio {
             _mainNavigationTargtes.Add(logTarget);
 
             this.Navigation.Load(_mainNavigationTargtes);
+
+            // Set default page
+            this.Navigation.PageName = "Editor";
+        }
+
+        private void Navigation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals("PageName")) {
+                this.ContentGird.Children.Clear();
+                string pageName = this.Navigation.PageName;
+                switch (pageName) {
+                    case "Editor":
+                    this.ContentGird.Children.Add(new Editor());
+                    break;
+                    case "Monitor":
+                    case "Statistic":
+                    case "Log":
+                    break;
+                    default:
+                    throw new NotSupportedException(pageName + " is not supported!");
+                }
+            }
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {

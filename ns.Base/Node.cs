@@ -188,6 +188,7 @@ namespace ns.Base {
             bool result = true;
 
             foreach (Node child in this.Childs) {
+                if (!child.IsInitialized) continue;
                 if (!child.Finalize())
                     result = false;
             }

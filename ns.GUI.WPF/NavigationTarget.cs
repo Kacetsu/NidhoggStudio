@@ -1,9 +1,7 @@
 ﻿using ns.Base;
-using System;
+using ns.Core;
+using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF {
@@ -13,6 +11,7 @@ namespace ns.GUI.WPF {
         private List<NavigationTarget> _childTargets;
         private NavigationTarget _parent;
         private BitmapImage _icon;
+        private NavigationMenu _menu;
 
         public string Name {
             get { return _name; }
@@ -29,6 +28,11 @@ namespace ns.GUI.WPF {
         public NavigationTarget Parent {
             get { return _parent; }
             protected set { _parent = value; }
+        }
+
+        public NavigationMenu Menu {
+            get { return _menu; }
+            set { _menu = value; }
         }
 
         public NavigationTarget() { }
@@ -70,8 +74,6 @@ namespace ns.GUI.WPF {
             return result;
         }
 
-        public virtual void CallAction() {
-
-        }
+        public virtual void CallAction() { }
     }
 }

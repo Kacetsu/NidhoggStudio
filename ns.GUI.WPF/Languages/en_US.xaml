@@ -13,6 +13,7 @@
     <system:String x:Key="Start">Start</system:String>
     <system:String x:Key="Loop">Loop</system:String>
     <system:String x:Key="Remove">Remove</system:String>
+    <system:String x:Key="Project_XML">Project XML</system:String>
     
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Close</system:String>

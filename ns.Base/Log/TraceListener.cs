@@ -13,11 +13,14 @@ using ns.Base.Event;
 namespace ns.Base.Log {
     public class TraceListener : TextWriterTraceListener {
 
+        private const uint MAX_BUFFERED_LOGENTRIES = 100;
+
         private string _directory;
         private string _logFile;
         private DateTime _logFileDate;
         private List<string> _categoriesToLog = new List<string>();
         private XmlWriter _xmlWriter = null;
+        private List<LogData> _logEntries = new List<LogData>();
 
         /// <summary>
         /// Gets the log file date.
@@ -25,7 +28,13 @@ namespace ns.Base.Log {
         /// <value>
         /// The log file date.
         /// </value>
-        public DateTime LogFileDate { get { return _logFileDate; } }
+        public DateTime LogFileDate {
+            get { return _logFileDate; }
+        }
+
+        public List<LogData> LogEntries {
+            get { return _logEntries; }
+        }
 
         public delegate void TraceListenerEvent(Object sender, TraceListenerEventArgs e);
         public event TraceListenerEvent traceListenerEvent = delegate { };
@@ -141,6 +150,10 @@ namespace ns.Base.Log {
                 lock (_categoriesToLog) {
 
                     string timestamp = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff");
+
+                    if (LogEntries.Count > MAX_BUFFERED_LOGENTRIES)
+                        LogEntries.RemoveAt(0);
+                    LogEntries.Add(new LogData(timestamp, message, category));
 
                     traceListenerEvent(this, new TraceListenerEventArgs(timestamp, message, category));
 

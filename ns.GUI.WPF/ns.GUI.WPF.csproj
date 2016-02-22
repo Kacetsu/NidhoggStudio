@@ -88,6 +88,9 @@
     <Compile Include="Controls\HistogramControl.xaml.cs">
       <DependentUpon>HistogramControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LogContainer.xaml.cs">
+      <DependentUpon>LogContainer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NavigationMenu.xaml.cs">
       <DependentUpon>NavigationMenu.xaml</DependentUpon>
     </Compile>
@@ -202,6 +205,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\HistogramControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LogContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

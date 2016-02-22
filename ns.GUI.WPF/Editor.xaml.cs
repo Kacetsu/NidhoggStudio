@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
@@ -41,9 +40,9 @@ namespace ns.GUI.WPF {
             LoopExecutionToggleButton.DataContext = CoreSystem.Processor;
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
-            _projectExplorer = this.ProjectExplorer;
+            _projectExplorer = ProjectExplorer;
             _projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
-            this.ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
+            ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
         }
 
         private void OnPropertyChanged(string name) {

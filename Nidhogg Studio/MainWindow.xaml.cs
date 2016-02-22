@@ -1,20 +1,10 @@
 ﻿using ns.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ns.GUI.WPF;
-using System.Windows.Media.Animation;
 
 namespace Nidhogg_Studio {
     /// <summary>
@@ -26,8 +16,8 @@ namespace Nidhogg_Studio {
 
         public MainWindow() {
             InitializeComponent();
-            this.Loaded += HandleLoaded;
-            this.Closing += HandleClosing;
+            Loaded += HandleLoaded;
+            Closing += HandleClosing;
 
             _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
 
@@ -39,7 +29,7 @@ namespace Nidhogg_Studio {
         }
 
         private void CreateNavigation() {
-            this.Navigation.PropertyChanged += Navigation_PropertyChanged;
+            Navigation.PropertyChanged += Navigation_PropertyChanged;
             _mainNavigationTargtes = new List<NavigationTarget>();
 
             BitmapImage editorLogo = new BitmapImage();
@@ -72,23 +62,25 @@ namespace Nidhogg_Studio {
             _mainNavigationTargtes.Add(statisticTarget);
             _mainNavigationTargtes.Add(logTarget);
 
-            this.Navigation.Load(_mainNavigationTargtes);
+            Navigation.Load(_mainNavigationTargtes);
 
             // Set default page
-            this.Navigation.PageName = "Editor";
+            Navigation.PageName = "Editor";
         }
 
         private void Navigation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals("PageName")) {
-                this.ContentGird.Children.Clear();
-                string pageName = this.Navigation.PageName;
+                ContentGird.Children.Clear();
+                string pageName = Navigation.PageName;
                 switch (pageName) {
                     case "Editor":
-                    this.ContentGird.Children.Add(new Editor());
+                    ContentGird.Children.Add(new Editor());
                     break;
                     case "Monitor":
                     case "Statistic":
+                    break;
                     case "Log":
+                    ContentGird.Children.Add(new LogView());
                     break;
                     default:
                     throw new NotSupportedException(pageName + " is not supported!");
@@ -98,7 +90,7 @@ namespace Nidhogg_Studio {
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
             Version version = Assembly.GetEntryAssembly().GetName().Version;
-            this.Title = this.Title + " (" + version.ToString() + ")";
+            Title = Title + " (" + version.ToString() + ")";
             CreateNavigation();
         }
 

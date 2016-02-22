@@ -12,6 +12,7 @@
     <system:String x:Key="Histogram">Histogramm</system:String>
     <system:String x:Key="Loop">Schleife</system:String>
     <system:String x:Key="Remove">Entfernen</system:String>
+    <system:String x:Key="Project_XML">Projekt XML</system:String>
     
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Schließen</system:String>

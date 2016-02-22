@@ -77,6 +77,9 @@
     <!-- Results View -->
     <SolidColorBrush x:Key="ResultsHeaderBackgroundBrush" Color="#FFB85932" />
 
+    <!-- Log Project XML -->
+    <SolidColorBrush x:Key="ProjectXMLHeaderBackgroundBrush" Color="#FF96AA39" />
+    
     <!-- Foreground -->
     <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />

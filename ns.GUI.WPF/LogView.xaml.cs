@@ -81,6 +81,10 @@ namespace ns.GUI.WPF {
             ProjectGrid.Width = 0;
             LogHeaderGrid.Height = 0;
             Loaded += LogView_Loaded;
+            LogContainer dummyContainer = new LogContainer("", "", LogCategory.Info);
+            InfoToggleBorder.DataContext = dummyContainer;
+            WarningToggleBorder.DataContext = dummyContainer;
+            ErrorToggleBorder.DataContext = dummyContainer;
         }
 
         private void OnPropertyChanged(string name) {

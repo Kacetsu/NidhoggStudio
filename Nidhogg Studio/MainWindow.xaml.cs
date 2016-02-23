@@ -42,10 +42,10 @@ namespace Nidhogg_Studio {
             monitorLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Monitor.png");
             monitorLogo.EndInit();
 
-            BitmapImage statictisLogo = new BitmapImage();
-            statictisLogo.BeginInit();
-            statictisLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Statistics.png");
-            statictisLogo.EndInit();
+            BitmapImage statisticsLogo = new BitmapImage();
+            statisticsLogo.BeginInit();
+            statisticsLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Statistics.png");
+            statisticsLogo.EndInit();
 
             BitmapImage logLogo = new BitmapImage();
             logLogo.BeginInit();
@@ -54,7 +54,9 @@ namespace Nidhogg_Studio {
 
             EditorNavigationTarget projectTarget = new EditorNavigationTarget("Editor", editorLogo);
             MonitorNavigationTarget monitorTarget = new MonitorNavigationTarget("Monitor", monitorLogo);
-            StatisticNavigationTarget statisticTarget = new StatisticNavigationTarget("Statistics", statictisLogo);
+            monitorTarget.IsEnabled = false;
+            StatisticNavigationTarget statisticTarget = new StatisticNavigationTarget("Statistics", statisticsLogo);
+            statisticTarget.IsEnabled = false;
             LogNavigationTarget logTarget = new LogNavigationTarget("Log", logLogo);
             
             _mainNavigationTargtes.Add(projectTarget);

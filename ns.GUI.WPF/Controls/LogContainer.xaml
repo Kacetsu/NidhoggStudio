@@ -21,6 +21,6 @@
             </Border>
             <TextBox Grid.Column="1" Text="{Binding Path=Message,Mode=OneWay,FallbackValue=[Message]}" IsReadOnly="True" Style="{DynamicResource LogTextBox}" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold" TextWrapping="Wrap" Margin="4,0,0,0" />
         </Grid>
-        <Grid Grid.Row="1" Background="{DynamicResource SecondaryBackgroundBrush}" />
+        <Grid Grid.Row="1" Background="{Binding Path=LogBrush,Mode=OneWay}" />
     </Grid>
 </UserControl>

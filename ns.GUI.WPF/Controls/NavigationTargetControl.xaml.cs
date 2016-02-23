@@ -19,6 +19,13 @@ namespace ns.GUI.WPF.Controls {
             get { return _icon; }
         }
 
+        public bool IsTargetEnabled {
+            get {
+                if (_target == null) return false;
+                else return _target.IsEnabled;
+            }
+        }
+
         public NavigationTargetControl() {
             InitializeComponent();
         }
@@ -32,7 +39,8 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
-            _target.CallAction();
+            if(_target.IsEnabled)
+                _target.CallAction();
         }
     }
 }

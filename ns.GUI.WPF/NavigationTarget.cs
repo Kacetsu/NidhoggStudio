@@ -12,6 +12,7 @@ namespace ns.GUI.WPF {
         private NavigationTarget _parent;
         private BitmapImage _icon;
         private NavigationMenu _menu;
+        private bool _isEnabled = true;
 
         public string Name {
             get { return _name; }
@@ -33,6 +34,16 @@ namespace ns.GUI.WPF {
         public NavigationMenu Menu {
             get { return _menu; }
             set { _menu = value; }
+        }
+
+        public bool IsEnabled {
+            get { return _isEnabled; }
+            set {
+                if(_isEnabled != value) {
+                    _isEnabled = value;
+                    OnPropertyChanged("IsEnabled");
+                }
+            }
         }
 
         public NavigationTarget() { }

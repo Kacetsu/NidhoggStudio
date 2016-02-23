@@ -18,19 +18,28 @@
             </Grid.RowDefinitions>
             <Grid Name="LogHeaderGrid" Height="60">
                 <StackPanel Orientation="Horizontal" Margin="0,10">
-                    <ToggleButton Width="100" Margin="10,0" IsChecked="{Binding Path=IsInfoVisible,Mode=TwoWay}">
+                    <ToggleButton Width="120" Margin="10,0" IsChecked="{Binding Path=IsInfoVisible,Mode=TwoWay}">
                         <ToggleButton.Content>
-                            <TextBlock Text="Info" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            <StackPanel Orientation="Horizontal">
+                                <Border Name="InfoToggleBorder" Width="32" Margin="4,4,0,4" Background="{Binding Path=InfoBrush,FallbackValue=Gray}" CornerRadius="5" Opacity="0.8" />
+                                <TextBlock Text="Info" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            </StackPanel>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton Width="100" Margin="10,0" IsChecked="{Binding Path=IsWarningVisible,Mode=TwoWay}">
+                    <ToggleButton Width="120" Margin="10,0" IsChecked="{Binding Path=IsWarningVisible,Mode=TwoWay}">
                         <ToggleButton.Content>
-                            <TextBlock Text="Warning" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            <StackPanel Orientation="Horizontal">
+                                <Border Name="WarningToggleBorder" Width="32" Margin="4,4,0,4" Background="{Binding Path=WarningBrush,FallbackValue=Gray}" CornerRadius="5" Opacity="0.8" />
+                                <TextBlock Text="Warning" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            </StackPanel>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton Width="100" Margin="10,0" IsChecked="{Binding Path=IsErrorVisible,Mode=TwoWay}">
+                    <ToggleButton Width="120" Margin="10,0" IsChecked="{Binding Path=IsErrorVisible,Mode=TwoWay}">
                         <ToggleButton.Content>
-                            <TextBlock Text="Error" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            <StackPanel Orientation="Horizontal">
+                                <Border Name="ErrorToggleBorder" Width="32" Margin="4,4,0,4" Background="{Binding Path=ErrorBrush,FallbackValue=Gray}" CornerRadius="5" Opacity="0.8" />
+                                <TextBlock Text="Error" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                            </StackPanel>
                         </ToggleButton.Content>
                     </ToggleButton>
                 </StackPanel>

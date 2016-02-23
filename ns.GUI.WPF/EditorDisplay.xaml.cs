@@ -2,21 +2,14 @@
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core;
-using System;
+using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
     /// <summary>
@@ -26,6 +19,10 @@ namespace ns.GUI.WPF {
         private GuiManager _guiManager = null;
         private ImageProperty _lastImageProperty = null;
         private BitmapSource _bitmap = null;
+        private List<OverlayRectangle> _rectangles;
+        private double _imageWidth = 0;
+        private double _imageHeight = 0;
+        private double _scalingFactor = 1;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -39,10 +36,55 @@ namespace ns.GUI.WPF {
             }
         }
 
+        public double ImageWidth {
+            get { return _imageWidth; }
+            set {
+                if(_imageWidth != value) {
+                    _imageWidth = value;
+                    OnPropertyChanged("ImageWidth");
+                }
+            }
+        }
+
+        public double ImageHeight {
+            get { return _imageHeight; }
+            set {
+                if (_imageHeight != value) {
+                    _imageHeight = value;
+                    OnPropertyChanged("ImageHeight");
+                }
+            }
+        }
+
+        public double ScalingFactor {
+            get { return _scalingFactor; }
+            set {
+                if(_scalingFactor != value) {
+                    _scalingFactor = value;
+                    OnPropertyChanged("ScalingFactor");
+                }
+            }
+        }
+
         public EditorDisplay() {
             InitializeComponent();
             ImageDisplay.DataContext = this;
+            ImageCanvas.DataContext = this;
             Loaded += EditorDisplay_Loaded;
+        }
+
+        private void AddOverlayProperties(Tool parent) {
+            if (parent == null) return;
+            if (_rectangles == null) _rectangles = new List<OverlayRectangle>();
+            
+
+            foreach(Property child in parent.Childs.Where(c => c is Property)) {
+                if(!child.IsOutput && child is RectangleProperty) {
+                    OverlayRectangle overlay = new OverlayRectangle(child as RectangleProperty, ImageCanvas);
+                    _rectangles.Add(overlay);
+                    ImageCanvas.Children.Add(overlay.Rectangle);
+                }
+            }
         }
 
         private void EditorDisplay_Loaded(object sender, RoutedEventArgs e) {
@@ -54,6 +96,11 @@ namespace ns.GUI.WPF {
 
         private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
             if (e.SelectedNode == null) return;
+
+            if (_rectangles != null) _rectangles.Clear();
+            Image oldImageDisplay = ImageDisplay;
+            ImageCanvas.Children.Clear();
+            ImageCanvas.Children.Add(oldImageDisplay);
 
             if(_lastImageProperty != null) {
                 _lastImageProperty.PropertyChanged -= _lastImageProperty_PropertyChanged;
@@ -87,6 +134,7 @@ namespace ns.GUI.WPF {
 
             if(_lastImageProperty != null) {
                 _lastImageProperty.PropertyChanged += _lastImageProperty_PropertyChanged;
+                AddOverlayProperties(e.SelectedNode as Tool);
             }
         }
 
@@ -98,6 +146,8 @@ namespace ns.GUI.WPF {
                 BitmapSource tmpBitmap = ImageContainerToBitmapSource(container.Data, container.Width, container.Height, container.Stride, container.BytesPerPixel);
                 tmpBitmap.Freeze();
                 Bitmap = tmpBitmap;
+                ImageWidth = Bitmap.Width;
+                ImageHeight = Bitmap.Height;
             }
         }
 

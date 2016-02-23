@@ -10,6 +10,13 @@
         <Grid.Background>
             <ImageBrush ImageSource="/ns.GUI.WPF;component/Images/Blank_Background.png" Stretch="None" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,16,16"/>
         </Grid.Background>
-        <Image Name="ImageDisplay" Source="{Binding Path=Bitmap,Mode=OneWay}" />
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <Canvas Name="ImageCanvas" VerticalAlignment="Center" HorizontalAlignment="Center" Width="{Binding Path=ImageWidth,Mode=OneWay}" Height="{Binding Path=ImageHeight,Mode=OneWay}">
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding Path=ScalingFactor,Mode=OneWay,FallbackValue=1}" ScaleY="{Binding Path=ScalingFactor,Mode=OneWay,FallbackValue=1}" />
+                </Canvas.LayoutTransform>
+                <Image Name="ImageDisplay" Source="{Binding Path=Bitmap,Mode=OneWay}" Stretch="None" Width="{Binding Path=ImageWidth,Mode=OneWay}" Height="{Binding Path=ImageHeight,Mode=OneWay}"/>
+            </Canvas>
+        </ScrollViewer>
     </Grid>
 </UserControl>

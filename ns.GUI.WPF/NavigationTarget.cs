@@ -1,5 +1,4 @@
 ﻿using ns.Base;
-using ns.Core;
 using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;

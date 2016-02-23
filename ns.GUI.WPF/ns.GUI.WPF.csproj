@@ -143,9 +143,6 @@
     <Compile Include="Controls\NodeTreeItem.cs" />
     <Compile Include="Controls\OperationDisplayTabItem.cs" />
     <Compile Include="Controls\OperationTreeItem.cs" />
-    <Compile Include="Controls\ProjectExplorer2.xaml.cs">
-      <DependentUpon>ProjectExplorer2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PropertyEditor2.xaml.cs">
       <DependentUpon>PropertyEditor2.xaml</DependentUpon>
     </Compile>
@@ -159,9 +156,6 @@
       <DependentUpon>NumberPropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Property\PropertyControl.cs" />
-    <Compile Include="Controls\ResultsView2.xaml.cs">
-      <DependentUpon>ResultsView2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
@@ -170,9 +164,6 @@
     </Compile>
     <Compile Include="DisplayArea.xaml.cs">
       <DependentUpon>DisplayArea.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Editor2.xaml.cs">
-      <DependentUpon>Editor2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ToolTreeItem.cs" />
     <Compile Include="GuiManager.cs" />
@@ -240,10 +231,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ProjectExplorer2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\PropertyEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -276,10 +263,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ResultsView2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\ResultViewContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -301,10 +284,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Editor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Editor2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

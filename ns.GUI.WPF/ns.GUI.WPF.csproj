@@ -143,9 +143,6 @@
     <Compile Include="Controls\NodeTreeItem.cs" />
     <Compile Include="Controls\OperationDisplayTabItem.cs" />
     <Compile Include="Controls\OperationTreeItem.cs" />
-    <Compile Include="Controls\PropertyEditor2.xaml.cs">
-      <DependentUpon>PropertyEditor2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\Property\ComboBoxPropertyControl.xaml.cs">
       <DependentUpon>ComboBoxPropertyControl.xaml</DependentUpon>
     </Compile>
@@ -232,10 +229,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PropertyEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\PropertyEditor2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

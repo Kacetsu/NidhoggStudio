@@ -2,11 +2,8 @@
 using ns.Base.Event;
 using ns.Base.Plugins;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
@@ -21,7 +18,10 @@ namespace ns.GUI.WPF.Controls {
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         public string DisplayName {
-            get { return _tool.DisplayName; }
+            get { return _tool.Name; }
+            protected set {
+                OnPropertyChanged("DisplayName");
+            }
         }
 
         public Tool Tool {
@@ -31,7 +31,13 @@ namespace ns.GUI.WPF.Controls {
         public ToolNodeControl(Tool tool) {
             InitializeComponent();
             _tool = tool;
+            _tool.PropertyChanged += _tool_PropertyChanged;
             DataContext = this;
+        }
+
+        private void _tool_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Name")
+                DisplayName = _tool.Name;
         }
 
         private void OnConfigNode(Node node) {

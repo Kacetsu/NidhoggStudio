@@ -64,10 +64,15 @@ namespace ns.Base.Plugins {
         public string DisplayName {
             get {
                 if (string.IsNullOrEmpty(_displayName))
-                    _displayName = this.Name;
+                    _displayName = this.GetType().Name;
                 return _displayName; 
             }
-            set { _displayName = value; }
+            set {
+                if (!_displayName.Equals(value)) {
+                    _displayName = value;
+                    OnPropertyChanged("DisplayName");
+                }
+            }
         }
 
         /// <summary>

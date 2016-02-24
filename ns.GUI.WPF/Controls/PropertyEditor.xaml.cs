@@ -21,9 +21,17 @@ namespace ns.GUI.WPF.Controls {
             get {
                 if(_node is Plugin) {
                     Plugin plugin = _node as Plugin;
-                    return plugin.DisplayName;
+                    return plugin.Name;
                 } else {
                     return "Properties";
+                }
+            }
+            set {
+                if (_node is Plugin) {
+                    Plugin plugin = _node as Plugin;
+                    if (!plugin.Name.Equals(value)) {
+                        plugin.Name = value;
+                    }
                 }
             }
         }

@@ -1,39 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F62CCCB0-97E5-480F-8096-0448875179A8}</ProjectGuid>
+    <ProjectGuid>{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ns.Core</RootNamespace>
-    <AssemblyName>ns.Core</AssemblyName>
+    <RootNamespace>ns.ProjectBox</RootNamespace>
+    <AssemblyName>ns.ProjectBox</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -55,37 +38,18 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\BaseConfiguration.cs" />
-    <Compile Include="Configuration\LogConfiguration.cs" />
-    <Compile Include="Configuration\ProjectConfiguration.cs" />
-    <Compile Include="DataStorage.cs" />
-    <Compile Include="ExecutionContext.cs" />
-    <Compile Include="Manager\DataStorageManager.cs" />
-    <Compile Include="Manager\DisplayManager.cs" />
-    <Compile Include="Manager\ProjectManager.cs" />
-    <Compile Include="CoreSystem.cs" />
-    <Compile Include="Manager\DeviceManager.cs" />
-    <Compile Include="Manager\ExtensionManager.cs" />
-    <Compile Include="Manager\ToolManager.cs" />
-    <Compile Include="Manager\PluginManager.cs" />
-    <Compile Include="AsyncNanoProcessor.cs" />
-    <Compile Include="Processor.cs" />
+    <Compile Include="ProjectBoxManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Manager\PropertyManager.cs" />
-    <Compile Include="Shell.cs" />
-    <Compile Include="NanoProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">
       <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
       <Name>ns.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ns.ProjectBox\ns.ProjectBox.csproj">
-      <Project>{865c476f-6b9e-42fc-89a3-de3e2e94fdd4}</Project>
-      <Name>ns.ProjectBox</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

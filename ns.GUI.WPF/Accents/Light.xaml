@@ -6,7 +6,9 @@
     <SolidColorBrush x:Key="Foreground" Color="Black" />
     <SolidColorBrush x:Key="ControlForeground" Color="#FF858E96" />
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF43484C" />
-    <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF43484C" />
+    <SolidColorBrush x:Key="ControlHoverBackgroundBrush" Color="#FF383D42" />
+    <SolidColorBrush x:Key="ControlPressedBackgroundBrush" Color="#FF303438" />
+    <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF50565B" />
     <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76"/>
     <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76"/>
     <SolidColorBrush x:Key="NormalBrush" Color="White" />
@@ -79,7 +81,10 @@
 
     <!-- Log Project XML -->
     <SolidColorBrush x:Key="ProjectXMLHeaderBackgroundBrush" Color="#FF96AA39" />
-    
+
+    <!-- Project View -->
+    <SolidColorBrush x:Key="ProjectHeaderBackgroundBrush" Color="#FF96AA39" />
+
     <!-- Foreground -->
     <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />

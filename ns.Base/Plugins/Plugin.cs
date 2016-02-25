@@ -1,5 +1,4 @@
-﻿using ns.Base.Event;
-using ns.Base.Log;
+﻿using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
 using System.IO;

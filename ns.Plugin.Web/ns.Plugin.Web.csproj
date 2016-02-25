@@ -120,10 +120,12 @@
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">
       <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
       <Name>ns.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ns.Core\ns.Core.csproj">
       <Project>{f62cccb0-97e5-480f-8096-0448875179a8}</Project>
       <Name>ns.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

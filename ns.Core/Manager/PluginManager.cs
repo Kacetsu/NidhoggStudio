@@ -4,10 +4,7 @@ using ns.Base.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using ns.Base.Manager;
 using ns.Base;
 
@@ -30,7 +27,7 @@ namespace ns.Core.Manager {
         public string PluginPath {
             get {
                 if (IsWebservice)
-                    return Environment.GetEnvironmentVariable("NEUROSTUDIO_BIN") + Path.DirectorySeparatorChar + "Plugins";
+                    return Environment.GetEnvironmentVariable("NIDHOGGSTUDIO_BIN") + Path.DirectorySeparatorChar + "Plugins";
                 else
                     return _pluginPath; 
             }

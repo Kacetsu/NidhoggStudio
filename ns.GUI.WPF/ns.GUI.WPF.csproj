@@ -101,6 +101,9 @@
       <DependentUpon>OperationNodeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\OverlayRectangle.cs" />
+    <Compile Include="Controls\ProjectContainer.xaml.cs">
+      <DependentUpon>ProjectContainer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProjectExplorer.xaml.cs">
       <DependentUpon>ProjectExplorer.xaml</DependentUpon>
     </Compile>
@@ -109,6 +112,9 @@
     </Compile>
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ConfirmButton .xaml.cs">
+      <DependentUpon>ConfirmButton .xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RemoveButton.xaml.cs">
       <DependentUpon>RemoveButton.xaml</DependentUpon>
@@ -170,6 +176,9 @@
     </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="NavigationTarget.cs" />
+    <Compile Include="ProjectView.xaml.cs">
+      <DependentUpon>ProjectView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Windows\AddNewElementDialog.xaml.cs">
       <DependentUpon>AddNewElementDialog.xaml</DependentUpon>
@@ -224,6 +233,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ProjectContainer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ProjectExplorer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -247,6 +260,10 @@
     <Page Include="Controls\Property\RectanglePropertyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ConfirmButton .xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\RemoveButton.xaml">
       <SubType>Designer</SubType>
@@ -293,6 +310,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProjectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -470,6 +491,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Statistics.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Project.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -52,17 +52,24 @@ namespace Nidhogg_Studio {
             logLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Log.png");
             logLogo.EndInit();
 
-            EditorNavigationTarget projectTarget = new EditorNavigationTarget("Editor", editorLogo);
+            BitmapImage projectLogo = new BitmapImage();
+            projectLogo.BeginInit();
+            projectLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Project.png");
+            projectLogo.EndInit();
+
+            EditorNavigationTarget editorTarget = new EditorNavigationTarget("Editor", editorLogo);
             MonitorNavigationTarget monitorTarget = new MonitorNavigationTarget("Monitor", monitorLogo);
             monitorTarget.IsEnabled = false;
             StatisticNavigationTarget statisticTarget = new StatisticNavigationTarget("Statistics", statisticsLogo);
             statisticTarget.IsEnabled = false;
             LogNavigationTarget logTarget = new LogNavigationTarget("Log", logLogo);
-            
-            _mainNavigationTargtes.Add(projectTarget);
+            ProjectNavigationTarget projectTarget = new ProjectNavigationTarget("Project", projectLogo);
+
+            _mainNavigationTargtes.Add(editorTarget);
             _mainNavigationTargtes.Add(monitorTarget);
             _mainNavigationTargtes.Add(statisticTarget);
             _mainNavigationTargtes.Add(logTarget);
+            _mainNavigationTargtes.Add(projectTarget);
 
             Navigation.Load(_mainNavigationTargtes);
 
@@ -83,6 +90,9 @@ namespace Nidhogg_Studio {
                     break;
                     case "Log":
                     ContentGird.Children.Add(new LogView());
+                    break;
+                    case "Project":
+                    ContentGird.Children.Add(new ProjectView());
                     break;
                     default:
                     throw new NotSupportedException(pageName + " is not supported!");

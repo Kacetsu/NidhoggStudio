@@ -12,7 +12,14 @@
     <system:String x:Key="Histogram">Histogramm</system:String>
     <system:String x:Key="Loop">Schleife</system:String>
     <system:String x:Key="Remove">Entfernen</system:String>
+    <system:String x:Key="Save">Speichern</system:String>
+    <system:String x:Key="Open">Öffnen</system:String>
+    <system:String x:Key="New">Neu</system:String>
+    <system:String x:Key="Duplicate">Duplizieren</system:String>
+    <system:String x:Key="Project">Projekt</system:String>
     <system:String x:Key="Project_XML">Projekt XML</system:String>
+    <system:String x:Key="ID">ID</system:String>
+    <system:String x:Key="Collection">Sammlung</system:String>
     
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Schließen</system:String>

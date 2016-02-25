@@ -2,6 +2,7 @@
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Core.Manager;
+using ns.ProjectBox;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -135,12 +136,14 @@ namespace ns.Core {
                 PluginManager pluginManager = new PluginManager();
                 DisplayManager displayManager = new DisplayManager();
                 DataStorageManager dataStorageManager = new DataStorageManager();
+                ProjectBoxManager projectBoxManager = new ProjectBoxManager();
 
                 _managers.Add(projectManager);
                 _managers.Add(propertyManager);
                 _managers.Add(pluginManager);
                 _managers.Add(displayManager);
                 _managers.Add(dataStorageManager);
+                _managers.Add(projectBoxManager);
 
                 AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
@@ -150,8 +153,11 @@ namespace ns.Core {
                 if (propertyManager.Initialize() == false)
                     throw new Exception("Could not initialize PropertyManager!");
 
+                if(projectBoxManager.Initialize() == false)
+                    throw new Exception("Could not initialize ProjectBoxManager!");
+
                 if (projectManager.Initialize() == false)
-                    throw new Exception("Could not initialize ConfigurationManager!");
+                    throw new Exception("Could not initialize ProjectManager!");
 
                 _traceListener.SetLoggingCategoties(projectManager.Configuration.LogConfiguration.Categories);
 

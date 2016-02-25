@@ -41,4 +41,14 @@ namespace Nidhogg_Studio {
             Menu.PageName = "Log";
         }
     }
+
+    public class ProjectNavigationTarget : NavigationTarget {
+        public ProjectNavigationTarget(string name) : base(name) { }
+        public ProjectNavigationTarget(string name, BitmapImage icon) : base(name, icon) { }
+
+        public override void CallAction() {
+            base.CallAction();
+            Menu.PageName = "Project";
+        }
+    }
 }

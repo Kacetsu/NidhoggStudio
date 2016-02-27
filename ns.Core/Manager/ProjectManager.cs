@@ -9,7 +9,7 @@ using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using System.IO;
+using ns.Core.Manager.ProjectBox;
 
 namespace ns.Core.Manager {
     public class ProjectManager : BaseManager {
@@ -238,6 +238,10 @@ namespace ns.Core.Manager {
             }
         }
 
+        public ProjectManager LoadManager(string path) {
+            return base.Load(path) as ProjectManager;
+        }
+
         /// <summary>
         /// Loads a new instance of ProjectManager.
         /// Will also override the old values of the currently loaded ProjectManager.
@@ -248,7 +252,7 @@ namespace ns.Core.Manager {
             if (this.Loading != null)
                 this.Loading();
 
-            ProjectManager manager = base.Load(path) as ProjectManager;
+            ProjectManager manager = LoadManager(path);
             this.Configuration.Name = manager.Configuration.Name;
             
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
@@ -326,8 +330,17 @@ namespace ns.Core.Manager {
             return false;
         }
 
-        public bool CreateEmptyProject() {
-            Load(AssemblyPath + Path.DirectorySeparatorChar + DefaultProjectFile);
+        public bool LoadLastUsedProject() { 
+            ProjectBoxManager projectBoxManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectBoxManager")) as ProjectBoxManager;
+            if (projectBoxManager == null) return false;
+            if (Load(projectBoxManager.Configuration.LastUsedProjectPath) == null) {
+                Trace.WriteLine("ProjectManager could not load last used project!", LogCategory.Error);
+                if (Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null) {
+                    Trace.WriteLine("ProjectManager could not load default project!", LogCategory.Error);
+                    return false;
+                }
+            }
+
             return true;
         }
 

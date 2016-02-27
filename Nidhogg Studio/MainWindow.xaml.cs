@@ -37,6 +37,11 @@ namespace Nidhogg_Studio {
             editorLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Config.png");
             editorLogo.EndInit();
 
+            BitmapImage projectLogo = new BitmapImage();
+            projectLogo.BeginInit();
+            projectLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Project.png");
+            projectLogo.EndInit();
+
             BitmapImage monitorLogo = new BitmapImage();
             monitorLogo.BeginInit();
             monitorLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Monitor.png");
@@ -52,24 +57,19 @@ namespace Nidhogg_Studio {
             logLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Log.png");
             logLogo.EndInit();
 
-            BitmapImage projectLogo = new BitmapImage();
-            projectLogo.BeginInit();
-            projectLogo.UriSource = new Uri("pack://application:,,,/ns.GUI.WPF;component/Images/Project.png");
-            projectLogo.EndInit();
-
             EditorNavigationTarget editorTarget = new EditorNavigationTarget("Editor", editorLogo);
+            ProjectNavigationTarget projectTarget = new ProjectNavigationTarget("Project", projectLogo);
             MonitorNavigationTarget monitorTarget = new MonitorNavigationTarget("Monitor", monitorLogo);
             monitorTarget.IsEnabled = false;
             StatisticNavigationTarget statisticTarget = new StatisticNavigationTarget("Statistics", statisticsLogo);
             statisticTarget.IsEnabled = false;
             LogNavigationTarget logTarget = new LogNavigationTarget("Log", logLogo);
-            ProjectNavigationTarget projectTarget = new ProjectNavigationTarget("Project", projectLogo);
 
             _mainNavigationTargtes.Add(editorTarget);
+            _mainNavigationTargtes.Add(projectTarget);
             _mainNavigationTargtes.Add(monitorTarget);
             _mainNavigationTargtes.Add(statisticTarget);
             _mainNavigationTargtes.Add(logTarget);
-            _mainNavigationTargtes.Add(projectTarget);
 
             Navigation.Load(_mainNavigationTargtes);
 

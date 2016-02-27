@@ -60,11 +60,14 @@
   <ItemGroup>
     <Compile Include="Configuration\BaseConfiguration.cs" />
     <Compile Include="Configuration\LogConfiguration.cs" />
+    <Compile Include="Configuration\ProjectBoxConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
     <Compile Include="DataStorage.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Manager\DataStorageManager.cs" />
     <Compile Include="Manager\DisplayManager.cs" />
+    <Compile Include="Manager\ProjectBox\ProjectBoxManager.cs" />
+    <Compile Include="Manager\ProjectBox\ProjectInfoContainer.cs" />
     <Compile Include="Manager\ProjectManager.cs" />
     <Compile Include="CoreSystem.cs" />
     <Compile Include="Manager\DeviceManager.cs" />
@@ -82,10 +85,6 @@
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">
       <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
       <Name>ns.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ns.ProjectBox\ns.ProjectBox.csproj">
-      <Project>{865c476f-6b9e-42fc-89a3-de3e2e94fdd4}</Project>
-      <Name>ns.ProjectBox</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -97,7 +97,7 @@ namespace ns.Base.Log {
 
             //delete all exception images older than keepdate (filename: Exception_yyyymmdd_hhmmss_*.png)
             Regex regexImages = new Regex("^Exception_\\d{8}_\\d{6}.*\\.(bmp|png)$");
-            foreach (FileInfo file in dir.GetFiles("Exception*")) {
+            foreach (System.IO.FileInfo file in dir.GetFiles("Exception*")) {
                 if (regexImages.IsMatch(file.Name) == true) {
                     //delete old files
                     int year = Convert.ToInt32(file.Name.Substring(10, 4));
@@ -120,7 +120,7 @@ namespace ns.Base.Log {
 
             //read directory and search for log fragments
             Regex regex = new Regex("^\\d{8}_\\d{6}_logFragments\\.xml$");
-            foreach (FileInfo file in dir.GetFiles("*_logFragments.xml")) {
+            foreach (System.IO.FileInfo file in dir.GetFiles("*_logFragments.xml")) {
                 if (regex.IsMatch(file.Name) == true) {
                     //delete old logfiles
                     int year = Convert.ToInt32(file.Name.Substring(0, 4));

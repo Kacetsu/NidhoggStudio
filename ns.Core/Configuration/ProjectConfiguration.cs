@@ -34,7 +34,7 @@ namespace ns.Core.Configuration {
                 _logConfiguration.Categories.Add(LogCategory.Error.GetDescription());
             }
 
-            if (_projectManager.CreateEmptyProject() == false) {
+            if (_projectManager.LoadLastUsedProject() == false) {
                 _name = new StringProperty("Name", "Unnamed Project");
                 _operations = new List<Operation>();
                 _devices = new List<Device>();

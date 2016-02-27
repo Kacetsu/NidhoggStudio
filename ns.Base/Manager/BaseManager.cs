@@ -1,13 +1,10 @@
 ﻿using ns.Base.Event;
 using ns.Base.Log;
-using ns.Base.Plugins;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace ns.Base.Manager {
@@ -18,8 +15,8 @@ namespace ns.Base.Manager {
         public event PropertyChangedEventHandler PropertyChanged;
 
         private const string APPLICATION_NAME = "Nidhogg Studio";
-        private static string _assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        private static string _documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + "\\" + APPLICATION_NAME + "\\";
+        private static string _assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string _documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + Path.DirectorySeparatorChar + APPLICATION_NAME + Path.DirectorySeparatorChar;
 
         private List<Node> _nodes = new List<Node>();
 
@@ -189,7 +186,7 @@ namespace ns.Base.Manager {
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
                 }
                 MemoryStream memoryStream = new MemoryStream();
-                if ((result = this.Save(ref memoryStream)) == true) {
+                if ((result = Save(ref memoryStream)) == true) {
                     using (FileStream stream = new FileStream(path, FileMode.Create)) {
                         memoryStream.Position = 0;
                         memoryStream.CopyTo(stream);
@@ -239,11 +236,11 @@ namespace ns.Base.Manager {
             }
         }
 
-        public static bool Load() {
+        public virtual bool Load() {
             throw new NotImplementedException("[Load] must be implemented!");
         }
 
-        public static bool Save() {
+        public virtual bool Save() {
             throw new NotImplementedException("[Load] must be implemented!");
         }
 

@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ns.Plugin.WPF", "ns.Plugin.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ns.Plugin.Web", "ns.Plugin.Web\ns.Plugin.Web.csproj", "{6D2F1635-66DF-41EB-ABB1-BE4BA085B459}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ns.ProjectBox", "ns.ProjectBox\ns.ProjectBox.csproj", "{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,12 +101,6 @@ Global
 		{6D2F1635-66DF-41EB-ABB1-BE4BA085B459}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D2F1635-66DF-41EB-ABB1-BE4BA085B459}.Release|x64.ActiveCfg = Release|x64
 		{6D2F1635-66DF-41EB-ABB1-BE4BA085B459}.Release|x64.Build.0 = Release|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Debug|x64.ActiveCfg = Debug|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Debug|x64.Build.0 = Debug|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Release|Any CPU.ActiveCfg = Release|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Release|x64.ActiveCfg = Release|x64
-		{865C476F-6B9E-42FC-89A3-DE3E2E94FDD4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

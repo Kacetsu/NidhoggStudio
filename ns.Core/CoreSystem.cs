@@ -2,7 +2,7 @@
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Core.Manager;
-using ns.ProjectBox;
+using ns.Core.Manager.ProjectBox;
 using System;
 using System.Collections.Generic;
 using System.IO;

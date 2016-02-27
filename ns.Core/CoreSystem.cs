@@ -153,7 +153,7 @@ namespace ns.Core {
                 if (propertyManager.Initialize() == false)
                     throw new Exception("Could not initialize PropertyManager!");
 
-                if(projectBoxManager.Initialize() == false)
+                if (projectBoxManager.Initialize() == false)
                     throw new Exception("Could not initialize ProjectBoxManager!");
 
                 if (projectManager.Initialize() == false)
@@ -175,6 +175,10 @@ namespace ns.Core {
                 _processor = new Core.Processor();
                 _shell = new Core.Shell();
                 _shell.Initialize();
+
+                if (!projectManager.LoadLastUsedProject())
+                    throw new Exception("Could not load latest project!");
+
                 result = true;
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);

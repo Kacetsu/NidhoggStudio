@@ -52,49 +52,6 @@ namespace ns.GUI.WPF.Controls {
             DescriptionTextBlock.BeginAnimation(Rectangle.HeightProperty, animation);
         }
 
-        //private void AddTool() {
-        //    ListBox view = null;
-
-        //    if (this.AnyTabs.SelectedItem == this.MainToolsTab) {
-
-        //        TabItem selectedTab = this.ToolTabs.SelectedItem as TabItem;
-        //        view = selectedTab.Content as ListBox;
-
-        //        if (view != null) {
-        //            Tool tool = view.SelectedItem as Tool;
-
-        //            if (tool == null)
-        //                return;
-
-        //            if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Tool) {
-        //                _guiManager.SelectNode(_guiManager.SelectedNode.Parent);
-        //            }
-
-        //            if (_guiManager.SelectedNode == null) {
-        //                ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-        //                if (manager.Configuration.Operations.Count > 0)
-        //                    _guiManager.SelectNode(manager.Configuration.Operations[0]);
-        //            }
-
-        //            if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Operation) {
-        //                _lastAddedNode = tool.Clone() as Node;
-        //                _projectManager.Add(_lastAddedNode, _guiManager.SelectedNode);
-        //            }
-        //        }
-        //    } else if (this.AnyTabs.SelectedItem == this.MainOperationsTabs) {
-        //        view = this.ListViewAllOperations;
-
-        //        Operation operation = view.SelectedItem as Operation;
-
-        //        if (operation == null)
-        //            return;
-
-        //        _lastAddedNode = operation.Clone() as Operation;
-        //        _projectManager.Add(_lastAddedNode);
-        //        _guiManager.SelectNode(_lastAddedNode);
-        //    }
-        //}
-
         private void AddButton_Click(object sender, RoutedEventArgs e) {
             GuiManager guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;

@@ -94,13 +94,16 @@ namespace ns.Core.Manager.ProjectBox
         public bool SaveProject() {
             string path = _configuration.LastUsedProjectPath;
             bool wasDefault = false;
+            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
 
             if (path.Equals(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
+                if (projectManager.Load(path) == null)
+                    return false;
+
                 path = ProjectsDirectory + PROJECTFILE_NAME + "_" + DateTime.Now.ToFileTime().ToString() + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
                 wasDefault = true;
             }
-
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            
             if (projectManager.Save(path)) {
                 if (wasDefault) {
                     if (projectManager.Load(path) == null) {

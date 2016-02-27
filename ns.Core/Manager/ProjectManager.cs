@@ -249,11 +249,11 @@ namespace ns.Core.Manager {
         /// <param name="path">Path to the configuration file.</param>
         /// <returns>Returns the instance of the ProjectManager if successful, else null.</returns>
         public override object Load(string path) {
-            if (this.Loading != null)
-                this.Loading();
+            if (Loading != null)
+                Loading();
 
             ProjectManager manager = LoadManager(path);
-            this.Configuration.Name = manager.Configuration.Name;
+            Configuration.Name = manager.Configuration.Name;
             
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
             _deviceManager = CoreSystem.Managers.Find(m => m.Name.Contains("DeviceManager")) as DeviceManager;
@@ -262,8 +262,8 @@ namespace ns.Core.Manager {
 
             _displayManager.Clear();
 
-            
-            this.Configuration.Operations.Clear();
+            Configuration.Initialize();
+            Configuration.Operations.Clear();
             _propertyManager.Nodes.Clear();
 
             List<Node> configuratedDevices = new List<Node>();
@@ -288,8 +288,8 @@ namespace ns.Core.Manager {
             List<Device> devices = new List<Device>();
             foreach (Device d in configuratedDevices)
                 devices.Add(d);
-            
-            this.Configuration.Devices.AddRange(devices);
+
+            Configuration.Devices.AddRange(devices);
             _deviceManager.AddRange(configuratedDevices);
 
             foreach (Operation o in manager.Configuration.Operations) {
@@ -307,12 +307,12 @@ namespace ns.Core.Manager {
 
                 LoadToolChilds(o, operationClone);
 
-                this.Configuration.Operations.Add(operationClone);
+                Configuration.Operations.Add(operationClone);
                 _propertyManager.ConnectPropertiesByNode(operationClone);
             }
 
-            if (this.Loaded != null)
-                this.Loaded();
+            if (Loaded != null)
+                Loaded();
 
             FileName = path;
             HasSavedProject = true;

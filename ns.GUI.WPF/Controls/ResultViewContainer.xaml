@@ -28,10 +28,10 @@
             <TextBlock Text="{Binding Path=Value,FallbackValue=UNKNOWN}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
         </Border>
         <Border Grid.Column="3" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
-            <TextBox Name="MinTextBox" Text="{Binding Path=Min}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" BorderBrush="Transparent" />
+            <TextBox Name="MinTextBox" Text="{Binding Path=Tolerance.Min}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" BorderBrush="Transparent" />
         </Border>
         <Border Grid.Column="4" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource StandardBorderBrush}">
-            <TextBox Name="MaxTextBox" Text="{Binding Path=Max}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" BorderBrush="Transparent" />
+            <TextBox Name="MaxTextBox" Text="{Binding Path=Tolerance.Max}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" BorderBrush="Transparent" />
         </Border>
     </Grid>
 </UserControl>

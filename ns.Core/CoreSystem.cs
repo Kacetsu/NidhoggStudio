@@ -172,12 +172,15 @@ namespace ns.Core {
                 if (extensionManager.Initialize() == false)
                     throw new Exception("Could not initialize ExtensionManager!");
 
-                _processor = new Core.Processor();
-                _shell = new Core.Shell();
+                _processor = new Processor();
+                _shell = new Shell();
                 _shell.Initialize();
 
-                if (!projectManager.LoadLastUsedProject())
-                    throw new Exception("Could not load latest project!");
+                if (!projectManager.LoadLastUsedProject()) {
+                    Trace.WriteLine("Could not load latest project!", LogCategory.Error);
+                    if (projectBoxManager.Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null)
+                        throw new Exception("[Fatal error] Could not load default project!");
+                }
 
                 result = true;
             } catch (Exception ex) {

@@ -14,7 +14,7 @@ namespace ns.Core {
     /// <summary>
     /// Handles the use of all operations.
     /// </summary>
-    public class Processor {
+    public class Processor : NotifyObject {
 
         private ProjectManager _projectManager;
         private DataStorageManager _dataStorageManager;
@@ -38,6 +38,12 @@ namespace ns.Core {
         /// </value>
         public bool IsRunning {
             get { return _isRunning; }
+            protected set {
+                if(_isRunning != value) {
+                    _isRunning = value;
+                    OnPropertyChanged("IsRunning");
+                }
+            }
         }
 
         /// <summary>
@@ -68,7 +74,7 @@ namespace ns.Core {
                 FinalizeOperations();
             }
 
-            _isRunning = initializeResult;
+            IsRunning = initializeResult;
 
             return initializeResult;
         }
@@ -89,10 +95,10 @@ namespace ns.Core {
             if (resultFinalize && resultTerminate) {
                 if (this.Stopped != null)
                     this.Stopped();
-                _isRunning = false;
+                IsRunning = false;
                 return true;
             } else {
-                _isRunning = false;
+                IsRunning = false;
                 return false;
             }
         }

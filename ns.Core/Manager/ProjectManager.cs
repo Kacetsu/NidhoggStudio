@@ -50,6 +50,7 @@ namespace ns.Core.Manager {
             return _configuration.Initialize();
         }
 
+        [XmlIgnore]
         public bool HasSavedProject {
             get { return _hasSavedProject; }
             set {
@@ -253,6 +254,7 @@ namespace ns.Core.Manager {
                 Loading();
 
             ProjectManager manager = LoadManager(path);
+            if (manager == null) return null;
             Configuration.Name = manager.Configuration.Name;
             
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
@@ -338,6 +340,9 @@ namespace ns.Core.Manager {
                 if (Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null) {
                     Trace.WriteLine("ProjectManager could not load default project!", LogCategory.Error);
                     return false;
+                } else {
+                    projectBoxManager.Configuration.LastUsedProjectPath = projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML;
+                    projectBoxManager.SaveProject();
                 }
             }
 
@@ -374,7 +379,7 @@ namespace ns.Core.Manager {
                 if (propertyClone is DeviceProperty) {
                     string uid = p.Value as string;
                     DeviceProperty devicePropertyClone = propertyClone as DeviceProperty;
-                    ns.Base.Plugins.Device device = this.Configuration.Devices.Find(d => d.UID == uid);
+                    Device device = this.Configuration.Devices.Find(d => d.UID == uid);
 
                     if (device != null)
                         devicePropertyClone.SetDevice(_deviceManager, device);
@@ -389,22 +394,30 @@ namespace ns.Core.Manager {
                 } else if (propertyClone is NumberProperty<object>) {
                     NumberProperty<object> targetPropertyClone = propertyClone as NumberProperty<object>;
                     NumberProperty<object> propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as NumberProperty<object>;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = propertyModel.Max;
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 } else if (propertyClone is DoubleProperty) {
                     DoubleProperty targetPropertyClone = propertyClone as DoubleProperty;
                     DoubleProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as DoubleProperty;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = targetPropertyClone.Max;
-                    if(propertyClone.Tolerance != null)
-                        targetPropertyClone.Tolerance = new Tolerance<double>(Convert.ToDouble(propertyClone.Tolerance.Min), Convert.ToDouble(propertyClone.Tolerance.Max));
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 } else if (propertyClone is IntegerProperty) {
                     IntegerProperty targetPropertyClone = propertyClone as IntegerProperty;
                     IntegerProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as IntegerProperty;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = targetPropertyClone.Max;
-                    if (propertyClone.Tolerance != null)
-                        targetPropertyClone.Tolerance = new Tolerance<int>(Convert.ToInt32(propertyClone.Tolerance.Min), Convert.ToInt32(propertyClone.Tolerance.Max));
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 }
 
 

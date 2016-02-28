@@ -57,12 +57,10 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Controls:ConfirmButton Grid.Row="0" x:Name="SaveButton" Text="{StaticResource Save}" Margin="10,10,10,5" Confirmed="Button_Confirmed" />
-                            <Controls:ConfirmButton Grid.Row="1" x:Name="OpenButton" Text="{StaticResource Open}" Margin="10,10,10,5" />
-                            <Controls:ConfirmButton Grid.Row="2" x:Name="NewButton" Text="{StaticResource New}" Margin="10,10,10,5" />
-                            <Controls:ConfirmButton Grid.Row="3" x:Name="DuplicateButton" Text="{StaticResource Duplicate}" Margin="10,10,10,5" />
+                            <Controls:ConfirmButton Grid.Row="0" x:Name="NewButton" Text="{StaticResource New}" Margin="10,10,10,5" Confirmed="Button_Confirmed" />
+                            <Controls:ConfirmButton Grid.Row="1" x:Name="OpenButton" Text="{StaticResource Open}" Margin="10,10,10,5" Confirmed="Button_Confirmed" />
+                            <Controls:ConfirmButton Grid.Row="2" x:Name="SaveButton" Text="{StaticResource Save}" Margin="10,10,10,5" Confirmed="Button_Confirmed" />
                         </Grid>
                     </ScrollViewer>
                 </Border>

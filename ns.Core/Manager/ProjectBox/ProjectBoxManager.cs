@@ -122,9 +122,24 @@ namespace ns.Core.Manager.ProjectBox
             return false;
         }
 
+        public bool LoadProject(string path) {
+            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            if (projectManager.Load(path) != null) {
+                SetUsedProject(path);
+                return true;
+            } else {
+                Trace.WriteLine("Could not load project!", LogCategory.Error);
+                return false;
+            }
+        }
+
+        public bool CreateNewProject() {
+            return SaveDefaultProjectBoxConfiguration();
+        }
+
         private bool SaveDefaultProjectBoxConfiguration() {
             _configuration.LastUsedProjectPath = DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML;
-            return Save() && SaveProject();
+            return SaveProject();
         }
 
         private bool CopyDefaultProject() {
@@ -134,6 +149,15 @@ namespace ns.Core.Manager.ProjectBox
                 return SaveDefaultProjectBoxConfiguration();
             }
             return false;
+        }
+
+        private void SetUsedProject(string path) {
+            foreach(ProjectInfoContainer container in _projectInfos) {
+                if (container.Path.Equals(path))
+                    container.IsUsed = true;
+                else
+                    container.IsUsed = false;
+            }
         }
 
         private bool GenerateInfoList() {

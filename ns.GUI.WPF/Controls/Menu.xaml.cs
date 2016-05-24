@@ -120,7 +120,7 @@ namespace ns.GUI.WPF.Controls {
             }
 
             ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            manager.CreateEmptyProject();
+            manager.LoadLastUsedProject();
         }
     }
 }

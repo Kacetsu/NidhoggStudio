@@ -112,6 +112,7 @@
     <Compile Include="Plugins\Properties\ImageProperty.cs" />
     <Compile Include="Plugins\Properties\IntegerProperty.cs" />
     <Compile Include="Plugins\Properties\StringProperty.cs" />
+    <Compile Include="FileInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

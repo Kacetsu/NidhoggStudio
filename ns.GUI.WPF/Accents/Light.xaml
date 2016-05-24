@@ -2,15 +2,95 @@
      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Common -->
+    <SolidColorBrush x:Key="Foreground" Color="Black" />
+    <SolidColorBrush x:Key="ControlForeground" Color="#FF858E96" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF43484C" />
+    <SolidColorBrush x:Key="ControlHoverBackgroundBrush" Color="#FF383D42" />
+    <SolidColorBrush x:Key="ControlPressedBackgroundBrush" Color="#FF303438" />
+    <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF50565B" />
+    <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76"/>
+    <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76"/>
+    <SolidColorBrush x:Key="NormalBrush" Color="White" />
+    <SolidColorBrush x:Key="StandardBackgroundBrush" Color="White" />
+    <Color x:Key="StandardBackgroundColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <SolidColorBrush x:Key="StandardBorderBrush" Color="#FFEAEAEA" />
+    <SolidColorBrush x:Key="HalfTransparentForegroundBrush" Color="#7F000000" />
+    <SolidColorBrush x:Key="QuarterTransparentForegroundBrush" Color="#BF000000" />
+
+    <!-- Secondary -->
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#007acc" />
+    <SolidColorBrush x:Key="SecondaryReadOnlyBackgroundBrush" Color="#007acc" />
+    <Color x:Key="SecondaryReadOnlyBackgroundColor" A="#FF" R="0" G="122" B="204"/>
+    <SolidColorBrush x:Key="SecondaryDisabledBackgroundBrush" Color="#007acc" />
+    <Color x:Key="SecondaryDisabledBackgroundColor" A="#FF" R="0" G="122" B="204"/>
+
+    <!-- Critical -->
+    <SolidColorBrush x:Key="CriticalBackgroundBrush" Color="#FFB84432" />
+    <SolidColorBrush x:Key="CriticalHoverBackgroundBrush" Color="#FFAA3E2D" />
+    <SolidColorBrush x:Key="CriticalPressedBackgroundBrush" Color="#FF9B3929" />
+
+    <!-- Button -->
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="#7F000000" />
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#19000000" />
+    <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#33000000" />
+
+    <!-- Secondary Button-->
+    <SolidColorBrush x:Key="SecondaryButtonBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="SecondaryButtonForegroundBrush" Color="#3FFFFFFF" />
+    <SolidColorBrush x:Key="SecondaryButtonHoverBackgroundBrush" Color="#FF0070BB" />
+    <SolidColorBrush x:Key="SecondaryButtonPressedBackgroundBrush" Color="#FF0062A4" />
+
+    <!-- ToggleButton -->
+    <SolidColorBrush x:Key="ToggleButtonHoverBackgroundBrush" Color="#FF24262B" />
+    <SolidColorBrush x:Key="ToggleButtonCheckedBackgroundBrush" Color="#FF24262B" />
+    <SolidColorBrush x:Key="ToggleButtonBackgroundBrush" Color="#FF303338" />
+    <SolidColorBrush x:Key="ToggleButtonBorderBrush" Color="#FF33363B" />
+
+    <!-- ComboBox -->
+    <SolidColorBrush x:Key="ComboBoxForegroundBrush" Color="#7FFFFFFF" />
+    <SolidColorBrush x:Key="ComboBoxPopUpBrush" Color="#252526" />
+
+    <!-- TextBox -->
+    <SolidColorBrush x:Key="TextBoxReadonlyBackgroundBrush" Color="#FFE2E0E0" />
+    <Color x:Key="TextBoxReadonlyBackgroundColor" A="#FF" R="226" G="224" B="224"/>
+    
+    <!-- Editor -->
+    <SolidColorBrush x:Key="HeaderForegroundBrush" Color="#FF858E96" />
+    
+    <!-- Project Explorer -->
+    <SolidColorBrush x:Key="ProjectExplorerBackgroundBrush" Color="#007acc" />
+
+    <!-- Property Editor -->
+    <SolidColorBrush x:Key="PropertyEditorHeaderBackgroundBrush" Color="#FFB85932" />
+
+    <!-- Add Tool -->
+    <SolidColorBrush x:Key="AddToolHeaderBackgroundBrush" Color="#FF96AA39" />
+    <SolidColorBrush x:Key="AddToolBackgroundBrush" Color="LightGray" />
+
+    <!-- Add Tool Node -->
+    <SolidColorBrush x:Key="AddToolNodeBackgroundBrush" Color="White" />
+
+    <!-- Histogram View -->
+    <SolidColorBrush x:Key="HistogramHeaderBackgroundBrush" Color="#FF96AA39" />
+
+    <!-- Results View -->
+    <SolidColorBrush x:Key="ResultsHeaderBackgroundBrush" Color="#FFB85932" />
+
+    <!-- Log Project XML -->
+    <SolidColorBrush x:Key="ProjectXMLHeaderBackgroundBrush" Color="#FF96AA39" />
+
+    <!-- Project View -->
+    <SolidColorBrush x:Key="ProjectHeaderBackgroundBrush" Color="#FF96AA39" />
+
     <!-- Foreground -->
-    <SolidColorBrush x:Key="Foreground" Color="#FFFFFF" />
     <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
     <SolidColorBrush x:Key="TitelbarForegroundBrush" Color="#999999" />
 
     <!-- Background -->
-    <SolidColorBrush x:Key="StandardBackgroundBrush" Color="#2d2d30" />
-    <SolidColorBrush x:Key="NormalBrush" Color="#888" />
     <SolidColorBrush x:Key="HorizontalNormalBrush" Color="#888" />
     <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="#252526" />
     <SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="#252526" />
@@ -20,7 +100,6 @@
     <Color x:Key="EditBoxBackgroundColor" A="#FF" R="#51" G="#51" B="#55"/>
 
     <!-- Border -->
-    <SolidColorBrush x:Key="StandardBorderBrush" Color="#888" />
     <Color x:Key="StandardBorderColor" A="#FF" R="#62" G="#62" B="#66"/>
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#888" />
     <SolidColorBrush x:Key="HoverBorderBrush" Color="#007acc" />
@@ -65,14 +144,9 @@
     <Color x:Key="GlyphColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
     <Color x:Key="SelectedBackgroundColor" A="#FF"  R="0" G="122" B="204"  />
     <Color x:Key="SelectedUnfocusedColor" A="#FF" R="63" G="63" B="70" />
-    <!--<Color x:Key="BorderMediumColor" R="0" B="0" G="0" />
-    <Color x:Key="ControlLightColor" R="0" B="0" G="0" />-->
 
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#007acc"/>
     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#3f3f41"/>
-
-    <SolidColorBrush x:Key="ComboBoxPopUpBrush" Color="#252526" />
-    <SolidColorBrush x:Key="ComboBoxTextBoxBackgroundBrush" Color="#3c3c3c" />
 
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#888" />
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />

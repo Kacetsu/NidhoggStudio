@@ -1,20 +1,10 @@
 ﻿using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls.Property {
     /// <summary>
@@ -22,12 +12,28 @@ namespace ns.GUI.WPF.Controls.Property {
     /// </summary>
     public partial class NumberPropertyControl : PropertyControl {
         private ns.Base.Plugins.Properties.Property _property;
+        private string _stringValue = string.Empty;
+
+        public string StringValue {
+            get { return _stringValue; }
+            set {
+                if (!_stringValue.Equals(value)) {
+                    _stringValue = value;
+                    OnPropertyChanged("StringValue");
+                }
+            }
+        }
+
+        public string DisplayName {
+            get { return _property.Name; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberPropertyControl"/> class.
         /// </summary>
         public NumberPropertyControl() {
             InitializeComponent();
+            DataContext = this;
         }
 
         /// <summary>
@@ -39,16 +45,17 @@ namespace ns.GUI.WPF.Controls.Property {
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
-            this.NameLabel.Content = property.Name;
+            DataContext = property;
             _property = property;
+            DataContext = this;
 
             if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
                 ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
             } else {
                 if (property is IntegerProperty) {
-                    this.NumberBox.Text = ((int)property.Value).ToString();
+                    StringValue = ((int)property.Value).ToString();
                 } else if (property is DoubleProperty) {
-                    this.NumberBox.Text = ((double)property.Value).ToString();
+                    StringValue = ((double)property.Value).ToString();
                 } else {
                     Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodInfo.GetCurrentMethod() + "!", LogCategory.Error);
                 }
@@ -66,23 +73,23 @@ namespace ns.GUI.WPF.Controls.Property {
             try {
                 if (_property != null) {
                     if (_property is IntegerProperty) {
-                        int currentValue = Convert.ToInt32(this.NumberBox.Text);
+                        int currentValue = Convert.ToInt32(StringValue);
                         int newValue = currentValue + step;
                         if(newValue > (int)((IntegerProperty)_property).Max)
                             newValue = (int)((IntegerProperty)_property).Max;
                         else if (newValue < (int)((IntegerProperty)_property).Min)
                             newValue = (int)((IntegerProperty)_property).Min;
-                        this.NumberBox.Text = newValue.ToString();
+                        StringValue = newValue.ToString();
                         _property.Value = newValue;
                         result = true;
                     } else if(_property is DoubleProperty) {
-                        double currentValue = Convert.ToDouble(this.NumberBox.Text);
+                        double currentValue = Convert.ToDouble(StringValue);
                         double newValue = currentValue + (double)step;
                         if (newValue > (double)((DoubleProperty)_property).Max)
                             newValue = (double)((DoubleProperty)_property).Max;
                         else if (newValue < (double)((DoubleProperty)_property).Min)
                             newValue = (double)((DoubleProperty)_property).Min;
-                        this.NumberBox.Text = newValue.ToString();
+                        StringValue = newValue.ToString();
                         _property.Value = newValue;
                         result = true;
                     }
@@ -115,20 +122,20 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void NumberBox_TextChanged(object sender, TextChangedEventArgs e) {
-            if (string.IsNullOrEmpty(this.NumberBox.Text)) return;
-            if (this.NumberBox.Text == "-") return;
-            if (this.NumberBox.Text.EndsWith(",")) return;
+            if (string.IsNullOrEmpty(StringValue)) return;
+            if (StringValue == "-") return;
+            if (StringValue.EndsWith(",")) return;
             try {
                 if (_property != null) {
                     if (_property is IntegerProperty) {
-                        int value = Convert.ToInt32(this.NumberBox.Text);
+                        int value = Convert.ToInt32(StringValue);
                         if (value > (int)((IntegerProperty)_property).Max)
                             value = (int)((IntegerProperty)_property).Max;
                         else if (value < (int)((IntegerProperty)_property).Min)
                             value = (int)((IntegerProperty)_property).Min;
                         _property.Value = value;
                     } else if (_property is DoubleProperty) {
-                        double value = Convert.ToDouble(this.NumberBox.Text);
+                        double value = Convert.ToDouble(StringValue);
                         if (value > (double)((DoubleProperty)_property).Max)
                             value = (double)((DoubleProperty)_property).Max;
                         else if (value < (double)((DoubleProperty)_property).Min)
@@ -140,9 +147,9 @@ namespace ns.GUI.WPF.Controls.Property {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Warning);
             } finally {
                 if (_property is IntegerProperty) {
-                    this.NumberBox.Text = ((int)_property.Value).ToString();
+                    StringValue = ((int)_property.Value).ToString();
                 } else if (_property is DoubleProperty) {
-                    this.NumberBox.Text = ((double)_property.Value).ToString();
+                    StringValue = ((double)_property.Value).ToString();
                 }
             }
         }

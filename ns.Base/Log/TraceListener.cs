@@ -13,11 +13,14 @@ using ns.Base.Event;
 namespace ns.Base.Log {
     public class TraceListener : TextWriterTraceListener {
 
+        private const uint MAX_BUFFERED_LOGENTRIES = 100;
+
         private string _directory;
         private string _logFile;
         private DateTime _logFileDate;
         private List<string> _categoriesToLog = new List<string>();
         private XmlWriter _xmlWriter = null;
+        private List<LogData> _logEntries = new List<LogData>();
 
         /// <summary>
         /// Gets the log file date.
@@ -25,7 +28,13 @@ namespace ns.Base.Log {
         /// <value>
         /// The log file date.
         /// </value>
-        public DateTime LogFileDate { get { return _logFileDate; } }
+        public DateTime LogFileDate {
+            get { return _logFileDate; }
+        }
+
+        public List<LogData> LogEntries {
+            get { return _logEntries; }
+        }
 
         public delegate void TraceListenerEvent(Object sender, TraceListenerEventArgs e);
         public event TraceListenerEvent traceListenerEvent = delegate { };
@@ -88,7 +97,7 @@ namespace ns.Base.Log {
 
             //delete all exception images older than keepdate (filename: Exception_yyyymmdd_hhmmss_*.png)
             Regex regexImages = new Regex("^Exception_\\d{8}_\\d{6}.*\\.(bmp|png)$");
-            foreach (FileInfo file in dir.GetFiles("Exception*")) {
+            foreach (System.IO.FileInfo file in dir.GetFiles("Exception*")) {
                 if (regexImages.IsMatch(file.Name) == true) {
                     //delete old files
                     int year = Convert.ToInt32(file.Name.Substring(10, 4));
@@ -111,7 +120,7 @@ namespace ns.Base.Log {
 
             //read directory and search for log fragments
             Regex regex = new Regex("^\\d{8}_\\d{6}_logFragments\\.xml$");
-            foreach (FileInfo file in dir.GetFiles("*_logFragments.xml")) {
+            foreach (System.IO.FileInfo file in dir.GetFiles("*_logFragments.xml")) {
                 if (regex.IsMatch(file.Name) == true) {
                     //delete old logfiles
                     int year = Convert.ToInt32(file.Name.Substring(0, 4));
@@ -141,6 +150,10 @@ namespace ns.Base.Log {
                 lock (_categoriesToLog) {
 
                     string timestamp = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff");
+
+                    if (LogEntries.Count > MAX_BUFFERED_LOGENTRIES)
+                        LogEntries.RemoveAt(0);
+                    LogEntries.Add(new LogData(timestamp, message, category));
 
                     traceListenerEvent(this, new TraceListenerEventArgs(timestamp, message, category));
 

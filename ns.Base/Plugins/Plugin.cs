@@ -1,5 +1,4 @@
-﻿using ns.Base.Event;
-using ns.Base.Log;
+﻿using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
 using System.IO;
@@ -64,10 +63,15 @@ namespace ns.Base.Plugins {
         public string DisplayName {
             get {
                 if (string.IsNullOrEmpty(_displayName))
-                    _displayName = this.Name;
+                    _displayName = this.GetType().Name;
                 return _displayName; 
             }
-            set { _displayName = value; }
+            set {
+                if (!_displayName.Equals(value)) {
+                    _displayName = value;
+                    OnPropertyChanged("DisplayName");
+                }
+            }
         }
 
         /// <summary>
@@ -143,12 +147,18 @@ namespace ns.Base.Plugins {
                         if (property.IsToleranceDisabled) continue;
                         if (property is DoubleProperty) {
                             DoubleProperty targetProperty = property as DoubleProperty;
-                            if (Convert.ToDouble(targetProperty.Value) > targetProperty.Tolerance.Max || Convert.ToDouble(targetProperty.Value) < targetProperty.Tolerance.Min) {
+                            double min = targetProperty.Tolerance.Min;
+                            double max = targetProperty.Tolerance.Max;
+                            double value = Convert.ToDouble(targetProperty.Value);
+                            if (value > max || value < min) {
                                 result = false;
                             }
                         } else if (property is IntegerProperty) {
                             IntegerProperty targetProperty = property as IntegerProperty;
-                            if (Convert.ToDouble(targetProperty.Value) > targetProperty.Tolerance.Max || Convert.ToDouble(targetProperty.Value) < targetProperty.Tolerance.Min) {
+                            int min = targetProperty.Tolerance.Min;
+                            int max = targetProperty.Tolerance.Max;
+                            int value = Convert.ToInt32(targetProperty.Value);
+                            if (value > max || value < min) {
                                 result = false;
                             }
                         }

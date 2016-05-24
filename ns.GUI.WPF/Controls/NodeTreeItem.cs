@@ -232,7 +232,7 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void NodeTreeItem_Drop(object sender, DragEventArgs e) {
-            int a = 0;
+            
         }
 
         private void NodeTreeItem_DragOver(object sender, DragEventArgs e) {

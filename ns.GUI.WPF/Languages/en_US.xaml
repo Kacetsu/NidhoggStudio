@@ -3,11 +3,24 @@
      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
      xmlns:system="clr-namespace:System;assembly=mscorlib">
 
+    <system:String x:Key="Yes">Yes</system:String>
+    <system:String x:Key="No">No</system:String>
     <system:String x:Key="Name">Name</system:String>
     <system:String x:Key="Value">Value</system:String>
     <system:String x:Key="Monitored">Monitored</system:String>
     <system:String x:Key="Add">Add</system:String>
     <system:String x:Key="Histogram">Histogram</system:String>
+    <system:String x:Key="Start">Start</system:String>
+    <system:String x:Key="Loop">Loop</system:String>
+    <system:String x:Key="Remove">Remove</system:String>
+    <system:String x:Key="Save">Save</system:String>
+    <system:String x:Key="Open">Open</system:String>
+    <system:String x:Key="New">New</system:String>
+    <system:String x:Key="Duplicate">Duplicate</system:String>
+    <system:String x:Key="Project">Project</system:String>
+    <system:String x:Key="Project_XML">Project XML</system:String>
+    <system:String x:Key="ID">ID</system:String>
+    <system:String x:Key="Collection">Collection</system:String>
     
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Close</system:String>
@@ -63,4 +76,7 @@
     <system:String x:Key="Min_Tolerance">Min. Tolerance</system:String>
     <system:String x:Key="Max_Tolerance">Max. Tolerance</system:String>
     
+    <!-- Remove Button -->
+    <system:String x:Key="RB_ConfirmRemove">Are you sure?</system:String>
+
 </ResourceDictionary>

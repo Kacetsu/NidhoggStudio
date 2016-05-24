@@ -13,7 +13,6 @@ namespace ns.Plugin.Base {
     public class CheckIntensity : Tool {
         private RectangleProperty _aoiProperty;
         private ImageProperty _inputImage;
-        private ImageProperty _outputImage;
         private DoubleProperty _intensityProperty;
 
         public override string Category {
@@ -30,9 +29,8 @@ namespace ns.Plugin.Base {
 
         public CheckIntensity() {
             DisplayName = "Check Intensity";
-            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             AddChild(new ImageProperty("InputImage", false));
-            AddChild(new ImageProperty("OuputImage", true));
+            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
             DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
             intensityProperty.Tolerance = new Tolerance<double>(0, 100);
             AddChild(intensityProperty);
@@ -43,7 +41,7 @@ namespace ns.Plugin.Base {
 
             _aoiProperty = GetProperty("AOI") as RectangleProperty;
             _inputImage = GetProperty("InputImage") as ImageProperty;
-            _outputImage = GetProperty("OuputImage") as ImageProperty;
+            _inputImage.IsVisible = true;
             _intensityProperty = GetProperty("Intensity") as DoubleProperty;
             return true;
         }
@@ -98,7 +96,6 @@ namespace ns.Plugin.Base {
                 }
 
                 _intensityProperty.Value = Math.Round((100.0 / 255.0) * (double)(sum / count), 2);
-                _outputImage.Value = inputContainer.DeepClone();
             } catch(Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 return false;

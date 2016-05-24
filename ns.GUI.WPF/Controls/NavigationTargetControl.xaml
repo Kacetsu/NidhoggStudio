@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.NavigationTargetControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="300" Background="{DynamicResource ControlBackgroundBrush}" Margin="0" Padding="0" IsEnabled="{Binding Path=IsTargetEnabled,FallbackValue=true}" >
+    <Grid>
+        <Button Click="Button_Click">
+            <Button.Content>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding Path=Icon}" Margin="8" />
+                    <TextBlock Grid.Column="1" Text="{Binding Path=DisplayName, FallbackValue=UNKOWN}" Foreground="{DynamicResource ControlForeground}" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="4,0" />
+                </Grid>
+            </Button.Content>
+        </Button>
+    </Grid>
+</UserControl>

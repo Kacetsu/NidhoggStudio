@@ -3,48 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="620" d:DesignWidth="300" Background="{DynamicResource StandardBackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="37" />
-            <RowDefinition Height="37" />
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <TreeView Name="ProjectTree" AllowDrop="True">
-                <TreeViewItem Header="Test1">
-                    <TreeViewItem Header="SubTest1" />
-                    <TreeViewItem Header="SubTest2">
-                        <TreeViewItem Header="SubTest21" />
-                        <TreeViewItem Header="SubTest22" />
-                    </TreeViewItem>
-                    <TreeViewItem Header="SubTest3" />
-                </TreeViewItem>
-                <TreeViewItem Header="Test2">
-                    <TreeViewItem Header="SubTest1" />
-                    <TreeViewItem Header="SubTest1" />
-                    <TreeViewItem Header="SubTest1" />
-                </TreeViewItem>
-            </TreeView>
+        <Grid Background="{DynamicResource ProjectExplorerBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Name="AddToolButton">
+                <Button.Content>
+                    <TextBlock Text="+" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="42" Margin="0,-3,0,0" />
+                </Button.Content>
+            </Button>
+            <TextBlock Text="{DynamicResource Project_Explorer}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid Name="ContentGrid" />
         </ScrollViewer>
-        <Button Name="AddToolButton" Grid.Row="1" Height="33" Margin="2,2" Style="{DynamicResource AddToolButton}" ToolTip="{DynamicResource S_T_Add_new_Element}" Click="Button_Click">
-            <Button.Content>
-                <TextBlock Text="+" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center" />
-            </Button.Content>
-        </Button>
-        <Border Grid.Row="2" Margin="1" Padding="0,2,0,0" BorderThickness="0" BorderBrush="Transparent" Background="{StaticResource StandardBackgroundBrush}">
-        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                <Button Name="DeleteButton" Width="30" ToolTip="{DynamicResource Delete}" Click="Button_Click">
-                    <Image Source="/ns.GUI.WPF;component/Images/Trash.png" Height="20" />
-                </Button>
-                <Button Name="MoveUpButton" Width="30" IsEnabled="False" ToolTip="{DynamicResource MoveUp}">
-                    <Image Source="/ns.GUI.WPF;component/Images/Up.png" Height="20" />
-                </Button>
-                <Button Name="MoveDownButton" Width="30" IsEnabled="False" ToolTip="{DynamicResource MoveDown}">
-                    <Image Source="/ns.GUI.WPF;component/Images/Down.png" Height="20" />
-                </Button>
-        </StackPanel>
-        </Border>
     </Grid>
 </UserControl>

@@ -127,6 +127,10 @@ namespace ns.Base.Plugins.Properties {
             }
         }
 
+        public Property ConnectedProperty {
+            get { return _connectedProperty; }
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance can automatic connect.
         /// </summary>

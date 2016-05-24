@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="ns.GUI.WPF.EditorDisplay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/ns.GUI.WPF;component/Images/Blank_Background.png" Stretch="None" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,16,16"/>
+        </Grid.Background>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <Canvas Name="ImageCanvas" VerticalAlignment="Center" HorizontalAlignment="Center" Width="{Binding Path=ImageWidth,Mode=OneWay}" Height="{Binding Path=ImageHeight,Mode=OneWay}">
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding Path=ScalingFactor,Mode=OneWay,FallbackValue=1}" ScaleY="{Binding Path=ScalingFactor,Mode=OneWay,FallbackValue=1}" />
+                </Canvas.LayoutTransform>
+                <Image Name="ImageDisplay" Source="{Binding Path=Bitmap,Mode=OneWay}" Stretch="None" Width="{Binding Path=ImageWidth,Mode=OneWay}" Height="{Binding Path=ImageHeight,Mode=OneWay}"/>
+            </Canvas>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

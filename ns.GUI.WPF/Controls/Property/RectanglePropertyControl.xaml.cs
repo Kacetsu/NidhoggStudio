@@ -1,20 +1,10 @@
 ﻿using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls.Property {
     /// <summary>
@@ -23,8 +13,13 @@ namespace ns.GUI.WPF.Controls.Property {
     public partial class RectanglePropertyControl : PropertyControl {
         private ns.Base.Plugins.Properties.Property _property;
 
+        public string DisplayName {
+            get { return _property.Name; }
+        }
+
         public RectanglePropertyControl() {
             InitializeComponent();
+            DataContext = this;
         }
 
         /// <summary>
@@ -36,7 +31,7 @@ namespace ns.GUI.WPF.Controls.Property {
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
-            this.NameLabel.Content = property.Name;
+            DataContext = this;
             _property = property;
             property.PropertyChanged += Property_PropertyChanged;
 

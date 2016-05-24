@@ -1,7 +1,12 @@
-﻿using ns.Core;
+﻿using ns.Base;
+using ns.Base.Event;
+using ns.Base.Plugins;
+using ns.Core;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,66 +19,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ns.Base;
-using System.ComponentModel;
-using ns.Base.Plugins;
-using ns.GUI.WPF.Windows;
 
 namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für ProjectExplorer.xaml
     /// </summary>
     public partial class ProjectExplorer : UserControl {
-
         private ProjectManager _projectManager;
         private GuiManager _guiManager;
+
+        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
+        public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         public ProjectExplorer() {
             InitializeComponent();
             this.Loaded += HandleLoaded;
-            this.ProjectTree.SelectedItemChanged += HandleSelectedItemChanged;
         }
 
-        private void HandleSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
-            TreeView view = null;
-            
-            if (sender == this.ProjectTree)
-                view = this.ProjectTree;
-
-            if (view == null)
-                throw new Exception("Project Explorer View is NULL!");
-
-            TreeViewItem item = view.SelectedItem as TreeViewItem;
-            if(item is OperationTreeItem)
-                item.IsExpanded = true;
-
-            if (view.SelectedItem is OperationTreeItem) {
-                OperationTreeItem selectedItem = view.SelectedItem as OperationTreeItem;
-                if (selectedItem == null)
-                    throw new Exception("OperationTreeItem is NULL!");
-                _guiManager.SelectNode(selectedItem.Operation);
-            } else if (view.SelectedItem is ToolTreeItem) {
-                ToolTreeItem selectedItem = view.SelectedItem as ToolTreeItem;
-                if (selectedItem == null)
-                    throw new Exception("ToolTreeItem is NULL!");
-                _guiManager.SelectNode(selectedItem.Tool);
-            } else if(view.SelectedItem is NodeTreeItem) {
-                NodeTreeItem selectedItem = view.SelectedItem as NodeTreeItem;
-                if (selectedItem == null)
-                    throw new Exception("NodeTreeItem is NULL!");
-                _guiManager.SelectNode(selectedItem.Node);
-            } else {
-                _guiManager.SelectNode(null);
-            }
-        }
-
-        private void ProjectManagerLoading() {
-            foreach (NodeTreeItem item in this.ProjectTree.Items) {
-                if (item is OperationTreeItem) {
-                    ((OperationTreeItem)item).Close();
-                }
-            }
-            this.ProjectTree.Items.Clear();
+        private void OnConfigNode(Node node) {
+            if (ConfigNodeHandlerChanged != null)
+                ConfigNodeHandlerChanged(this, new NodeSelectionChangedEventArgs(node));
         }
 
         private void GenerateTree() {
@@ -83,20 +48,27 @@ namespace ns.GUI.WPF.Controls {
             }
             if (_projectManager != null) {
 
-                this.ProjectTree.Items.Clear();
-
-                NodeTreeItem projectItem = new NodeTreeItem(_projectManager.Configuration.Name, "Project '{0}'");
-                this.ProjectTree.Items.Add(projectItem);
+                this.ContentGrid.Children.Clear();
 
                 foreach (Operation operation in _projectManager.Configuration.Operations) {
-                    OperationTreeItem operationItem = new OperationTreeItem(operation);
-                    operationItem.IsExpanded = true;
-                    this.ProjectTree.Items.Add(operationItem);
-                    foreach(Tool tool in operation.Childs.Where(c => c is Tool)) {
+                    OperationNodeControl operationItem = new OperationNodeControl(operation);
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+                    this.ContentGrid.RowDefinitions.Add(rowDefinition);
+                    Grid.SetRow(operationItem, this.ContentGrid.Children.Count);
+                    this.ContentGrid.Children.Add(operationItem);
+                    foreach (Tool tool in operation.Childs.Where(c => c is Tool)) {
                         _guiManager.SelectNode(tool);
                     }
+
+                    operationItem.UpdateChildControls();
+                    operationItem.ConfigNodeHandlerChanged += OperationItem_ConfigNodeHandlerChanged;
                 }
             }
+        }
+
+        private void OperationItem_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs e) {
+            OnConfigNode(e.SelectedNode);
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
@@ -122,14 +94,14 @@ namespace ns.GUI.WPF.Controls {
             this.GenerateTree();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) {
-            if(sender == this.DeleteButton) {
-                Node selectedNode = _guiManager.SelectedNode;
-                _projectManager.Remove(selectedNode);
-            }else if(sender == this.AddToolButton) {
-                AddNewElementDialog dialog = new AddNewElementDialog();
-                dialog.ShowDialog();
-            }
+        private void ProjectManagerLoading() {
+            //foreach (NodeTreeItem item in this.ProjectTree.Items) {
+            //    if (item is OperationTreeItem) {
+            //        ((OperationTreeItem)item).Close();
+            //    }
+            //}
+            //this.ProjectTree.Items.Clear();
         }
+
     }
 }

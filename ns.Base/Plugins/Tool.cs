@@ -28,8 +28,12 @@ namespace ns.Base.Plugins {
 
         public override string Name {
             get {
-                if (string.IsNullOrEmpty(_name))
-                    _name = this.GetType().Name;
+                if (string.IsNullOrEmpty(_name)) {
+                    if (!string.IsNullOrEmpty(DisplayName))
+                        _name = DisplayName;
+                    else
+                        _name = this.GetType().Name;
+                }
                 return _name; 
             }
             set {

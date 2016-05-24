@@ -9,7 +9,7 @@ using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using System.IO;
+using ns.Core.Manager.ProjectBox;
 
 namespace ns.Core.Manager {
     public class ProjectManager : BaseManager {
@@ -50,6 +50,7 @@ namespace ns.Core.Manager {
             return _configuration.Initialize();
         }
 
+        [XmlIgnore]
         public bool HasSavedProject {
             get { return _hasSavedProject; }
             set {
@@ -238,6 +239,10 @@ namespace ns.Core.Manager {
             }
         }
 
+        public ProjectManager LoadManager(string path) {
+            return base.Load(path) as ProjectManager;
+        }
+
         /// <summary>
         /// Loads a new instance of ProjectManager.
         /// Will also override the old values of the currently loaded ProjectManager.
@@ -245,11 +250,12 @@ namespace ns.Core.Manager {
         /// <param name="path">Path to the configuration file.</param>
         /// <returns>Returns the instance of the ProjectManager if successful, else null.</returns>
         public override object Load(string path) {
-            if (this.Loading != null)
-                this.Loading();
+            if (Loading != null)
+                Loading();
 
-            ProjectManager manager = base.Load(path) as ProjectManager;
-            this.Configuration.Name = manager.Configuration.Name;
+            ProjectManager manager = LoadManager(path);
+            if (manager == null) return null;
+            Configuration.Name = manager.Configuration.Name;
             
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
             _deviceManager = CoreSystem.Managers.Find(m => m.Name.Contains("DeviceManager")) as DeviceManager;
@@ -258,8 +264,8 @@ namespace ns.Core.Manager {
 
             _displayManager.Clear();
 
-            
-            this.Configuration.Operations.Clear();
+            Configuration.Initialize();
+            Configuration.Operations.Clear();
             _propertyManager.Nodes.Clear();
 
             List<Node> configuratedDevices = new List<Node>();
@@ -284,8 +290,8 @@ namespace ns.Core.Manager {
             List<Device> devices = new List<Device>();
             foreach (Device d in configuratedDevices)
                 devices.Add(d);
-            
-            this.Configuration.Devices.AddRange(devices);
+
+            Configuration.Devices.AddRange(devices);
             _deviceManager.AddRange(configuratedDevices);
 
             foreach (Operation o in manager.Configuration.Operations) {
@@ -303,12 +309,12 @@ namespace ns.Core.Manager {
 
                 LoadToolChilds(o, operationClone);
 
-                this.Configuration.Operations.Add(operationClone);
+                Configuration.Operations.Add(operationClone);
                 _propertyManager.ConnectPropertiesByNode(operationClone);
             }
 
-            if (this.Loaded != null)
-                this.Loaded();
+            if (Loaded != null)
+                Loaded();
 
             FileName = path;
             HasSavedProject = true;
@@ -326,8 +332,20 @@ namespace ns.Core.Manager {
             return false;
         }
 
-        public bool CreateEmptyProject() {
-            Load(AssemblyPath + Path.DirectorySeparatorChar + DefaultProjectFile);
+        public bool LoadLastUsedProject() { 
+            ProjectBoxManager projectBoxManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectBoxManager")) as ProjectBoxManager;
+            if (projectBoxManager == null) return false;
+            if (Load(projectBoxManager.Configuration.LastUsedProjectPath) == null) {
+                Trace.WriteLine("ProjectManager could not load last used project!", LogCategory.Error);
+                if (Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null) {
+                    Trace.WriteLine("ProjectManager could not load default project!", LogCategory.Error);
+                    return false;
+                } else {
+                    projectBoxManager.Configuration.LastUsedProjectPath = projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML;
+                    projectBoxManager.SaveProject();
+                }
+            }
+
             return true;
         }
 
@@ -361,7 +379,7 @@ namespace ns.Core.Manager {
                 if (propertyClone is DeviceProperty) {
                     string uid = p.Value as string;
                     DeviceProperty devicePropertyClone = propertyClone as DeviceProperty;
-                    ns.Base.Plugins.Device device = this.Configuration.Devices.Find(d => d.UID == uid);
+                    Device device = this.Configuration.Devices.Find(d => d.UID == uid);
 
                     if (device != null)
                         devicePropertyClone.SetDevice(_deviceManager, device);
@@ -376,22 +394,30 @@ namespace ns.Core.Manager {
                 } else if (propertyClone is NumberProperty<object>) {
                     NumberProperty<object> targetPropertyClone = propertyClone as NumberProperty<object>;
                     NumberProperty<object> propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as NumberProperty<object>;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = propertyModel.Max;
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 } else if (propertyClone is DoubleProperty) {
                     DoubleProperty targetPropertyClone = propertyClone as DoubleProperty;
                     DoubleProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as DoubleProperty;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = targetPropertyClone.Max;
-                    if(propertyClone.Tolerance != null)
-                        targetPropertyClone.Tolerance = new Tolerance<double>(Convert.ToDouble(propertyClone.Tolerance.Min), Convert.ToDouble(propertyClone.Tolerance.Max));
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 } else if (propertyClone is IntegerProperty) {
                     IntegerProperty targetPropertyClone = propertyClone as IntegerProperty;
                     IntegerProperty propertyModel = numberProperties.Find(c => ((Property)c).Name == targetPropertyClone.Name) as IntegerProperty;
-                    targetPropertyClone.Min = propertyModel.Min;
-                    targetPropertyClone.Max = targetPropertyClone.Max;
-                    if (propertyClone.Tolerance != null)
-                        targetPropertyClone.Tolerance = new Tolerance<int>(Convert.ToInt32(propertyClone.Tolerance.Min), Convert.ToInt32(propertyClone.Tolerance.Max));
+                    if (propertyClone.Tolerance != null) {
+                        targetPropertyClone.Tolerance.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Tolerance.Max = propertyModel.Tolerance.Max;
+                        targetPropertyClone.Min = propertyModel.Tolerance.Min;
+                        targetPropertyClone.Max = propertyModel.Tolerance.Max;
+                    }
                 }
 
 

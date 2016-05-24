@@ -77,14 +77,7 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Finalize() {
-            base.Finalize();
-
-            foreach (Tool tool in this.Childs.Where(t => t is Tool)) {
-                if (!tool.Finalize())
-                    return false;
-            }
-
-            return true;
+            return base.Finalize(); ;
         }
 
         /// <summary>

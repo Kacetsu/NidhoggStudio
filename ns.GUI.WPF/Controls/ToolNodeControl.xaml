@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="ns.GUI.WPF.Controls.ToolNodeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="32" d:DesignWidth="300" MinHeight="48" MinWidth="250">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44" />
+            <RowDefinition Height="3" />
+        </Grid.RowDefinitions>
+        <Grid Name="HeaderGrid" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Name="ConfigButton" Grid.Column="1" Click="ConfigButton_Click" Visibility="Visible">
+                <Image Source="/ns.GUI.WPF;component/Images/Wrench.png" />
+            </Button>
+            <TextBlock Grid.Column="2" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0" />
+        </Grid>
+        <Grid Grid.Row="1" Background="{DynamicResource SecondaryBackgroundBrush}">
+            <Border Name="StatusBorder" Background="Transparent" BorderThickness="0" />
+        </Grid>
+    </Grid>
+</UserControl>

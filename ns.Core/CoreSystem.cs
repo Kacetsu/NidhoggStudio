@@ -2,6 +2,7 @@
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Core.Manager;
+using ns.Core.Manager.ProjectBox;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -135,12 +136,14 @@ namespace ns.Core {
                 PluginManager pluginManager = new PluginManager();
                 DisplayManager displayManager = new DisplayManager();
                 DataStorageManager dataStorageManager = new DataStorageManager();
+                ProjectBoxManager projectBoxManager = new ProjectBoxManager();
 
                 _managers.Add(projectManager);
                 _managers.Add(propertyManager);
                 _managers.Add(pluginManager);
                 _managers.Add(displayManager);
                 _managers.Add(dataStorageManager);
+                _managers.Add(projectBoxManager);
 
                 AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
@@ -150,8 +153,11 @@ namespace ns.Core {
                 if (propertyManager.Initialize() == false)
                     throw new Exception("Could not initialize PropertyManager!");
 
+                if (projectBoxManager.Initialize() == false)
+                    throw new Exception("Could not initialize ProjectBoxManager!");
+
                 if (projectManager.Initialize() == false)
-                    throw new Exception("Could not initialize ConfigurationManager!");
+                    throw new Exception("Could not initialize ProjectManager!");
 
                 _traceListener.SetLoggingCategoties(projectManager.Configuration.LogConfiguration.Categories);
 
@@ -166,9 +172,16 @@ namespace ns.Core {
                 if (extensionManager.Initialize() == false)
                     throw new Exception("Could not initialize ExtensionManager!");
 
-                _processor = new Core.Processor();
-                _shell = new Core.Shell();
+                _processor = new Processor();
+                _shell = new Shell();
                 _shell.Initialize();
+
+                if (!projectManager.LoadLastUsedProject()) {
+                    Trace.WriteLine("Could not load latest project!", LogCategory.Error);
+                    if (projectBoxManager.Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null)
+                        throw new Exception("[Fatal error] Could not load default project!");
+                }
+
                 result = true;
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);

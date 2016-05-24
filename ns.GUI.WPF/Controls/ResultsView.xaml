@@ -3,31 +3,56 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="600" Background="{DynamicResource StandardBackgroundBrush}">
     <Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <DataGrid Name="DataControl" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="{DynamicResource Monitored}" Binding="{Binding Path=IsMonitored}" MinWidth="20" />
-                    <DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Path=Name}" MinWidth="100" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="{DynamicResource Value}" Binding="{Binding Path=Value}" MinWidth="100" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="{DynamicResource Min_Tolerance}"  MinWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Tolerance.Min,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=IsToleranceDisabled,FallbackValue=True}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource Max_Tolerance}"  MinWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Tolerance.Max,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=IsToleranceDisabled,FallbackValue=True}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </ScrollViewer>  
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{DynamicResource ResultsHeaderBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image />
+            <TextBlock Grid.Column="1" Text="{DynamicResource Results}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0" />
+        </Grid>
+        <Border Grid.Row="1" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource StandardBorderBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*" MaxWidth="80" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                    </Grid.ColumnDefinitions>
+                    <Border BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Monitored}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    </Border>
+                    <Border Grid.Column="1" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    </Border>
+                    <Border Grid.Column="2" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Value}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    </Border>
+                    <Border Grid.Column="3" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Min_Tolerance}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    </Border>
+                    <Border Grid.Column="4" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Max_Tolerance}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    </Border>
+                </Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="1">
+                    <ListBox Name="ContenList" />
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

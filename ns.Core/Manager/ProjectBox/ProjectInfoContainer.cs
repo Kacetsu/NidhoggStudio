@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ns.Core.Manager.ProjectBox {
-    public class ProjectInfoContainer : NotifyObject {
+    public class ProjectInfoContainer : NotifiableObject {
         private string _path = string.Empty;
         private string _name = string.Empty;
         private bool _isUsed = false;

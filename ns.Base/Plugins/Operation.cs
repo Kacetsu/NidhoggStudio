@@ -1,23 +1,19 @@
-﻿using ns.Base.Event;
+﻿using ns.Base.Extensions;
 using ns.Base.Log;
-using ns.Base.Plugins;
-using ns.Base.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using ns.Base.Plugins.Properties;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace ns.Base.Plugins {
+
     /// <summary>
     /// Base Class for all Operations.
     /// Instead of all other Base Classes this one can be used directly as a functional Operation.
     /// </summary>
     [Serializable]
     public class Operation : Plugin, IXmlSerializable {
-
         private string _linkedOperation = string.Empty;
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace ns.Base.Plugins {
         /// </returns>
         public override object Clone() {
             Operation clone = this.DeepClone();
-            clone.UID = Node.GenerateUID();
+            clone.UID = GenerateUID();
             return clone;
         }
 
@@ -108,10 +104,10 @@ namespace ns.Base.Plugins {
 
             reader.ReadStartElement();
 
-            XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-            this.Cache = ser.Deserialize(reader) as Cache;
+            XmlSerializer ser = new XmlSerializer(Cache.GetType());
+            Cache = ser.Deserialize(reader) as Cache;
 
-            this.Childs = new List<object>(this.Cache.Childs);
+            Childs = new ObservableList<object>(Cache.Childs);
         }
 
         /// <summary>
@@ -119,13 +115,13 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <param name="writer">The instance of the XmlWriter.</param>
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer) {
-            this.Cache.Childs = this.Childs;
+            Cache.Childs = Childs;
 
             WriteBasicXmlInfo(writer);
 
             try {
-                XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                ser.Serialize(writer, this.Cache);
+                XmlSerializer ser = new XmlSerializer(Cache.GetType());
+                ser.Serialize(writer, Cache);
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
             }

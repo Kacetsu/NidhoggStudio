@@ -1,19 +1,19 @@
 ﻿using ns.Base;
 using ns.Base.Event;
+using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Base.Extensions;
 using ns.Core.Configuration;
+using ns.Core.Manager.ProjectBox;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using ns.Core.Manager.ProjectBox;
 
 namespace ns.Core.Manager {
+
     public class ProjectManager : BaseManager {
-        
         private static string _fileName = string.Empty;
         private const string EXTENSION_ZIP = ".nsproj";
         private const string EXTENSION_XML = ".xml";
@@ -38,6 +38,7 @@ namespace ns.Core.Manager {
         /// Will be triggered if a new BaseOperation is added.
         /// </summary>
         public event OperationCollectionChangedHandler OperationAddedEvent;
+
         public event OperationCollectionChangedHandler OperationRemovedEvent;
 
         [XmlIgnore]
@@ -141,7 +142,7 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public override void Remove(Node node) {
-            if(_displayManager == null)
+            if (_displayManager == null)
                 _displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
 
             if (node is Operation) {
@@ -184,7 +185,7 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         /// <param name="parent">The parent.</param>
         public void Add(Node node, Node parent) {
-            if(_propertyManager == null)
+            if (_propertyManager == null)
                 _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
 
             bool enableProcessor = false;
@@ -256,7 +257,7 @@ namespace ns.Core.Manager {
             ProjectManager manager = LoadManager(path);
             if (manager == null) return null;
             Configuration.Name = manager.Configuration.Name;
-            
+
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
             _deviceManager = CoreSystem.Managers.Find(m => m.Name.Contains("DeviceManager")) as DeviceManager;
             _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
@@ -313,8 +314,7 @@ namespace ns.Core.Manager {
                 _propertyManager.ConnectPropertiesByNode(operationClone);
             }
 
-            if (Loaded != null)
-                Loaded();
+            Loaded?.Invoke();
 
             FileName = path;
             HasSavedProject = true;
@@ -332,7 +332,7 @@ namespace ns.Core.Manager {
             return false;
         }
 
-        public bool LoadLastUsedProject() { 
+        public bool LoadLastUsedProject() {
             ProjectBoxManager projectBoxManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectBoxManager")) as ProjectBoxManager;
             if (projectBoxManager == null) return false;
             if (Load(projectBoxManager.Configuration.LastUsedProjectPath) == null) {
@@ -356,7 +356,7 @@ namespace ns.Core.Manager {
         /// <param name="destination">The destination.</param>
         private void CloneProperties(Node source, Node destination) {
             List<object> listProperties = destination.Childs.FindAll(c => c is ListProperty);
-            List<object> numberProperties = destination.Childs.DeepClone();
+            ObservableList<object> numberProperties = destination.Childs.DeepClone();
 
             destination.Childs.Clear();
 
@@ -369,7 +369,7 @@ namespace ns.Core.Manager {
                 propertyClone.IsOutput = p.IsOutput;
                 propertyClone.IsMonitored = p.IsMonitored;
                 propertyClone.ConnectedToUID = p.ConnectedToUID;
-                propertyClone.Childs = new List<object>(p.Childs);
+                propertyClone.Childs = new ObservableList<object>(p.Childs);
                 propertyClone.Tolerance = p.Tolerance;
 
                 foreach (Node childNode in propertyClone.Childs)
@@ -385,7 +385,6 @@ namespace ns.Core.Manager {
                         devicePropertyClone.SetDevice(_deviceManager, device);
                     else
                         devicePropertyClone.SetDevice(_deviceManager, uid);
-
                 } else if (propertyClone is ImageProperty) {
                     _displayManager.Add(propertyClone);
                 } else if (propertyClone is ListProperty) {
@@ -420,7 +419,6 @@ namespace ns.Core.Manager {
                     }
                 }
 
-
                 _propertyManager.Add(propertyClone);
                 destination.Childs.Add(propertyClone);
             }
@@ -441,7 +439,7 @@ namespace ns.Core.Manager {
 
                 toolClone.SetParent(clone);
                 CloneProperties(m, toolClone);
-                
+
                 clone.Childs.Add(toolClone);
                 Trace.WriteLine("Added tool: " + toolClone.Name + " (" + toolClone.UID + ")", LogCategory.Debug);
                 LoadToolChilds(m, toolClone);

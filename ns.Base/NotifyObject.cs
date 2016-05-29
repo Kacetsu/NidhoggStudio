@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ns.Base {
+
     [Serializable]
-    public class NotifyObject : INotifyPropertyChanged {
+    public class NotifiableObject : INotifyPropertyChanged {
+
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
-        [field: NonSerializedAttribute()]
+        [field: NonSerialized()]
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Called when [property changed].
         /// </summary>
         /// <param name="name">The name.</param>
-        protected void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

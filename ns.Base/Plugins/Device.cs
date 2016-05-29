@@ -3,13 +3,15 @@ using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace ns.Base.Plugins
-{
+namespace ns.Base.Plugins {
+
     [Serializable]
     public class Device : Plugin, IXmlSerializable {
+
         /// <summary>
         /// Clones the Node with all its Members.
         /// Will set a new UID.
@@ -19,14 +21,14 @@ namespace ns.Base.Plugins
         /// </returns>
         public override object Clone() {
             Device clone = this.DeepClone();
-            clone.UID = Node.GenerateUID();
+            clone.UID = GenerateUID();
             return clone;
         }
 
         public override bool Finalize() {
             bool result = base.Finalize();
 
-            foreach (Property childProperty in this.Childs.Where(c => c is Property)) {
+            foreach (Property childProperty in Childs.Where(c => c is Property)) {
                 if (childProperty.IsOutput)
                     childProperty.Value = null;
                 else if (!string.IsNullOrEmpty(childProperty.ConnectedToUID))
@@ -62,15 +64,11 @@ namespace ns.Base.Plugins
             reader.ReadStartElement();
             if (reader.IsEmptyElement == false) {
                 XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                this.Cache = ser.Deserialize(reader) as Cache;
+                Cache = ser.Deserialize(reader) as Cache;
 
-                List<object> propertiesObj = this.Cache.Childs.FindAll(c => c is Property);
+                IEnumerable<object> propertiesObj = Cache.Childs.Where(c => c is Property);
 
-                List<Property> properties = new List<Property>();
-                foreach (Property p in propertiesObj)
-                    properties.Add(p);
-
-                this.Childs.AddRange(properties);
+                foreach (Property p in propertiesObj) Childs.Add(p);
             }
         }
 
@@ -83,11 +81,11 @@ namespace ns.Base.Plugins
             writer.WriteAttributeString("AssemblyFile", AssemblyFile);
             writer.WriteAttributeString("Version", Version);
 
-            this.Cache.Childs = new List<object>(this.Childs);
+            Cache.Childs = new ObservableList<object>(Childs);
 
             try {
-                XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                ser.Serialize(writer, this.Cache);
+                XmlSerializer ser = new XmlSerializer(Cache.GetType());
+                ser.Serialize(writer, Cache);
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
             }

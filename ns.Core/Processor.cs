@@ -14,7 +14,7 @@ namespace ns.Core {
     /// <summary>
     /// Handles the use of all operations.
     /// </summary>
-    public class Processor : NotifyObject {
+    public class Processor : NotifiableObject {
 
         private ProjectManager _projectManager;
         private DataStorageManager _dataStorageManager;

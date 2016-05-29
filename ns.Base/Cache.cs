@@ -1,10 +1,11 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
 namespace ns.Base {
+
     [Serializable]
     public class Cache {
 
@@ -19,14 +20,6 @@ namespace ns.Base {
         XmlElement(typeof(Extension)),
         XmlElement(typeof(ListProperty)),
         XmlElement(typeof(Property))]
-        public List<object> Childs { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Cache"/> class.
-        /// </summary>
-        public Cache() {
-            Childs = new List<object>();
-        }
-
+        public ObservableList<object> Childs { get; set; } = new ObservableList<object>();
     }
 }

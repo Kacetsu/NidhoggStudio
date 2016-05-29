@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF {
-    public class NavigationTarget : NotifyObject {
+    public class NavigationTarget : NotifiableObject {
         private string _name;
         private string _displayName;
         private List<NavigationTarget> _childTargets;

@@ -85,6 +85,7 @@
     <Compile Include="Manager\BaseManager.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="NotifyObject.cs" />
+    <Compile Include="ObservableList.cs" />
     <Compile Include="Plugins\ImageDevice.cs" />
     <Compile Include="Plugins\INode.cs" />
     <Compile Include="Plugins\IPlugin.cs" />

@@ -1,8 +1,8 @@
 ﻿using ns.Base.Plugins;
 
 namespace ns.GUI.WPF.Controls {
-    public class OperationTreeItem : NodeTreeItem {
 
+    public class OperationTreeItem : NodeTreeItem {
         private Operation _operation;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="operation">The operation.</param>
         public OperationTreeItem(Operation operation) : base(operation) {
             _operation = operation;
-            _operation.ChildCollectionChanged += HandleChildCollectionChanged;
+            _operation.Childs.CollectionChanged += Operation_Childs_CollectionChanged;
             _operation.PropertyChanged += HandlePropertyChanged;
         }
 
@@ -31,7 +31,7 @@ namespace ns.GUI.WPF.Controls {
         public override void Close() {
             base.Close();
             if (_operation != null) {
-                _operation.ChildCollectionChanged -= HandleChildCollectionChanged;
+                _operation.Childs.CollectionChanged -= Operation_Childs_CollectionChanged;
                 _operation.PropertyChanged -= HandlePropertyChanged;
                 _operation = null;
             }
@@ -51,13 +51,8 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        /// <summary>
-        /// Handles the child collection changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Base.Event.ChildCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void HandleChildCollectionChanged(object sender, Base.Event.ChildCollectionChangedEventArgs e) {
-            this.UpdateChilds();
+        private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            UpdateChilds();
         }
     }
 }

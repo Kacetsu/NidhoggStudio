@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für OperationNodeControl.xaml
     /// </summary>
@@ -19,6 +20,7 @@ namespace ns.GUI.WPF.Controls {
         private GuiManager _guiManager;
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
+
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         public OperationNodeControl(Operation operation) {
@@ -29,7 +31,7 @@ namespace ns.GUI.WPF.Controls {
             ContentToggleButton.IsChecked = true;
             _toolControls = new LockedObservableCollection<ToolNodeControl>();
             ContentList.ItemsSource = _toolControls;
-            _operation.ChildCollectionChanged += _operation_ChildCollectionChanged;
+            _operation.Childs.CollectionChanged += Operation_Childs_CollectionChanged;
             ContentList.SelectionChanged += ContentList_SelectionChanged;
 
             if (_guiManager == null)
@@ -39,18 +41,16 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if(_guiManager == null)
+            if (_guiManager == null)
                 _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
 
-            if(ContentList.SelectedItem is ToolNodeControl && (ContentList.SelectedItem as ToolNodeControl).Tool != null) {
+            if (ContentList.SelectedItem is ToolNodeControl && (ContentList.SelectedItem as ToolNodeControl).Tool != null) {
                 _guiManager.SelectNode((ContentList.SelectedItem as ToolNodeControl).Tool);
             }
-            
         }
 
         private void OnConfigNode(Node node) {
-            if (ConfigNodeHandlerChanged != null)
-                ConfigNodeHandlerChanged(this, new NodeSelectionChangedEventArgs(node));
+            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs(node));
         }
 
         public void UpdateChildControls() {
@@ -60,7 +60,6 @@ namespace ns.GUI.WPF.Controls {
 
                 foreach (Node child in _operation.Childs) {
                     if (child is Tool) {
-
                         Tool tool = child as Tool;
                         ToolNodeControl toolNodeControl = new ToolNodeControl(tool);
                         toolNodeControl.ConfigNodeHandlerChanged += ToolNodeControl_ConfigNodeHandlerChanged;
@@ -76,7 +75,7 @@ namespace ns.GUI.WPF.Controls {
             OnConfigNode(e.SelectedNode);
         }
 
-        private void _operation_ChildCollectionChanged(object sender, Base.Event.ChildCollectionChangedEventArgs e) {
+        private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
             UpdateChildControls();
         }
 

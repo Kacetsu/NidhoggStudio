@@ -2,10 +2,12 @@
 using ns.Base.Log;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
+
     /// <summary>
     /// Base Class for all Properties.
     /// @warning Should not be used directly.
@@ -27,7 +29,6 @@ namespace ns.Base.Plugins.Properties {
         private bool _canAutoConnect = false;
         private bool _isToleranceDisabled = true;
         private Tolerance<object> _tolerance;
-        
 
         /// <summary>
         /// Gets or sets the name of the group.
@@ -42,7 +43,7 @@ namespace ns.Base.Plugins.Properties {
                     result = _groupName;
                 return result;
             }
-            set { 
+            set {
                 _groupName = value;
                 OnPropertyChanged("GroupName");
             }
@@ -53,7 +54,7 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         public object Value {
             get { return _value; }
-            set { 
+            set {
                 _value = value;
                 OnPropertyChanged("Value");
             }
@@ -75,7 +76,7 @@ namespace ns.Base.Plugins.Properties {
         [XmlAttribute("ToolUID")]
         public string ToolUID {
             get { return _toolUid; }
-            set { 
+            set {
                 _toolUid = value;
                 OnPropertyChanged("ToolUID");
             }
@@ -87,7 +88,7 @@ namespace ns.Base.Plugins.Properties {
         [XmlAttribute("IsOutput")]
         public bool IsOutput {
             get { return _isOutput; }
-            set { 
+            set {
                 _isOutput = value;
                 OnPropertyChanged("IsOutput");
             }
@@ -102,7 +103,7 @@ namespace ns.Base.Plugins.Properties {
         [XmlAttribute("IsMonitored")]
         public bool IsMonitored {
             get { return _isMonitored; }
-            set { 
+            set {
                 _isMonitored = value;
                 OnPropertyChanged("IsMonitored");
             }
@@ -121,7 +122,7 @@ namespace ns.Base.Plugins.Properties {
         [XmlAttribute("ConnectedToUID")]
         public string ConnectedToUID {
             get { return _connectedToUid; }
-            set { 
+            set {
                 _connectedToUid = value;
                 OnPropertyChanged("ConnectedToUID");
             }
@@ -139,7 +140,7 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         public bool CanAutoConnect {
             get { return _canAutoConnect; }
-            set { 
+            set {
                 _canAutoConnect = value;
                 OnPropertyChanged("CanAutoConnect");
             }
@@ -316,11 +317,11 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="reader">The instance of the XmlReader.</param>
         void IXmlSerializable.ReadXml(System.Xml.XmlReader reader) {
             ReadBasicXmlInfo(reader);
-            if(reader.MoveToAttribute("IsOutput"))
+            if (reader.MoveToAttribute("IsOutput"))
                 this.IsOutput = Convert.ToBoolean(reader.ReadContentAsString());
             if (reader.MoveToAttribute("IsMonitored"))
                 this.IsMonitored = Convert.ToBoolean(reader.ReadContentAsString());
-            if(reader.MoveToAttribute("ConnectedToUID"))
+            if (reader.MoveToAttribute("ConnectedToUID"))
                 this.ConnectedToUID = reader.ReadContentAsString();
 
             if (reader.IsEmptyElement == false) {
@@ -332,7 +333,7 @@ namespace ns.Base.Plugins.Properties {
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                     }
-                } else if(reader.Name == "ArrayOfDouble") {
+                } else if (reader.Name == "ArrayOfDouble") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(List<double>));
                         this.Value = ser.Deserialize(reader);
@@ -357,10 +358,10 @@ namespace ns.Base.Plugins.Properties {
                 } catch (Exception ex) {
                     Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 }
-                this.Childs = new List<object>(this.Cache.Childs);
+                Childs = new ObservableList<object>(Cache.Childs);
             }
 
-            if(reader.Name.Contains("ToleranceOf") && reader.IsStartElement()) {
+            if (reader.Name.Contains("ToleranceOf") && reader.IsStartElement()) {
                 reader.ReadStartElement();
                 this.Tolerance = new Tolerance<object>();
                 string min = reader.ReadInnerXml();
@@ -377,7 +378,6 @@ namespace ns.Base.Plugins.Properties {
 
                 reader.ReadEndElement();
             }
-
         }
 
         /// <summary>
@@ -386,45 +386,44 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="writer">The instance of the XmlWriter.</param>
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer) {
             WriteBasicXmlInfo(writer);
-            if(this.IsOutput)
-                writer.WriteAttributeString("IsOutput", this.IsOutput.ToString());
-            if (this.IsMonitored)
-                writer.WriteAttributeString("IsMonitored", this.IsMonitored.ToString());
-            if(!string.IsNullOrEmpty(this.ConnectedToUID))
-                writer.WriteAttributeString("ConnectedToUID", this.ConnectedToUID);
+            if (IsOutput)
+                writer.WriteAttributeString("IsOutput", IsOutput.ToString());
+            if (IsMonitored)
+                writer.WriteAttributeString("IsMonitored", IsMonitored.ToString());
+            if (!string.IsNullOrEmpty(ConnectedToUID))
+                writer.WriteAttributeString("ConnectedToUID", ConnectedToUID);
 
-            this.Cache.Childs = new List<object>();
+            Cache.Childs = new ObservableList<object>();
 
-            foreach (Node child in this.Childs) {
+            foreach (Node child in Childs) {
                 if (child is Property)
-                    this.Cache.Childs.Add(child);
+                    Cache.Childs.Add(child);
             }
 
-            if (this.Value != null && !this.IsOutput) {
+            if (Value != null && !IsOutput) {
                 try {
                     XmlSerializer ser = new XmlSerializer(typeof(object));
                     if (this is DeviceProperty)
                         ser.Serialize(writer, ((DeviceProperty)this).DeviceUID);
                     else if (this is ListProperty)
-                        ser.Serialize(writer, this.Value.ToString());
+                        ser.Serialize(writer, Value.ToString());
                     else if (this is RectangleProperty) {
                         ser = new XmlSerializer(typeof(List<double>));
-                        ser.Serialize(writer, this.Value);
+                        ser.Serialize(writer, Value);
                     } else
-                        ser.Serialize(writer, this.Value);
-                    if (this.Cache.Childs.Count > 0) {
-                        ser = new XmlSerializer(this.Cache.GetType());
-                        ser.Serialize(writer, this.Cache);
+                        ser.Serialize(writer, Value);
+                    if (Cache.Childs.Count > 0) {
+                        ser = new XmlSerializer(Cache.GetType());
+                        ser.Serialize(writer, Cache);
                     }
                 } catch (Exception ex) {
                     Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 }
             }
 
-            if(!this.IsToleranceDisabled) {
-                this.Save(writer);
+            if (!IsToleranceDisabled) {
+                Save(writer);
             }
-
         }
     }
 }

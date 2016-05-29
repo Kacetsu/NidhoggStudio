@@ -1,18 +1,19 @@
-﻿using ns.Base.Log;
-using ns.Base.Extensions;
+﻿using ns.Base.Extensions;
+using ns.Base.Log;
+using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
-using ns.Base.Plugins.Properties;
 
 namespace ns.Base.Plugins {
+
     /// <summary>
     /// Base Class for all Tools.
     /// </summary>
     [Serializable]
-    public class Tool : Plugin, IXmlSerializable  {
-
+    public class Tool : Plugin, IXmlSerializable {
         private DateTime _timeMeasureStart;
         private DoubleProperty _executionTimeMs;
 
@@ -34,7 +35,7 @@ namespace ns.Base.Plugins {
                     else
                         _name = this.GetType().Name;
                 }
-                return _name; 
+                return _name;
             }
             set {
                 base.Name = value;
@@ -76,7 +77,7 @@ namespace ns.Base.Plugins {
         public override bool Finalize() {
             bool result = base.Finalize();
 
-            if(_executionTimeMs != null)
+            if (_executionTimeMs != null)
                 _executionTimeMs.Value = 0;
 
             foreach (Property childProperty in this.Childs.Where(c => c is Property)) {
@@ -96,7 +97,7 @@ namespace ns.Base.Plugins {
         }
 
         public override bool PostRun() {
-            if(_timeMeasureStart != null)
+            if (_timeMeasureStart != null)
                 _executionTimeMs.Value = DateTime.Now.Subtract(_timeMeasureStart).TotalMilliseconds;
 
             return base.PostRun();
@@ -118,31 +119,28 @@ namespace ns.Base.Plugins {
         void IXmlSerializable.ReadXml(System.Xml.XmlReader reader) {
             ReadBasicXmlInfo(reader);
 
-            reader.MoveToAttribute("AssemblyFile");
+            reader.MoveToAttribute(nameof(AssemblyFile));
             AssemblyFile = reader.ReadContentAsString();
-            reader.MoveToAttribute("Version");
+            reader.MoveToAttribute(nameof(Version));
             Version = reader.ReadContentAsString();
 
             reader.ReadStartElement();
             if (reader.IsEmptyElement == false) {
-                XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                this.Cache = ser.Deserialize(reader) as Cache;
+                XmlSerializer ser = new XmlSerializer(Cache.GetType());
+                Cache = ser.Deserialize(reader) as Cache;
 
-                List<object> tools = this.Cache.Childs.FindAll(c => c is Tool);
-                List<object> propertiesObj = this.Cache.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
-
-                List<Property> properties = new List<Property>();
-                foreach (Property p in propertiesObj)
-                    properties.Add(p);
+                IEnumerable<object> tools = Cache.Childs.Where(c => c is Tool);
+                IEnumerable<object> propertiesObj = Cache.Childs.Where(c => c is Property);
 
                 if (tools != null)
-                    this.Childs = new List<object>(tools);
+                    Childs = new ObservableList<object>(tools);
 
-                this.Childs.AddRange(properties);
+                List<Property> properties = new List<Property>();
+                foreach (Property p in propertiesObj) Childs.Add(p);
             }
 
             while (!reader.IsStartElement()) {
-                if (reader.Name == "Cache") {
+                if (reader.Name == nameof(Cache)) {
                     reader.ReadEndElement();
                     break;
                 }
@@ -157,14 +155,14 @@ namespace ns.Base.Plugins {
         /// <param name="writer">The instance of the XmlWriter.</param>
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer) {
             WriteBasicXmlInfo(writer);
-            writer.WriteAttributeString("AssemblyFile", AssemblyFile);
-            writer.WriteAttributeString("Version", Version);
+            writer.WriteAttributeString(nameof(AssemblyFile), AssemblyFile);
+            writer.WriteAttributeString(nameof(Version), Version);
 
-            this.Cache.Childs = new List<object>(this.Childs);
+            Cache.Childs = new ObservableList<object>(Childs);
 
             try {
-                XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                ser.Serialize(writer, this.Cache);
+                XmlSerializer ser = new XmlSerializer(Cache.GetType());
+                ser.Serialize(writer, Cache);
             } catch (Exception ex) {
                 Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
             }

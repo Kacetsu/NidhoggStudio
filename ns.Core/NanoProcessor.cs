@@ -8,7 +8,7 @@ namespace ns.Core {
     /// <summary>
     /// Runs the Operation on a sync way.
     /// </summary>
-    public class NanoProcessor : NotifyObject {
+    public class NanoProcessor : NotifiableObject {
         private Operation _operation;
         private bool _result = false;
         private DataStorageManager _dataStorageManager;

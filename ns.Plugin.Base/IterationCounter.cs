@@ -5,9 +5,9 @@ using ns.Base.Plugins.Properties;
 using System;
 
 namespace ns.Plugin.Base {
+
     [Visible, Serializable]
     public class IterationCounter : Tool {
-
         private int _iterations = 0;
         private DateTime _lastTime;
 
@@ -39,7 +39,7 @@ namespace ns.Plugin.Base {
         public IterationCounter() {
             DisplayName = "Iteration Counter";
             AddChild(new IntegerProperty("Iterations", true));
-            AddChild(new IntegerProperty("ElapsedMs", true));
+            AddChild(new DoubleProperty("ElapsedMs", true));
         }
 
         public override bool Initialize() {
@@ -59,7 +59,7 @@ namespace ns.Plugin.Base {
             base.PostRun();
 
             IntegerProperty propIteration = GetProperty("Iterations") as IntegerProperty;
-            IntegerProperty propElapsedMs = GetProperty("ElapsedMs") as IntegerProperty;
+            DoubleProperty propElapsedMs = GetProperty("ElapsedMs") as DoubleProperty;
             propIteration.Value = _iterations;
 
             DateTime endTime = DateTime.Now;

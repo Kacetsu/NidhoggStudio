@@ -84,7 +84,7 @@
     <Compile Include="Log\TraceListener.cs" />
     <Compile Include="Manager\BaseManager.cs" />
     <Compile Include="Cache.cs" />
-    <Compile Include="NotifyObject.cs" />
+    <Compile Include="NotifiableObject.cs" />
     <Compile Include="ObservableList.cs" />
     <Compile Include="Plugins\ImageDevice.cs" />
     <Compile Include="Plugins\INode.cs" />
@@ -97,6 +97,7 @@
     <Compile Include="Plugins\Properties\NumberProperty.cs" />
     <Compile Include="Plugins\Properties\OperationSelectionProperty.cs" />
     <Compile Include="Plugins\Properties\RectangleProperty.cs" />
+    <Compile Include="Plugins\Properties\GenericProperty.cs" />
     <Compile Include="Plugins\Tolerance.cs" />
     <Compile Include="Plugins\Tool.cs" />
     <Compile Include="Plugins\Operation.cs" />

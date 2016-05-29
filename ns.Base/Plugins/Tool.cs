@@ -3,7 +3,6 @@ using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 

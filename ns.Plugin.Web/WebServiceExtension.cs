@@ -17,9 +17,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ns.Plugin.Web {
+
     [Visible]
     public class WebServiceExtension : Extension {
-
         private int _port = 9999;
 
         private IHubContext _renderHubContext;
@@ -107,7 +107,6 @@ namespace ns.Plugin.Web {
         private void ThreadLoop() {
             _stopwatch.Start();
             while (!_isTerminated) {
-
                 if (_imageQueue.Count > 0 && _stopwatch.ElapsedMilliseconds > 50) {
                     byte[] imageData = ConvertToByteArry(_imageQueue.Dequeue());
                     if (imageData == null)
@@ -127,23 +126,22 @@ namespace ns.Plugin.Web {
         /// <param name="imageProperty">The image property.</param>
         /// <returns></returns>
         private byte[] ConvertToByteArry(ImageProperty imageProperty) {
-            if (imageProperty == null || imageProperty.Value == null)
-                return null;
+            if (imageProperty == null || imageProperty.Value.Data == null || imageProperty.Value.Data.Count() < 1) return null;
 
-            ImageContainer container = (ImageContainer)imageProperty.Value;
-            System.Drawing.Imaging.PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
+            ImageContainer container = imageProperty.Value;
+            PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 
             EncoderParameters codecParams;
 
             if (container.BytesPerPixel == 1) {
                 pixelFormat = PixelFormat.Format8bppIndexed;
-                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 30L);
-                EncoderParameter encoderParameter2 = new EncoderParameter(System.Drawing.Imaging.Encoder.ColorDepth, 8L);
+                EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, 30L);
+                EncoderParameter encoderParameter2 = new EncoderParameter(Encoder.ColorDepth, 8L);
                 codecParams = new EncoderParameters(2);
                 codecParams.Param[0] = encoderParameter;
                 codecParams.Param[1] = encoderParameter2;
             } else {
-                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 30L);
+                EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, 30L);
                 codecParams = new EncoderParameters(1);
                 codecParams.Param[0] = encoderParameter;
             }
@@ -172,11 +170,9 @@ namespace ns.Plugin.Web {
             }
 
             using (MemoryStream stream = new MemoryStream()) {
-
                 bitmap.Save(stream, jpegCodecInfo, codecParams);
                 return stream.ToArray();
             }
         }
-
     }
 }

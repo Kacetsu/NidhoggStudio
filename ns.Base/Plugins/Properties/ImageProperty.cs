@@ -1,25 +1,27 @@
 ﻿using System;
 
 namespace ns.Base.Plugins.Properties {
-    [Serializable]
-    public class ImageProperty : Property {
 
+    [Serializable]
+    public class ImageProperty : GenericProperty<ImageContainer> {
         private bool _isVisible = false;
 
-        public ImageProperty() : base() { CanAutoConnect = true; }
-        public ImageProperty(string name, byte[] value) : base(name, value) { CanAutoConnect = true; }
-        public ImageProperty(string name, bool isOutput) : base(name, isOutput) { CanAutoConnect = true; }
+        public ImageProperty() : base() {
+            CanAutoConnect = true;
+        }
 
-        public override Type Type {
-            get {
-                return typeof(byte[]);
-            }
+        public ImageProperty(string name, ImageContainer value) : base(name, value) {
+            CanAutoConnect = true;
+        }
+
+        public ImageProperty(string name, bool isOutput) : base(name, isOutput) {
+            CanAutoConnect = true;
         }
 
         public bool IsVisible {
             get { return _isVisible; }
             set {
-                if(_isVisible != value) {
+                if (_isVisible != value) {
                     _isVisible = value;
                     OnPropertyChanged("IsVisible");
                 }
@@ -32,9 +34,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The width.
         /// </value>
-        public int Width {
-            get { return ((ImageContainer)this.Value).Width; }
-        }
+        public int Width => Value.Width;
 
         /// <summary>
         /// Gets the height.
@@ -42,9 +42,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The height.
         /// </value>
-        public int Height {
-            get { return ((ImageContainer)this.Value).Height; }
-        }
+        public int Height => Value.Height;
 
         /// <summary>
         /// Gets the bytes per pixel.
@@ -52,9 +50,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The bytes per pixel.
         /// </value>
-        public byte BytesPerPixel {
-            get { return ((ImageContainer)this.Value).BytesPerPixel; }
-        }
+        public byte BytesPerPixel => Value.BytesPerPixel;
 
         /// <summary>
         /// Gets the parent operation.
@@ -107,15 +103,7 @@ namespace ns.Base.Plugins.Properties {
             container.Height = height;
             container.Stride = stride;
             container.BytesPerPixel = bytesPerPixel;
-            this.Value = container;
-        }
-
-        /// <summary>
-        /// Sets the value.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        public void SetValue(ImageContainer container) {
-            this.Value = container;
+            Value = container;
         }
     }
 }

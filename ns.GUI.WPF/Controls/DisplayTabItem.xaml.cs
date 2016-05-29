@@ -10,10 +10,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaction logic for DisplayTabItem.xaml
     /// </summary>
     public partial class DisplayTabItem : TabItem, INotifyPropertyChanged {
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ImageProperty _imageProperty;
@@ -58,7 +60,7 @@ namespace ns.GUI.WPF.Controls {
                 OnPropertyChanged("ScalingFactor");
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the scaling factor as string.
         /// @Warning: Should only be used as binding.
@@ -184,32 +186,31 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         /// <param name="image">The image.</param>
         public void UpdateImage(ImageProperty image) {
-            if (image.Value != null) {
-                BitmapSource imageSource = null;
+            if (image.Value.Data == null) return;
+            BitmapSource imageSource = null;
 
-                if (!image.ParentTool.IsSelected)
-                    _storedImageContainer = (ImageContainer)image.Value;
-                else {
-                    _storedImageContainer = (ImageContainer)image.Value;
-                    imageSource = LoadImage(_storedImageContainer.Data, _storedImageContainer.Width, _storedImageContainer.Height, _storedImageContainer.Stride, _storedImageContainer.BytesPerPixel);
-                }
-
-                this.ImageDisplay.Width = _storedImageContainer.Width;
-                this.ImageDisplay.Height = _storedImageContainer.Height;
-                this.ImageCanvas.Width = _storedImageContainer.Width;
-                this.ImageCanvas.Height = _storedImageContainer.Height;
-
-                if (!image.ParentTool.IsSelected)
-                    return;
-
-                this.Image = imageSource;
+            if (!image.ParentTool.IsSelected)
+                _storedImageContainer = image.Value;
+            else {
+                _storedImageContainer = image.Value;
+                imageSource = LoadImage(_storedImageContainer.Data, _storedImageContainer.Width, _storedImageContainer.Height, _storedImageContainer.Stride, _storedImageContainer.BytesPerPixel);
             }
+
+            ImageDisplay.Width = _storedImageContainer.Width;
+            ImageDisplay.Height = _storedImageContainer.Height;
+            ImageCanvas.Width = _storedImageContainer.Width;
+            ImageCanvas.Height = _storedImageContainer.Height;
+
+            if (!image.ParentTool.IsSelected)
+                return;
+
+            this.Image = imageSource;
         }
 
         private void HandleParentPropertyChanged(object sender, PropertyChangedEventArgs e) {
-            this.Dispatcher.BeginInvoke(new Action(() => {
+            Dispatcher.BeginInvoke(new Action(() => {
                 if (e.PropertyName == "Name") {
-                    this.Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
+                    Header = _imageProperty.ParentTool.Name + " - " + _imageProperty.Name;
                 }
             }));
         }
@@ -224,7 +225,6 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="bytesPerPixel">The bytes per pixel.</param>
         /// <returns></returns>
         private BitmapSource LoadImage(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
-
             PixelFormat pixelFormat = PixelFormats.Bgr24;
 
             if (bytesPerPixel == 1)
@@ -281,10 +281,10 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void SetOverlayProperties(ImageProperty imageProperty) {
-            if(imageProperty.Parent is Tool) {
+            if (imageProperty.Parent is Tool) {
                 Tool parent = imageProperty.Parent as Tool;
-                foreach(ns.Base.Plugins.Properties.Property child in parent.Childs.Where(c => c is ns.Base.Plugins.Properties.Property)) {
-                    if(child is RectangleProperty && !child.IsOutput) {
+                foreach (ns.Base.Plugins.Properties.Property child in parent.Childs.Where(c => c is ns.Base.Plugins.Properties.Property)) {
+                    if (child is RectangleProperty && !child.IsOutput) {
                         if (_rectangles == null) _rectangles = new List<OverlayRectangle>();
                         OverlayRectangle overlay = new OverlayRectangle(child as RectangleProperty, this.ImageCanvas);
                         _rectangles.Add(overlay);
@@ -305,23 +305,23 @@ namespace ns.GUI.WPF.Controls {
 
         private void Button_Click(object sender, RoutedEventArgs e) {
             double newScalingFactor = _scalingFactor;
-            if(sender == this.ZoomInButton) {
+            if (sender == this.ZoomInButton) {
                 if (newScalingFactor < 2.0) {
                     newScalingFactor += 0.1;
                 } else {
                     newScalingFactor += 1.0;
                 }
-            } else if(sender == this.ZoomOutButton) {
-                if(_scalingFactor <= 2.1) {
+            } else if (sender == this.ZoomOutButton) {
+                if (_scalingFactor <= 2.1) {
                     newScalingFactor -= 0.1;
                 } else {
                     newScalingFactor -= 1.0;
                 }
 
-                if(newScalingFactor < 0.1) {
+                if (newScalingFactor < 0.1) {
                     newScalingFactor = 0.1;
                 }
-            } else if(sender == this.HistogramToggleButton) {
+            } else if (sender == this.HistogramToggleButton) {
                 IsHistogramEnabled = !IsHistogramEnabled;
             }
             ScalingFactor = newScalingFactor;

@@ -19,11 +19,5 @@ namespace ns.Base.Plugins.Properties {
 
         public DoubleProperty(string name, double value, double min, double max) : base(name, value, min, max) {
         }
-
-        public override Type Type {
-            get {
-                return typeof(double);
-            }
-        }
     }
 }

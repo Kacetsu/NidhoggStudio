@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
+
     [Serializable]
     public class ListProperty : Property {
-
         private List<object> _list = new List<object>();
 
         /// <summary>
@@ -34,7 +30,7 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="isOutput">True if the property is a output.</param>
-        public ListProperty(string name,  bool isOutput)
+        public ListProperty(string name, bool isOutput)
             : base(name, isOutput) {
         }
 
@@ -46,7 +42,7 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         public List<object> List {
             get { return _list; }
-            set { 
+            set {
                 _list = value;
                 OnPropertyChanged("List");
             }

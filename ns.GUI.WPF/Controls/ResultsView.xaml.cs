@@ -1,23 +1,13 @@
 ﻿using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für ResultsView.xaml
     /// </summary>
@@ -36,7 +26,7 @@ namespace ns.GUI.WPF.Controls {
 
         private void ResultsView_Loaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
-            
+
             _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
             _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
@@ -58,14 +48,14 @@ namespace ns.GUI.WPF.Controls {
                 if (!property.IsOutput || !(property.Parent is Tool)) continue;
 
                 bool contains = false;
-                foreach(ResultViewContainer container in _collection) {
-                    if(container.Property == property) {
+                foreach (ResultViewContainer container in _collection) {
+                    if (container.Property == property) {
                         contains = true;
                         break;
                     }
                 }
 
-                if(!contains)
+                if (!contains)
                     _collection.Add(new ResultViewContainer(property));
             }
         }
@@ -111,7 +101,7 @@ namespace ns.GUI.WPF.Controls {
                     }
                 }
 
-                if(containerToRemove != null)
+                if (containerToRemove != null)
                     _collection.Remove(containerToRemove);
             }
         }

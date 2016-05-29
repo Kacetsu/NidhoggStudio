@@ -56,7 +56,7 @@ namespace ns.Base.Plugins.Properties {
             get { return _value; }
             set {
                 _value = value;
-                OnPropertyChanged("Value");
+                OnPropertyChanged();
             }
         }
 

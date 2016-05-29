@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ns.Base.Extensions;
-using System.Xml.Serialization;
+﻿using ns.Base.Extensions;
+using System;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
+
     [Serializable]
-    public class NumberProperty<T> : Property {
-        private object _max;
-        private object _min;
+    public class NumberProperty<T> : GenericProperty<T> {
+        private T _max;
+        private T _min;
         private Tolerance<T> _tolerance;
 
         public NumberProperty() : base() {
             _tolerance = new Tolerance<T>();
         }
-        public NumberProperty(string name, T value) : base(name, value) { }
-        public NumberProperty(string name, bool isOutput) : base(name, isOutput) { }
+
+        public NumberProperty(string name, T value) : base(name, value) {
+        }
+
+        public NumberProperty(string name, bool isOutput) : base(name, isOutput) {
+        }
+
         public NumberProperty(string name, T value, T min, T max) : base(name, value) {
             _max = max;
             _min = min;
@@ -38,7 +40,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The maximum.
         /// </value>
-        public object Max {
+        public T Max {
             get { return _max; }
             set { _max = value; }
         }
@@ -49,7 +51,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The minimum.
         /// </value>
-        public object Min {
+        public T Min {
             get { return _min; }
             set { _min = value; }
         }
@@ -70,7 +72,7 @@ namespace ns.Base.Plugins.Properties {
 
         public override void Save(XmlWriter writer) {
             XmlSerializer ser = new XmlSerializer(typeof(Tolerance<T>));
-            ser.Serialize(writer, this.Tolerance);
+            ser.Serialize(writer, Tolerance);
         }
     }
 }

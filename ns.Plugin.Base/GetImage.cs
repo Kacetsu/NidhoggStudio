@@ -6,13 +6,13 @@ using ns.Base.Plugins.Properties;
 using System;
 
 namespace ns.Plugin.Base {
+
     [Visible, Serializable]
     public class GetImage : Tool {
         private ImageDevice _device;
         private ImageProperty _imageProperty;
         private DeviceProperty _deviceProperty;
         private bool _isRunning = false;
-
 
         /// <summary>
         /// Gets the category.
@@ -94,7 +94,7 @@ namespace ns.Plugin.Base {
         /// <returns></returns>
         public override bool PreRun() {
             bool result = true;
-            if(_isRunning)
+            if (_isRunning)
                 result = base.PreRun() && _device.PreRun();
             return result;
         }
@@ -107,18 +107,17 @@ namespace ns.Plugin.Base {
         /// </returns>
         public override bool Run() {
             bool result = false;
-            if (!_isRunning) 
+            if (!_isRunning)
                 return true;
             if (_device != null) {
                 lock (_device) {
                     if (result = _device.Run()) {
                         ImageProperty deviceImage = _device.GetProperty(typeof(ImageProperty)) as ImageProperty;
-                        ImageContainer container = (ImageContainer)deviceImage.Value;
-                        _imageProperty.SetValue(container);
+                        _imageProperty.Value = deviceImage.Value;
                     }
                 }
             }
-            
+
             return result;
         }
 
@@ -128,7 +127,7 @@ namespace ns.Plugin.Base {
         /// <returns></returns>
         public override bool PostRun() {
             bool result = true;
-            if(_isRunning)
+            if (_isRunning)
                 result = base.PostRun() && _device.PostRun();
             return result;
         }

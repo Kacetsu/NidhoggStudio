@@ -1,14 +1,9 @@
 ﻿using ns.Base.Event;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ns.Base {
@@ -328,11 +323,11 @@ namespace ns.Base {
         /// <param name="reader">The instance of the XmlReader.</param>
         protected void ReadBasicXmlInfo(System.Xml.XmlReader reader) {
             reader.MoveToAttribute(nameof(Name));
-            this.Name = reader.ReadContentAsString();
+            Name = reader.ReadContentAsString();
             reader.MoveToAttribute(nameof(Fullname));
-            this.Fullname = reader.ReadContentAsString();
+            Fullname = reader.ReadContentAsString();
             reader.MoveToAttribute(nameof(UID));
-            this.UID = reader.ReadContentAsString();
+            UID = reader.ReadContentAsString();
         }
     }
 }

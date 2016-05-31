@@ -2,7 +2,6 @@
 using ns.Base.Log;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -23,12 +22,10 @@ namespace ns.Base.Plugins.Properties {
         private bool _isOutput = false;
         private string _connectedToUid = string.Empty;
         private Property _connectedProperty = null;
-        private object _initialValue = null;
         private string _groupName = string.Empty;
         private bool _isMonitored = false;
         private bool _canAutoConnect = false;
         private bool _isToleranceDisabled = true;
-        private Tolerance<object> _tolerance;
 
         /// <summary>
         /// Gets or sets the name of the group.
@@ -36,6 +33,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The name of the group.
         /// </value>
+        [XmlIgnore]
         public string GroupName {
             get {
                 string result = _name;
@@ -45,7 +43,7 @@ namespace ns.Base.Plugins.Properties {
             }
             set {
                 _groupName = value;
-                OnPropertyChanged("GroupName");
+                OnPropertyChanged();
             }
         }
 
@@ -66,31 +64,30 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The initial value.
         /// </value>
-        public object InitialValue {
-            get { return _initialValue; }
-        }
+        [XmlIgnore]
+        public object InitialValue { get; private set; } = null;
 
         /// <summary>
         /// Gets or sets the unified identification of the parent tool.
         /// </summary>
-        [XmlAttribute("ToolUID")]
+        [XmlAttribute]
         public string ToolUID {
             get { return _toolUid; }
             set {
                 _toolUid = value;
-                OnPropertyChanged("ToolUID");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets or sets if the property is used as output.
         /// </summary>
-        [XmlAttribute("IsOutput")]
+        [XmlAttribute]
         public bool IsOutput {
             get { return _isOutput; }
             set {
                 _isOutput = value;
-                OnPropertyChanged("IsOutput");
+                OnPropertyChanged();
             }
         }
 
@@ -100,37 +97,33 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// <c>true</c> if this instance is monitored; otherwise, <c>false</c>.
         /// </value>
-        [XmlAttribute("IsMonitored")]
+        [XmlAttribute]
         public bool IsMonitored {
             get { return _isMonitored; }
             set {
                 _isMonitored = value;
-                OnPropertyChanged("IsMonitored");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets if the Property has a numeric value.
         /// </summary>
-        public virtual bool IsNumeric {
-            get { return false; }
-        }
+        public virtual bool IsNumeric => false;
 
         /// <summary>
         /// Gets or sets the UID of the property that is connected to this one.
         /// </summary>
-        [XmlAttribute("ConnectedToUID")]
+        [XmlAttribute]
         public string ConnectedToUID {
             get { return _connectedToUid; }
             set {
                 _connectedToUid = value;
-                OnPropertyChanged("ConnectedToUID");
+                OnPropertyChanged();
             }
         }
 
-        public Property ConnectedProperty {
-            get { return _connectedProperty; }
-        }
+        public Property ConnectedProperty => null;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance can automatic connect.
@@ -142,37 +135,33 @@ namespace ns.Base.Plugins.Properties {
             get { return _canAutoConnect; }
             set {
                 _canAutoConnect = value;
-                OnPropertyChanged("CanAutoConnect");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        [XmlAttribute("Type")]
-        public virtual Type Type {
-            get { return typeof(object); }
-        }
+        [XmlIgnore]
+        public virtual Type Type => typeof(object);
 
         public virtual bool IsToleranceDisabled {
             get { return _isToleranceDisabled; }
             set {
                 _isToleranceDisabled = value;
-                OnPropertyChanged("IsToleranceDisabled");
+                OnPropertyChanged();
             }
         }
 
-        public virtual Tolerance<object> Tolerance {
-            get { return _tolerance; }
-            set { _tolerance = value; }
-        }
+        public virtual Tolerance<object> Tolerance { get; set; }
 
         /// <summary>
         /// Base Class for all Properties.
         /// @warning Should not be used directly.
         /// </summary>
         public Property() {
-            this.Name = "UNKNOWN";
+            Name = "UNKNOWN";
+            UID = GenerateUID();
         }
 
         /// <summary>
@@ -181,10 +170,10 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="value">Value of the property.</param>
-        public Property(string name, object value) {
-            this.Name = name;
-            this.Value = value;
-            this.UID = Property.GenerateUID();
+        public Property(string name, object value) : this() {
+            Name = name;
+            Value = value;
+            InitialValue = value;
         }
 
         /// <summary>
@@ -193,11 +182,8 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="name">The name.</param>
         /// <param name="groupName">Name of the group.</param>
         /// <param name="value">The value.</param>
-        public Property(string name, string groupName, object value) {
-            this.Name = name;
-            this.GroupName = groupName;
-            this.Value = value;
-            this.UID = Property.GenerateUID();
+        public Property(string name, string groupName, object value) : this(name, value) {
+            GroupName = groupName;
         }
 
         /// <summary>
@@ -206,15 +192,18 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="isOutput">True if the property is a output.</param>
-        public Property(string name, bool isOutput) {
-            this.Name = name;
-            this.Value = null;
-            this.UID = Property.GenerateUID();
-            this.IsOutput = isOutput;
+        public Property(string name, bool isOutput) : this() {
+            Name = name;
+            Value = null;
+            IsOutput = isOutput;
         }
 
         public Property(Property property) : base(property) {
-            this.Value = property.Value;
+            Value = property.Value;
+            InitialValue = property.InitialValue;
+            IsOutput = property.IsOutput;
+            GroupName = property.GroupName;
+            IsMonitored = property.IsMonitored;
         }
 
         /// <summary>
@@ -224,13 +213,13 @@ namespace ns.Base.Plugins.Properties {
         public void Connect(Property property) {
             if (_connectedProperty == property) return;
 
-            _initialValue = this.Value;
+            InitialValue = Value;
             if (_connectedProperty != null) {
                 _connectedProperty.PropertyChanged -= ConnectedPropertyChangedHandle;
                 _connectedProperty.PropertyUnconnectEvent -= ConnectedPropertyUnconnectEvent;
             }
             _connectedProperty = property;
-            this.ConnectedToUID = _connectedProperty.UID;
+            ConnectedToUID = _connectedProperty.UID;
             _connectedProperty.PropertyChanged += ConnectedPropertyChangedHandle;
             _connectedProperty.PropertyUnconnectEvent += ConnectedPropertyUnconnectEvent;
         }
@@ -239,24 +228,21 @@ namespace ns.Base.Plugins.Properties {
         /// Connects the specified uid.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        public void Connect(string uid) {
-            this.ConnectedToUID = uid;
-        }
+        public void Connect(string uid) => ConnectedToUID = uid;
 
         /// <summary>
         /// Unconnects this instance.
         /// </summary>
         public void Unconnect() {
-            this.ConnectedToUID = string.Empty;
+            ConnectedToUID = string.Empty;
 
-            if (this.PropertyUnconnectEvent != null)
-                this.PropertyUnconnectEvent(this, new NodeChangedEventArgs(this));
+            PropertyUnconnectEvent?.Invoke(this, new NodeChangedEventArgs(this));
 
             if (_connectedProperty != null) {
                 _connectedProperty.PropertyChanged -= ConnectedPropertyChangedHandle;
                 _connectedProperty.PropertyUnconnectEvent -= ConnectedPropertyUnconnectEvent;
             }
-            this.Value = _initialValue;
+            Value = InitialValue;
             _connectedProperty = null;
         }
 
@@ -266,8 +252,8 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="NodeChangedEventArgs"/> instance containing the event data.</param>
         private void ConnectedPropertyChangedHandle(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "Value") {
-                if (_initialValue == null) _initialValue = _value;
+            if (e.PropertyName == nameof(Value)) {
+                if (InitialValue == null) InitialValue = _value;
                 _value = _connectedProperty.Value;
             }
         }
@@ -277,9 +263,7 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="NodeChangedEventArgs"/> instance containing the event data.</param>
-        private void ConnectedPropertyUnconnectEvent(object sender, NodeChangedEventArgs e) {
-            this.Unconnect();
-        }
+        private void ConnectedPropertyUnconnectEvent(object sender, NodeChangedEventArgs e) => Unconnect();
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -290,71 +274,64 @@ namespace ns.Base.Plugins.Properties {
         /// </returns>
         public override object Clone() {
             Property clone = base.Clone() as Property;
-            clone.Value = this.Value;
+            clone.Value = Value;
             return clone;
         }
 
-        public virtual void Save(XmlWriter writer) {
-            WriteXml(writer);
-        }
+        public virtual void Save(XmlWriter writer) => WriteXml(writer);
 
-        public virtual void Load(XmlReader reader) {
-            ReadXml(reader);
-        }
+        public virtual void Load(XmlReader reader) => ReadXml(reader);
 
         /// <summary>
         /// Gets the XML Shema.
         /// @warning Leave this always null. See also: https://msdn.microsoft.com/de-de/library/system.xml.serialization.ixmlserializable.getschema%28v=vs.110%29.aspx
         /// </summary>
         /// <returns>Returns null.</returns>
-        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() {
-            return null;
-        }
+        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() => null;
 
         /// <summary>
         /// Reads the Property from the XML.
         /// </summary>
         /// <param name="reader">The instance of the XmlReader.</param>
-        void IXmlSerializable.ReadXml(System.Xml.XmlReader reader) {
+        void IXmlSerializable.ReadXml(XmlReader reader) {
             ReadBasicXmlInfo(reader);
-            if (reader.MoveToAttribute("IsOutput"))
-                this.IsOutput = Convert.ToBoolean(reader.ReadContentAsString());
-            if (reader.MoveToAttribute("IsMonitored"))
-                this.IsMonitored = Convert.ToBoolean(reader.ReadContentAsString());
-            if (reader.MoveToAttribute("ConnectedToUID"))
-                this.ConnectedToUID = reader.ReadContentAsString();
+            if (reader.MoveToAttribute(nameof(IsOutput))) IsOutput = Convert.ToBoolean(reader.ReadContentAsString());
 
-            if (reader.IsEmptyElement == false) {
+            if (reader.MoveToAttribute(nameof(IsMonitored))) IsMonitored = Convert.ToBoolean(reader.ReadContentAsString());
+
+            if (reader.MoveToAttribute(nameof(ConnectedToUID))) ConnectedToUID = reader.ReadContentAsString();
+
+            if (!reader.IsEmptyElement) {
                 reader.ReadStartElement();
                 if (reader.Name == "anyType") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(object));
-                        this.Value = ser.Deserialize(reader);
+                        Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                     }
                 } else if (reader.Name == "ArrayOfDouble") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(List<double>));
-                        this.Value = ser.Deserialize(reader);
+                        Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                     }
                 } else if (reader.Name == "ArrayOfInteger") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(List<int>));
-                        this.Value = ser.Deserialize(reader);
+                        Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
                         Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                     }
                 }
             }
 
-            if (reader.Name == "Cache" && reader.IsStartElement()) {
+            if (reader.Name == nameof(Cache) && reader.IsStartElement()) {
                 reader.ReadStartElement();
                 try {
-                    XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
-                    this.Cache = ser.Deserialize(reader) as Cache;
+                    XmlSerializer ser = new XmlSerializer(Cache.GetType());
+                    Cache = ser.Deserialize(reader) as Cache;
                 } catch (Exception ex) {
                     Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
                 }
@@ -363,15 +340,15 @@ namespace ns.Base.Plugins.Properties {
 
             if (reader.Name.Contains("ToleranceOf") && reader.IsStartElement()) {
                 reader.ReadStartElement();
-                this.Tolerance = new Tolerance<object>();
+                Tolerance = new Tolerance<object>();
                 string min = reader.ReadInnerXml();
                 string max = reader.ReadInnerXml();
-                this.Tolerance.Min = min;
-                this.Tolerance.Max = max;
+                Tolerance.Min = min;
+                Tolerance.Max = max;
             }
 
             while (!reader.IsStartElement()) {
-                if (reader.Name == "Cache") {
+                if (reader.Name == nameof(Cache)) {
                     reader.ReadEndElement();
                     break;
                 }
@@ -384,14 +361,13 @@ namespace ns.Base.Plugins.Properties {
         /// Writes the Property to the XML.
         /// </summary>
         /// <param name="writer">The instance of the XmlWriter.</param>
-        void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer) {
+        void IXmlSerializable.WriteXml(XmlWriter writer) {
             WriteBasicXmlInfo(writer);
-            if (IsOutput)
-                writer.WriteAttributeString("IsOutput", IsOutput.ToString());
-            if (IsMonitored)
-                writer.WriteAttributeString("IsMonitored", IsMonitored.ToString());
-            if (!string.IsNullOrEmpty(ConnectedToUID))
-                writer.WriteAttributeString("ConnectedToUID", ConnectedToUID);
+            if (IsOutput) writer.WriteAttributeString(nameof(IsOutput), IsOutput.ToString());
+
+            if (IsMonitored) writer.WriteAttributeString(nameof(IsMonitored), IsMonitored.ToString());
+
+            if (!string.IsNullOrEmpty(ConnectedToUID)) writer.WriteAttributeString(nameof(ConnectedToUID), ConnectedToUID);
 
             Cache.Childs = new ObservableList<object>();
 

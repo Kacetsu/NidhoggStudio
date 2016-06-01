@@ -1,7 +1,6 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
@@ -9,6 +8,7 @@ using ns.Core.Configuration;
 using ns.Core.Manager.ProjectBox;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace ns.Core.Manager {
@@ -93,17 +93,11 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Gets the File Extension.
         /// </summary>
-        public static string FileExtension {
-            get { return EXTENSION_ZIP; }
-        }
+        public static string FileExtension => EXTENSION_ZIP;
 
-        public static string FileFilter {
-            get { return "Project File (*.xml) | *.xml"; }
-        }
+        public static string FileFilter => "Project File (*.xml) | *.xml";
 
-        public static string DefaultProjectFile {
-            get { return DEFAULT_PROJECT_FILE; }
-        }
+        public static string DefaultProjectFile => DEFAULT_PROJECT_FILE;
 
         /// <summary>
         /// Called when [operation collection changed].
@@ -111,11 +105,9 @@ namespace ns.Core.Manager {
         /// <param name="nodes">The nodes.</param>
         public void OnOperationCollectionChanged(List<Node> nodes, bool remove) {
             if (!remove) {
-                if (this.OperationAddedEvent != null)
-                    this.OperationAddedEvent(this, new ChildCollectionChangedEventArgs(nodes));
+                OperationAddedEvent?.Invoke(this, new ChildCollectionChangedEventArgs(nodes));
             } else {
-                if (this.OperationRemovedEvent != null)
-                    this.OperationRemovedEvent(this, new ChildCollectionChangedEventArgs(nodes));
+                OperationRemovedEvent?.Invoke(this, new ChildCollectionChangedEventArgs(nodes));
             }
         }
 
@@ -156,7 +148,7 @@ namespace ns.Core.Manager {
                 bool enableProcessor = false;
 
                 if (CoreSystem.Processor.IsRunning) {
-                    Trace.WriteLine("Stopping processor while removing a tool ...", LogCategory.Info);
+                    Base.Log.Trace.WriteLine("Stopping processor while removing a tool ...", TraceEventType.Information);
                     CoreSystem.Processor.Stop();
                     enableProcessor = true;
                 }
@@ -172,7 +164,7 @@ namespace ns.Core.Manager {
 
                 if (enableProcessor) {
                     CoreSystem.Processor.Start();
-                    Trace.WriteLine("... processor started again!", LogCategory.Info);
+                    Base.Log.Trace.WriteLine("... processor started again!", TraceEventType.Information);
                 }
             }
             _displayManager.Remove(node);
@@ -191,7 +183,7 @@ namespace ns.Core.Manager {
             bool enableProcessor = false;
 
             if (node is Tool && CoreSystem.Processor.IsRunning) {
-                Trace.WriteLine("Stopping processor while attaching another tool ...", LogCategory.Info);
+                Base.Log.Trace.WriteLine("Stopping processor while attaching another tool ...", TraceEventType.Information);
                 CoreSystem.Processor.Stop();
                 enableProcessor = true;
             }
@@ -200,7 +192,7 @@ namespace ns.Core.Manager {
 
             if (enableProcessor) {
                 CoreSystem.Processor.Start();
-                Trace.WriteLine("... processor started again!", LogCategory.Info);
+                Base.Log.Trace.WriteLine("... processor started again!", TraceEventType.Information);
             }
         }
 
@@ -306,7 +298,7 @@ namespace ns.Core.Manager {
 
                 CloneProperties(o, operationClone);
 
-                Trace.WriteLine("Loading opeartion: " + operationClone.Name + " (" + operationClone.UID + ")...", LogCategory.Debug);
+                Base.Log.Trace.WriteLine("Loading opeartion: " + operationClone.Name + " (" + operationClone.UID + ")...", TraceEventType.Verbose);
 
                 LoadToolChilds(o, operationClone);
 
@@ -336,9 +328,9 @@ namespace ns.Core.Manager {
             ProjectBoxManager projectBoxManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectBoxManager")) as ProjectBoxManager;
             if (projectBoxManager == null) return false;
             if (Load(projectBoxManager.Configuration.LastUsedProjectPath) == null) {
-                Trace.WriteLine("ProjectManager could not load last used project!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("ProjectManager could not load last used project!", TraceEventType.Error);
                 if (Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null) {
-                    Trace.WriteLine("ProjectManager could not load default project!", LogCategory.Error);
+                    Base.Log.Trace.WriteLine("ProjectManager could not load default project!", TraceEventType.Error);
                     return false;
                 } else {
                     projectBoxManager.Configuration.LastUsedProjectPath = projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML;
@@ -441,7 +433,7 @@ namespace ns.Core.Manager {
                 CloneProperties(m, toolClone);
 
                 clone.Childs.Add(toolClone);
-                Trace.WriteLine("Added tool: " + toolClone.Name + " (" + toolClone.UID + ")", LogCategory.Debug);
+                Base.Log.Trace.WriteLine("Added tool: " + toolClone.Name + " (" + toolClone.UID + ")", TraceEventType.Verbose);
                 LoadToolChilds(m, toolClone);
             }
         }

@@ -5,6 +5,7 @@ using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
@@ -12,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ns.Plugin.AForge {
+
     [Visible, Serializable]
     public class DirectShowDevice : ImageDevice {
         private ImageProperty _imageProperty;
@@ -20,7 +22,7 @@ namespace ns.Plugin.AForge {
         private bool _isTerminated = true;
 
         [NonSerialized]
-        VideoCaptureDevice _videoDevice = null;
+        private VideoCaptureDevice _videoDevice = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectShowDevice"/> class.
@@ -36,7 +38,7 @@ namespace ns.Plugin.AForge {
 
                 foreach (FilterInfo device in videoDevices) {
                     values.Add(device.Name);
-                    Trace.WriteLine(device.Name, LogCategory.Debug);
+                    Base.Log.Trace.WriteLine(device.Name, TraceEventType.Verbose);
                 }
 
                 VideoCapabilities[] videoCapabilities;
@@ -56,15 +58,14 @@ namespace ns.Plugin.AForge {
                 }
 
                 AddChild(new ListProperty("Resolution", resolutions));
-
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
         }
 
         private void DeviceListProperty_PropertyChangedEvent(object sender, Base.Event.NodeChangedEventArgs e) {
             if (sender == _deviceListProperty && e.Name == "Value") {
-                Trace.WriteLine(MethodInfo.GetCurrentMethod().Name + " not implemented!", LogCategory.Warning);
+                Base.Log.Trace.WriteLine(MethodBase.GetCurrentMethod().Name + " not implemented!", TraceEventType.Warning);
             }
         }
 
@@ -79,7 +80,7 @@ namespace ns.Plugin.AForge {
                 _imageProperty = GetProperty("Image") as ImageProperty;
                 _deviceListProperty = GetProperty("Selected") as ListProperty;
                 _resolutionListProperty = GetProperty("Resolution") as ListProperty;
-                
+
                 _resolutionListProperty.PropertyChanged += ResolutionListProperty_PropertyChanged;
 
                 FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -102,7 +103,7 @@ namespace ns.Plugin.AForge {
                 _isTerminated = false;
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -124,8 +125,7 @@ namespace ns.Plugin.AForge {
         /// Success of the Operation.
         /// </returns>
         public override bool Run() {
-
-            while (!_imageAcquired && !_isTerminated) 
+            while (!_imageAcquired && !_isTerminated)
                 Thread.Sleep(1);
             if (_isTerminated)
                 return true;
@@ -155,7 +155,7 @@ namespace ns.Plugin.AForge {
         private Bitmap _bitmap;
 
         private void _videoDevice_NewFrame(object sender, global::AForge.Video.NewFrameEventArgs eventArgs) {
-            _bitmap = eventArgs.Frame.Clone() as Bitmap;    
+            _bitmap = eventArgs.Frame.Clone() as Bitmap;
             _imageAcquired = true;
         }
 
@@ -177,7 +177,7 @@ namespace ns.Plugin.AForge {
 
 #if STOPWATCH
             stopwatch.Stop();
-            Trace.WriteLine("Stopwatch: ImageToByteArray: " + stopwatch.ElapsedMilliseconds.ToString(), LogCategory.Debug);
+            Base.Log.Trace.WriteLine("Stopwatch: ImageToByteArray: " + stopwatch.ElapsedMilliseconds.ToString(), TraceEventType.Verbose);
 #endif
             return byteArray;
         }

@@ -1,11 +1,12 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Plugins;
-using System;
 using ns.Base.Extensions;
+using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Base.Log;
+using System;
+using System.Diagnostics;
 
 namespace ns.Plugin.Base {
+
     /// <summary>
     /// Calculates the intensity.
     /// </summary>
@@ -52,7 +53,7 @@ namespace ns.Plugin.Base {
         /// <returns></returns>
         public override bool Run() {
             try {
-                ImageContainer inputContainer = (ImageContainer)_inputImage.Value;
+                ImageContainer inputContainer = _inputImage.Value;
                 byte[] data = inputContainer.Data;
                 byte bpp = inputContainer.BytesPerPixel;
 
@@ -95,13 +96,12 @@ namespace ns.Plugin.Base {
                     }
                 }
 
-                _intensityProperty.Value = Math.Round((100.0 / 255.0) * (double)(sum / count), 2);
-            } catch(Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                _intensityProperty.Value = Math.Round((100.0 / 255.0) * (sum / count), 2);
+            } catch (Exception ex) {
+                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
             return true;
         }
     }
 }
-

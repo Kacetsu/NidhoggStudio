@@ -78,7 +78,6 @@
     <Compile Include="Event\TraceListenerEventArgs.cs" />
     <Compile Include="Extensions\EnumExtension.cs" />
     <Compile Include="Extensions\Marshal.cs" />
-    <Compile Include="Log\LogCategory.cs" />
     <Compile Include="Log\LogData.cs" />
     <Compile Include="Log\Trace.cs" />
     <Compile Include="Log\TraceListener.cs" />

@@ -1,21 +1,17 @@
 ﻿using ns.Base.Attribute;
 using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
+
     [Visible, Serializable]
     public class ApplyMask : Tool {
-
         private ImageProperty _imageInput;
         private ImageProperty _imageMask;
         private ImageProperty _imageOutput;
@@ -52,28 +48,27 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         public override bool Run() {
-
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value.DeepClone();
-                ImageContainer overlayContainer = (ImageContainer)_imageMask.Value.DeepClone();
+                ImageContainer inputContainer = _imageInput.Value.DeepClone();
+                ImageContainer overlayContainer = _imageMask.Value.DeepClone();
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 
                 if (inputContainer.BytesPerPixel == 1)
                     pixelFormat = PixelFormat.Format8bppIndexed;
 
-                Bitmap source = ns.Plugin.AForge.Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
-                Bitmap mask = ns.Plugin.AForge.Converter.ToBitmap(overlayContainer.Data, overlayContainer.Width, overlayContainer.Height, overlayContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap mask = Converter.ToBitmap(overlayContainer.Data, overlayContainer.Width, overlayContainer.Height, overlayContainer.Stride, pixelFormat);
 
                 global::AForge.Imaging.UnmanagedImage uSource = global::AForge.Imaging.UnmanagedImage.FromManagedImage(source);
                 global::AForge.Imaging.UnmanagedImage uMask = global::AForge.Imaging.UnmanagedImage.FromManagedImage(mask);
 
-                global::AForge.Imaging.Filters.ApplyMask filter = new AFilter.ApplyMask(uMask);
+                AFilter.ApplyMask filter = new AFilter.ApplyMask(uMask);
                 filter.ApplyInPlace(uSource);
 
                 _imageOutput.Value = inputContainer;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return true;

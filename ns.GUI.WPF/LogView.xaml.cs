@@ -1,17 +1,20 @@
-﻿using ns.Base.Log;
+﻿using ns.Base;
 using ns.Core;
+using ns.Core.Manager;
 using ns.GUI.WPF.Controls;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
-using ns.Core.Manager;
-using System.IO;
-using System.ComponentModel;
 
 namespace ns.GUI.WPF {
+
     /// <summary>
     /// Interaktionslogik für LogView.xaml
     /// </summary>
@@ -34,10 +37,10 @@ namespace ns.GUI.WPF {
         public bool IsInfoVisible {
             get { return _isInfoVisible; }
             set {
-                if(_isInfoVisible != value) {
+                if (_isInfoVisible != value) {
                     _isInfoVisible = value;
                     UpdateLog();
-                    OnPropertyChanged("IsInfoVisible");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -48,7 +51,7 @@ namespace ns.GUI.WPF {
                 if (_isWarningVisible != value) {
                     _isWarningVisible = value;
                     UpdateLog();
-                    OnPropertyChanged("IsWarningVisible");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -59,7 +62,7 @@ namespace ns.GUI.WPF {
                 if (_isErrorVisible != value) {
                     _isErrorVisible = value;
                     UpdateLog();
-                    OnPropertyChanged("IsErrorVisible");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -69,9 +72,8 @@ namespace ns.GUI.WPF {
             set {
                 if (!_xmlContent.Equals(value)) {
                     _xmlContent = value;
-                    OnPropertyChanged("XmlContent");
+                    OnPropertyChanged();
                 }
-                
             }
         }
 
@@ -81,32 +83,29 @@ namespace ns.GUI.WPF {
             ProjectGrid.Width = 0;
             LogHeaderGrid.Height = 0;
             Loaded += LogView_Loaded;
-            LogContainer dummyContainer = new LogContainer("", "", LogCategory.Info);
+            LogContainer dummyContainer = new LogContainer("", "", TraceEventType.Information);
             InfoToggleBorder.DataContext = dummyContainer;
             WarningToggleBorder.DataContext = dummyContainer;
             ErrorToggleBorder.DataContext = dummyContainer;
         }
 
-        private void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void UpdateLog() {
             if (CoreSystem.LogListener == null) return;
             LogCollection.Clear();
-            foreach (LogData logData in CoreSystem.LogListener.LogEntries) {
+            foreach (Base.Log.LogData logData in CoreSystem.LogListener.LogEntries) {
                 AddLogEntry(null, new Base.Event.TraceListenerEventArgs(logData.Timestamp, logData.Message, logData.Category));
             }
         }
 
         private void LogView_Loaded(object sender, RoutedEventArgs e) {
-            GuiHelper.DoubleAnimateControl(500, ProjectGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.3));
-            GuiHelper.DoubleAnimateControl(60, LogHeaderGrid, Rectangle.HeightProperty, TimeSpan.FromSeconds(0.3));
+            GuiHelper.DoubleAnimateControl(500, ProjectGrid, WidthProperty, TimeSpan.FromSeconds(0.3));
+            GuiHelper.DoubleAnimateControl(60, LogHeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
             if (projectManager == null) {
-                Trace.WriteLine("Could not find project manager!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not find project manager!", TraceEventType.Error);
             } else {
                 MemoryStream stream = new MemoryStream();
                 projectManager.Save(ref stream);
@@ -121,39 +120,18 @@ namespace ns.GUI.WPF {
 
         private void AddLogEntry(object sender, Base.Event.TraceListenerEventArgs e) {
             try {
-                LogCategory category = LogCategory.Error;
-                switch (e.Category) {
-                    case "ERROR":
-                    category = LogCategory.Error;
-                    if (!IsErrorVisible) return;
-                    break;
-                    case "WARNING":
-                    category = LogCategory.Warning;
-                    if (!IsWarningVisible) return;
-                    break;
-                    case "INFO":
-                    category = LogCategory.Info;
-                    if (!IsInfoVisible) return;
-                    break;
-                    case "DEBUG":
-                    category = LogCategory.Debug;
-                    break;
-                    default:
-                    throw new NotSupportedException(e.Category + " is not supported!");
-                }
                 if (!LogListBox.CheckAccess()) {
                     if (LogCollection.Count > MAX_BUFFERED_LOGENTRIES)
                         LogCollection.RemoveAt(0);
-                    LogListBox.Dispatcher.Invoke(new Action(() => LogCollection.Add(new LogContainer(e.Timestamp, e.Message, category))));
+                    LogListBox.Dispatcher.Invoke(new Action(() => LogCollection.Add(new LogContainer(e.Timestamp, e.Message, e.Category))));
                 } else {
                     if (LogCollection.Count > MAX_BUFFERED_LOGENTRIES)
                         LogCollection.RemoveAt(0);
-                    LogCollection.Add(new LogContainer(e.Timestamp, e.Message, category));
+                    LogCollection.Add(new LogContainer(e.Timestamp, e.Message, e.Category));
                 }
             } catch (StackOverflowException ex) {
                 Console.WriteLine(ex.Message);
             }
         }
-
     }
 }

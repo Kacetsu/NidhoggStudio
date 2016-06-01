@@ -1,20 +1,20 @@
-﻿using ns.Base.Attribute;
-using ns.Base.Log;
+﻿using ns.Base;
+using ns.Base.Attribute;
+using ns.Base.Manager;
 using ns.Base.Plugins;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using ns.Base.Manager;
-using ns.Base;
 
 namespace ns.Core.Manager {
-    public class PluginManager : BaseManager {
 
+    public class PluginManager : BaseManager {
         private const string LIBRARY_EXTENSION = ".dll";
         private const string FACTORY_NAME = "Factory";
 
-        private static string _pluginPath = BaseManager.AssemblyPath + "\\Plugins";
+        private static string _pluginPath = AssemblyPath + "\\Plugins";
 
         private List<string> _fileList = new List<string>();
         private List<Assembly> _assemblyList = new List<Assembly>();
@@ -29,7 +29,7 @@ namespace ns.Core.Manager {
                 if (IsWebservice)
                     return Environment.GetEnvironmentVariable("NIDHOGGSTUDIO_BIN") + Path.DirectorySeparatorChar + "Plugins";
                 else
-                    return _pluginPath; 
+                    return _pluginPath;
             }
         }
 
@@ -70,7 +70,7 @@ namespace ns.Core.Manager {
         /// </exception>
         public override bool Initialize() {
             try {
-                Trace.WriteLine("Initialize PluginManager ...", LogCategory.Info);
+                Base.Log.Trace.WriteLine("Initialize PluginManager ...", TraceEventType.Information);
                 ToolManager toolManager = new ToolManager();
                 DeviceManager deviceManager = new DeviceManager();
                 ExtensionManager extensionManager = new ExtensionManager();
@@ -78,10 +78,10 @@ namespace ns.Core.Manager {
                 if (toolManager.Initialize() == false)
                     throw new Exception("Could not initialize ToolManager!");
 
-                if(deviceManager.Initialize() == false)
+                if (deviceManager.Initialize() == false)
                     throw new Exception("Could not initialize DeviceManager!");
 
-                if(extensionManager.Initialize() == false)
+                if (extensionManager.Initialize() == false)
                     throw new Exception("Could not initialize ExtensionManager!");
 
                 CoreSystem.Managers.Add(toolManager);
@@ -93,7 +93,7 @@ namespace ns.Core.Manager {
 
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -104,7 +104,7 @@ namespace ns.Core.Manager {
         /// <returns>Success of the operation.</returns>
         public bool UpdatePlugins() {
             bool result = false;
-            Trace.WriteLine("Updating Plugin list ... ", LogCategory.Info);
+            Base.Log.Trace.WriteLine("Updating Plugin list ... ", TraceEventType.Information);
             try {
                 ToolManager toolManager = (ToolManager)CoreSystem.Managers.Find(pm => pm.GetType() == typeof(ToolManager));
                 DeviceManager deviceManager = (DeviceManager)CoreSystem.Managers.Find(pm => pm.GetType() == typeof(DeviceManager));
@@ -112,7 +112,7 @@ namespace ns.Core.Manager {
 
                 if (Directory.Exists(PluginPath) == false) {
                     Directory.CreateDirectory(PluginPath);
-                    Trace.WriteLine("No plugins to load!", LogCategory.Warning);
+                    Base.Log.Trace.WriteLine("No plugins to load!", TraceEventType.Warning);
                 } else {
                     _fileList.Clear();
                     toolManager.Plugins.Clear();
@@ -127,7 +127,7 @@ namespace ns.Core.Manager {
                     foreach (string file in Directory.GetFiles(PluginPath)) {
                         if ((file.EndsWith(LIBRARY_EXTENSION) == false) || (_fileList.Contains(file) == true))
                             continue;
-                        else 
+                        else
                             _fileList.Add(file);
 
                         Assembly assembly;
@@ -151,7 +151,7 @@ namespace ns.Core.Manager {
                                     plugin = null;
 
                                 toolManager.Plugins.Add(plugin);
-                            } else if(probalePlugin is Operation) {
+                            } else if (probalePlugin is Operation) {
                                 plugin = probalePlugin as Operation;
                                 if (ValidateOperation(plugin as Operation) == false)
                                     plugin = null;
@@ -165,7 +165,7 @@ namespace ns.Core.Manager {
                                 deviceManager.Plugins.Add(plugin);
                             } else if (probalePlugin is Extension) {
                                 plugin = probalePlugin as Extension;
-                                if(ValidateExtension(plugin as Extension) == false)
+                                if (ValidateExtension(plugin as Extension) == false)
                                     plugin = null;
 
                                 extensionManager.Plugins.Add(plugin);
@@ -179,18 +179,17 @@ namespace ns.Core.Manager {
 
                             _plugins.Add(plugin);
                         }
-
                     }
                 }
 
-                Trace.WriteLine("System contains " + _plugins.Count + " Plugins:\n\t"
-                    + toolManager.Plugins.Count + " Tool(s)\n\t" 
-                    + deviceManager.Plugins.Count + " Device(s)\n\t" 
-                    + extensionManager.Plugins.Count + " Extension(s)", LogCategory.Debug);
+                Base.Log.Trace.WriteLine("System contains " + _plugins.Count + " Plugins:\n\t"
+                    + toolManager.Plugins.Count + " Tool(s)\n\t"
+                    + deviceManager.Plugins.Count + " Device(s)\n\t"
+                    + extensionManager.Plugins.Count + " Extension(s)", TraceEventType.Verbose);
 
                 result = true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -209,7 +208,7 @@ namespace ns.Core.Manager {
 
                 result = true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -225,11 +224,10 @@ namespace ns.Core.Manager {
 
             try {
                 if (ValidatePlugin(tool) == true) {
-
                     result = true;
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -245,11 +243,10 @@ namespace ns.Core.Manager {
 
             try {
                 if (ValidatePlugin(operation) == true) {
-
                     result = true;
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -265,11 +262,10 @@ namespace ns.Core.Manager {
 
             try {
                 if (ValidatePlugin(device) == true) {
-
                     result = true;
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -285,15 +281,13 @@ namespace ns.Core.Manager {
 
             try {
                 if (ValidatePlugin(extension) == true) {
-
                     result = true;
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
         }
-
     }
 }

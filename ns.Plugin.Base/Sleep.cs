@@ -1,15 +1,15 @@
 ﻿using ns.Base.Attribute;
 using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ns.Plugin.Base {
+
     [Visible, Serializable]
     public class Sleep : Tool {
-
         private int _milliseconds;
 
         /// <summary>
@@ -18,11 +18,9 @@ namespace ns.Plugin.Base {
         /// <value>
         /// The category.
         /// </value>
-        public override string Category {
-            get {
-                return ToolCategory.Common.GetDescription();
-            }
-        }
+        public override string Category => ToolCategory.Common.GetDescription();
+
+        public object LogCategory { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sleep"/> class.
@@ -43,7 +41,7 @@ namespace ns.Plugin.Base {
                 _milliseconds = (int)GetProperty("Milliseconds").Value;
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -58,7 +56,7 @@ namespace ns.Plugin.Base {
             try {
                 _milliseconds = (int)GetProperty("Milliseconds").Value;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
             return true;

@@ -1,9 +1,11 @@
-﻿using ns.Base.Log;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ns.Base {
+
     public class FileInfo {
+
         public static bool CreateDirectory(string path) {
             DirectoryInfo info = Directory.CreateDirectory(path);
             return info.Exists;
@@ -19,8 +21,8 @@ namespace ns.Base {
             try {
                 File.Copy(source, destination, true);
                 return true;
-            }catch(Exception ex) {
-                Trace.WriteLine(ex.Message, LogCategory.Error);
+            } catch (Exception ex) {
+                Log.Trace.WriteLine(ex.Message, TraceEventType.Error);
                 return false;
             }
         }

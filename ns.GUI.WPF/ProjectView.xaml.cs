@@ -1,23 +1,13 @@
-﻿using ns.Base.Log;
-using ns.Core;
+﻿using ns.Core;
 using ns.Core.Manager.ProjectBox;
 using ns.GUI.WPF.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
+
     /// <summary>
     /// Interaktionslogik für ProjectView.xaml
     /// </summary>
@@ -31,7 +21,7 @@ namespace ns.GUI.WPF {
 
         private void UpdateProjectList() {
             if (_projectBoxManager == null) {
-                Trace.WriteLine("ProjectView could not find ProjectBoxManager while [Loaded]!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("ProjectView could not find ProjectBoxManager while [Loaded]!", TraceEventType.Error);
                 return;
             }
             ProjectsListBox.Items.Clear();

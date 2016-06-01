@@ -7,15 +7,16 @@ using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ns.Core {
+
     /// <summary>
     /// Handles the use of all operations.
     /// </summary>
     public class Processor : NotifiableObject {
-
         private ProjectManager _projectManager;
         private DataStorageManager _dataStorageManager;
         private PropertyManager _propertyManager;
@@ -39,7 +40,7 @@ namespace ns.Core {
         public bool IsRunning {
             get { return _isRunning; }
             protected set {
-                if(_isRunning != value) {
+                if (_isRunning != value) {
                     _isRunning = value;
                     OnPropertyChanged("IsRunning");
                 }
@@ -64,7 +65,7 @@ namespace ns.Core {
         public bool Start() {
             if (IsRunning) return true;
             bool initializeResult = InitializeOperations();
-            if(initializeResult == true)
+            if (initializeResult == true)
                 StartOperations();
 
             if (initializeResult) {
@@ -127,8 +128,8 @@ namespace ns.Core {
             _isFinalize = false;
             foreach (Operation operation in _projectManager.Configuration.Operations) {
                 if (operation.Childs.Count < 1 || operation.Initialize() == false) {
-                    Trace.WriteLine("Cannot start operation [" + operation.Name + "]!" 
-                        + Environment.NewLine + "May the operation is empty or something happend while initializing it.", LogCategory.Warning);
+                    Base.Log.Trace.WriteLine("Cannot start operation [" + operation.Name + "]!"
+                        + Environment.NewLine + "May the operation is empty or something happend while initializing it.", TraceEventType.Warning);
                     return false;
                 }
             }
@@ -162,7 +163,7 @@ namespace ns.Core {
         /// <returns>Success of the operation.</returns>
         private bool TerminateOperations() {
             bool result = true;
-            foreach(AsyncNanoProcessor nanoProcessor in _nexuses) {
+            foreach (AsyncNanoProcessor nanoProcessor in _nexuses) {
                 nanoProcessor.Operation.PropertyChanged -= OperationPropertyChangedHandle;
                 bool tmpResult = false;
                 tmpResult = nanoProcessor.Stop();
@@ -180,7 +181,7 @@ namespace ns.Core {
                 string trigger = triggerList.Value.ToString();
 
                 if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
-                    StartOperation(operation);
+                StartOperation(operation);
             }
         }
 
@@ -197,8 +198,8 @@ namespace ns.Core {
                 nanoProcessor = new AsyncNanoProcessor(operation);
                 _nexuses.Add(nanoProcessor);
             }
-            
-            if(nanoProcessor.Status != TaskStatus.Running)
+
+            if (nanoProcessor.Status != TaskStatus.Running)
                 nanoProcessor.Start();
         }
 
@@ -227,37 +228,37 @@ namespace ns.Core {
             switch (status) {
                 case PluginStatus.Failed:
                 case PluginStatus.Finished:
-                    if (_nexuses.Count > 0) {
-                        AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
-                        if (executionContext != null && _nexuses.Contains(executionContext)) {
-                            ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
-                            string trigger = triggerList.Value.ToString();
+                if (_nexuses.Count > 0) {
+                    AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
+                    if (executionContext != null && _nexuses.Contains(executionContext)) {
+                        ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
+                        string trigger = triggerList.Value.ToString();
 
-                            foreach (Operation o in connectedOperations) {
-                                Property triggerProperty = o.GetProperty("Trigger");
-                                if (triggerProperty.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
-                                    NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
-                                    nanoProcessor.Start();
-                                }
+                        foreach (Operation o in connectedOperations) {
+                            Property triggerProperty = o.GetProperty("Trigger");
+                            if (triggerProperty.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
+                                NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                                nanoProcessor.Start();
                             }
-                        } else
-                            Trace.WriteLine("Unknown execution context! Careful this could end in memory leak!", LogCategory.Error);
-                    }
-                    _extensionManager.RunAll();
-                    break;
+                        }
+                    } else
+                        Base.Log.Trace.WriteLine("Unknown execution context! Careful this could end in memory leak!", TraceEventType.Error);
+                }
+                _extensionManager.RunAll();
+                break;
 
                 case PluginStatus.Started:
-                    foreach (Operation o in connectedOperations) {
-                        Property triggerProperty = o.GetProperty("Trigger");
-                        if (triggerProperty.Value.ToString() == OperationTrigger.Started.GetDescription()) {
-                            NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
-                            nanoProcessor.Start();
-                        }
+                foreach (Operation o in connectedOperations) {
+                    Property triggerProperty = o.GetProperty("Trigger");
+                    if (triggerProperty.Value.ToString() == OperationTrigger.Started.GetDescription()) {
+                        NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                        nanoProcessor.Start();
                     }
-                    break;
+                }
+                break;
 
                 default:
-                    break;
+                break;
             }
         }
     }

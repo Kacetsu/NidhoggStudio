@@ -1,18 +1,18 @@
-﻿using ns.Base.Log;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins {
+
     /// <summary>
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
     /// </summary>
     [Serializable]
     public class Plugin : Node, IPlugin, ICloneable {
-
         private string _version = string.Empty;
         private string _assemblyFile = string.Empty;
         private string _displayName = string.Empty;
@@ -25,7 +25,7 @@ namespace ns.Base.Plugins {
         public Plugin() : base() { }
 
         /// <summary>
-        /// Gets or sets the AssemblyFile. 
+        /// Gets or sets the AssemblyFile.
         /// Used to find the correct Plugin while loading the CoreSystem / PluginManager.
         /// </summary>
         [XmlAttribute("AssemblyFile")]
@@ -64,7 +64,7 @@ namespace ns.Base.Plugins {
             get {
                 if (string.IsNullOrEmpty(_displayName))
                     _displayName = this.GetType().Name;
-                return _displayName; 
+                return _displayName;
             }
             set {
                 if (!_displayName.Equals(value)) {
@@ -130,16 +130,16 @@ namespace ns.Base.Plugins {
         /// <returns></returns>
         public virtual bool RunChilds() {
             bool result = true;
-            lock (this.Childs) {
-                foreach (Plugin child in this.Childs.Where(p => p is Plugin)) {
+            lock (Childs) {
+                foreach (Plugin child in Childs.Where(p => p is Plugin)) {
                     if (child.PreRun() == false) {
-                        Trace.WriteLine("Plugin " + child.Name + " pre run failed!", LogCategory.Error);
+                        Log.Trace.WriteLine("Plugin " + child.Name + " pre run failed!", TraceEventType.Error);
                         result = false;
-                    }else if (child.Run() == false) {
-                        Trace.WriteLine("Plugin " + child.Name + " run failed!", LogCategory.Error);
+                    } else if (child.Run() == false) {
+                        Log.Trace.WriteLine("Plugin " + child.Name + " run failed!", TraceEventType.Error);
                         result = false;
-                    }else if (child.PostRun() == false) {
-                        Trace.WriteLine("Plugin " + child.Name + " post run failed!", LogCategory.Error);
+                    } else if (child.PostRun() == false) {
+                        Log.Trace.WriteLine("Plugin " + child.Name + " post run failed!", TraceEventType.Error);
                         result = false;
                     }
 
@@ -167,7 +167,7 @@ namespace ns.Base.Plugins {
                     if (!result) break;
                 }
 
-                if(!result) {
+                if (!result) {
                     // Set Status flag.
                     Status = PluginStatus.Failed;
                 }
@@ -183,7 +183,7 @@ namespace ns.Base.Plugins {
         public Property GetProperty(string name) {
             Property result = null;
 
-            foreach (Property property in this.Childs.Where(p => p is Property)) {
+            foreach (Property property in Childs.Where(p => p is Property)) {
                 if (property.Name == name) {
                     result = property;
                     break;
@@ -201,7 +201,7 @@ namespace ns.Base.Plugins {
         public Property GetProperty(Type type) {
             Property result = null;
 
-            foreach (Property property in this.Childs.Where(p => p is Property)) {
+            foreach (Property property in Childs.Where(p => p is Property)) {
                 if (property.GetType() == type) {
                     result = property;
                     break;
@@ -215,14 +215,14 @@ namespace ns.Base.Plugins {
         /// Called when [started].
         /// </summary>
         public void OnStarted() {
-            this.Status = PluginStatus.Started;
+            Status = PluginStatus.Started;
         }
 
         /// <summary>
         /// Called when [finished].
         /// </summary>
         public void OnFinished() {
-            if(this.Status != PluginStatus.Failed) this.Status = PluginStatus.Finished;
+            if (Status != PluginStatus.Failed) Status = PluginStatus.Finished;
         }
     }
 }

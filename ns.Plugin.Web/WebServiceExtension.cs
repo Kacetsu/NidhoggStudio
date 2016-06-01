@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using ns.Base.Attribute;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core;
@@ -9,6 +8,7 @@ using ns.Core.Manager;
 using ns.Plugin.Web.Hubs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -95,7 +95,7 @@ namespace ns.Plugin.Web {
                     _imageQueue.Dequeue();
                 _imageQueue.Enqueue(property.Clone() as ImageProperty);
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
             return true;
@@ -165,7 +165,7 @@ namespace ns.Plugin.Web {
             ImageCodecInfo jpegCodecInfo = availableCodecs.FirstOrDefault(codec => codec.MimeType == "image/jpeg");
 
             if (jpegCodecInfo == null) {
-                Trace.WriteLine("No available jpeg codec found!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("No available jpeg codec found!", TraceEventType.Error);
                 return null;
             }
 

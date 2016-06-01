@@ -1,40 +1,25 @@
-﻿using ns.Base;
-using ns.Base.Log;
-using ns.Base.Manager;
+﻿using ns.Base.Manager;
 using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ns.Core.Manager.ProjectBox
-{
+namespace ns.Core.Manager.ProjectBox {
+
     public class ProjectBoxManager : BaseManager {
         public const string EXTENSION_XML = ".xml";
         public const string PROJECTFILE_NAME = "Project";
         public const string PROJECTBOX_NAME = "ProjectBox";
 
-        private List<ProjectInfoContainer> _projectInfos = new List<ProjectInfoContainer>();
-        private ProjectBoxConfiguration _configuration = new ProjectBoxConfiguration();
+        public string ProjectsDirectory => DocumentsPath + "Projects" + Path.DirectorySeparatorChar;
 
-        public string ProjectsDirectory {
-            get { return DocumentsPath + "Projects" + Path.DirectorySeparatorChar; }
-        }
+        public string DefaultProjectDirectory => ProjectsDirectory + "Default" + Path.DirectorySeparatorChar;
 
-        public string DefaultProjectDirectory {
-            get { return ProjectsDirectory + "Default" + Path.DirectorySeparatorChar; }
-        }
+        public List<ProjectInfoContainer> ProjectInfos => new List<ProjectInfoContainer>();
 
-        public List<ProjectInfoContainer> ProjectInfos {
-            get { return _projectInfos; }
-        }
-
-        public ProjectBoxConfiguration Configuration {
-            get { return _configuration; }
-        }
+        public ProjectBoxConfiguration Configuration { get; private set; } = new ProjectBoxConfiguration();
 
         public override bool Initialize() {
             bool resultCreateDirectory = false;
@@ -52,11 +37,11 @@ namespace ns.Core.Manager.ProjectBox
                 resultCreateDefaultProject = CopyDefaultProject();
             }
 
-            if(!File.Exists(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) && resultCreateDefaultProject) {
+            if (!File.Exists(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) && resultCreateDefaultProject) {
                 resultCreateDefaultProject = SaveDefaultProjectBoxConfiguration();
             }
 
-            _configuration = Load(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) as ProjectBoxConfiguration;
+            Configuration = Load(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) as ProjectBoxConfiguration;
 
             resultGenerateInfoList = GenerateInfoList();
 
@@ -70,19 +55,19 @@ namespace ns.Core.Manager.ProjectBox
                 obj = serializer.Deserialize(stream);
                 return obj;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return null;
             }
         }
 
         public override bool Save(ref MemoryStream stream) {
             try {
-                XmlSerializer serializer = new XmlSerializer(_configuration.GetType());
-                serializer.Serialize(stream, _configuration);
+                XmlSerializer serializer = new XmlSerializer(Configuration.GetType());
+                serializer.Serialize(stream, Configuration);
                 stream.Flush();
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -92,7 +77,7 @@ namespace ns.Core.Manager.ProjectBox
         }
 
         public bool SaveProject() {
-            string path = _configuration.LastUsedProjectPath;
+            string path = Configuration.LastUsedProjectPath;
             bool wasDefault = false;
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
 
@@ -103,7 +88,7 @@ namespace ns.Core.Manager.ProjectBox
                 path = ProjectsDirectory + PROJECTFILE_NAME + "_" + DateTime.Now.ToFileTime().ToString() + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
                 wasDefault = true;
             }
-            
+
             if (projectManager.Save(path)) {
                 if (wasDefault) {
                     if (projectManager.Load(path) == null) {
@@ -113,7 +98,7 @@ namespace ns.Core.Manager.ProjectBox
                     }
                 }
 
-                _configuration.LastUsedProjectPath = path;
+                Configuration.LastUsedProjectPath = path;
                 Save();
                 GenerateInfoList();
                 return true;
@@ -128,7 +113,7 @@ namespace ns.Core.Manager.ProjectBox
                 SetUsedProject(path);
                 return true;
             } else {
-                Trace.WriteLine("Could not load project!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not load project!", TraceEventType.Error);
                 return false;
             }
         }
@@ -138,7 +123,7 @@ namespace ns.Core.Manager.ProjectBox
         }
 
         private bool SaveDefaultProjectBoxConfiguration() {
-            _configuration.LastUsedProjectPath = DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML;
+            Configuration.LastUsedProjectPath = DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML;
             return SaveProject();
         }
 
@@ -152,7 +137,7 @@ namespace ns.Core.Manager.ProjectBox
         }
 
         private void SetUsedProject(string path) {
-            foreach(ProjectInfoContainer container in _projectInfos) {
+            foreach (ProjectInfoContainer container in ProjectInfos) {
                 if (container.Path.Equals(path))
                     container.IsUsed = true;
                 else
@@ -162,7 +147,7 @@ namespace ns.Core.Manager.ProjectBox
 
         private bool GenerateInfoList() {
             try {
-                _projectInfos.Clear();
+                ProjectInfos.Clear();
                 string[] directories = Base.FileInfo.GetDirectories(ProjectsDirectory);
                 ProjectManager dummyManager = new ProjectManager();
                 foreach (string directory in directories) {
@@ -172,13 +157,13 @@ namespace ns.Core.Manager.ProjectBox
                         string projectName = tmpManager.Configuration.Name.Value as string;
                         ProjectInfoContainer container = new ProjectInfoContainer(projectFilePath, projectName);
                         container.PropertyChanged += Container_PropertyChanged;
-                        if (container.Path.Equals(_configuration.LastUsedProjectPath))
-                            container.IsUsed = true;
-                        _projectInfos.Add(container);
+                        if (container.Path.Equals(Configuration.LastUsedProjectPath)) container.IsUsed = true;
+
+                        ProjectInfos.Add(container);
                     }
                 }
-            } catch(Exception ex) {
-                Trace.WriteLine(ex.Message, LogCategory.Error);
+            } catch (Exception ex) {
+                Base.Log.Trace.WriteLine(ex.Message, TraceEventType.Error);
                 return false;
             }
             return true;

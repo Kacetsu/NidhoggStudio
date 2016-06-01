@@ -3,6 +3,7 @@ using ns.Base.Manager;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -16,7 +17,6 @@ namespace ns.Core {
     public class Shell {
         private List<string> _commands = new List<string>();
 
-
         /// <summary>
         /// Gets the command.
         /// </summary>
@@ -24,7 +24,6 @@ namespace ns.Core {
         /// The command.
         /// </value>
         public List<string> Command { get { return _commands; } }
-
 
         /// <summary>
         /// Initializes this instance.
@@ -52,19 +51,17 @@ namespace ns.Core {
                 serializer.Serialize(stream, _commands);
             }
 #endif
-            
+
             return true;
         }
-
 
         /// <summary>
         /// Helps this instance.
         /// </summary>
         public void Help() {
             string shellHelp = "Shell syntax: METHOD_NAME[TYPE PARAMETER]";
-            Trace.WriteLine(shellHelp, LogCategory.Info);
+            Base.Log.Trace.WriteLine(shellHelp, TraceEventType.Information);
         }
-
 
         /// <summary>
         /// Sleeps the specified milliseconds.
@@ -150,8 +147,8 @@ namespace ns.Core {
                 returnObj = methodInfo.Invoke(invokeObj, paramterObjects);
                 string returnStr = string.Empty;
 
-                if (returnObj == null) { 
-                    returnStr = "null"; 
+                if (returnObj == null) {
+                    returnStr = "null";
                 } else if (returnObj.GetType() == typeof(List<string>)) {
                     foreach (string str in returnObj as List<string>) {
                         returnStr += str + "\n";
@@ -160,15 +157,14 @@ namespace ns.Core {
                     returnStr = returnObj.ToString();
                 }
 
-                Trace.WriteLine("Shell command: " + command + " == " + returnStr, LogCategory.Info);
+                Base.Log.Trace.WriteLine("Shell command: " + command + " == " + returnStr, TraceEventType.Information);
 
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
-
 
         /// <summary>
         /// Gets the method from command.
@@ -196,7 +192,6 @@ namespace ns.Core {
             }
             return value;
         }
-
 
         /// <summary>
         /// Gets the parameters from command.
@@ -232,7 +227,6 @@ namespace ns.Core {
                 return null;
             }
         }
-
 
         /// <summary>
         /// Gets the types from command.
@@ -275,10 +269,10 @@ namespace ns.Core {
         /// <returns>True if supported.</returns>
         private bool CheckForSupportedParameters(ParameterInfo[] infos) {
             foreach (ParameterInfo info in infos) {
-                if(info.ParameterType == typeof(string)
+                if (info.ParameterType == typeof(string)
                     || info.ParameterType == typeof(int)
                     || info.ParameterType == typeof(bool)) {
-                        continue;
+                    continue;
                 } else {
                     return false;
                 }
@@ -308,7 +302,6 @@ namespace ns.Core {
             }
         }
 
-
         /// <summary>
         /// Fills the type of the command list by.
         /// </summary>
@@ -325,7 +318,7 @@ namespace ns.Core {
                 parameters += "]";
                 if (pis.Length > 0) {
                     _commands.Add(parent + "." + type.Name.ToString() + "." + mi.Name.ToString() + parameters);
-                } else { 
+                } else {
                     _commands.Add(parent + "." + type.Name.ToString() + "." + mi.Name.ToString());
                 }
             }

@@ -1,10 +1,10 @@
 ﻿using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Core.Manager;
 using ns.Core.Manager.ProjectBox;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -14,13 +14,11 @@ namespace ns.Core {
     /// The core, from here you should access any necessary system component.
     /// </summary>
     public class CoreSystem {
-
         private static CoreSystem _instance = new CoreSystem();
         private static List<BaseManager> _managers = new List<BaseManager>();
-        private static TraceListener _traceListener;
+        private static Base.Log.TraceListener _traceListener;
         private static Processor _processor;
         private static Shell _shell;
-
 
         /// <summary>
         /// Gets the instance.
@@ -29,7 +27,6 @@ namespace ns.Core {
         /// The instance.
         /// </value>
         public static CoreSystem Instance { get { return _instance; } }
-
 
         /// <summary>
         /// Gets the managers.
@@ -41,17 +38,15 @@ namespace ns.Core {
             get { return _managers; }
         }
 
-
         /// <summary>
         /// Gets the log listener.
         /// </summary>
         /// <value>
         /// The log listener.
         /// </value>
-        public static TraceListener LogListener {
+        public static Base.Log.TraceListener LogListener {
             get { return _traceListener; }
         }
-
 
         /// <summary>
         /// Gets the processor.
@@ -97,7 +92,7 @@ namespace ns.Core {
 
                 //Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";" + BaseManager.AssemblyPath + Path.DirectorySeparatorChar + "Libs");
 
-                AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
+                AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args) {
                     // Find name (first argument)
                     string assemblyName = args.Name.Substring(0, args.Name.IndexOf(','));
                     try {
@@ -113,21 +108,22 @@ namespace ns.Core {
                         else
                             return null;
                     } catch (Exception ex) {
-                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                        Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                         throw ex;
                     }
                 };
 
-                _traceListener = new TraceListener(BaseManager.LogPath, BaseManager.DaysToKeepLogFiles);
-                _traceListener.SetLoggingCategoties(new List<string> { 
+                _traceListener = new Base.Log.TraceListener(BaseManager.LogPath, BaseManager.DaysToKeepLogFiles);
+                _traceListener.SetLoggingCategoties(new List<string> {
 #if DEBUG
-                    LogCategory.Debug.GetDescription(), 
+                    TraceEventType.Verbose.GetDescription(),
 #endif
-                    LogCategory.Info.GetDescription(), 
-                    LogCategory.Warning.GetDescription(), 
-                    LogCategory.Error.GetDescription() });
-                System.Diagnostics.Trace.Listeners.Add(_traceListener);
-                Trace.WriteLine("Initialize CoreSystem ...", LogCategory.Info);
+                    TraceEventType.Information.GetDescription(),
+                    TraceEventType.Warning.GetDescription(),
+                    TraceEventType.Error.GetDescription() });
+
+                Base.Log.Trace.Listeners.Add(_traceListener);
+                Base.Log.Trace.WriteLine("Initialize CoreSystem ...", TraceEventType.Information);
                 _managers.Clear();
 
                 // Default managers must be added to the CoreSystem.
@@ -177,14 +173,14 @@ namespace ns.Core {
                 _shell.Initialize();
 
                 if (!projectManager.LoadLastUsedProject()) {
-                    Trace.WriteLine("Could not load latest project!", LogCategory.Error);
+                    Base.Log.Trace.WriteLine("Could not load latest project!", TraceEventType.Error);
                     if (projectBoxManager.Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null)
                         throw new Exception("[Fatal error] Could not load default project!");
                 }
 
                 result = true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 throw ex;
             }
 
@@ -221,7 +217,7 @@ namespace ns.Core {
             foreach (BaseManager manager in _managers)
                 manager.Finalize();
 
-            if(_traceListener != null)
+            if (_traceListener != null)
                 _traceListener.Close();
 
             return true;

@@ -1,21 +1,16 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
+
     [Visible, Serializable]
     public class BilateralSmoothing : Tool {
-
         private ImageProperty _imageInput;
         private IntegerProperty _kernelSize;
         private IntegerProperty _spatialFactor;
@@ -60,33 +55,32 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         public override bool Run() {
-
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value;
-                int kernelSize = (int)_kernelSize.Value;
-                int spatialFactor = (int)_spatialFactor.Value;
-                int colorFactor = (int)_colorFactor.Value;
-                double colorPower = (double)_colorPower.Value;
+                ImageContainer inputContainer = _imageInput.Value;
+                int kernelSize = _kernelSize.Value;
+                int spatialFactor = _spatialFactor.Value;
+                int colorFactor = _colorFactor.Value;
+                double colorPower = _colorPower.Value;
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 
                 if (inputContainer.BytesPerPixel == 1)
                     pixelFormat = PixelFormat.Format8bppIndexed;
 
-                Bitmap source = ns.Plugin.AForge.Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
 
                 global::AForge.Imaging.UnmanagedImage uSource = global::AForge.Imaging.UnmanagedImage.FromManagedImage(source);
 
-                global::AForge.Imaging.Filters.BilateralSmoothing filter = new AFilter.BilateralSmoothing();
+                AFilter.BilateralSmoothing filter = new AFilter.BilateralSmoothing();
                 filter.EnableParallelProcessing = true;
                 filter.KernelSize = kernelSize;
                 filter.SpatialFactor = spatialFactor;
                 filter.ColorFactor = colorFactor;
                 filter.ColorPower = colorPower;
 
-                _imageOutput.Value = ns.Plugin.AForge.Converter.ToImageContainer(filter.Apply(source));
+                _imageOutput.Value = Converter.ToImageContainer(filter.Apply(source));
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return true;

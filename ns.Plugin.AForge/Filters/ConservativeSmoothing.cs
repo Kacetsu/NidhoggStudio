@@ -1,21 +1,16 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
+
     [Visible, Serializable]
     public class ConservativeSmoothing : Tool {
-
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
         private IntegerProperty _kernelSize;
@@ -28,11 +23,11 @@ namespace ns.Plugin.AForge.Filters {
 
         public override string Description {
             get {
-                return "The filter implements conservative smoothing,\n" 
-                    + "which is a noise reduction technique that derives its name from the fact that it employs a simple,\n" 
-                    + "fast filtering algorithm that sacrifices noise suppression power in order to preserve the high spatial\n" 
-                    + "frequency detail (e.g. sharp edges) in an image. It is explicitly designed to remove noise spikes -\n" 
-                    + "isolated pixels of exceptionally low or high pixel intensity (salt and pepper noise).\n" 
+                return "The filter implements conservative smoothing,\n"
+                    + "which is a noise reduction technique that derives its name from the fact that it employs a simple,\n"
+                    + "fast filtering algorithm that sacrifices noise suppression power in order to preserve the high spatial\n"
+                    + "frequency detail (e.g. sharp edges) in an image. It is explicitly designed to remove noise spikes -\n"
+                    + "isolated pixels of exceptionally low or high pixel intensity (salt and pepper noise).\n"
                     + "The filter accepts 8 bpp grayscale images and 24/32 bpp color images for processing.";
             }
         }
@@ -54,24 +49,23 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         public override bool Run() {
-
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value;
+                ImageContainer inputContainer = _imageInput.Value;
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 
                 if (inputContainer.BytesPerPixel == 1)
                     pixelFormat = PixelFormat.Format8bppIndexed;
 
-                Bitmap source = ns.Plugin.AForge.Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
 
-                global::AForge.Imaging.Filters.ConservativeSmoothing filter = new AFilter.ConservativeSmoothing();
+                AFilter.ConservativeSmoothing filter = new AFilter.ConservativeSmoothing();
                 filter.KernelSize = (int)_kernelSize.Value;
                 Bitmap destination = filter.Apply(source);
-                
-                _imageOutput.Value = ns.Plugin.AForge.Converter.ToImageContainer(destination as Bitmap);
+
+                _imageOutput.Value = Converter.ToImageContainer(destination as Bitmap);
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return true;

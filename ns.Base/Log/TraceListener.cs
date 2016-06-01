@@ -1,18 +1,17 @@
-﻿using System;
+﻿using ns.Base.Event;
+using ns.Base.Extensions;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
-using ns.Base.Extensions;
-using ns.Base.Event;
 
 namespace ns.Base.Log {
-    public class TraceListener : TextWriterTraceListener {
 
+    public class TraceListener : TextWriterTraceListener {
         private const uint MAX_BUFFERED_LOGENTRIES = 100;
 
         private string _directory;
@@ -28,15 +27,12 @@ namespace ns.Base.Log {
         /// <value>
         /// The log file date.
         /// </value>
-        public DateTime LogFileDate {
-            get { return _logFileDate; }
-        }
+        public DateTime LogFileDate => _logFileDate;
 
-        public List<LogData> LogEntries {
-            get { return _logEntries; }
-        }
+        public List<LogData> LogEntries => _logEntries;
 
-        public delegate void TraceListenerEvent(Object sender, TraceListenerEventArgs e);
+        public delegate void TraceListenerEvent(object sender, TraceListenerEventArgs e);
+
         public event TraceListenerEvent traceListenerEvent = delegate { };
 
         /// <summary>
@@ -44,7 +40,7 @@ namespace ns.Base.Log {
         /// </summary>
         /// <param name="directory">The directory.</param>
         /// <param name="daysToKeep">The days to keep.</param>
-        public TraceListener(string directory, uint daysToKeep) {
+        public TraceListener(string directory, uint daysToKeep) : base() {
             _directory = directory;
             _logFileDate = DateTime.Now;
 
@@ -54,12 +50,12 @@ namespace ns.Base.Log {
                 }
             }
 
-            String filename = String.Format("{0:0000}{1:00}{2:00}_{3:00}{4:00}{5:00}_logFragments.xml", _logFileDate.Year, _logFileDate.Month, _logFileDate.Day, _logFileDate.Hour, _logFileDate.Minute, _logFileDate.Second);
+            string filename = string.Format("{0:0000}{1:00}{2:00}_{3:00}{4:00}{5:00}_logFragments.xml", _logFileDate.Year, _logFileDate.Month, _logFileDate.Day, _logFileDate.Hour, _logFileDate.Minute, _logFileDate.Second);
             _logFile = _directory + Path.DirectorySeparatorChar + filename;
 
             DeleteOldLogFiles(daysToKeep);
 
-            SetLoggingCategoties(new List<string>(new string[] { LogCategory.Warning.GetDescription(), LogCategory.Error.GetDescription() }));
+            SetLoggingCategoties(new List<string>(new string[] { TraceEventType.Warning.GetDescription(), TraceEventType.Error.GetDescription() }));
 
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Encoding = Encoding.UTF8;
@@ -111,7 +107,7 @@ namespace ns.Base.Log {
             }
 
             //actualice the logfiles.xml
-            String logfileListName = _directory + Path.DirectorySeparatorChar + "logfiles.xml";
+            string logfileListName = _directory + Path.DirectorySeparatorChar + "logfiles.xml";
             if (File.Exists(logfileListName) == true)
                 File.Delete(logfileListName);
             XmlDocument logfiles = new XmlDocument();
@@ -145,10 +141,9 @@ namespace ns.Base.Log {
         /// </summary>
         /// <param name="message">A message to write.</param>
         /// <param name="category">A category name used to organize the output.</param>
-        public override void WriteLine(string message, string category) {
+        public void WriteLine(string message, TraceEventType category) {
             try {
                 lock (_categoriesToLog) {
-
                     string timestamp = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff");
 
                     if (LogEntries.Count > MAX_BUFFERED_LOGENTRIES)
@@ -157,12 +152,12 @@ namespace ns.Base.Log {
 
                     traceListenerEvent(this, new TraceListenerEventArgs(timestamp, message, category));
 
-                    if (_categoriesToLog.Contains(category) == true) {
+                    if (_categoriesToLog.Contains(category.GetDescription()) == true) {
                         try {
                             _xmlWriter.WriteStartElement("ENTRY");
                             _xmlWriter.WriteAttributeString("timestamp", timestamp);
                             _xmlWriter.WriteAttributeString("thread", Thread.CurrentThread.ManagedThreadId.ToString());
-                            _xmlWriter.WriteAttributeString("category", category);
+                            _xmlWriter.WriteAttributeString("category", category.GetDescription());
                             _xmlWriter.WriteRaw(message);
                             _xmlWriter.WriteEndElement();
                         } catch (Exception ex) {
@@ -183,14 +178,24 @@ namespace ns.Base.Log {
                 _xmlWriter.Close();
             }
         }
+
         /// <summary>
         /// Closes the <see cref="P:System.Diagnostics.TextWriterTraceListener.Writer" /> so that it no longer receives tracing or debugging output.
         /// </summary>
         public override void Close() {
             _xmlWriter.WriteEndElement();
             base.Close();
-            this.CloseWriter();
+            CloseWriter();
         }
 
+        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data) {
+            WriteLine(data.ToString(), eventType);
+        }
+
+        public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data) {
+            foreach (object obj in data) {
+                WriteLine(obj.ToString(), eventType);
+            }
+        }
     }
 }

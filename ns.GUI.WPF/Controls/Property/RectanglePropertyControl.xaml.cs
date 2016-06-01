@@ -1,12 +1,14 @@
 ﻿using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ns.GUI.WPF.Controls.Property {
+
     /// <summary>
     /// Interaction logic for RectanglePropertyControl.xaml
     /// </summary>
@@ -27,7 +29,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="isConnectable">if set to <c>true</c> [is connectable].</param>
-        public RectanglePropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable) 
+        public RectanglePropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
@@ -44,15 +46,14 @@ namespace ns.GUI.WPF.Controls.Property {
                     this.YNumberBox.Text = rectangleProperty.Y.ToString();
                     this.WidthNumberBox.Text = rectangleProperty.Width.ToString();
                     this.HeightNumberBox.Text = rectangleProperty.Height.ToString();
-                    
-                } else { 
-                    Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodInfo.GetCurrentMethod() + "!", LogCategory.Error);
+                } else {
+                    Base.Log.Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodBase.GetCurrentMethod() + "!", TraceEventType.Error);
                 }
             }
         }
 
         private void Property_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if(sender is RectangleProperty) {
+            if (sender is RectangleProperty) {
                 RectangleProperty property = sender as RectangleProperty;
                 this.XNumberBox.Text = property.X.ToString();
                 this.YNumberBox.Text = property.Y.ToString();
@@ -75,7 +76,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 box.Text = newValue.ToString();
                 result = true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -96,10 +97,9 @@ namespace ns.GUI.WPF.Controls.Property {
                         ((RectangleProperty)_property).Width = value;
                     else if (box == HeightNumberBox)
                         ((RectangleProperty)_property).Height = value;
-
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Warning);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
             } finally {
                 if (box == XNumberBox)
                     box.Text = ((RectangleProperty)_property).X.ToString();

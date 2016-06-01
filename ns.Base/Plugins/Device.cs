@@ -1,9 +1,8 @@
 ﻿using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -87,7 +86,7 @@ namespace ns.Base.Plugins {
                 XmlSerializer ser = new XmlSerializer(Cache.GetType());
                 ser.Serialize(writer, Cache);
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
         }
     }

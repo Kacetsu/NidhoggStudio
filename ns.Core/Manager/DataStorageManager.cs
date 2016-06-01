@@ -1,20 +1,17 @@
 ﻿using ns.Base;
 using ns.Base.Event;
-using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace ns.Core.Manager {
+
     public class DataStorageManager : BaseManager {
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="DataStorageContainerChangedEventArgs"/> instance containing the event data.</param>
@@ -61,7 +58,7 @@ namespace ns.Core.Manager {
                 stream.Flush();
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -80,7 +77,7 @@ namespace ns.Core.Manager {
                 obj = serializer.Deserialize(stream);
                 return obj;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return null;
             }
         }
@@ -89,8 +86,8 @@ namespace ns.Core.Manager {
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
-        public override void Add(Base.Node node) {
-            if(node is Property){
+        public override void Add(Node node) {
+            if (node is Property) {
                 Property property = node as Property;
                 DataStorageContainer container;
 
@@ -100,15 +97,11 @@ namespace ns.Core.Manager {
                         if (container.Values.Count > MAX_VALUES)
                             container.Values.RemoveAt(0);
                         container.Values.Add(property.Value);
-                        if (this.ContainerChangedEvent != null) {
-                            this.ContainerChangedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
-                        }
+                        ContainerChangedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
                     } catch {
                         container = new DataStorageContainer(property.Name, property.TreeName, property.UID);
                         _dataStorage.Containers.Add(container);
-                        if (this.ContainerAddedEvent != null) {
-                            this.ContainerAddedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
-                        }
+                        ContainerAddedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
                     }
                 }
             }
@@ -126,15 +119,12 @@ namespace ns.Core.Manager {
                 lock (_dataStorage.Containers) {
                     try {
                         container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
-                        if (this.ContainerRemovedEvent != null) {
-                            this.ContainerRemovedEvent(this, new DataStorageContainerChangedEventArgs(property, container));
-                        }
+                        ContainerRemovedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
                         _dataStorage.Containers.Remove(container);
-                    } catch(Exception ex) {
-                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    } catch (ArgumentNullException ex) {
+                        Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                     }
                 }
-
             }
         }
 
@@ -147,7 +137,7 @@ namespace ns.Core.Manager {
                 if (child is Property) {
                     Property property = child as Property;
                     if (property.IsOutput && property.IsMonitored) {
-                        this.Add(property);
+                        Add(property);
                     }
                 }
                 AddContext(child);

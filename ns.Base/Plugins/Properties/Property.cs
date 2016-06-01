@@ -2,6 +2,7 @@
 using ns.Base.Log;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -308,21 +309,21 @@ namespace ns.Base.Plugins.Properties {
                         XmlSerializer ser = new XmlSerializer(typeof(object));
                         Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
-                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                        Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                     }
                 } else if (reader.Name == "ArrayOfDouble") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(List<double>));
                         Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
-                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                        Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                     }
                 } else if (reader.Name == "ArrayOfInteger") {
                     try {
                         XmlSerializer ser = new XmlSerializer(typeof(List<int>));
                         Value = ser.Deserialize(reader);
                     } catch (Exception ex) {
-                        Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                        Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                     }
                 }
             }
@@ -333,7 +334,7 @@ namespace ns.Base.Plugins.Properties {
                     XmlSerializer ser = new XmlSerializer(Cache.GetType());
                     Cache = ser.Deserialize(reader) as Cache;
                 } catch (Exception ex) {
-                    Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 }
                 Childs = new ObservableList<object>(Cache.Childs);
             }
@@ -393,7 +394,7 @@ namespace ns.Base.Plugins.Properties {
                         ser.Serialize(writer, Cache);
                     }
                 } catch (Exception ex) {
-                    Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                    Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 }
             }
 

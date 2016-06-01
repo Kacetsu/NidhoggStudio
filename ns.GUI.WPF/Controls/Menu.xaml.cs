@@ -5,15 +5,16 @@ using ns.Core;
 using ns.Core.Manager;
 using ns.GUI.WPF.Windows;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für Menu.xaml
     /// </summary>
     public partial class Menu : System.Windows.Controls.Menu {
-
         private GuiManager _guiManager;
 
         public Menu() {
@@ -26,7 +27,7 @@ namespace ns.GUI.WPF.Controls {
                 PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains("PluginManager")) as PluginManager;
                 _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
 
-                if(_guiManager == null) {
+                if (_guiManager == null) {
                     _guiManager = new GuiManager();
                     _guiManager.Initialize();
                     CoreSystem.Managers.Add(_guiManager);
@@ -51,7 +52,7 @@ namespace ns.GUI.WPF.Controls {
                     this.HelpMenuItem.Items.Add(childItem);
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
         }
 
@@ -72,7 +73,7 @@ namespace ns.GUI.WPF.Controls {
             } else if (sender is LibraryInformationMenuItem) {
                 LibraryInformationMenuItem item = sender as LibraryInformationMenuItem;
                 if (item.Information.DocumentationLink.StartsWith("http")) {
-                    System.Diagnostics.Process.Start(item.Information.DocumentationLink);
+                    Process.Start(item.Information.DocumentationLink);
                 }
             }
         }
@@ -95,7 +96,7 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        private void LoadProject(){
+        private void LoadProject() {
             MessageBoxResult result = MessageBox.Show("Do you want to save your changes?", "Loading Project", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes) {
                 SaveProject();

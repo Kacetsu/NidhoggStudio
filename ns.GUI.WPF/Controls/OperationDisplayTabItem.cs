@@ -1,13 +1,15 @@
-﻿using ns.Base.Log;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF.Controls {
+
     public class OperationDisplayTabItem : TabItem {
         private Operation _operation;
 
@@ -17,9 +19,7 @@ namespace ns.GUI.WPF.Controls {
         /// <value>
         /// The operation.
         /// </value>
-        public Operation Operation {
-            get { return _operation; }
-        }
+        public Operation Operation => _operation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationDisplayTabItem"/> class.
@@ -31,9 +31,9 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         /// <param name="operation">The operation.</param>
         public OperationDisplayTabItem(Operation operation) {
-            this.Style = new Style(GetType(), this.FindResource(typeof(TabItem)) as Style);
-            this.Header = operation.Name;
-            this.Unloaded += OperationDisplayTabItem_Unloaded;
+            Style = new Style(GetType(), FindResource(typeof(TabItem)) as Style);
+            Header = operation.Name;
+            Unloaded += OperationDisplayTabItem_Unloaded;
             _operation = operation;
             operation.PropertyChanged += HandlePropertyChanged;
             TabControl tabControl = new TabControl();
@@ -46,11 +46,11 @@ namespace ns.GUI.WPF.Controls {
                 brush.Viewport = new Rect(0, 0, 16, 16);
 
                 tabControl.Background = brush;
-            } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+            } catch (Exception ex) when (ex is ArgumentNullException || ex is ArgumentException || ex is FileNotFoundException) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
-            this.Content = tabControl;
+            Content = tabControl;
         }
 
         /// <summary>
@@ -61,9 +61,10 @@ namespace ns.GUI.WPF.Controls {
                 _operation.PropertyChanged -= HandlePropertyChanged;
                 _operation = null;
             }
-            foreach (DisplayTabItem item in ((TabControl)this.Content).Items)
-                item.Close();
-            ((TabControl)this.Content).Items.Clear();
+
+            foreach (DisplayTabItem item in (Content as TabControl)?.Items) item.Close();
+
+            (Content as TabControl)?.Items.Clear();
         }
 
         /// <summary>
@@ -71,13 +72,11 @@ namespace ns.GUI.WPF.Controls {
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void OperationDisplayTabItem_Unloaded(object sender, RoutedEventArgs e) {
-            Close();
-        }
+        private void OperationDisplayTabItem_Unloaded(object sender, RoutedEventArgs e) => Close();
 
         private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == "Name") {
-                this.Header = _operation.Name;
+                Header = _operation.Name;
             }
         }
     }

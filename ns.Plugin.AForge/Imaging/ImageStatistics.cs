@@ -1,21 +1,15 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Imaging {
+
     [Visible, Serializable]
     public class ImageStatistics : Tool {
-
         private ImageProperty _imageInput;
 
         private IntegerProperty _maxBlue;
@@ -44,7 +38,7 @@ namespace ns.Plugin.AForge.Imaging {
 
         public override string Description {
             get {
-                return "The class is used to accumulate statistical values about images,\n" 
+                return "The class is used to accumulate statistical values about images,\n"
                     + "like histogram, mean, standard deviation, etc. for each color channel in RGB color space.\n"
                     + "The class accepts 8 bpp grayscale and 24/32 bpp color images for processing.";
             }
@@ -100,26 +94,25 @@ namespace ns.Plugin.AForge.Imaging {
         }
 
         public override bool Run() {
-
             try {
-                ImageContainer inputContainer = (ImageContainer)_imageInput.Value;
+                ImageContainer inputContainer = _imageInput.Value;
 
                 PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
 
                 if (inputContainer.BytesPerPixel == 1)
                     pixelFormat = PixelFormat.Format8bppIndexed;
 
-                Bitmap source = ns.Plugin.AForge.Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
 
                 global::AForge.Imaging.ImageStatistics statistics = new global::AForge.Imaging.ImageStatistics(source);
-                
+
                 global::AForge.Math.Histogram blueHistogram = statistics.Blue;
                 _maxBlue.Value = blueHistogram.Max;
                 _minBlue.Value = blueHistogram.Min;
                 _medianBlue.Value = blueHistogram.Median;
                 _meanBlue.Value = blueHistogram.Mean;
                 _stdDevBlue.Value = blueHistogram.StdDev;
-                
+
                 global::AForge.Math.Histogram greenHistogram = statistics.Green;
                 _maxGreen.Value = greenHistogram.Max;
                 _minGreen.Value = greenHistogram.Min;
@@ -133,9 +126,8 @@ namespace ns.Plugin.AForge.Imaging {
                 _medianRed.Value = redHistogram.Median;
                 _meanRed.Value = redHistogram.Mean;
                 _stdDevRed.Value = redHistogram.StdDev;
-
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return true;

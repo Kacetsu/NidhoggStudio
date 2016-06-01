@@ -1,12 +1,13 @@
-﻿using ns.Base.Log;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ns.Base.Extensions
-{
+namespace ns.Base.Extensions {
+
     public static class Marshal {
+
         public static T DeepClone<T>(this T source) {
             try {
                 if (!typeof(T).IsSerializable) {
@@ -14,7 +15,7 @@ namespace ns.Base.Extensions
                 }
 
                 // Don't serialize a null object, simply return the default for that object
-                if (Object.ReferenceEquals(source, null)) {
+                if (ReferenceEquals(source, null)) {
                     return default(T);
                 }
 
@@ -30,7 +31,7 @@ namespace ns.Base.Extensions
 
                 return (T)obj;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
             return default(T);
         }

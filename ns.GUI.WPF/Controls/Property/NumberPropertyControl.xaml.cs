@@ -2,11 +2,13 @@
 using ns.Base.Plugins.Properties;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Controls.Property {
+
     /// <summary>
     /// Interaction logic for NumberPropertyControl.xaml
     /// </summary>
@@ -41,7 +43,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="isConnectable">if set to <c>true</c> [is connectable].</param>
-        public NumberPropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable) 
+        public NumberPropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
@@ -57,7 +59,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 } else if (property is DoubleProperty) {
                     StringValue = ((double)property.Value).ToString();
                 } else {
-                    Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodInfo.GetCurrentMethod() + "!", LogCategory.Error);
+                    Base.Log.Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodBase.GetCurrentMethod() + "!", TraceEventType.Error);
                 }
             }
         }
@@ -72,30 +74,30 @@ namespace ns.GUI.WPF.Controls.Property {
 
             try {
                 if (_property != null) {
-                    if (_property is IntegerProperty) {
+                    IntegerProperty integerProperty = _property as IntegerProperty;
+                    DoubleProperty doubleProperty = _property as DoubleProperty;
+                    if (integerProperty != null) {
                         int currentValue = Convert.ToInt32(StringValue);
                         int newValue = currentValue + step;
-                        if(newValue > (int)((IntegerProperty)_property).Max)
-                            newValue = (int)((IntegerProperty)_property).Max;
-                        else if (newValue < (int)((IntegerProperty)_property).Min)
-                            newValue = (int)((IntegerProperty)_property).Min;
+                        if (newValue > integerProperty.Max) newValue = integerProperty.Max;
+                        else if (newValue < integerProperty.Min) newValue = integerProperty.Min;
+
                         StringValue = newValue.ToString();
-                        _property.Value = newValue;
+                        integerProperty.Value = newValue;
                         result = true;
-                    } else if(_property is DoubleProperty) {
+                    } else if (doubleProperty != null) {
                         double currentValue = Convert.ToDouble(StringValue);
-                        double newValue = currentValue + (double)step;
-                        if (newValue > (double)((DoubleProperty)_property).Max)
-                            newValue = (double)((DoubleProperty)_property).Max;
-                        else if (newValue < (double)((DoubleProperty)_property).Min)
-                            newValue = (double)((DoubleProperty)_property).Min;
+                        double newValue = currentValue + step;
+                        if (newValue > doubleProperty.Max) newValue = doubleProperty.Max;
+                        else if (newValue < doubleProperty.Min) newValue = doubleProperty.Min;
+
                         StringValue = newValue.ToString();
-                        _property.Value = newValue;
+                        doubleProperty.Value = newValue;
                         result = true;
                     }
                 }
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
 
             return result;
@@ -127,24 +129,25 @@ namespace ns.GUI.WPF.Controls.Property {
             if (StringValue.EndsWith(",")) return;
             try {
                 if (_property != null) {
-                    if (_property is IntegerProperty) {
-                        int value = Convert.ToInt32(StringValue);
-                        if (value > (int)((IntegerProperty)_property).Max)
-                            value = (int)((IntegerProperty)_property).Max;
-                        else if (value < (int)((IntegerProperty)_property).Min)
-                            value = (int)((IntegerProperty)_property).Min;
-                        _property.Value = value;
-                    } else if (_property is DoubleProperty) {
-                        double value = Convert.ToDouble(StringValue);
-                        if (value > (double)((DoubleProperty)_property).Max)
-                            value = (double)((DoubleProperty)_property).Max;
-                        else if (value < (double)((DoubleProperty)_property).Min)
-                            value = (double)((DoubleProperty)_property).Min;
-                        _property.Value = value;
+                    IntegerProperty integerProperty = _property as IntegerProperty;
+                    DoubleProperty doubleProperty = _property as DoubleProperty;
+
+                    if (integerProperty != null) {
+                        int newValue = Convert.ToInt32(StringValue);
+                        if (newValue > integerProperty.Max) newValue = integerProperty.Max;
+                        else if (newValue < integerProperty.Min) newValue = integerProperty.Min;
+
+                        integerProperty.Value = newValue;
+                    } else if (doubleProperty != null) {
+                        double newValue = Convert.ToDouble(StringValue);
+                        if (newValue > doubleProperty.Max) newValue = doubleProperty.Max;
+                        else if (newValue < doubleProperty.Min) newValue = doubleProperty.Min;
+
+                        doubleProperty.Value = newValue;
                     }
                 }
-            }catch(Exception ex){
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Warning);
+            } catch (Exception ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
             } finally {
                 if (_property is IntegerProperty) {
                     StringValue = ((int)_property.Value).ToString();

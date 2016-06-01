@@ -1,13 +1,15 @@
 ﻿using ns.Base;
+using ns.Base.Extensions;
 using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Base.Extensions;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ns.Core.Manager {
+
     public class PropertyManager : BaseManager {
         private List<Property> _propertyTypes = new List<Property>();
         private List<Property> _properties = new List<Property>();
@@ -53,9 +55,9 @@ namespace ns.Core.Manager {
 
             if ((result = !_propertyTypes.Contains(propertyType)) == true) {
                 _propertyTypes.Add(propertyType);
-                Trace.WriteLine("Property type added: " + propertyType.ToString(), LogCategory.Debug);
+                Base.Log.Trace.WriteLine("Property type added: " + propertyType.ToString(), TraceEventType.Verbose);
             }
-            
+
             return result;
         }
 
@@ -76,7 +78,7 @@ namespace ns.Core.Manager {
                         if (plugin is Device)
                             devices.Add(plugin as Device);
                     }
-                    
+
                     DeviceProperty deviceProperty = node as DeviceProperty;
                     deviceProperty.AddDeviceList(devices.DeepClone(), _deviceManager);
                 }
@@ -93,18 +95,18 @@ namespace ns.Core.Manager {
 
                 _displayManager.Add(node);
                 Nodes.Add(node);
-                Trace.WriteLine("Property added: " + node.ToString(), LogCategory.Debug);
+                Base.Log.Trace.WriteLine("Property added: " + node.ToString(), TraceEventType.Verbose);
                 OnNodeAdded(node);
             }
         }
 
         private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "IsMonitored") {
-                if(_dataStorageManager == null)
+                if (_dataStorageManager == null)
                     _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
 
                 Property property = sender as Property;
-                if(property.IsMonitored)
+                if (property.IsMonitored)
                     _dataStorageManager.Add(property);
                 else
                     _dataStorageManager.Remove(property);
@@ -211,6 +213,5 @@ namespace ns.Core.Manager {
 
             return properties;
         }
-
     }
 }

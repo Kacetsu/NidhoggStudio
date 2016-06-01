@@ -1,19 +1,18 @@
 ﻿using ns.Base;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Windows {
+
     /// <summary>
     /// Interaktionslogik für AddNewElementDialog.xaml
     /// </summary>
     public partial class AddNewElementDialog : BaseWindow {
-
         private GuiManager _guiManager;
         private ProjectManager _projectManager;
         private List<KeyValuePair<string, ListBox>> _listBoxes;
@@ -45,7 +44,6 @@ namespace ns.GUI.WPF.Windows {
         private void AddTool() {
             ListBox view = null;
             if (this.AnyTabs.SelectedItem == this.MainToolsTab) {
-
                 TabItem selectedTab = this.ToolTabs.SelectedItem as TabItem;
                 view = selectedTab.Content as ListBox;
 
@@ -55,7 +53,7 @@ namespace ns.GUI.WPF.Windows {
                     if (tool == null)
                         return;
 
-                   if(_guiManager.SelectedNode != null && _guiManager.SelectedNode is Tool) {
+                    if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Tool) {
                         _guiManager.SelectNode(_guiManager.SelectedNode.Parent);
                     }
 
@@ -65,13 +63,12 @@ namespace ns.GUI.WPF.Windows {
                             _guiManager.SelectNode(manager.Configuration.Operations[0]);
                     }
 
-                    if (_guiManager.SelectedNode != null &&  _guiManager.SelectedNode is Operation) {
+                    if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Operation) {
                         _lastAddedNode = tool.Clone() as Node;
                         _projectManager.Add(_lastAddedNode, _guiManager.SelectedNode);
                     }
                 }
-            }
-            else if (this.AnyTabs.SelectedItem == this.MainOperationsTabs) {
+            } else if (this.AnyTabs.SelectedItem == this.MainOperationsTabs) {
                 view = this.ListViewAllOperations;
 
                 Operation operation = view.SelectedItem as Operation;
@@ -96,12 +93,12 @@ namespace ns.GUI.WPF.Windows {
             _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
 
             if (manager == null) {
-                Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", TraceEventType.Error);
                 return;
             }
 
             if (_guiManager == null) {
-                Trace.WriteLine("Could not find NodeSelectionManager instance in CoreSystem!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not find NodeSelectionManager instance in CoreSystem!", TraceEventType.Error);
                 return;
             }
 
@@ -141,7 +138,6 @@ namespace ns.GUI.WPF.Windows {
                         _listBoxes.Add(new KeyValuePair<string, ListBox>(tool.Category, box));
                         box.Items.Add(tool);
                     }
-
                 } else if (node is Operation)
                     this.ListViewAllOperations.Items.Add(node);
             }

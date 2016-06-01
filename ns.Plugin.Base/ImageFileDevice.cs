@@ -1,16 +1,17 @@
 ﻿using ns.Base.Attribute;
-using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ns.Plugin.Base {
+
     [Visible, Serializable]
     public class ImageFileDevice : ImageDevice {
         private string _directory = string.Empty;
@@ -39,7 +40,7 @@ namespace ns.Plugin.Base {
             _imageProperty = GetProperty("Image") as ImageProperty;
 
             if (!Directory.Exists(_directory)) {
-                Trace.WriteLine("[" + this.Name + "] directory " + _directory + " does not exist!", LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist!", TraceEventType.Error);
                 return false;
             }
             string[] filenames = Directory.GetFiles(_directory);
@@ -58,7 +59,7 @@ namespace ns.Plugin.Base {
             }
 
             if (imageCount == 0) {
-                Trace.WriteLine("No images found in " + _directory, LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Error);
                 return false;
             }
 
@@ -123,7 +124,7 @@ namespace ns.Plugin.Base {
                 }
                 return byteArray;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 stride = 0;
                 return new byte[0];
             }

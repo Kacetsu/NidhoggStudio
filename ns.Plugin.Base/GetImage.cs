@@ -4,6 +4,7 @@ using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
+using System.Diagnostics;
 
 namespace ns.Plugin.Base {
 
@@ -57,24 +58,24 @@ namespace ns.Plugin.Base {
             bool result = false;
             _deviceProperty = GetProperty("Interface") as DeviceProperty;
             if (_deviceProperty == null) {
-                Trace.WriteLine("Device interface is null!", LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine("Device interface is null!", TraceEventType.Error);
                 return false;
             }
             _deviceProperty.PropertyChanged -= DeviceProperty_PropertyChanged;
             _deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
             _device = _deviceProperty.Value as ImageDevice;
             if (_device == null) {
-                Trace.WriteLine("Device is null!", LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine("Device is null!", TraceEventType.Error);
                 return false;
             }
             _imageProperty = GetProperty(typeof(ImageProperty)) as ImageProperty;
 
             if (_device == null) {
-                Trace.WriteLine("Device interface is null!", LogCategory.Error);
+                ns.Base.Log.Trace.WriteLine("Device interface is null!", TraceEventType.Error);
             } else {
                 result = _device.Initialize();
                 if (!result)
-                    Trace.WriteLine("Could not initialize device!", LogCategory.Error);
+                    ns.Base.Log.Trace.WriteLine("Could not initialize device!", TraceEventType.Error);
             }
 
             _isRunning = result;

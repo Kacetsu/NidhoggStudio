@@ -5,6 +5,7 @@ using ns.Core;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,11 +20,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für AddToolControl.xaml
     /// </summary>
     public partial class AddToolControl : UserControl {
-        
         private GuiManager _guiManager;
         private ProjectManager _projectManager;
 
@@ -53,12 +54,12 @@ namespace ns.GUI.WPF.Controls {
             _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
 
             if (manager == null) {
-                Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", TraceEventType.Error);
                 return;
             }
 
             if (_guiManager == null) {
-                Trace.WriteLine("Could not find NodeSelectionManager instance in CoreSystem!", LogCategory.Error);
+                Base.Log.Trace.WriteLine("Could not find NodeSelectionManager instance in CoreSystem!", TraceEventType.Error);
                 return;
             }
 
@@ -82,12 +83,12 @@ namespace ns.GUI.WPF.Controls {
 
             ToolGrid.Children.Clear();
 
-            foreach(Node node in manager.Plugins) {
-                if(node is Tool) {
+            foreach (Node node in manager.Plugins) {
+                if (node is Tool) {
                     Tool tool = node as Tool;
                     if (tool.Category.Equals(CategoryComboBox.SelectedItem)) {
                         AddToolToControl(tool);
-                    }else if(CategoryComboBox.SelectedIndex == 0) {
+                    } else if (CategoryComboBox.SelectedIndex == 0) {
                         AddToolToControl(tool);
                     }
                 }

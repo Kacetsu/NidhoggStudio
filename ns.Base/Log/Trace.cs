@@ -1,28 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ns.Base.Extensions;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace ns.Base.Log {
-    public static class Trace {
+
+    public class Trace {
+        private TraceSource _traceSource = new TraceSource(Assembly.GetEntryAssembly().GetName().Name);
+        private static Lazy<Trace> _instance = new Lazy<Trace>(() => new Trace());
+        private int _id;
+
+        public static TraceListenerCollection Listeners => _instance.Value._traceSource.Listeners;
+
+        public Trace() {
+            SourceSwitch sourcSwitch = new SourceSwitch("SourceSwitch", "All");
+            _traceSource.Switch = sourcSwitch;
+        }
+
         /// <summary>
         /// Write a trace line with message and category.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void WriteLine(string message, LogCategory category) {
-#if DEBUG
+        public static void WriteLine(string message, TraceEventType category) {
             try {
-                System.Diagnostics.Trace.WriteLine(message, category.GetDescription());
+#if DEBUG
+
+                _instance.Value._traceSource.TraceData(category, _instance.Value._id, message);
+
+#else
+                if (category != TraceEventType.Verbose) {
+                    _instance.Value._traceSource.TraceData(category, _instance.Value._id, message);
+                }
+#endif
+                _instance.Value._id++;
+                if (_instance.Value._id == int.MaxValue) {
+                    _instance.Value._id = 0;
+                }
+
+                _instance.Value._traceSource.Flush();
             } catch (StackOverflowException ex) {
                 Console.WriteLine(ex);
             }
-#else            
-            if(category != LogCategory.Debug)
-                System.Diagnostics.Trace.WriteLine(message, category.GetDescription());
-#endif
         }
 
         /// <summary>
@@ -31,9 +49,8 @@ namespace ns.Base.Log {
         /// <param name="message">The message.</param>
         /// <param name="stackTrace">The stack trace.</param>
         /// <param name="category">The category.</param>
-        public static void WriteLine(string message, string stackTrace, LogCategory category) {
-            Trace.WriteLine(message + Environment.NewLine + "Stack Trace: " + Environment.NewLine + stackTrace, category);
+        public static void WriteLine(string message, string stackTrace, TraceEventType category) {
+            WriteLine(message + Environment.NewLine + "Stack Trace: " + Environment.NewLine + stackTrace, category);
         }
-
     }
 }

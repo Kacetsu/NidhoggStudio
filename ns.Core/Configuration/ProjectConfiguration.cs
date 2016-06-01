@@ -1,23 +1,18 @@
-﻿using ns.Base.Log;
-using ns.Base.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core.Manager;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ns.Core.Configuration {
+
     public class ProjectConfiguration : BaseConfiguration {
-        
         private StringProperty _name;
         private LogConfiguration _logConfiguration;
         private List<Operation> _operations;
         private List<Device> _devices;
         private ProjectManager _projectManager;
-        
 
         public bool Initialize() {
             _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
@@ -28,11 +23,11 @@ namespace ns.Core.Configuration {
             if (_logConfiguration == null) {
                 _logConfiguration = new LogConfiguration();
 #if DEBUG
-                _logConfiguration.Categories.Add(LogCategory.Debug.GetDescription());
+                _logConfiguration.Categories.Add(TraceEventType.Verbose.GetDescription());
 #endif
-                _logConfiguration.Categories.Add(LogCategory.Info.GetDescription());
-                _logConfiguration.Categories.Add(LogCategory.Warning.GetDescription());
-                _logConfiguration.Categories.Add(LogCategory.Error.GetDescription());
+                _logConfiguration.Categories.Add(TraceEventType.Information.GetDescription());
+                _logConfiguration.Categories.Add(TraceEventType.Warning.GetDescription());
+                _logConfiguration.Categories.Add(TraceEventType.Error.GetDescription());
             }
 
             if (_operations.Count == 0) {

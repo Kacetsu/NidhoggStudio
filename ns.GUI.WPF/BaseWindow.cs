@@ -1,7 +1,7 @@
-﻿using ns.Base.Log;
-using System;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,12 +10,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace ns.GUI.WPF {
-    public class BaseWindow : System.Windows.Window, INotifyPropertyChanged {
-        private const Int32 WM_SYSCOMMAND = 0x112;
+
+    public class BaseWindow : Window, INotifyPropertyChanged {
+        private const int WM_SYSCOMMAND = 0x112;
         private HwndSource m_hwndSource;
         private DateTime _lastTitlebarClick;
         private TimeSpan _doubleClick = TimeSpan.FromMilliseconds(500);
@@ -24,7 +23,7 @@ namespace ns.GUI.WPF {
         private Window _glowWinowLeft;
         private Window _glowWindowBottom;
         private Window _glowWindowRight;
-        private const Int32 _edgeWindowSize = 23;
+        private const int _edgeWindowSize = 23;
 
         private enum ResizeDirection {
             Left = 1,
@@ -61,7 +60,7 @@ namespace ns.GUI.WPF {
             get { return (bool)GetValue(MaximizedProperty); }
             set {
                 SetValue(MaximizedProperty, value);
-                OnPropertyChanged("Maximized");
+                OnPropertyChanged();
             }
         }
 
@@ -69,7 +68,7 @@ namespace ns.GUI.WPF {
             get { return (bool)GetValue(ShowMinimizeButtonProperty); }
             set {
                 SetValue(ShowMinimizeButtonProperty, value);
-                OnPropertyChanged("ShowMinimizeButton");
+                OnPropertyChanged();
             }
         }
 
@@ -77,15 +76,11 @@ namespace ns.GUI.WPF {
             get { return (bool)GetValue(ShowMaximizeButtonProperty); }
             set {
                 SetValue(ShowMaximizeButtonProperty, value);
-                OnPropertyChanged("ShowMaximizeButton");
+                OnPropertyChanged();
             }
         }
 
-        private void OnPropertyChanged(string name) {
-            if(this.PropertyChanged != null) {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
             try {
@@ -106,20 +101,20 @@ namespace ns.GUI.WPF {
                 topBorderRectangle.PreviewMouseLeftButtonDown += topBorderRectangle_PreviewMouseLeftButtonDown;
                 bottomBorderRectangle.PreviewMouseLeftButtonDown += bottomBorderRectangle_PreviewMouseLeftButtonDown;
             } catch (Exception ex) {
-                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
         }
 
         private void minimizeButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            this.WindowState = System.Windows.WindowState.Minimized;
+            this.WindowState = WindowState.Minimized;
         }
 
         private void maximizeRestoreButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            if (this.WindowState == System.Windows.WindowState.Maximized) {
-                this.WindowState = System.Windows.WindowState.Normal;
+            if (this.WindowState == WindowState.Maximized) {
+                this.WindowState = WindowState.Normal;
                 Maximized = false;
             } else {
-                this.WindowState = System.Windows.WindowState.Maximized;
+                this.WindowState = WindowState.Maximized;
                 Maximized = true;
             }
         }
@@ -154,13 +149,12 @@ namespace ns.GUI.WPF {
         private void titlebarDockPanel_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (DateTime.Now.Subtract(_lastTitlebarClick) <= _doubleClick) {
                 if (Maximized == true) {
-                    this.WindowState = System.Windows.WindowState.Normal;
+                    this.WindowState = WindowState.Normal;
                     Maximized = false;
                 } else {
-                    this.WindowState = System.Windows.WindowState.Maximized;
+                    this.WindowState = WindowState.Maximized;
                     Maximized = true;
                 }
-
             } else {
                 DragMove();
             }
@@ -190,19 +184,19 @@ namespace ns.GUI.WPF {
             base.OnInitialized(e);
         }
 
-        private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void HandleClosing(object sender, CancelEventArgs e) {
             CloseSurrounds();
         }
 
-        public void HandleGotKeyboardFocus(Object sender, KeyboardFocusChangedEventArgs e) {
+        public void HandleGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             SetSurroundShadows(true);
         }
 
-        public void HandleLostKeyboardFocus(Object sender, KeyboardFocusChangedEventArgs e) {
+        public void HandleLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             SetSurroundShadows(false);
         }
 
-        private void HandleLocationChanged(Object sender, EventArgs e) {
+        private void HandleLocationChanged(object sender, EventArgs e) {
             _glowWindowTop.Left = Left - _edgeWindowSize;
             _glowWindowTop.Top = Top - _glowWindowTop.Height;
             _glowWindowTop.Width = Width + _edgeWindowSize * 2;
@@ -224,7 +218,7 @@ namespace ns.GUI.WPF {
             _glowWindowRight.Height = Height;
         }
 
-        private void HandleWndStateChanged(Object sender, EventArgs e) {
+        private void HandleWndStateChanged(object sender, EventArgs e) {
             if (WindowState == WindowState.Normal) {
                 ShowSurrounds();
             } else {
@@ -258,10 +252,9 @@ namespace ns.GUI.WPF {
             SetSurroundShadows();
         }
 
-
-        private void SetSurroundShadows(Boolean active = true) {
+        private void SetSurroundShadows(bool active = true) {
             if (active) {
-                Double cornerRadius = 0.75;
+                double cornerRadius = 0.75;
 
                 _glowWindowTop.Content = GetDecorator("Images/window_active_shadow_top.PNG");
                 _glowWinowLeft.Content = GetDecorator("Images/window_active_shadow_left.PNG", cornerRadius);
@@ -276,7 +269,7 @@ namespace ns.GUI.WPF {
         }
 
         [DebuggerStepThrough]
-        private Decorator GetDecorator(String imageUri, Double radius = 0) {
+        private Decorator GetDecorator(string imageUri, double radius = 0) {
             Border border = new Border();
             border.CornerRadius = new CornerRadius(radius);
             Uri baseUri = BaseUriHelper.GetBaseUri(this);
@@ -308,6 +301,7 @@ namespace ns.GUI.WPF {
             _glowWindowBottom.Hide();
             _glowWindowRight.Hide();
         }
+
         /// <summary>
         /// Closes the surrounding windows.
         /// </summary>
@@ -317,6 +311,5 @@ namespace ns.GUI.WPF {
             _glowWindowBottom.Close();
             _glowWindowRight.Close();
         }
-
     }
 }

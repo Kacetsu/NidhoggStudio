@@ -1,71 +1,64 @@
 ﻿using ns.Base.Event;
-using ns.Base.Log;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;
 
 namespace ns.Base.Manager {
+
     public class BaseManager : INotifyPropertyChanged {
+
         public delegate void NodeCollectionChangedHandler(object sender, NodeCollectionChangedEventArgs e);
+
         public event NodeCollectionChangedHandler NodeAddedEvent;
+
         public event NodeCollectionChangedHandler NodeRemovedEvent;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private const string APPLICATION_NAME = "Nidhogg Studio";
         private static string _assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static string _documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + Path.DirectorySeparatorChar + APPLICATION_NAME + Path.DirectorySeparatorChar;
 
-        private List<Node> _nodes = new List<Node>();
-
-        private static bool _isWebservice = false;
-
         /// <summary>
         /// Gets the Typename.
         /// </summary>
-        public string Name { get { return this.GetType().ToString(); } }
+        public string Name => GetType().ToString();
 
         /// <summary>
         /// Gets the application name.
         /// </summary>
-        public static string ApplicationName {
-            get { return APPLICATION_NAME; }
-        }
+        public static string ApplicationName => APPLICATION_NAME;
 
         /// <summary>
         /// Gets the path to the application assembly.
         /// </summary>
         public static string AssemblyPath {
-            get { 
-                if(IsWebservice)
+            get {
+                if (IsWebservice)
                     return Environment.GetEnvironmentVariable("NEUROSTUDIO_BIN");
                 else
-                    return _assemblyPath; 
+                    return _assemblyPath;
             }
         }
 
         /// <summary>
         /// Gets the default documents path.
         /// </summary>
-        public static string DocumentsPath {
-            get { return _documentsPath; }
-        }
+        public static string DocumentsPath => _documentsPath;
 
         /// <summary>
         /// Gets the log path.
         /// </summary>
-        public static string LogPath {
-            get { return _documentsPath + "Log\\"; }
-        }
+        public static string LogPath => _documentsPath + "Log\\";
 
         /// <summary>
         /// Gets the days the log files will be stored.
         /// </summary>
-        public static uint DaysToKeepLogFiles {
-            get { return 30; }
-        }
+        public static uint DaysToKeepLogFiles => 30;
 
         /// <summary>
         /// Gets the nodes.
@@ -73,9 +66,7 @@ namespace ns.Base.Manager {
         /// <value>
         /// The nodes.
         /// </value>
-        public List<Node> Nodes {
-            get { return _nodes; }
-        }
+        public List<Node> Nodes => new List<Node>();
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is webservice.
@@ -83,26 +74,19 @@ namespace ns.Base.Manager {
         /// <value>
         /// <c>true</c> if this instance is webservice; otherwise, <c>false</c>.
         /// </value>
-        public static bool IsWebservice {
-            get { return _isWebservice; }
-            set { _isWebservice = value; }
-        }
+        public static bool IsWebservice { get; set; } = false;
 
         /// <summary>
         /// Initialize the instance of the manager.
         /// </summary>
         /// <returns></returns>
-        public virtual bool Initialize() {
-            return true;
-        }
+        public virtual bool Initialize() => true;
 
         /// <summary>
         /// Finalizes this instance.
         /// </summary>
         /// <returns></returns>
-        public virtual bool Finalize() {
-            return true;
-        }
+        public virtual bool Finalize() => true;
 
         /// <summary>
         /// Called when [selection changed].
@@ -115,13 +99,11 @@ namespace ns.Base.Manager {
         }
 
         public void OnNodeAdded(Node node) {
-            if (this.NodeAddedEvent != null)
-                this.NodeAddedEvent(this, new NodeCollectionChangedEventArgs(node));
+            NodeAddedEvent?.Invoke(this, new NodeCollectionChangedEventArgs(node));
         }
 
         public void OnNodeRemoved(Node node) {
-            if (this.NodeRemovedEvent != null)
-                this.NodeRemovedEvent(this, new NodeCollectionChangedEventArgs(node));
+            NodeRemovedEvent?.Invoke(this, new NodeCollectionChangedEventArgs(node));
         }
 
         /// <summary>
@@ -129,8 +111,8 @@ namespace ns.Base.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public virtual void Add(Node node) {
-            if (!_nodes.Contains(node)) {
-                _nodes.Add(node);
+            if (!Nodes.Contains(node)) {
+                Nodes.Add(node);
                 OnNodeAdded(node);
             }
         }
@@ -150,8 +132,8 @@ namespace ns.Base.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public virtual void Remove(Node node) {
-            if (_nodes.Contains(node)) {
-                _nodes.Remove(node);
+            if (Nodes.Contains(node)) {
+                Nodes.Remove(node);
                 OnNodeRemoved(node);
             }
         }
@@ -169,7 +151,7 @@ namespace ns.Base.Manager {
                 }
                 return obj;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return null;
             }
         }
@@ -195,7 +177,7 @@ namespace ns.Base.Manager {
                 }
                 memoryStream.Close();
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 result = false;
             }
 
@@ -214,7 +196,7 @@ namespace ns.Base.Manager {
                 stream.Flush();
                 return true;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
         }
@@ -231,7 +213,7 @@ namespace ns.Base.Manager {
                 obj = serializer.Deserialize(stream);
                 return obj;
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return null;
             }
         }
@@ -249,8 +231,7 @@ namespace ns.Base.Manager {
         /// </summary>
         /// <param name="name">The name.</param>
         public void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

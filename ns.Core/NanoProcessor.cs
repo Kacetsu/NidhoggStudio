@@ -1,10 +1,11 @@
 ﻿using ns.Base;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Core.Manager;
 using System;
+using System.Diagnostics;
 
 namespace ns.Core {
+
     /// <summary>
     /// Runs the Operation on a sync way.
     /// </summary>
@@ -27,9 +28,7 @@ namespace ns.Core {
         /// <summary>
         /// Gets the the referred Operation.
         /// </summary>
-        public Operation Operation {
-            get { return _operation; }
-        }
+        public Operation Operation => _operation;
 
         /// <summary>
         /// Base Constructor.
@@ -54,7 +53,7 @@ namespace ns.Core {
         public virtual bool Start() {
             return Execute();
         }
-        
+
         protected bool Execute() {
             bool preResult = false;
             bool postResult = false;
@@ -63,16 +62,15 @@ namespace ns.Core {
             try {
                 if ((preResult = _operation.PreRun()) == true) {
                     if ((runResult = _operation.Run()) == false)
-                        Trace.WriteLine("Run operation [" + _operation.Name + "] failed!", LogCategory.Error);
+                        Base.Log.Trace.WriteLine("Run operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 } else {
-                    Trace.WriteLine("Prerun operation [" + _operation.Name + "] failed!", LogCategory.Error);
+                    Base.Log.Trace.WriteLine("Prerun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 }
 
                 if ((postResult = _operation.PostRun()) == false)
-                    Trace.WriteLine("Postrun operation [" + _operation.Name + "] failed!", LogCategory.Error);
-
+                    Base.Log.Trace.WriteLine("Postrun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, ex.StackTrace, LogCategory.Error);
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 preResult = false;
                 runResult = false;
                 postResult = false;
@@ -88,10 +86,11 @@ namespace ns.Core {
             switch (_operation.Status) {
                 case PluginStatus.Failed:
                 case PluginStatus.Finished:
-                    _dataStorageManager.AddContext(_operation);
-                    break;
+                _dataStorageManager.AddContext(_operation);
+                break;
+
                 default:
-                    break;
+                break;
             }
         }
     }

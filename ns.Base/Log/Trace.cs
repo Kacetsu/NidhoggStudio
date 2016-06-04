@@ -9,8 +9,17 @@ namespace ns.Base.Log {
         private static Lazy<Trace> _instance = new Lazy<Trace>(() => new Trace());
         private int _id;
 
+        /// <summary>
+        /// Gets the listeners.
+        /// </summary>
+        /// <value>
+        /// The listeners.
+        /// </value>
         public static TraceListenerCollection Listeners => _instance.Value._traceSource.Listeners;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Trace"/> class.
+        /// </summary>
         public Trace() {
             SourceSwitch sourcSwitch = new SourceSwitch("SourceSwitch", "All");
             _traceSource.Switch = sourcSwitch;

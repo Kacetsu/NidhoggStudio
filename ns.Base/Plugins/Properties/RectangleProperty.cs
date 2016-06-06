@@ -1,93 +1,101 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
+
     [Serializable]
-    public class RectangleProperty : Property {
-        public RectangleProperty() : base() { }
-        public RectangleProperty(string name, bool isOutput) : base(name, isOutput) { }
+    public class RectangleProperty : GenericProperty<Rectangle> {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
+        /// </summary>
+        public RectangleProperty() : base() {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
+        /// </summary>
+        /// <param name="name">Name of the property.</param>
+        /// <param name="isOutput">True if the property is a output.</param>
+        public RectangleProperty(string name, bool isOutput) : base(name, isOutput) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
         public RectangleProperty(string name, double x, double y, double width, double height) : base() {
             Name = name;
-            List<double> values = new List<double>();
-            values.Add(x);
-            values.Add(y);
-            values.Add(width);
-            values.Add(height);
-            Value = values;
+            Value = new Rectangle(x, y, width, height);
         }
 
         /// <summary>
         /// Gets or sets x offset.
         /// </summary>
+        [XmlIgnore]
         public double X {
             get {
-                if(Value != null)
-                    return ((List<double>)Value)[0];
-                else
-                    return 0;
+                return Value.X;
             }
             set {
-                ((List<double>)Value)[0] = value;
-                OnPropertyChanged("X");
+                Value.X = value;
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets or sets y offset.
         /// </summary>
+        [XmlIgnore]
         public double Y {
             get {
-                if(Value != null)
-                    return ((List<double>)Value)[1];
-                else
-                    return 0;
+                return Value.Y;
             }
             set {
-                ((List<double>)Value)[1] = value;
-                OnPropertyChanged("Y");
+                Value.Y = value;
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets or sets width.
         /// </summary>
+        [XmlIgnore]
         public double Width {
             get {
-                if (Value != null)
-                    return ((List<double>)Value)[2];
-                else
-                    return 0;
+                return Value.Width;
             }
             set {
-                ((List<double>)Value)[2] = value;
-                OnPropertyChanged("Width");
+                Value.Width = value;
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Gets or sets height.
         /// </summary>
+        [XmlIgnore]
         public double Height {
             get {
-                if (Value != null)
-                    return ((List<double>)Value)[3];
-                else
-                    return 0;
+                return Value.Height;
             }
             set {
-                ((List<double>)Value)[3] = value;
-                OnPropertyChanged("Height");
+                Value.Height = value;
+                OnPropertyChanged();
             }
         }
 
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
         public override Type Type {
             get {
-                return typeof(List<double>);
+                return typeof(Rectangle);
             }
         }
-
     }
 }

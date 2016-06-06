@@ -26,6 +26,9 @@ namespace ns.Base.Plugins {
             AddChild(executionTimeMs);
         }
 
+        /// <summary>
+        /// Gets or sets the Name.
+        /// </summary>
         public override string Name {
             get {
                 if (string.IsNullOrEmpty(_name)) {
@@ -62,6 +65,12 @@ namespace ns.Base.Plugins {
             return clone;
         }
 
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             _executionTimeMs = GetProperty("ExecutionTimeMs") as DoubleProperty;
             return base.Initialize();
@@ -80,21 +89,33 @@ namespace ns.Base.Plugins {
                 _executionTimeMs.Value = 0;
 
             foreach (Property childProperty in this.Childs.Where(c => c is Property)) {
-                if (childProperty.IsOutput)
-                    childProperty.Value = null;
-                else if (!string.IsNullOrEmpty(childProperty.ConnectedToUID))
-                    childProperty.Value = childProperty.InitialValue;
+                IValue<object> valueProperty = childProperty as IValue<object>;
+                if (valueProperty == null) continue;
+
+                if (childProperty.IsOutput) {
+                    valueProperty.Value = null;
+                } else if (!string.IsNullOrEmpty(childProperty.ConnectedUID)) {
+                    valueProperty.Value = (childProperty as IConnectable<object>)?.InitialValue;
+                }
             }
 
             return result;
         }
 
+        /// <summary>
+        /// Pres the run.
+        /// </summary>
+        /// <returns></returns>
         public override bool PreRun() {
             _timeMeasureStart = DateTime.Now;
 
             return base.PreRun();
         }
 
+        /// <summary>
+        /// Posts the run.
+        /// </summary>
+        /// <returns></returns>
         public override bool PostRun() {
             if (_timeMeasureStart != null)
                 _executionTimeMs.Value = DateTime.Now.Subtract(_timeMeasureStart).TotalMilliseconds;
@@ -128,11 +149,11 @@ namespace ns.Base.Plugins {
                 XmlSerializer ser = new XmlSerializer(Cache.GetType());
                 Cache = ser.Deserialize(reader) as Cache;
 
-                IEnumerable<object> tools = Cache.Childs.Where(c => c is Tool);
-                IEnumerable<object> propertiesObj = Cache.Childs.Where(c => c is Property);
+                IEnumerable<Node> tools = Cache.Childs.Where(c => c is Tool);
+                IEnumerable<Node> propertiesObj = Cache.Childs.Where(c => c is Property);
 
                 if (tools != null)
-                    Childs = new ObservableList<object>(tools);
+                    Childs = new ObservableList<Node>(tools);
 
                 List<Property> properties = new List<Property>();
                 foreach (Property p in propertiesObj) Childs.Add(p);
@@ -157,7 +178,7 @@ namespace ns.Base.Plugins {
             writer.WriteAttributeString(nameof(AssemblyFile), AssemblyFile);
             writer.WriteAttributeString(nameof(Version), Version);
 
-            Cache.Childs = new ObservableList<object>(Childs);
+            Cache.Childs = new ObservableList<Node>(Childs);
 
             try {
                 XmlSerializer ser = new XmlSerializer(Cache.GetType());

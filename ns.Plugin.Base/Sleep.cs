@@ -38,7 +38,7 @@ namespace ns.Plugin.Base {
             base.Initialize();
 
             try {
-                _milliseconds = (int)GetProperty("Milliseconds").Value;
+                _milliseconds = (GetProperty("Milliseconds") as IntegerProperty).Value;
                 return true;
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
@@ -54,7 +54,7 @@ namespace ns.Plugin.Base {
             base.PreRun();
 
             try {
-                _milliseconds = (int)GetProperty("Milliseconds").Value;
+                _milliseconds = (GetProperty("Milliseconds") as IntegerProperty).Value;
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;

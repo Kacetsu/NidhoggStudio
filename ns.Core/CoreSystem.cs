@@ -1,4 +1,5 @@
-﻿using ns.Base.Extensions;
+﻿using ns.Base.Exceptions;
+using ns.Base.Extensions;
 using ns.Base.Manager;
 using ns.Core.Manager;
 using ns.Core.Manager.ProjectBox;
@@ -26,7 +27,7 @@ namespace ns.Core {
         /// <value>
         /// The instance.
         /// </value>
-        public static CoreSystem Instance { get { return _instance; } }
+        public static CoreSystem Instance => _instance;
 
         /// <summary>
         /// Gets the managers.
@@ -34,9 +35,7 @@ namespace ns.Core {
         /// <value>
         /// The managers.
         /// </value>
-        public static List<BaseManager> Managers {
-            get { return _managers; }
-        }
+        public static List<BaseManager> Managers => _managers;
 
         /// <summary>
         /// Gets the log listener.
@@ -44,9 +43,7 @@ namespace ns.Core {
         /// <value>
         /// The log listener.
         /// </value>
-        public static Base.Log.TraceListener LogListener {
-            get { return _traceListener; }
-        }
+        public static Base.Log.TraceListener LogListener => _traceListener;
 
         /// <summary>
         /// Gets the processor.
@@ -54,9 +51,7 @@ namespace ns.Core {
         /// <value>
         /// The processor.
         /// </value>
-        public static Processor Processor {
-            get { return _processor; }
-        }
+        public static Processor Processor => _processor;
 
         /// <summary>
         /// Gets the shell.
@@ -64,9 +59,7 @@ namespace ns.Core {
         /// <value>
         /// The shell.
         /// </value>
-        public static Shell Shell {
-            get { return _shell; }
-        }
+        public static Shell Shell => _shell;
 
         /// <summary>
         /// Initializes the specified is webservice.
@@ -84,7 +77,7 @@ namespace ns.Core {
         /// or
         /// Could not initialize DataStorageManager!
         /// </exception>
-        public static bool Initialize(bool isWebservice) {
+        public static bool Initialize(bool isWebservice = false) {
             bool result = false;
 
             try {
@@ -130,53 +123,34 @@ namespace ns.Core {
                 ProjectManager projectManager = new ProjectManager();
                 PropertyManager propertyManager = new PropertyManager();
                 PluginManager pluginManager = new PluginManager();
-                DisplayManager displayManager = new DisplayManager();
                 DataStorageManager dataStorageManager = new DataStorageManager();
                 ProjectBoxManager projectBoxManager = new ProjectBoxManager();
 
-                _managers.Add(projectManager);
-                _managers.Add(propertyManager);
-                _managers.Add(pluginManager);
-                _managers.Add(displayManager);
-                _managers.Add(dataStorageManager);
-                _managers.Add(projectBoxManager);
+                if (!_managers.Contains(projectManager)) _managers.Add(projectManager);
+                if (!_managers.Contains(pluginManager)) _managers.Add(pluginManager);
+                if (!_managers.Contains(propertyManager)) _managers.Add(propertyManager);
+                if (!_managers.Contains(dataStorageManager)) _managers.Add(dataStorageManager);
+                if (!_managers.Contains(projectBoxManager)) _managers.Add(projectBoxManager);
 
                 AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
-                if (pluginManager.Initialize() == false)
-                    throw new Exception("Could not initialize PluginManager!");
+                if (!pluginManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
 
-                if (propertyManager.Initialize() == false)
-                    throw new Exception("Could not initialize PropertyManager!");
+                if (!propertyManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
 
-                if (projectBoxManager.Initialize() == false)
-                    throw new Exception("Could not initialize ProjectBoxManager!");
+                if (!projectBoxManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
 
-                if (projectManager.Initialize() == false)
-                    throw new Exception("Could not initialize ProjectManager!");
+                if (!dataStorageManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(DataStorageManager));
 
-                _traceListener.SetLoggingCategoties(projectManager.Configuration.LogConfiguration.Categories);
+                ExtensionManager extensionManager = Managers.Find(m => m.Name.Contains(nameof(ExtensionManager))) as ExtensionManager;
 
-                if (displayManager.Initialize() == false)
-                    throw new Exception("Could not initialize DisplayManager!");
+                if (!extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
 
-                if (dataStorageManager.Initialize() == false)
-                    throw new Exception("Could not initialize DataStorageManager!");
-
-                ExtensionManager extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
-
-                if (extensionManager.Initialize() == false)
-                    throw new Exception("Could not initialize ExtensionManager!");
+                if (!projectManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
 
                 _processor = new Processor();
                 _shell = new Shell();
                 _shell.Initialize();
-
-                if (!projectManager.LoadLastUsedProject()) {
-                    Base.Log.Trace.WriteLine("Could not load latest project!", TraceEventType.Error);
-                    if (projectBoxManager.Load(projectBoxManager.DefaultProjectDirectory + ProjectBoxManager.PROJECTFILE_NAME + ProjectBoxManager.EXTENSION_XML) == null)
-                        throw new Exception("[Fatal error] Could not load default project!");
-                }
 
                 result = true;
             } catch (Exception ex) {

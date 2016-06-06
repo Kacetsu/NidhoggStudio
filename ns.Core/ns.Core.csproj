@@ -65,12 +65,10 @@
     <Compile Include="DataStorage.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Manager\DataStorageManager.cs" />
-    <Compile Include="Manager\DisplayManager.cs" />
     <Compile Include="Manager\ProjectBox\ProjectBoxManager.cs" />
     <Compile Include="Manager\ProjectBox\ProjectInfoContainer.cs" />
     <Compile Include="Manager\ProjectManager.cs" />
     <Compile Include="CoreSystem.cs" />
-    <Compile Include="Manager\DeviceManager.cs" />
     <Compile Include="Manager\ExtensionManager.cs" />
     <Compile Include="Manager\ToolManager.cs" />
     <Compile Include="Manager\PluginManager.cs" />

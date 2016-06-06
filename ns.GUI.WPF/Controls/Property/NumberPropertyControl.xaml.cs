@@ -51,7 +51,7 @@ namespace ns.GUI.WPF.Controls.Property {
             _property = property;
             DataContext = this;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
             } else {
                 if (property is IntegerProperty) {

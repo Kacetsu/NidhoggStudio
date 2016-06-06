@@ -221,7 +221,7 @@ namespace ns.Core {
 
             foreach (Operation o in _projectManager.Configuration.Operations) {
                 Property linkedProperty = o.GetProperty("LinkedOperation");
-                if (linkedProperty.ConnectedToUID == operation.UID)
+                if (linkedProperty.ConnectedUID == operation.UID)
                     connectedOperations.Add(o);
             }
 
@@ -236,7 +236,7 @@ namespace ns.Core {
 
                         foreach (Operation o in connectedOperations) {
                             Property triggerProperty = o.GetProperty("Trigger");
-                            if (triggerProperty.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
+                            if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
                                 NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
                                 nanoProcessor.Start();
                             }
@@ -250,7 +250,7 @@ namespace ns.Core {
                 case PluginStatus.Started:
                 foreach (Operation o in connectedOperations) {
                     Property triggerProperty = o.GetProperty("Trigger");
-                    if (triggerProperty.Value.ToString() == OperationTrigger.Started.GetDescription()) {
+                    if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Started.GetDescription()) {
                         NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
                         nanoProcessor.Start();
                     }

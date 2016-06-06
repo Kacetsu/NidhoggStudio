@@ -5,13 +5,10 @@ using System.Collections.Generic;
 namespace ns.Base.Plugins.Properties {
 
     [Serializable]
-    public class DeviceProperty : Property {
+    public class DeviceProperty : GenericProperty<Device> {
 
         [NonSerialized]
-        private List<Node> _devicePlugins = new List<Node>();
-
-        [NonSerialized]
-        private BaseManager _deviceManager;
+        private List<Device> _devicePlugins = new List<Device>();
 
         private string _tmpDeviceUID = string.Empty;
         private Type _filterType;
@@ -32,7 +29,7 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public DeviceProperty(string name, string value) : base(name, value) { }
+        public DeviceProperty(string name, Device value) : base(name, value) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceProperty"/> class.
@@ -40,7 +37,9 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="name">The name.</param>
         /// <param name="groupName">Name of the group.</param>
         /// <param name="value">The value.</param>
-        public DeviceProperty(string name, string groupName, string value) : base(name, groupName, value) { }
+        public DeviceProperty(string name, string groupName, Device value) : base(name, value) {
+            GroupName = groupName;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceProperty"/> class.
@@ -48,8 +47,9 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="name">The name.</param>
         /// <param name="groupName">Name of the group.</param>
         /// <param name="filterType">Type of the filter.</param>
-        public DeviceProperty(string name, string groupName, Type filterType) : base(name, groupName, null) {
+        public DeviceProperty(string name, string groupName, Type filterType) : base(name, null) {
             _filterType = filterType;
+            GroupName = groupName;
         }
 
         /// <summary>
@@ -73,24 +73,6 @@ namespace ns.Base.Plugins.Properties {
         public Type FilterType => _filterType;
 
         /// <summary>
-        /// Gets the device.
-        /// </summary>
-        /// <value>
-        /// The device.
-        /// </value>
-        public Device Device {
-            get {
-                string valueStr = Value as string;
-                if (Value != null && !string.IsNullOrEmpty(valueStr)) {
-                    Device device = _devicePlugins.Find(d => d.UID == valueStr) as Device;
-                    return device;
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets the device uid.
         /// </summary>
         /// <value>
@@ -98,8 +80,8 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         public string DeviceUID {
             get {
-                if (Device == null) return _tmpDeviceUID;
-                else return Device.UID;
+                if (Value == null) return string.Empty;
+                else return Value.UID;
             }
         }
 
@@ -109,16 +91,13 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The device plugins.
         /// </value>
-        public List<Node> DevicePlugins => _devicePlugins;
+        public List<Device> DevicePlugins => _devicePlugins;
 
         /// <summary>
         /// Sets the device.
         /// </summary>
         /// <param name="device">The device.</param>
-        public void SetDevice(Node device) {
-            if (Value != null) _deviceManager.Remove(Value as Device);
-
-            _deviceManager.Add(device);
+        public void SetDevice(Device device) {
             object oldValue = Value;
             Value = device;
 
@@ -130,58 +109,18 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
-        /// Sets the device.
-        /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void SetDevice(string uid) {
-            if (_deviceManager != null) {
-                Device device = _deviceManager.Nodes.Find(d => d.UID == uid) as Device;
-                if (device != null) SetDevice(device);
-            }
-
-            _tmpDeviceUID = uid;
-        }
-
-        /// <summary>
-        /// Sets the device.
-        /// </summary>
-        /// <param name="deviceManager">The device manager.</param>
-        /// <param name="uid">The uid.</param>
-        public void SetDevice(BaseManager deviceManager, string uid) {
-            _deviceManager = deviceManager;
-            Device device = _deviceManager.Nodes.Find(d => d.UID == uid) as Device;
-            if (device != null) SetDevice(device);
-
-            _tmpDeviceUID = uid;
-        }
-
-        /// <summary>
-        /// Sets the device.
-        /// </summary>
-        /// <param name="deviceManager">The device manager.</param>
-        /// <param name="device">The device.</param>
-        public void SetDevice(BaseManager deviceManager, Device device) {
-            _deviceManager = deviceManager;
-            SetDevice(device);
-        }
-
-        /// <summary>
         /// Adds the device list.
         /// </summary>
         /// <param name="devicePlugins">The device plugins.</param>
         /// <param name="deviceManager">The device manager.</param>
-        public void AddDeviceList(List<Node> devicePlugins, BaseManager deviceManager) {
-            _deviceManager = deviceManager;
-
-            if (_devicePlugins != null) _devicePlugins.Clear();
-
+        public void AddDeviceList(List<Device> devicePlugins) {
             List<Node> _matchingDevices = new List<Node>();
             if (_filterType == null)
                 _devicePlugins = devicePlugins;
             else {
-                _devicePlugins = new List<Node>();
+                _devicePlugins = new List<Device>();
 
-                foreach (Node device in devicePlugins) {
+                foreach (Device device in devicePlugins) {
                     if (device.GetType().IsAssignableFrom(FilterType) || device.GetType().IsSubclassOf(FilterType)) {
                         _devicePlugins.Add(device);
                     }
@@ -192,11 +131,6 @@ namespace ns.Base.Plugins.Properties {
             if ((selectedDevice = (_devicePlugins.Find(d => d.UID == DeviceUID)) as Device) != null) {
                 Value = selectedDevice;
                 SetDevice(selectedDevice);
-            } else if ((selectedDevice = (_deviceManager.Nodes.Find(d => d.UID == DeviceUID)) as Device) != null) {
-                Value = selectedDevice;
-                SetDevice(selectedDevice);
-
-                _devicePlugins.Insert(0, selectedDevice);
             } else if (_devicePlugins.Count > 0) {
                 Value = _devicePlugins[0];
                 SetDevice(_devicePlugins[0]);

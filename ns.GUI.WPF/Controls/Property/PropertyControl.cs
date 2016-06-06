@@ -190,8 +190,8 @@ namespace ns.GUI.WPF.Controls.Property {
                 _selectionComboBox.ItemsSource = operations;
                 _selectionComboBox.DisplayMemberPath = "Name";
 
-                if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
-                    Operation targetOperation = projectManager.Configuration.Operations.Find(p => p.UID == Property.ConnectedToUID);
+                if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+                    Operation targetOperation = projectManager.Configuration.Operations.Find(p => p.UID == Property.ConnectedUID);
                     if (targetOperation != null)
                         _selectionComboBox.SelectedItem = targetOperation;
                 }
@@ -202,8 +202,8 @@ namespace ns.GUI.WPF.Controls.Property {
                 _selectionComboBox.ItemsSource = properties;
                 _selectionComboBox.DisplayMemberPath = "TreeName";
 
-                if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
-                    ns.Base.Plugins.Properties.Property targetProperty = properties.Find(p => p.UID == Property.ConnectedToUID);
+                if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+                    ns.Base.Plugins.Properties.Property targetProperty = properties.Find(p => p.UID == Property.ConnectedUID);
                     if (targetProperty != null)
                         _selectionComboBox.SelectedItem = targetProperty;
                 }

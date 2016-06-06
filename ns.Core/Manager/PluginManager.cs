@@ -1,5 +1,6 @@
 ﻿using ns.Base;
 using ns.Base.Attribute;
+using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using System;
@@ -10,7 +11,7 @@ using System.Reflection;
 
 namespace ns.Core.Manager {
 
-    public class PluginManager : BaseManager {
+    public class PluginManager : NodeManager<Plugin> {
         private const string LIBRARY_EXTENSION = ".dll";
         private const string FACTORY_NAME = "Factory";
 
@@ -20,6 +21,7 @@ namespace ns.Core.Manager {
         private List<Assembly> _assemblyList = new List<Assembly>();
         private List<Plugin> _plugins = new List<Plugin>();
         private List<LibraryInformation> _libraryInformations = new List<LibraryInformation>();
+        private ExtensionManager _extensionManager;
 
         /// <summary>
         /// Gets the path to the plugins.
@@ -30,18 +32,6 @@ namespace ns.Core.Manager {
                     return Environment.GetEnvironmentVariable("NIDHOGGSTUDIO_BIN") + Path.DirectorySeparatorChar + "Plugins";
                 else
                     return _pluginPath;
-            }
-        }
-
-        /// <summary>
-        /// Gets the plugins.
-        /// </summary>
-        /// <value>
-        /// The plugins.
-        /// </value>
-        public List<Plugin> Plugins {
-            get {
-                return _plugins;
             }
         }
 
@@ -71,22 +61,11 @@ namespace ns.Core.Manager {
         public override bool Initialize() {
             try {
                 Base.Log.Trace.WriteLine("Initialize PluginManager ...", TraceEventType.Information);
-                ToolManager toolManager = new ToolManager();
-                DeviceManager deviceManager = new DeviceManager();
-                ExtensionManager extensionManager = new ExtensionManager();
+                _extensionManager = new ExtensionManager();
 
-                if (toolManager.Initialize() == false)
-                    throw new Exception("Could not initialize ToolManager!");
+                if (!_extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
 
-                if (deviceManager.Initialize() == false)
-                    throw new Exception("Could not initialize DeviceManager!");
-
-                if (extensionManager.Initialize() == false)
-                    throw new Exception("Could not initialize ExtensionManager!");
-
-                CoreSystem.Managers.Add(toolManager);
-                CoreSystem.Managers.Add(deviceManager);
-                CoreSystem.Managers.Add(extensionManager);
+                CoreSystem.Managers.Add(_extensionManager);
 
                 if (UpdatePlugins() == false)
                     throw new Exception("Could not get any plugins!");
@@ -106,23 +85,16 @@ namespace ns.Core.Manager {
             bool result = false;
             Base.Log.Trace.WriteLine("Updating Plugin list ... ", TraceEventType.Information);
             try {
-                ToolManager toolManager = (ToolManager)CoreSystem.Managers.Find(pm => pm.GetType() == typeof(ToolManager));
-                DeviceManager deviceManager = (DeviceManager)CoreSystem.Managers.Find(pm => pm.GetType() == typeof(DeviceManager));
-                ExtensionManager extensionManager = (ExtensionManager)CoreSystem.Managers.Find(pm => pm.GetType() == typeof(ExtensionManager));
-
                 if (Directory.Exists(PluginPath) == false) {
                     Directory.CreateDirectory(PluginPath);
                     Base.Log.Trace.WriteLine("No plugins to load!", TraceEventType.Warning);
                 } else {
                     _fileList.Clear();
-                    toolManager.Plugins.Clear();
-                    deviceManager.Plugins.Clear();
-                    extensionManager.Plugins.Clear();
+                    _extensionManager.Nodes.Clear();
 
                     // Add the Plugins here!
                     Operation baseOperation = new Operation();
                     _plugins.Add(baseOperation);
-                    toolManager.Plugins.Add(baseOperation);
 
                     foreach (string file in Directory.GetFiles(PluginPath)) {
                         if ((file.EndsWith(LIBRARY_EXTENSION) == false) || (_fileList.Contains(file) == true))
@@ -144,38 +116,12 @@ namespace ns.Core.Manager {
                                 continue;
                             object probalePlugin = assembly.CreateInstance(type.ToString());
 
-                            Plugin plugin = null;
-                            if (probalePlugin is Tool) {
-                                plugin = probalePlugin as Tool;
-                                if (ValidateTool(plugin as Tool) == false)
-                                    plugin = null;
+                            Plugin plugin = probalePlugin as Plugin;
+                            Extension extension = probalePlugin as Extension;
+                            if (plugin == null) continue;
 
-                                toolManager.Plugins.Add(plugin);
-                            } else if (probalePlugin is Operation) {
-                                plugin = probalePlugin as Operation;
-                                if (ValidateOperation(plugin as Operation) == false)
-                                    plugin = null;
-
-                                toolManager.Plugins.Add(plugin);
-                            } else if (probalePlugin is Device) {
-                                plugin = probalePlugin as Device;
-                                if (ValidateDevice(plugin as Device) == false)
-                                    plugin = null;
-
-                                deviceManager.Plugins.Add(plugin);
-                            } else if (probalePlugin is Extension) {
-                                plugin = probalePlugin as Extension;
-                                if (ValidateExtension(plugin as Extension) == false)
-                                    plugin = null;
-
-                                extensionManager.Plugins.Add(plugin);
-                            } else if (probalePlugin is LibraryInformation) {
-                                LibraryInformation libraryInformation = probalePlugin as LibraryInformation;
-                                _libraryInformations.Add(libraryInformation);
-                            }
-
-                            if (plugin == null)
-                                continue;
+                            if (extension != null) _extensionManager.Add(extension);
+                            else Add(plugin);
 
                             _plugins.Add(plugin);
                         }
@@ -183,9 +129,8 @@ namespace ns.Core.Manager {
                 }
 
                 Base.Log.Trace.WriteLine("System contains " + _plugins.Count + " Plugins:\n\t"
-                    + toolManager.Plugins.Count + " Tool(s)\n\t"
-                    + deviceManager.Plugins.Count + " Device(s)\n\t"
-                    + extensionManager.Plugins.Count + " Extension(s)", TraceEventType.Verbose);
+                    + Nodes.Count + " Plugin(s)\n\t"
+                    + _extensionManager.Nodes.Count + " Extension(s)", TraceEventType.Verbose);
 
                 result = true;
             } catch (Exception ex) {

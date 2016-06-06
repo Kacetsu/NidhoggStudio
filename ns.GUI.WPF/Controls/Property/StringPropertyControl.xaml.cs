@@ -68,7 +68,7 @@ namespace ns.GUI.WPF.Controls.Property {
             _property = property;
             StringProperty stringProperty = property as StringProperty;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(this.ContentBox as Control, this.ConnectImage);
             } else {
                 this.ContentBox.Text = stringProperty.Value as string;
@@ -89,7 +89,7 @@ namespace ns.GUI.WPF.Controls.Property {
             _property = property;
             StringProperty stringProperty = property as StringProperty;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(this.ContentBox as Control, this.ConnectImage);
             } else {
                 this.ContentBox.Text = stringProperty.Value as string;

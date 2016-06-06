@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ns.Base.Plugins {
+
     [Serializable]
     public class Tolerance<T> : INotifyPropertyChanged {
         private T _min;
@@ -13,7 +14,8 @@ namespace ns.Base.Plugins {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Tolerance() { }
+        public Tolerance() {
+        }
 
         public Tolerance(T min, T max) {
             _min = min;

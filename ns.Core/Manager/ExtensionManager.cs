@@ -1,37 +1,36 @@
 ﻿using ns.Base.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
+
     public class ExtensionManager : PluginManager {
 
-        private List<Plugin> _plugins = new List<Plugin>();
-
-        public new List<Plugin> Plugins {
-            get {
-                return _plugins;
-            }
-        }
-
+        /// <summary>
+        /// Initialize the instance of the manager.
+        /// </summary>
+        /// <returns></returns>
         public override bool Initialize() {
-            foreach (Extension extension in _plugins) {
+            foreach (Extension extension in Nodes) {
                 extension.Initialize();
             }
             return true;
         }
 
+        /// <summary>
+        /// Finalizes this instance.
+        /// </summary>
+        /// <returns></returns>
         public override bool Finalize() {
-            foreach (Extension extension in _plugins) {
+            foreach (Extension extension in Nodes) {
                 extension.Finalize();
             }
             return true;
         }
 
+        /// <summary>
+        /// Runs all.
+        /// </summary>
         public void RunAll() {
-            foreach (Extension extension in _plugins) {
+            foreach (Extension extension in Nodes) {
                 if (extension.PreRun())
                     extension.Run();
                 extension.PostRun();

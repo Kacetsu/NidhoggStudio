@@ -66,8 +66,17 @@
     <Compile Include="DataStorageContainer.cs" />
     <Compile Include="Event\DataStorageContainerChangedEventArgs.cs" />
     <Compile Include="Event\NodeCollectionChangedEventArgs.cs" />
+    <Compile Include="Exceptions\DeviceAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\DeviceInitialisationFailedException.cs" />
+    <Compile Include="Exceptions\ManagerInitialisationFailedException.cs" />
+    <Compile Include="Exceptions\OperationAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\OperationNotFoundException.cs" />
+    <Compile Include="Exceptions\PluginNotFoundException.cs" />
+    <Compile Include="Exceptions\ToolAlreadyExistsException.cs" />
     <Compile Include="Imaging\Histogram.cs" />
     <Compile Include="LibraryInformation.cs" />
+    <Compile Include="Manager\GenericConfigurationManager.cs" />
+    <Compile Include="Manager\NodeManager.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Event\ChildCollectionChangedEventArgs.cs" />
     <Compile Include="Event\DeviceSelectionChangedEventArgs.cs" />
@@ -91,10 +100,14 @@
     <Compile Include="Plugins\Plugin.cs" />
     <Compile Include="Plugins\Device.cs" />
     <Compile Include="Plugins\Extension.cs" />
+    <Compile Include="Plugins\Properties\IConnectable.cs" />
     <Compile Include="Plugins\Properties\ImageContainer.cs" />
+    <Compile Include="Plugins\Properties\IMonitorable.cs" />
+    <Compile Include="Plugins\Properties\INumerical.cs" />
+    <Compile Include="Plugins\Properties\ITolerance.cs" />
+    <Compile Include="Plugins\Properties\IValue.cs" />
     <Compile Include="Plugins\Properties\KeyValuePairListProperty.cs" />
     <Compile Include="Plugins\Properties\NumberProperty.cs" />
-    <Compile Include="Plugins\Properties\OperationSelectionProperty.cs" />
     <Compile Include="Plugins\Properties\RectangleProperty.cs" />
     <Compile Include="Plugins\Properties\GenericProperty.cs" />
     <Compile Include="Plugins\Tolerance.cs" />
@@ -114,6 +127,7 @@
     <Compile Include="Plugins\Properties\IntegerProperty.cs" />
     <Compile Include="Plugins\Properties\StringProperty.cs" />
     <Compile Include="FileInfo.cs" />
+    <Compile Include="Rectangle.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

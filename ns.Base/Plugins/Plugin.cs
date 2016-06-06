@@ -12,7 +12,7 @@ namespace ns.Base.Plugins {
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
     /// </summary>
     [Serializable]
-    public class Plugin : Node, IPlugin, ICloneable {
+    public class Plugin : Node, IPlugin, ICloneable, IXmlSerializable {
         private string _version = string.Empty;
         private string _assemblyFile = string.Empty;
         private string _displayName = string.Empty;
@@ -22,13 +22,15 @@ namespace ns.Base.Plugins {
         /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
         /// Creates additional to the BaseNode the following fields: AssemblyFile and Version.
         /// </summary>
-        public Plugin() : base() { }
+        public Plugin() : base() {
+            Cache = new Cache();
+        }
 
         /// <summary>
         /// Gets or sets the AssemblyFile.
         /// Used to find the correct Plugin while loading the CoreSystem / PluginManager.
         /// </summary>
-        [XmlAttribute("AssemblyFile")]
+        [XmlAttribute]
         public string AssemblyFile {
             get {
                 if (string.IsNullOrEmpty(_assemblyFile)) {
@@ -43,7 +45,7 @@ namespace ns.Base.Plugins {
         /// <summary>
         /// Gets or sets the Version.
         /// </summary>
-        [XmlAttribute("Version")]
+        [XmlAttribute]
         public string Version {
             get {
                 if (string.IsNullOrEmpty(_version)) {
@@ -69,7 +71,7 @@ namespace ns.Base.Plugins {
             set {
                 if (!_displayName.Equals(value)) {
                     _displayName = value;
-                    OnPropertyChanged("DisplayName");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -82,13 +84,24 @@ namespace ns.Base.Plugins {
             get { return string.Empty; }
         }
 
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        /// <value>
+        /// The status.
+        /// </value>
         public PluginStatus Status {
             get { return _status; }
             set {
                 _status = value;
-                OnPropertyChanged("Status");
+                OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Gets or sets the NodeCache.
+        /// </summary>
+        public Cache Cache { get; set; }
 
         /// <summary>
         /// Pres the run.
@@ -144,24 +157,10 @@ namespace ns.Base.Plugins {
                     }
 
                     foreach (Property property in child.Childs) {
-                        if (property.IsToleranceDisabled) continue;
-                        if (property is DoubleProperty) {
-                            DoubleProperty targetProperty = property as DoubleProperty;
-                            double min = targetProperty.Tolerance.Min;
-                            double max = targetProperty.Tolerance.Max;
-                            double value = Convert.ToDouble(targetProperty.Value);
-                            if (value > max || value < min) {
-                                result = false;
-                            }
-                        } else if (property is IntegerProperty) {
-                            IntegerProperty targetProperty = property as IntegerProperty;
-                            int min = targetProperty.Tolerance.Min;
-                            int max = targetProperty.Tolerance.Max;
-                            int value = Convert.ToInt32(targetProperty.Value);
-                            if (value > max || value < min) {
-                                result = false;
-                            }
-                        }
+                        ITolerance<object> tolerancProperty = property as ITolerance<object>;
+                        if (tolerancProperty?.IsToleranceEnabled == false) continue;
+
+                        result = tolerancProperty.InTolerance;
                     }
 
                     if (!result) break;
@@ -223,6 +222,67 @@ namespace ns.Base.Plugins {
         /// </summary>
         public void OnFinished() {
             if (Status != PluginStatus.Failed) Status = PluginStatus.Finished;
+        }
+
+        /// <summary>
+        /// Gets the XML Shema.
+        /// @warning Leave this always null. See also: https://msdn.microsoft.com/de-de/library/system.xml.serialization.ixmlserializable.getschema%28v=vs.110%29.aspx
+        /// </summary>
+        /// <returns>Returns null.</returns>
+        public System.Xml.Schema.XmlSchema GetSchema() {
+            return null;
+        }
+
+        /// <summary>
+        /// Reads the Node from the XML.
+        /// </summary>
+        /// <param name="reader">The instance of the XmlReader.</param>
+        public void ReadXml(System.Xml.XmlReader reader) {
+            ReadBasicXmlInfo(reader);
+
+            reader.ReadStartElement();
+
+            XmlSerializer ser = new XmlSerializer(Cache.GetType());
+            Cache = ser.Deserialize(reader) as Cache;
+
+            if (!reader.IsStartElement())
+                reader.ReadEndElement();
+        }
+
+        /// <summary>
+        /// Writes the Node to the XML.
+        /// </summary>
+        /// <param name="writer">The instance of the XmlWriter.</param>
+        public void WriteXml(System.Xml.XmlWriter writer) {
+            WriteBasicXmlInfo(writer);
+
+            Cache.Childs = Childs;
+
+            XmlSerializer ser = new XmlSerializer(Cache.GetType());
+            ser.Serialize(writer, Cache);
+        }
+
+        /// <summary>
+        /// Writes basic Informations to the XML.
+        /// </summary>
+        /// <param name="writer">The instance of the XmlWriter.</param>
+        protected void WriteBasicXmlInfo(System.Xml.XmlWriter writer) {
+            writer.WriteAttributeString(nameof(Name), Name);
+            writer.WriteAttributeString(nameof(Fullname), Fullname);
+            writer.WriteAttributeString(nameof(UID), UID);
+        }
+
+        /// <summary>
+        /// Reads bais Informations from the XML.
+        /// </summary>
+        /// <param name="reader">The instance of the XmlReader.</param>
+        protected void ReadBasicXmlInfo(System.Xml.XmlReader reader) {
+            reader.MoveToAttribute(nameof(Name));
+            Name = reader.ReadContentAsString();
+            reader.MoveToAttribute(nameof(Fullname));
+            Fullname = reader.ReadContentAsString();
+            reader.MoveToAttribute(nameof(UID));
+            UID = reader.ReadContentAsString();
         }
     }
 }

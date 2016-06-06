@@ -37,7 +37,7 @@ namespace ns.GUI.WPF.Controls.Property {
             _property = property;
             property.PropertyChanged += Property_PropertyChanged;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
             } else {
                 if (property is RectangleProperty) {

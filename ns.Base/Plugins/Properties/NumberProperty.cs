@@ -1,21 +1,17 @@
 ﻿using ns.Base.Extensions;
 using System;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
     [Serializable]
-    public class NumberProperty<T> : GenericProperty<T>, INumerical {
-        private T _max;
-        private T _min;
-        private Tolerance<T> _tolerance;
+    public abstract class NumberProperty<T> : GenericProperty<T>, INumerical, ITolerance<T>, IConnectable<T> {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
         /// </summary>
         public NumberProperty() : base() {
-            _tolerance = new Tolerance<T>();
+            Tolerance = new Tolerance<T>();
         }
 
         /// <summary>
@@ -42,17 +38,24 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
         public NumberProperty(string name, T value, T min, T max) : base(name, value) {
-            _max = max;
-            _min = min;
-            _tolerance = new Tolerance<T>(min, max);
+            Max = max;
+            Min = min;
+            Tolerance = new Tolerance<T>(min, max);
         }
+
+        /// <summary>
+        /// Gets the initial value.
+        /// </summary>
+        /// <value>
+        /// The initial value.
+        /// </value>
+        [XmlIgnore]
+        public T InitialValue { get; set; }
 
         /// <summary>
         /// Gets if the Property has a numeric value.
         /// </summary>
-        public override bool IsNumeric {
-            get { return true; }
-        }
+        public bool IsNumeric => true;
 
         /// <summary>
         /// Gets the maximum.
@@ -60,10 +63,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The maximum.
         /// </value>
-        public T Max {
-            get { return _max; }
-            set { _max = value; }
-        }
+        public T Max { get; set; }
 
         /// <summary>
         /// Gets the minimum.
@@ -71,10 +71,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The minimum.
         /// </value>
-        public T Min {
-            get { return _min; }
-            set { _min = value; }
-        }
+        public T Min { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is tolerance disabled.
@@ -82,9 +79,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// <c>true</c> if this instance is tolerance disabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsToleranceDisabled {
-            get { return _tolerance == null; }
-        }
+        public bool IsToleranceEnabled => Tolerance != null;
 
         /// <summary>
         /// Gets or sets the tolerance.
@@ -92,10 +87,15 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The tolerance.
         /// </value>
-        public new Tolerance<T> Tolerance {
-            get { return _tolerance; }
-            set { _tolerance = value; }
-        }
+        public Tolerance<T> Tolerance { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether [in tolerance].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [in tolerance]; otherwise, <c>false</c>.
+        /// </value>
+        public bool InTolerance => (System.Collections.Generic.Comparer<T>.Default.Compare(Max, Value) >= 0) && (System.Collections.Generic.Comparer<T>.Default.Compare(Min, Value) <= 0);
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -104,18 +104,6 @@ namespace ns.Base.Plugins.Properties {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() {
-            NumberProperty<T> clone = this.DeepClone();
-            return clone;
-        }
-
-        /// <summary>
-        /// Saves the specified writer.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        public override void Save(XmlWriter writer) {
-            XmlSerializer ser = new XmlSerializer(typeof(Tolerance<T>));
-            ser.Serialize(writer, Tolerance);
-        }
+        public override object Clone() => this.DeepClone();
     }
 }

@@ -4,11 +4,10 @@ using ns.Base.Manager;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
-using System.Xml.Serialization;
 
 namespace ns.Core.Manager {
 
-    public class DataStorageManager : BaseManager {
+    public class DataStorageManager : NodeManager<Node> {
 
         /// <summary>
         ///
@@ -45,44 +44,6 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Saves the manager to a MemoryStream.
-        /// </summary>
-        /// <param name="stream">Reference to the MemoryStream.</param>
-        /// <returns>
-        /// Success of the operation.
-        /// </returns>
-        public override bool Save(ref System.IO.MemoryStream stream) {
-            try {
-                XmlSerializer serializer = new XmlSerializer(_dataStorage.GetType());
-                serializer.Serialize(stream, _dataStorage);
-                stream.Flush();
-                return true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Loads the manager from a FileStream.
-        /// </summary>
-        /// <param name="stream">The FileStream.</param>
-        /// <returns>
-        /// The manager object. NULL if any error happend.
-        /// </returns>
-        public override object Load(System.IO.FileStream stream) {
-            try {
-                object obj;
-                XmlSerializer serializer = new XmlSerializer(_dataStorage.GetType());
-                obj = serializer.Deserialize(stream);
-                return obj;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
@@ -94,9 +55,9 @@ namespace ns.Core.Manager {
                 lock (_dataStorage.Containers) {
                     try {
                         container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
-                        if (container.Values.Count > MAX_VALUES)
-                            container.Values.RemoveAt(0);
-                        container.Values.Add(property.Value);
+                        if (container.Values.Count > MAX_VALUES) container.Values.RemoveAt(0);
+
+                        container.Values.Add((property as IValue<object>)?.Value);
                         ContainerChangedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
                     } catch {
                         container = new DataStorageContainer(property.Name, property.TreeName, property.UID);

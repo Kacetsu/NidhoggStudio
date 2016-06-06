@@ -14,6 +14,22 @@ namespace ns.Base.Plugins {
     [Serializable]
     public class Operation : Plugin, IXmlSerializable {
         private string _linkedOperation = string.Empty;
+        private Device _captureDevice;
+
+        /// <summary>
+        /// Gets or sets the capture device.
+        /// </summary>
+        /// <value>
+        /// The capture device.
+        /// </value>
+        public Device CaptureDevice {
+            get { return _captureDevice; }
+            set {
+                if (_captureDevice == value) return;
+                _captureDevice = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Base Class for all Operations.
@@ -21,7 +37,7 @@ namespace ns.Base.Plugins {
         /// </summary>
         public Operation() : base() {
             DisplayName = "Operation";
-            AddChild(new OperationSelectionProperty("LinkedOperation", false));
+            AddChild(new StringProperty("LinkedOperation", false));
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
         }
 
@@ -31,8 +47,8 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <param name="name">The name of the Operation.</param>
         public Operation(string name) : base() {
-            this.Name = name;
-            AddChild(new OperationSelectionProperty("LinkedOperation", false));
+            Name = name;
+            AddChild(new StringProperty("LinkedOperation", false));
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
         }
 
@@ -58,7 +74,7 @@ namespace ns.Base.Plugins {
         public override bool Initialize() {
             base.Initialize();
 
-            foreach (Tool tool in this.Childs.Where(t => t is Tool)) {
+            foreach (Tool tool in Childs.Where(t => t is Tool)) {
                 if (!tool.Initialize())
                     return false;
             }
@@ -103,10 +119,13 @@ namespace ns.Base.Plugins {
 
             reader.ReadStartElement();
 
-            XmlSerializer ser = new XmlSerializer(Cache.GetType());
+            XmlSerializer ser = new XmlSerializer(typeof(Cache));
             Cache = ser.Deserialize(reader) as Cache;
 
-            Childs = new ObservableList<object>(Cache.Childs);
+            ser = new XmlSerializer(typeof(Device));
+            CaptureDevice = ser.Deserialize(reader) as Device;
+
+            Childs = new ObservableList<Node>(Cache.Childs);
         }
 
         /// <summary>
@@ -121,8 +140,12 @@ namespace ns.Base.Plugins {
             try {
                 XmlSerializer ser = new XmlSerializer(Cache.GetType());
                 ser.Serialize(writer, Cache);
+
+                ser = new XmlSerializer(typeof(Device));
+                ser.Serialize(writer, CaptureDevice);
             } catch (Exception ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
             }
         }
     }

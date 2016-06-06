@@ -5,7 +5,7 @@ using System.Reflection;
 namespace ns.Base.Log {
 
     public class Trace {
-        private TraceSource _traceSource = new TraceSource(Assembly.GetEntryAssembly().GetName().Name);
+        private TraceSource _traceSource;
         private static Lazy<Trace> _instance = new Lazy<Trace>(() => new Trace());
         private int _id;
 
@@ -21,6 +21,12 @@ namespace ns.Base.Log {
         /// Initializes a new instance of the <see cref="Trace"/> class.
         /// </summary>
         public Trace() {
+            Assembly entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly == null) {
+                _traceSource = new TraceSource("TraceSource");
+            } else {
+                _traceSource = new TraceSource(entryAssembly.GetName().Name);
+            }
             SourceSwitch sourcSwitch = new SourceSwitch("SourceSwitch", "All");
             _traceSource.Switch = sourcSwitch;
         }

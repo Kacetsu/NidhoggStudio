@@ -3,10 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Controls.Property {
+
     /// <summary>
     /// Interaction logic for ComboBoxPropertyControl.xaml
     /// </summary>
-    public partial class ComboBoxPropertyControl : PropertyControl  {
+    public partial class ComboBoxPropertyControl : PropertyControl {
         private Base.Plugins.Properties.Property _property;
 
         public string DisplayName {
@@ -24,7 +25,7 @@ namespace ns.GUI.WPF.Controls.Property {
             _property = property;
             DataContext = this;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
                 if (property is ListProperty) {
@@ -34,12 +35,12 @@ namespace ns.GUI.WPF.Controls.Property {
                     if (listProperty.List.Count > 0) {
                         ContentBox.SelectedItem = listProperty.Value;
 
-                        // Value could be a number from any enum, 
+                        // Value could be a number from any enum,
                         // so we need to check if we found a correct field.
                         if (ContentBox.SelectedItem == null) {
-                            if (listProperty.Value is int)
-                                ContentBox.SelectedIndex = (int)listProperty.Value;
-                            else if (listProperty.Value is string) {
+                            if (listProperty.SelectedItem is int)
+                                ContentBox.SelectedIndex = (int)listProperty.SelectedItem;
+                            else if (listProperty.SelectedItem is string) {
                                 foreach (object o in listProperty.List) {
                                     if (o.ToString() == listProperty.Value.ToString()) {
                                         ContentBox.SelectedItem = o;
@@ -47,7 +48,6 @@ namespace ns.GUI.WPF.Controls.Property {
                                     }
                                 }
                             }
-
                         }
                     }
                 }
@@ -62,8 +62,15 @@ namespace ns.GUI.WPF.Controls.Property {
 
         private void ContentBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ComboBox box = sender as ComboBox;
-            if(_property.Value != box.SelectedItem)
-                _property.Value = box.SelectedItem;
+            ListProperty listProperty = _property as ListProperty;
+            if (listProperty != null && listProperty.SelectedItem != box.SelectedItem) {
+                listProperty.SelectedItem = box.SelectedItem;
+            } else {
+                IValue<object> valueProperty = _property as IValue<object>;
+                if (valueProperty != null && valueProperty.Value != box.SelectedItem) {
+                    valueProperty.Value = box.SelectedItem;
+                }
+            }
         }
     }
 }

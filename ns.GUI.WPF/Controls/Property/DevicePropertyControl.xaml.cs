@@ -45,7 +45,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 this.SelectionBox.SelectedItem = device;
             }
 
-            if (!string.IsNullOrEmpty(Property.ConnectedToUID)) {
+            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(this.SelectionBox as Control, this.ConnectImage);
             }
         }

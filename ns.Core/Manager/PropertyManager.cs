@@ -1,6 +1,5 @@
 ﻿using ns.Base;
 using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
@@ -10,77 +9,30 @@ using System.Linq;
 
 namespace ns.Core.Manager {
 
-    public class PropertyManager : BaseManager {
-        private List<Property> _propertyTypes = new List<Property>();
+    public class PropertyManager : NodeManager<Property> {
         private List<Property> _properties = new List<Property>();
-        private DeviceManager _deviceManager;
-        private DisplayManager _displayManager;
         private DataStorageManager _dataStorageManager;
+        private PluginManager _pluginManager;
 
-        /// <summary>
-        /// Gets or sets the properties.
-        /// </summary>
-        /// <value>
-        /// The properties.
-        /// </value>
-        public List<Property> PropertyTypes {
-            get { return _propertyTypes; }
-            set { _propertyTypes = value; }
-        }
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
         public override bool Initialize() {
-            AddType(new StringProperty());
-            AddType(new IntegerProperty());
-            AddType(new DoubleProperty());
-            AddType(new DeviceProperty());
-            AddType(new ImageProperty());
-            AddType(new ListProperty());
-            AddType(new RectangleProperty());
-            AddType(new OperationSelectionProperty());
-            AddType(new Property());
-            return true;
-        }
-
-        /// <summary>
-        /// Adds the specified property.
-        /// </summary>
-        /// <param name="propertyType">The property.</param>
-        /// <returns></returns>
-        public bool AddType(Property propertyType) {
-            bool result = false;
-
-            if ((result = !_propertyTypes.Contains(propertyType)) == true) {
-                _propertyTypes.Add(propertyType);
-                Base.Log.Trace.WriteLine("Property type added: " + propertyType.ToString(), TraceEventType.Verbose);
-            }
-
-            return result;
+            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            return _pluginManager != null;
         }
 
         /// <summary>
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
-        public override void Add(Node node) {
-            if (_deviceManager == null)
-                _deviceManager = CoreSystem.Managers.Find(m => m.Name.Contains("DeviceManager")) as DeviceManager;
-            if (_displayManager == null)
-                _displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
-
+        public override void Add(Property node) {
             if (!Nodes.Contains(node)) {
                 if (node is DeviceProperty) {
-                    List<Node> devices = new List<Node>();
-                    foreach (Plugin plugin in _deviceManager.Plugins) {
-                        if (plugin is Device)
-                            devices.Add(plugin as Device);
+                    List<Device> devices = new List<Device>();
+                    foreach (Device device in _pluginManager.Nodes.Where(n => n is Device)) {
+                        devices.Add(device);
                     }
 
                     DeviceProperty deviceProperty = node as DeviceProperty;
-                    deviceProperty.AddDeviceList(devices.DeepClone(), _deviceManager);
+                    deviceProperty.AddDeviceList(devices.DeepClone());
                 }
 
                 if (node is Property) {
@@ -88,12 +40,11 @@ namespace ns.Core.Manager {
                     property.PropertyChanged += PropertyPropertyChanged;
                     if (property.IsMonitored) {
                         if (_dataStorageManager == null)
-                            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+                            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
                         _dataStorageManager.Add(property);
                     }
                 }
 
-                _displayManager.Add(node);
                 Nodes.Add(node);
                 Base.Log.Trace.WriteLine("Property added: " + node.ToString(), TraceEventType.Verbose);
                 OnNodeAdded(node);
@@ -103,7 +54,7 @@ namespace ns.Core.Manager {
         private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "IsMonitored") {
                 if (_dataStorageManager == null)
-                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
 
                 Property property = sender as Property;
                 if (property.IsMonitored)
@@ -117,17 +68,12 @@ namespace ns.Core.Manager {
         /// Removes the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
-        public override void Remove(Node node) {
-            if (_displayManager == null)
-                _displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
-
-            if (node is Property) {
-                foreach (Property child in node.Childs.Where(p => p is Property))
-                    Remove(child);
-
-                _displayManager.Remove(node);
-                base.Remove(node);
+        public override void Remove(Property node) {
+            foreach (Property child in node.Childs.Where(p => p is Property)) {
+                Remove(child);
             }
+
+            base.Remove(node);
         }
 
         /// <summary>
@@ -138,8 +84,8 @@ namespace ns.Core.Manager {
             foreach (Node c in node.Childs) {
                 if (c is Property) {
                     Property child = c as Property;
-                    if (!string.IsNullOrEmpty(child.ConnectedToUID)) {
-                        Property parent = this.Nodes.Find(p => p.UID == child.ConnectedToUID) as Property;
+                    if (!string.IsNullOrEmpty(child.ConnectedUID)) {
+                        Property parent = this.Nodes.Find(p => p.UID == child.ConnectedUID) as Property;
                         if (parent != null)
                             child.Connect(parent);
                     }
@@ -197,13 +143,13 @@ namespace ns.Core.Manager {
         /// <param name="parent">The parent.</param>
         /// <returns></returns>
         private List<Property> GetTargetProperties(Property property, Tool targetTool, Node parent) {
-            List<ns.Base.Plugins.Properties.Property> properties = new List<ns.Base.Plugins.Properties.Property>();
+            List<Property> properties = new List<Property>();
 
             foreach (Node node in parent.Childs) {
                 if (node == targetTool) break;
 
                 if (node is Property) {
-                    ns.Base.Plugins.Properties.Property prop = node as ns.Base.Plugins.Properties.Property;
+                    Property prop = node as Property;
                     if (prop.IsOutput && (prop.Parent is Tool || prop.Parent is Operation) && property.GetType() == prop.GetType())
                         properties.Add(prop);
                 }

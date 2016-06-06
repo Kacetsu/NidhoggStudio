@@ -24,14 +24,23 @@ namespace ns.Base.Plugins {
             return clone;
         }
 
+        /// <summary>
+        /// Finalize the Node.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Finalize() {
             bool result = base.Finalize();
 
             foreach (Property childProperty in Childs.Where(c => c is Property)) {
+                IValue<object> valueProperty = childProperty as IValue<object>;
+                if (valueProperty == null) continue;
+
                 if (childProperty.IsOutput)
-                    childProperty.Value = null;
-                else if (!string.IsNullOrEmpty(childProperty.ConnectedToUID))
-                    childProperty.Value = childProperty.InitialValue;
+                    valueProperty.Value = null;
+                else if (!string.IsNullOrEmpty(childProperty.ConnectedUID))
+                    valueProperty.Value = (childProperty as IConnectable<object>)?.InitialValue;
             }
 
             return result;
@@ -62,10 +71,10 @@ namespace ns.Base.Plugins {
 
             reader.ReadStartElement();
             if (reader.IsEmptyElement == false) {
-                XmlSerializer ser = new XmlSerializer(this.Cache.GetType());
+                XmlSerializer ser = new XmlSerializer(Cache.GetType());
                 Cache = ser.Deserialize(reader) as Cache;
 
-                IEnumerable<object> propertiesObj = Cache.Childs.Where(c => c is Property);
+                IEnumerable<Node> propertiesObj = Cache.Childs.Where(c => c is Property);
 
                 foreach (Property p in propertiesObj) Childs.Add(p);
             }
@@ -80,7 +89,19 @@ namespace ns.Base.Plugins {
             writer.WriteAttributeString("AssemblyFile", AssemblyFile);
             writer.WriteAttributeString("Version", Version);
 
-            Cache.Childs = new ObservableList<object>(Childs);
+            Cache.Childs = new ObservableList<Node>(Childs);
+
+            List<Property> filteredProperties = new List<Property>();
+
+            foreach (Property property in Cache.Childs.Where(c => c is Property)) {
+                if (property.IsOutput) {
+                    filteredProperties.Add(property);
+                }
+            }
+
+            foreach (Property property in filteredProperties) {
+                Cache.Childs.Remove(property);
+            }
 
             try {
                 XmlSerializer ser = new XmlSerializer(Cache.GetType());

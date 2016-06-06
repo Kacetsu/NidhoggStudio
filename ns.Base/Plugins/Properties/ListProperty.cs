@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ns.Base.Plugins.Properties {
 
     [Serializable]
-    public class ListProperty : Property {
+    public class ListProperty : GenericProperty<List<object>> {
         private List<object> _list = new List<object>();
 
         /// <summary>
@@ -20,9 +20,9 @@ namespace ns.Base.Plugins.Properties {
         public ListProperty(string name, List<object> values) : base(name, values) {
             _list = values;
             if (values.Count == 0)
-                this.Value = "INVALID";
+                SelectedItem = "INVALID";
             else
-                this.Value = values[0];
+                SelectedItem = values[0];
         }
 
         /// <summary>
@@ -35,18 +35,12 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
-        /// Gets or sets the list.
+        /// Gets or sets the selected item.
         /// </summary>
         /// <value>
-        /// The list.
+        /// The selected item.
         /// </value>
-        public List<object> List {
-            get { return _list; }
-            set {
-                _list = value;
-                OnPropertyChanged("List");
-            }
-        }
+        public object SelectedItem { get; set; }
 
         /// <summary>
         /// Gets the index.

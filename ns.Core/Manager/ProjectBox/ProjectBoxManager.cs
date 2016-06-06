@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace ns.Core.Manager.ProjectBox {
 
-    public class ProjectBoxManager : BaseManager {
+    public class ProjectBoxManager : GenericConfigurationManager<ProjectBoxConfiguration> {
         public const string EXTENSION_XML = ".xml";
         public const string PROJECTFILE_NAME = "Project";
         public const string PROJECTBOX_NAME = "ProjectBox";
@@ -18,8 +18,6 @@ namespace ns.Core.Manager.ProjectBox {
         public string DefaultProjectDirectory => ProjectsDirectory + "Default" + Path.DirectorySeparatorChar;
 
         public List<ProjectInfoContainer> ProjectInfos => new List<ProjectInfoContainer>();
-
-        public ProjectBoxConfiguration Configuration { get; private set; } = new ProjectBoxConfiguration();
 
         public override bool Initialize() {
             bool resultCreateDirectory = false;
@@ -41,34 +39,24 @@ namespace ns.Core.Manager.ProjectBox {
                 resultCreateDefaultProject = SaveDefaultProjectBoxConfiguration();
             }
 
-            Configuration = Load(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) as ProjectBoxConfiguration;
+            if (Load(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) == false) {
+                throw new FileLoadException(nameof(ProjectBoxConfiguration));
+            }
 
             resultGenerateInfoList = GenerateInfoList();
 
             return resultCreateDirectory && resultCreateDefaultProject && resultGenerateInfoList;
         }
 
-        public override object Load(FileStream stream) {
+        public override ProjectBoxConfiguration Load(Stream stream) {
             try {
-                object obj;
+                ProjectBoxConfiguration obj;
                 XmlSerializer serializer = new XmlSerializer(typeof(ProjectBoxConfiguration));
-                obj = serializer.Deserialize(stream);
+                obj = serializer.Deserialize(stream) as ProjectBoxConfiguration;
                 return obj;
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return null;
-            }
-        }
-
-        public override bool Save(ref MemoryStream stream) {
-            try {
-                XmlSerializer serializer = new XmlSerializer(Configuration.GetType());
-                serializer.Serialize(stream, Configuration);
-                stream.Flush();
-                return true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
             }
         }
 
@@ -82,7 +70,7 @@ namespace ns.Core.Manager.ProjectBox {
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
 
             if (path.Equals(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
-                if (projectManager.Load(path) == null)
+                if (!Load(path))
                     return false;
 
                 path = ProjectsDirectory + PROJECTFILE_NAME + "_" + DateTime.Now.ToFileTime().ToString() + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
@@ -91,7 +79,7 @@ namespace ns.Core.Manager.ProjectBox {
 
             if (projectManager.Save(path)) {
                 if (wasDefault) {
-                    if (projectManager.Load(path) == null) {
+                    if (!Load(path)) {
                         return false;
                     } else {
                         Base.FileInfo.CopyDirectory(DefaultProjectDirectory + "Images", Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + "Images");
@@ -109,7 +97,7 @@ namespace ns.Core.Manager.ProjectBox {
 
         public bool LoadProject(string path) {
             ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            if (projectManager.Load(path) != null) {
+            if (Load(path)) {
                 SetUsedProject(path);
                 return true;
             } else {
@@ -153,13 +141,14 @@ namespace ns.Core.Manager.ProjectBox {
                 foreach (string directory in directories) {
                     string projectFilePath = directory + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
                     if (File.Exists(projectFilePath) && !Path.GetDirectoryName(projectFilePath).Equals(Path.GetDirectoryName(DefaultProjectDirectory))) {
-                        ProjectManager tmpManager = dummyManager.LoadManager(projectFilePath);
-                        string projectName = tmpManager.Configuration.Name.Value as string;
-                        ProjectInfoContainer container = new ProjectInfoContainer(projectFilePath, projectName);
-                        container.PropertyChanged += Container_PropertyChanged;
-                        if (container.Path.Equals(Configuration.LastUsedProjectPath)) container.IsUsed = true;
+                        // ToDo: Refactor!ProjectConfiguration
+                        //ProjectManager tmpManager = dummyManager.LoadManager(projectFilePath);
+                        //string projectName = tmpManager.Configuration.ProjectName.Value as string;
+                        //ProjectInfoContainer container = new ProjectInfoContainer(projectFilePath, projectName);
+                        //container.PropertyChanged += Container_PropertyChanged;
+                        //if (container.Path.Equals(Configuration.LastUsedProjectPath)) container.IsUsed = true;
 
-                        ProjectInfos.Add(container);
+                        //ProjectInfos.Add(container);
                     }
                 }
             } catch (Exception ex) {
@@ -173,9 +162,10 @@ namespace ns.Core.Manager.ProjectBox {
             if (e.PropertyName.Equals("Name")) {
                 ProjectInfoContainer container = sender as ProjectInfoContainer;
                 ProjectManager dummyManager = new ProjectManager();
-                ProjectManager tmpManager = dummyManager.LoadManager(container.Path);
-                tmpManager.Configuration.Name.Value = container.Name;
-                tmpManager.Save(container.Path);
+                // ToDo: Refactor!ProjectConfiguration
+                //ProjectManager tmpManager = dummyManager.LoadManager(container.Path);
+                //tmpManager.Configuration.ProjectName.Value = container.Name;
+                //tmpManager.Save(container.Path);
             }
         }
     }

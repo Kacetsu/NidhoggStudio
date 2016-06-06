@@ -15,7 +15,7 @@ namespace ns.Base {
     XmlInclude(typeof(Plugin)),
     XmlInclude(typeof(Tool)),
     XmlInclude(typeof(Property))]
-    public class Node : NotifiableObject, ICloneable, INode, IXmlSerializable {
+    public class Node : NotifiableObject, ICloneable, INode {
         private bool _isInitialized = false;
         private bool _isSelected = false;
 
@@ -28,15 +28,13 @@ namespace ns.Base {
 
         protected string _name = string.Empty;
         private string _fullname = string.Empty;
-        private Node _parent;
 
         /// <summary>
         /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
         /// Creates the base fields: Name, Fullname, Childs, Cache and UID.
         /// </summary>
         public Node() {
-            Childs = new ObservableList<object>();
-            Cache = new Cache();
+            Childs = new ObservableList<Node>();
             UID = GenerateUID();
         }
 
@@ -48,6 +46,8 @@ namespace ns.Base {
             UID = node.UID;
             Fullname = node.Fullname;
             Name = node.Name;
+            Childs = new ObservableList<Node>(node.Childs);
+            Parent = node.Parent;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace ns.Base {
         /// Gets or sets the list with all Childs.
         /// </summary>
         [XmlIgnore]
-        public ObservableList<object> Childs { get; set; } = new ObservableList<object>();
+        public ObservableList<Node> Childs { get; set; } = new ObservableList<Node>();
 
         /// <summary>
         /// Gets the parent.
@@ -100,12 +100,8 @@ namespace ns.Base {
         /// <value>
         /// The parent.
         /// </value>
-        public Node Parent => _parent;
-
-        /// <summary>
-        /// Gets or sets the NodeCache.
-        /// </summary>
-        public Cache Cache { get; set; }
+        [XmlIgnore]
+        public Node Parent { get; private set; }
 
         /// <summary>
         /// Gets the name of the tree.
@@ -115,7 +111,7 @@ namespace ns.Base {
         /// </value>
         public string TreeName {
             get {
-                Node parent = this.Parent;
+                Node parent = Parent;
                 string name = string.Empty;
 
                 if (parent != null) {
@@ -137,6 +133,7 @@ namespace ns.Base {
         /// <summary>
         /// Gets or sets if the Node is selected;
         /// </summary>
+        [XmlIgnore]
         public bool IsSelected {
             get { return _isSelected; }
             set {
@@ -231,10 +228,10 @@ namespace ns.Base {
         /// </summary>
         /// <param name="parent">The parent.</param>
         public void SetParent(Node parent) {
-            if (_parent != null)
-                _parent.PropertyChanged -= ParentPropertyChangedEvent;
-            _parent = parent;
-            _parent.PropertyChanged += ParentPropertyChangedEvent;
+            if (Parent != null)
+                Parent.PropertyChanged -= ParentPropertyChangedEvent;
+            Parent = parent;
+            Parent.PropertyChanged += ParentPropertyChangedEvent;
         }
 
         /// <summary>
@@ -267,67 +264,6 @@ namespace ns.Base {
             nodeClone.Name = Name;
             nodeClone.Fullname = Fullname;
             return nodeClone;
-        }
-
-        /// <summary>
-        /// Gets the XML Shema.
-        /// @warning Leave this always null. See also: https://msdn.microsoft.com/de-de/library/system.xml.serialization.ixmlserializable.getschema%28v=vs.110%29.aspx
-        /// </summary>
-        /// <returns>Returns null.</returns>
-        public System.Xml.Schema.XmlSchema GetSchema() {
-            return null;
-        }
-
-        /// <summary>
-        /// Reads the Node from the XML.
-        /// </summary>
-        /// <param name="reader">The instance of the XmlReader.</param>
-        public void ReadXml(System.Xml.XmlReader reader) {
-            ReadBasicXmlInfo(reader);
-
-            reader.ReadStartElement();
-
-            XmlSerializer ser = new XmlSerializer(Cache.GetType());
-            Cache = ser.Deserialize(reader) as Cache;
-
-            if (!reader.IsStartElement())
-                reader.ReadEndElement();
-        }
-
-        /// <summary>
-        /// Writes the Node to the XML.
-        /// </summary>
-        /// <param name="writer">The instance of the XmlWriter.</param>
-        public void WriteXml(System.Xml.XmlWriter writer) {
-            WriteBasicXmlInfo(writer);
-
-            Cache.Childs = Childs;
-
-            XmlSerializer ser = new XmlSerializer(Cache.GetType());
-            ser.Serialize(writer, Cache);
-        }
-
-        /// <summary>
-        /// Writes basic Informations to the XML.
-        /// </summary>
-        /// <param name="writer">The instance of the XmlWriter.</param>
-        protected void WriteBasicXmlInfo(System.Xml.XmlWriter writer) {
-            writer.WriteAttributeString(nameof(Name), Name);
-            writer.WriteAttributeString(nameof(Fullname), Fullname);
-            writer.WriteAttributeString(nameof(UID), UID);
-        }
-
-        /// <summary>
-        /// Reads bais Informations from the XML.
-        /// </summary>
-        /// <param name="reader">The instance of the XmlReader.</param>
-        protected void ReadBasicXmlInfo(System.Xml.XmlReader reader) {
-            reader.MoveToAttribute(nameof(Name));
-            Name = reader.ReadContentAsString();
-            reader.MoveToAttribute(nameof(Fullname));
-            Fullname = reader.ReadContentAsString();
-            reader.MoveToAttribute(nameof(UID));
-            UID = reader.ReadContentAsString();
         }
     }
 }

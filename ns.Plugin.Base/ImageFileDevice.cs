@@ -18,6 +18,7 @@ namespace ns.Plugin.Base {
         private ImageProperty _imageProperty;
         private List<Bitmap> _bitmaps;
         private int _imageIndex = 0;
+        private List<string> _openImageFilenames;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFileDevice"/> class.
@@ -26,6 +27,7 @@ namespace ns.Plugin.Base {
             DisplayName = "Image File Device";
             AddChild(new StringProperty("Directory", BaseManager.DocumentsPath + "Images"));
             AddChild(new ImageProperty("Image", true));
+            _openImageFilenames = new List<string>();
         }
 
         /// <summary>
@@ -36,34 +38,41 @@ namespace ns.Plugin.Base {
         /// </returns>
         public override bool Initialize() {
             _bitmaps = new List<Bitmap>();
-            _directory = GetProperty("Directory").Value as string;
+            _directory = (GetProperty("Directory") as StringProperty).Value;
             _imageProperty = GetProperty("Image") as ImageProperty;
 
             if (!Directory.Exists(_directory)) {
-                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist!", TraceEventType.Error);
-                return false;
+                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
+                Directory.CreateDirectory(_directory);
             }
-            string[] filenames = Directory.GetFiles(_directory);
-            List<string> imageFiles = new List<string>();
+
+            int imageCount = UpdateImageFiles();
+
+            if (imageCount == 0) {
+                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Warning);
+            }
+
+            return true;
+        }
+
+        private int UpdateImageFiles() {
             int imageCount = 0;
+
+            string[] filenames = Directory.GetFiles(_directory);
 
             foreach (string filename in filenames) {
                 if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)
                     || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)
                     || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)) {
-                    imageFiles.Add(filename);
+                    if (_openImageFilenames.Contains(filename)) continue;
+
                     Bitmap bitmap = new Bitmap(filename);
                     _bitmaps.Add(bitmap);
                     imageCount++;
                 }
             }
 
-            if (imageCount == 0) {
-                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Error);
-                return false;
-            }
-
-            return true;
+            return imageCount;
         }
 
         /// <summary>
@@ -80,6 +89,11 @@ namespace ns.Plugin.Base {
             _imageIndex = 0;
 
             return true;
+        }
+
+        public override bool PreRun() {
+            UpdateImageFiles();
+            return base.PreRun();
         }
 
         /// <summary>

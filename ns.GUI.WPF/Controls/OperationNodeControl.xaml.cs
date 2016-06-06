@@ -89,10 +89,10 @@ namespace ns.GUI.WPF.Controls {
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
             animation.Completed += delegate (object s, EventArgs ev) {
                 this.ContentList.Height = 0;
-                this.ContentList.ApplyAnimationClock(Rectangle.HeightProperty, null);
+                this.ContentList.ApplyAnimationClock(HeightProperty, null);
                 this.ContentToggleButton.IsEnabled = true;
             };
-            ContentList.BeginAnimation(Rectangle.HeightProperty, animation);
+            ContentList.BeginAnimation(HeightProperty, animation);
         }
     }
 }

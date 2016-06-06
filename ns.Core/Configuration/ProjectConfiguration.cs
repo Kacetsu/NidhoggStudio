@@ -1,85 +1,21 @@
-﻿using ns.Base.Extensions;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Core.Manager;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;
+using System.Collections.ObjectModel;
 
 namespace ns.Core.Configuration {
 
-    public class ProjectConfiguration : BaseConfiguration {
-        private StringProperty _name;
-        private LogConfiguration _logConfiguration;
-        private List<Operation> _operations;
-        private List<Device> _devices;
-        private ProjectManager _projectManager;
-
-        public bool Initialize() {
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            _name = new StringProperty("Name", "Unnamed Project");
-            _operations = new List<Operation>();
-            _devices = new List<Device>();
-
-            if (_logConfiguration == null) {
-                _logConfiguration = new LogConfiguration();
-#if DEBUG
-                _logConfiguration.Categories.Add(TraceEventType.Verbose.GetDescription());
-#endif
-                _logConfiguration.Categories.Add(TraceEventType.Information.GetDescription());
-                _logConfiguration.Categories.Add(TraceEventType.Warning.GetDescription());
-                _logConfiguration.Categories.Add(TraceEventType.Error.GetDescription());
-            }
-
-            if (_operations.Count == 0) {
-                Operation operation = new Operation("Unnamed Operation");
-                _projectManager.Add(operation);
-            }
-
-            return true;
-        }
+    [Serializable]
+    public class ProjectConfiguration {
 
         /// <summary>
-        /// Gets or sets the name.
+        /// The project name
         /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        public StringProperty Name {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public StringProperty ProjectName { get; set; } = new StringProperty();
 
         /// <summary>
-        /// Gets or sets the log configuration.
+        /// The operations
         /// </summary>
-        /// <value>
-        /// The log configuration.
-        /// </value>
-        public LogConfiguration LogConfiguration {
-            get { return _logConfiguration; }
-            set { _logConfiguration = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the operations.
-        /// </summary>
-        /// <value>
-        /// The operations.
-        /// </value>
-        public List<Operation> Operations {
-            get { return _operations; }
-            set { _operations = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the devices.
-        /// </summary>
-        /// <value>
-        /// The devices.
-        /// </value>
-        public List<Device> Devices {
-            get { return _devices; }
-            set { _devices = value; }
-        }
+        public ObservableCollection<Operation> Operations { get; set; } = new ObservableCollection<Operation>();
     }
 }

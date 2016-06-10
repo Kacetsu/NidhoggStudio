@@ -91,6 +91,10 @@ namespace ns.Plugin.Base {
             return true;
         }
 
+        /// <summary>
+        /// Pre run.
+        /// </summary>
+        /// <returns></returns>
         public override bool PreRun() {
             UpdateImageFiles();
             return base.PreRun();

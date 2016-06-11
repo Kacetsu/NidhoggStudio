@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 
 namespace ns.Base.Manager {
 

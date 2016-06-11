@@ -3,7 +3,6 @@ using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Core.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;

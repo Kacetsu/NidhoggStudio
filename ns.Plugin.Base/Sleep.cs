@@ -4,11 +4,12 @@ using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace ns.Plugin.Base {
 
-    [Visible, Serializable]
+    [Visible, DataContract]
     public class Sleep : Tool {
         private int _milliseconds;
 
@@ -19,8 +20,6 @@ namespace ns.Plugin.Base {
         /// The category.
         /// </value>
         public override string Category => ToolCategory.Common.GetDescription();
-
-        public object LogCategory { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sleep"/> class.

@@ -10,7 +10,7 @@ using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
 
-    [Visible, Serializable, DataContract]
+    [Visible, DataContract]
     public class BilateralSmoothing : Tool {
         private ImageProperty _imageInput;
         private IntegerProperty _kernelSize;

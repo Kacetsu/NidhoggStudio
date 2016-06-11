@@ -3,10 +3,11 @@ using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
+using System.Runtime.Serialization;
 
 namespace ns.Plugin.Base {
 
-    [Visible, Serializable]
+    [Visible, DataContract]
     public class IterationCounter : Tool {
         private int _iterations = 0;
         private DateTime _lastTime;
@@ -42,6 +43,12 @@ namespace ns.Plugin.Base {
             AddChild(new DoubleProperty("ElapsedMs", true));
         }
 
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -49,12 +56,22 @@ namespace ns.Plugin.Base {
             return true;
         }
 
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Run() {
             if (_iterations == int.MaxValue) _iterations = 0;
             _iterations++;
             return true;
         }
 
+        /// <summary>
+        /// Posts the run.
+        /// </summary>
+        /// <returns></returns>
         public override bool PostRun() {
             base.PostRun();
 
@@ -70,6 +87,12 @@ namespace ns.Plugin.Base {
             return true;
         }
 
+        /// <summary>
+        /// Finalize the Node.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Finalize() {
             base.Finalize();
 

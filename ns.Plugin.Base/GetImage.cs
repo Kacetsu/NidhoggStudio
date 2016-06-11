@@ -2,12 +2,12 @@
 using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace ns.Plugin.Base {
 
-    [Visible, Serializable]
+    [Visible, DataContract]
     public class GetImage : Tool {
         private ImageDevice _device;
         private ImageProperty _imageProperty;

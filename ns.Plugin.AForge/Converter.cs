@@ -1,14 +1,10 @@
 ﻿using ns.Base.Plugins.Properties;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Plugin.AForge {
+
     public static class Converter {
 
         /// <summary>
@@ -38,16 +34,17 @@ namespace ns.Plugin.AForge {
 
             switch (bitmap.PixelFormat) {
                 case PixelFormat.Format32bppRgb:
-                    bpp = 4;
-                    break;
-                case PixelFormat.Format8bppIndexed:
-                    bpp = 1;
-                    break;
-                default:
-                    bpp = 3;
-                    break;
-            }
+                bpp = 4;
+                break;
 
+                case PixelFormat.Format8bppIndexed:
+                bpp = 1;
+                break;
+
+                default:
+                bpp = 3;
+                break;
+            }
 
             int size = bitmap.Width * bitmap.Height * bpp;
             byte[] byteArray = new byte[size];

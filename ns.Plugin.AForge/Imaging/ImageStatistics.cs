@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace ns.Plugin.AForge.Imaging {
 
-    [Visible, Serializable, DataContract]
+    [Visible, DataContract]
     public class ImageStatistics : Tool {
         private ImageProperty _imageInput;
 

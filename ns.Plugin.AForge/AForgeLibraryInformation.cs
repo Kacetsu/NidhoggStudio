@@ -1,12 +1,8 @@
 ﻿using ns.Base;
 using ns.Base.Attribute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Plugin.AForge {
+
     [Visible]
     public class AForgeLibraryInformation : LibraryInformation {
 

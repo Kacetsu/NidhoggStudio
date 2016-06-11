@@ -172,24 +172,12 @@ namespace ns.Core.Manager {
                 throw new ManagerInitialisationFailedException(nameof(pluginManager));
             }
 
-            List<Device> devices = new List<Device>();
-
             foreach (Operation operation in Configuration.Operations) {
                 Device device = operation.CaptureDevice;
                 if (device != null) {
-                    Device exactDevice = pluginManager.Nodes.Find(n => n.Fullname.Equals(device.Fullname)) as Device;
-                    if (exactDevice == null) throw new PluginNotFoundException(device.Fullname);
-
-                    exactDevice.Childs = device.Childs;
-                    operation.CaptureDevice = exactDevice;
-                    devices.Add(exactDevice);
-                }
-            }
-
-            // Initialize all devices.
-            foreach (Device device in devices) {
-                if (!device.Initialize()) {
-                    throw new DeviceInitialisationFailedException(device.Name);
+                    if (!device.Initialize()) {
+                        throw new DeviceInitialisationFailedException(device.Name);
+                    }
                 }
             }
 

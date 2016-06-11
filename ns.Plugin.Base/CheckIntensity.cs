@@ -4,13 +4,14 @@ using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace ns.Plugin.Base {
 
     /// <summary>
     /// Calculates the intensity.
     /// </summary>
-    [Visible, Serializable]
+    [Visible, DataContract]
     public class CheckIntensity : Tool {
         private RectangleProperty _aoiProperty;
         private ImageProperty _inputImage;

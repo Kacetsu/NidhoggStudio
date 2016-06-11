@@ -1,6 +1,5 @@
 ﻿using AForge.Video.DirectShow;
 using ns.Base.Attribute;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
@@ -15,14 +14,12 @@ using System.Threading;
 
 namespace ns.Plugin.AForge {
 
-    [Visible, Serializable, DataContract]
+    [Visible, DataContract]
     public class DirectShowDevice : ImageDevice {
         private ImageProperty _imageProperty;
         private ListProperty _deviceListProperty;
         private ListProperty _resolutionListProperty;
         private bool _isTerminated = true;
-
-        [NonSerialized]
         private VideoCaptureDevice _videoDevice = null;
 
         /// <summary>

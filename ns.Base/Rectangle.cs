@@ -1,28 +1,33 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ns.Base {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class Rectangle {
 
         /// <summary>
         /// The x
         /// </summary>
+        [DataMember]
         public double X;
 
         /// <summary>
         /// The y
         /// </summary>
+        [DataMember]
         public double Y;
 
         /// <summary>
         /// The width
         /// </summary>
+        [DataMember]
         public double Width;
 
         /// <summary>
         /// The height
         /// </summary>
+        [DataMember]
         public double Height;
 
         /// <summary>

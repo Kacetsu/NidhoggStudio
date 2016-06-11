@@ -1,11 +1,12 @@
-﻿using ns.Base;
-using ns.Base.Exceptions;
+﻿using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
 
@@ -126,6 +127,26 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
+        /// Saves the manager to a MemoryStream.
+        /// </summary>
+        /// <param name="stream">Reference to the MemoryStream.</param>
+        /// <returns>
+        /// Success of the operation.
+        /// </returns>
+        public override bool Save(Stream stream) {
+            try {
+                PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
+                serializer.WriteObject(stream, Configuration);
+                stream.Flush();
+                return true;
+            } catch (SerializationException ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Loads the manager from a FileStream.
         /// </summary>
         /// <param name="stream">The FileStream.</param>
@@ -133,12 +154,19 @@ namespace ns.Core.Manager {
         /// The manager object. NULL if any error happend.
         /// </returns>
         /// <exception cref="ManagerInitialisationFailedException"></exception>
-        /// <exception cref="ns.Base.Exceptions.PluginNotFoundException"></exception>
-        /// <exception cref="ns.Base.Exceptions.DeviceInitialisationFailedException"></exception>
+        /// <exception cref="PluginNotFoundException"></exception>
+        /// <exception cref="DeviceInitialisationFailedException"></exception>
         public override ProjectConfiguration Load(Stream stream) {
-            Configuration = base.Load(stream);
-
             PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+
+            try {
+                stream.Position = 0;
+                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
+                Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
+            } catch (SerializationException ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
+            }
 
             if (pluginManager == null) {
                 throw new ManagerInitialisationFailedException(nameof(pluginManager));
@@ -152,7 +180,7 @@ namespace ns.Core.Manager {
                     Device exactDevice = pluginManager.Nodes.Find(n => n.Fullname.Equals(device.Fullname)) as Device;
                     if (exactDevice == null) throw new PluginNotFoundException(device.Fullname);
 
-                    exactDevice.Childs = device.Cache.Childs;
+                    exactDevice.Childs = device.Childs;
                     operation.CaptureDevice = exactDevice;
                     devices.Add(exactDevice);
                 }

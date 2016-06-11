@@ -1,9 +1,8 @@
 ﻿using ns.Base.Extensions;
 using ns.Base.Plugins.Properties;
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins {
 
@@ -11,8 +10,8 @@ namespace ns.Base.Plugins {
     /// Base Class for all Operations.
     /// Instead of all other Base Classes this one can be used directly as a functional Operation.
     /// </summary>
-    [Serializable]
-    public class Operation : Plugin, IXmlSerializable {
+    [DataContract(IsReference = true), KnownType(typeof(OperationTrigger))]
+    public class Operation : Plugin {
         private string _linkedOperation = string.Empty;
         private Device _captureDevice;
 
@@ -22,6 +21,7 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The capture device.
         /// </value>
+        [DataMember]
         public Device CaptureDevice {
             get { return _captureDevice; }
             set {
@@ -99,54 +99,6 @@ namespace ns.Base.Plugins {
         /// </returns>
         public override bool Run() {
             return RunChilds();
-        }
-
-        /// <summary>
-        /// Gets the XML Shema.
-        /// @warning Leave this always null. See also: https://msdn.microsoft.com/de-de/library/system.xml.serialization.ixmlserializable.getschema%28v=vs.110%29.aspx
-        /// </summary>
-        /// <returns>Returns null.</returns>
-        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() {
-            return null;
-        }
-
-        /// <summary>
-        /// Reads the Operation from the XML.
-        /// </summary>
-        /// <param name="reader">The instance of the XmlReader.</param>
-        void IXmlSerializable.ReadXml(System.Xml.XmlReader reader) {
-            ReadBasicXmlInfo(reader);
-
-            reader.ReadStartElement();
-
-            XmlSerializer ser = new XmlSerializer(typeof(Cache));
-            Cache = ser.Deserialize(reader) as Cache;
-
-            ser = new XmlSerializer(typeof(Device));
-            CaptureDevice = ser.Deserialize(reader) as Device;
-
-            Childs = new ObservableList<Node>(Cache.Childs);
-        }
-
-        /// <summary>
-        /// Writes the Operation to the XML.
-        /// </summary>
-        /// <param name="writer">The instance of the XmlWriter.</param>
-        void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer) {
-            Cache.Childs = Childs;
-
-            WriteBasicXmlInfo(writer);
-
-            try {
-                XmlSerializer ser = new XmlSerializer(Cache.GetType());
-                ser.Serialize(writer, Cache);
-
-                ser = new XmlSerializer(typeof(Device));
-                ser.Serialize(writer, CaptureDevice);
-            } catch (Exception ex) {
-                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                throw;
-            }
         }
     }
 }

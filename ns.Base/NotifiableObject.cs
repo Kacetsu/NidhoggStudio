@@ -1,16 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace ns.Base {
 
-    [Serializable]
+    [DataContract(IsReference = true)]
     public class NotifiableObject : INotifyPropertyChanged {
 
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
-        [field: NonSerialized()]
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>

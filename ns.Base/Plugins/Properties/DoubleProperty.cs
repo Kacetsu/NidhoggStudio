@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class DoubleProperty : NumberProperty<double> {
 
         public DoubleProperty() : base() {

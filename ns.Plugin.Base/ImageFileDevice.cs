@@ -9,10 +9,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace ns.Plugin.Base {
 
-    [Visible, Serializable]
+    [Visible, DataContract]
     public class ImageFileDevice : ImageDevice {
         private string _directory = string.Empty;
         private ImageProperty _imageProperty;

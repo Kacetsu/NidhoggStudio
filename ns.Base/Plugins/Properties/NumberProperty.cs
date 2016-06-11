@@ -1,10 +1,11 @@
 ﻿using ns.Base.Extensions;
 using System;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [Serializable, DataContract, KnownType(typeof(DoubleProperty)), KnownType(typeof(IntegerProperty))]
     public abstract class NumberProperty<T> : GenericProperty<T>, INumerical, ITolerance<T>, IConnectable<T> {
 
         /// <summary>

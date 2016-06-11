@@ -4,17 +4,14 @@ using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace ns.Base {
 
     /// <summary>
     /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
     /// </summary>
-    [Serializable,
-    XmlInclude(typeof(Plugin)),
-    XmlInclude(typeof(Tool)),
-    XmlInclude(typeof(Property))]
+    [DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
     public class Node : NotifiableObject, ICloneable, INode {
         private bool _isInitialized = false;
         private bool _isSelected = false;
@@ -53,7 +50,7 @@ namespace ns.Base {
         /// <summary>
         /// Gets or sets the Fullname.
         /// </summary>
-        [XmlAttribute]
+        [DataMember]
         public string Fullname {
             get {
                 if (string.IsNullOrEmpty(_fullname))
@@ -69,7 +66,7 @@ namespace ns.Base {
         /// <summary>
         /// Gets or sets the Name.
         /// </summary>
-        [XmlAttribute]
+        [DataMember]
         public virtual string Name {
             get {
                 if (string.IsNullOrEmpty(_name))
@@ -85,13 +82,13 @@ namespace ns.Base {
         /// <summary>
         /// Gets or sets the unified identification.
         /// </summary>
-        [XmlAttribute]
+        [DataMember]
         public string UID { get; set; } = GenerateUID();
 
         /// <summary>
         /// Gets or sets the list with all Childs.
         /// </summary>
-        [XmlIgnore]
+        [DataMember]
         public ObservableList<Node> Childs { get; set; } = new ObservableList<Node>();
 
         /// <summary>
@@ -100,7 +97,7 @@ namespace ns.Base {
         /// <value>
         /// The parent.
         /// </value>
-        [XmlIgnore]
+        [DataMember]
         public Node Parent { get; private set; }
 
         /// <summary>
@@ -133,7 +130,7 @@ namespace ns.Base {
         /// <summary>
         /// Gets or sets if the Node is selected;
         /// </summary>
-        [XmlIgnore]
+        [DataMember]
         public bool IsSelected {
             get { return _isSelected; }
             set {

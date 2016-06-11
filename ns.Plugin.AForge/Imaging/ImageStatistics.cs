@@ -5,10 +5,11 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.Serialization;
 
 namespace ns.Plugin.AForge.Imaging {
 
-    [Visible, Serializable]
+    [Visible, Serializable, DataContract]
     public class ImageStatistics : Tool {
         private ImageProperty _imageInput;
 

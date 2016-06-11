@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class RectangleProperty : GenericProperty<Rectangle> {
 
         /// <summary>

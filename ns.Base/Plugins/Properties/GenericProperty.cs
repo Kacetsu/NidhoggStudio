@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [DataContract]
     public abstract class GenericProperty<T> : Property, IValue<T> {
         private T _value;
 
@@ -12,6 +13,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The value.
         /// </value>
+        [DataMember]
         public T Value {
             get { return _value; }
             set {

@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins {
+
+    [DataContract]
     public enum OperationTrigger : int {
-        [Description("Continuous")]
+
+        [Description("Continuous"), EnumMember]
         Continuous,
-        [Description("Off")]
+
+        [Description("Off"), EnumMember]
         Off,
-        [Description("Finished")]
+
+        [Description("Finished"), EnumMember]
         Finished,
-        [Description("Started")]
+
+        [Description("Started"), EnumMember]
         Started
     }
 }

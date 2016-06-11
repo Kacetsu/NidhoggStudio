@@ -1,13 +1,11 @@
-﻿using ns.Base.Manager;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [DataContract]
     public class DeviceProperty : GenericProperty<Device> {
-
-        [NonSerialized]
         private List<Device> _devicePlugins = new List<Device>();
 
         private string _tmpDeviceUID = string.Empty;

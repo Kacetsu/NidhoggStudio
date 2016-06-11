@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class ListProperty : GenericProperty<List<object>> {
         private List<object> _list = new List<object>();
 
@@ -40,6 +41,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The selected item.
         /// </value>
+        [DataMember]
         public object SelectedItem { get; set; }
 
         /// <summary>

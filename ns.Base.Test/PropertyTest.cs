@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace ns.Base.Test {
@@ -34,9 +35,9 @@ namespace ns.Base.Test {
             MemoryStream stream = new MemoryStream();
             IntegerProperty property = new IntegerProperty("IntegerProperty", 20);
 
-            XmlSerializer serializer = new XmlSerializer(property.GetType());
+            DataContractSerializer serializer = new DataContractSerializer(property.GetType());
             stream = new MemoryStream();
-            serializer.Serialize(stream, property);
+            serializer.WriteObject(stream, property);
 
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
@@ -45,8 +46,8 @@ namespace ns.Base.Test {
 
             property = null;
             stream.Position = 0;
-            serializer = new XmlSerializer(typeof(IntegerProperty));
-            property = serializer.Deserialize(stream) as IntegerProperty;
+            serializer = new DataContractSerializer(typeof(IntegerProperty));
+            property = serializer.ReadObject(stream) as IntegerProperty;
             Assert.AreEqual(property.Value, 20);
         }
 
@@ -58,9 +59,9 @@ namespace ns.Base.Test {
             MemoryStream stream = new MemoryStream();
             DoubleProperty property = new DoubleProperty("DoubleProperty", 543.21);
 
-            XmlSerializer serializer = new XmlSerializer(property.GetType());
+            DataContractSerializer serializer = new DataContractSerializer(property.GetType());
             stream = new MemoryStream();
-            serializer.Serialize(stream, property);
+            serializer.WriteObject(stream, property);
 
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
@@ -69,8 +70,8 @@ namespace ns.Base.Test {
 
             property = null;
             stream.Position = 0;
-            serializer = new XmlSerializer(typeof(DoubleProperty));
-            property = serializer.Deserialize(stream) as DoubleProperty;
+            serializer = new DataContractSerializer(typeof(DoubleProperty));
+            property = serializer.ReadObject(stream) as DoubleProperty;
             Assert.AreEqual(property.Value, 543.21);
         }
 
@@ -82,9 +83,9 @@ namespace ns.Base.Test {
             MemoryStream stream = new MemoryStream();
             StringProperty property = new StringProperty("StringProperty", "Test string");
 
-            XmlSerializer serializer = new XmlSerializer(property.GetType());
+            DataContractSerializer serializer = new DataContractSerializer(property.GetType());
             stream = new MemoryStream();
-            serializer.Serialize(stream, property);
+            serializer.WriteObject(stream, property);
 
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
@@ -93,8 +94,8 @@ namespace ns.Base.Test {
 
             property = null;
             stream.Position = 0;
-            serializer = new XmlSerializer(typeof(StringProperty));
-            property = serializer.Deserialize(stream) as StringProperty;
+            serializer = new DataContractSerializer(typeof(StringProperty));
+            property = serializer.ReadObject(stream) as StringProperty;
             Assert.AreEqual(property.Value, "Test string");
         }
 
@@ -106,9 +107,9 @@ namespace ns.Base.Test {
             MemoryStream stream = new MemoryStream();
             RectangleProperty property = new RectangleProperty("RectangleProperty", 8.7, 6.5, 4.3, 2.1);
 
-            XmlSerializer serializer = new XmlSerializer(property.GetType());
+            DataContractSerializer serializer = new DataContractSerializer(property.GetType());
             stream = new MemoryStream();
-            serializer.Serialize(stream, property);
+            serializer.WriteObject(stream, property);
 
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
@@ -117,8 +118,8 @@ namespace ns.Base.Test {
 
             property = null;
             stream.Position = 0;
-            serializer = new XmlSerializer(typeof(RectangleProperty));
-            property = serializer.Deserialize(stream) as RectangleProperty;
+            serializer = new DataContractSerializer(typeof(RectangleProperty));
+            property = serializer.ReadObject(stream) as RectangleProperty;
             Assert.AreEqual(property.Value.X, 8.7);
             Assert.AreEqual(property.Value.Y, 6.5);
             Assert.AreEqual(property.Value.Width, 4.3);
@@ -134,9 +135,9 @@ namespace ns.Base.Test {
             properties.Add(new StringProperty("StringProperty", "Test string"));
             properties.Add(new RectangleProperty("RectangleProperty", 8.7, 6.5, 4.3, 2.1));
 
-            XmlSerializer serializer = new XmlSerializer(properties.GetType());
+            DataContractSerializer serializer = new DataContractSerializer(properties.GetType());
             stream = new MemoryStream();
-            serializer.Serialize(stream, properties);
+            serializer.WriteObject(stream, properties);
 
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
@@ -145,8 +146,8 @@ namespace ns.Base.Test {
 
             properties = null;
             stream.Position = 0;
-            serializer = new XmlSerializer(typeof(List<Property>));
-            properties = serializer.Deserialize(stream) as List<Property>;
+            serializer = new DataContractSerializer(typeof(List<Property>));
+            properties = serializer.ReadObject(stream) as List<Property>;
             Assert.AreEqual(properties.Count, 4);
         }
     }

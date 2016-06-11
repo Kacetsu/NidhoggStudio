@@ -10,11 +10,12 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace ns.Plugin.AForge {
 
-    [Visible, Serializable]
+    [Visible, Serializable, DataContract]
     public class DirectShowDevice : ImageDevice {
         private ImageProperty _imageProperty;
         private ListProperty _deviceListProperty;
@@ -87,7 +88,7 @@ namespace ns.Plugin.AForge {
                 VideoCapabilities[] videoCapabilities;
 
                 foreach (FilterInfo device in videoDevices) {
-                    if (device.Name == _deviceListProperty.Value as string) {
+                    if (device.Name == _deviceListProperty.SelectedItem as string) {
                         _videoDevice = new VideoCaptureDevice(device.MonikerString);
                         break;
                     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace ns.Base.Manager {
@@ -28,7 +29,7 @@ namespace ns.Base.Manager {
                 }
                 Configuration = obj;
                 return true;
-            } catch (Exception ex) {
+            } catch (SerializationException ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
@@ -43,10 +44,10 @@ namespace ns.Base.Manager {
             try {
                 T obj;
                 stream.Position = 0;
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
-                obj = (T)serializer.Deserialize(stream);
+                DataContractSerializer serializer = new DataContractSerializer(typeof(T));
+                obj = (T)serializer.ReadObject(stream);
                 return obj;
-            } catch (Exception ex) {
+            } catch (SerializationException ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return default(T);
             }
@@ -87,11 +88,11 @@ namespace ns.Base.Manager {
         /// <returns>Success of the operation.</returns>
         public virtual bool Save(Stream stream) {
             try {
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
-                serializer.Serialize(stream, Configuration);
+                DataContractSerializer serializer = new DataContractSerializer(typeof(T));
+                serializer.WriteObject(stream, Configuration);
                 stream.Flush();
                 return true;
-            } catch (Exception ex) {
+            } catch (SerializationException ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }

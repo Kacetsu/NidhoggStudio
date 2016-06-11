@@ -6,11 +6,12 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.Serialization;
 using AFilter = global::AForge.Imaging.Filters;
 
 namespace ns.Plugin.AForge.Filters {
 
-    [Visible, Serializable]
+    [Visible, Serializable, DataContract]
     public class Add : Tool {
         private ImageProperty _imageInput;
         private ImageProperty _imageOverlay;

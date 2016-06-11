@@ -1,7 +1,6 @@
 ﻿using ns.Base.Event;
 using System;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
@@ -9,14 +8,13 @@ namespace ns.Base.Plugins.Properties {
     /// Base Class for all Properties.
     /// @warning Should not be used directly.
     /// </summary>
-    [Serializable,
-        XmlInclude(typeof(DeviceProperty)),
-        XmlInclude(typeof(DoubleProperty)),
-        XmlInclude(typeof(IntegerProperty)),
-        XmlInclude(typeof(ImageProperty)),
-        XmlInclude(typeof(ListProperty)),
-        XmlInclude(typeof(RectangleProperty)),
-        XmlInclude(typeof(StringProperty))]
+    [DataContract
+        KnownType(typeof(DeviceProperty)),
+        KnownType(typeof(ImageProperty)),
+        KnownType(typeof(ListProperty)),
+        KnownType(typeof(NumberProperty<object>)),
+        KnownType(typeof(RectangleProperty)),
+        KnownType(typeof(StringProperty))]
     public abstract class Property : Node {
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The name of the group.
         /// </value>
-        [XmlIgnore]
         public string GroupName {
             get {
                 string result = _name;
@@ -58,7 +55,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets or sets the unified identification of the parent tool.
         /// </summary>
-        [XmlAttribute]
+        [DataMember]
         public string ToolUID {
             get { return _toolUid; }
             set {
@@ -70,7 +67,6 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets or sets if the property is used as output.
         /// </summary>
-        [XmlAttribute]
         public bool IsOutput {
             get { return _isOutput; }
             set {
@@ -85,7 +81,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// <c>true</c> if this instance is monitored; otherwise, <c>false</c>.
         /// </value>
-        [XmlAttribute]
+        [DataMember]
         public bool IsMonitored {
             get { return _isMonitored; }
             set {
@@ -97,7 +93,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets or sets the UID of the property that is connected to this one.
         /// </summary>
-        [XmlAttribute]
+        [DataMember]
         public string ConnectedUID {
             get { return _connectedUid; }
             set {
@@ -120,7 +116,6 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// <c>true</c> if this instance can automatic connect; otherwise, <c>false</c>.
         /// </value>
-        [XmlIgnore]
         public bool CanAutoConnect {
             get { return _canAutoConnect; }
             set {
@@ -132,7 +127,6 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        [XmlIgnore]
         public virtual Type Type => typeof(object);
 
         /// <summary>

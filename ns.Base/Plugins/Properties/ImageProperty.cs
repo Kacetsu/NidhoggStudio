@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class ImageProperty : GenericProperty<ImageContainer> {
         private bool _isVisible = false;
 

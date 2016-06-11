@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
 
@@ -44,6 +45,8 @@ namespace ns.Core.Manager {
         public List<LibraryInformation> LibraryInformations {
             get { return _libraryInformations; }
         }
+
+        public List<Type> KnownTypes { get; } = new List<Type>();
 
         /// <summary>
         /// Initialize the instance of the manager.
@@ -111,9 +114,15 @@ namespace ns.Core.Manager {
 
                         // Searching for all [Visible] types as they may inherit [Plugin].
                         foreach (Type type in assembly.GetExportedTypes()) {
-                            Visible visible = (Visible)type.GetCustomAttribute(typeof(Visible));
-                            if (visible == null || visible.IsVisible == false)
+                            Visible visible = type.GetCustomAttribute(typeof(Visible)) as Visible;
+                            DataContractAttribute dataContract = type.GetCustomAttribute(typeof(DataContractAttribute)) as DataContractAttribute;
+                            if (visible == null || visible.IsVisible == false) continue;
+
+                            if (dataContract == null) {
+                                Base.Log.Trace.WriteLine(string.Format("Plugin {0} doesn't has the {1}! The plugin will not be used.", type.Name, nameof(DataContractAttribute)), TraceEventType.Warning);
                                 continue;
+                            }
+
                             object probalePlugin = assembly.CreateInstance(type.ToString());
 
                             Plugin plugin = probalePlugin as Plugin;
@@ -123,12 +132,13 @@ namespace ns.Core.Manager {
                             if (extension != null) _extensionManager.Add(extension);
                             else Add(plugin);
 
+                            KnownTypes.Add(plugin.GetType());
                             _plugins.Add(plugin);
                         }
                     }
                 }
 
-                Base.Log.Trace.WriteLine("System contains " + _plugins.Count + " Plugins:\n\t"
+                Base.Log.Trace.WriteLine("System contains " + (_plugins.Count - 1) + " Plugins:\n\t"
                     + Nodes.Count + " Plugin(s)\n\t"
                     + _extensionManager.Nodes.Count + " Extension(s)", TraceEventType.Verbose);
 

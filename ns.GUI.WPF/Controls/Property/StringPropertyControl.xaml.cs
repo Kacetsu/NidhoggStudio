@@ -1,33 +1,17 @@
-﻿using ns.Base;
-using ns.Base.Plugins.Properties;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ns.Base.Plugins.Properties;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls.Property {
+
     /// <summary>
     /// Interaktionslogik für StringPropertyControl.xaml
     /// </summary>
-    public partial class StringPropertyControl : PropertyControl {
-        private ns.Base.Plugins.Properties.Property _property;
+    public partial class StringPropertyControl : PropertyControl<StringProperty> {
 
         public delegate void TextChangedEventHandler(object sender, TextChangedEventArgs e);
-        public event TextChangedEventHandler TextChanged = delegate { };
 
-        public string DisplayName {
-            get { return _property.Name; }
-        }
+        public event TextChangedEventHandler TextChanged = delegate { };
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is connectable.
@@ -41,10 +25,7 @@ namespace ns.GUI.WPF.Controls.Property {
             }
             set {
                 base.IsConnectable = value;
-                if (value)
-                    this.ConnectButton.Visibility = System.Windows.Visibility.Visible;
-                else
-                    this.ConnectButton.Visibility = System.Windows.Visibility.Hidden;
+                ConnectButton.Visibility = value ? Visibility.Visible : Visibility.Hidden;
             }
         }
 
@@ -61,17 +42,15 @@ namespace ns.GUI.WPF.Controls.Property {
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="property">The property.</param>
-        public StringPropertyControl(ns.Base.Plugins.Properties.Property property)
+        public StringPropertyControl(StringProperty property)
             : base(property) {
             InitializeComponent();
             DataContext = this;
-            _property = property;
-            StringProperty stringProperty = property as StringProperty;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                ConnectClicked(this.ContentBox as Control, this.ConnectImage);
+                ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
-                this.ContentBox.Text = stringProperty.Value as string;
+                ContentBox.Text = property.Value as string;
             }
         }
 
@@ -81,18 +60,17 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="name">The name.</param>
         /// <param name="property">The property.</param>
         /// <param name="isConnectable">if set to <c>true</c> [is connectable].</param>
-        public StringPropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable)
+        public StringPropertyControl(StringProperty property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
             DataContext = this;
             _property = property;
-            StringProperty stringProperty = property as StringProperty;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                ConnectClicked(this.ContentBox as Control, this.ConnectImage);
+                ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
-                this.ContentBox.Text = stringProperty.Value as string;
+                ContentBox.Text = property.Value as string;
             }
         }
 
@@ -104,10 +82,8 @@ namespace ns.GUI.WPF.Controls.Property {
         public StringPropertyControl(string name, string content) {
             InitializeComponent();
             IsConnectable = false;
-            this.ContentBox.Text = content;
+            ContentBox.Text = content;
         }
-
-
 
         /// <summary>
         /// Handles the TextChanged event of the ContentBox control.
@@ -115,11 +91,11 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
         private void ContentBox_TextChanged(object sender, TextChangedEventArgs e) {
-            if (this.TextChanged != null) {
-                if (this.Property != null) {
-                    this.Property.Value = this.ContentBox.Text;
+            if (TextChanged != null) {
+                if (Property != null) {
+                    Property.Value = ContentBox.Text;
                 } else {
-                    this.TextChanged(this, e);
+                    TextChanged(this, e);
                 }
             }
         }
@@ -130,7 +106,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ConnectButton_Click(object sender, RoutedEventArgs e) {
-            this.ConnectClicked(this.ContentBox as Control, this.ConnectImage);
+            ConnectClicked(this.ContentBox as Control, this.ConnectImage);
         }
     }
 }

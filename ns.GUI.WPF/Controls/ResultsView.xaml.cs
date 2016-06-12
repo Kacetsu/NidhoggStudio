@@ -1,4 +1,5 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base;
+using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
 using System.Collections.Generic;
@@ -27,12 +28,12 @@ namespace ns.GUI.WPF.Controls {
         private void ResultsView_Loaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
 
-            _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PropertyManager))) as PropertyManager;
+            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
             _propertyManager.NodeAddedEvent += PropertyManagerNodeAddedEvent;
             _propertyManager.NodeRemovedEvent += PropertyManagerNodeRemovedEvent;
-            projectManager.Loading += ProjectManagerLoading;
+            //projectManager.Loading += ProjectManagerLoading;
             _guiManager.SelectedItemChanged += guiManager_SelectedItemChanged;
         }
 
@@ -42,7 +43,7 @@ namespace ns.GUI.WPF.Controls {
                 return;
             }
 
-            List<object> properties = e.SelectedNode.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
+            List<Node> properties = e.SelectedNode.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
             _collection.Clear();
             foreach (ns.Base.Plugins.Properties.Property property in properties) {
                 if (!property.IsOutput || !(property.Parent is Tool)) continue;

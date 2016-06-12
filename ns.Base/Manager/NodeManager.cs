@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ns.Base.Manager {
 
-    public class NodeManager<T> : BaseManager where T : Node {
+    public class NodeManager<T> : BaseManager, INodeManager<T> where T : Node {
 
         public delegate void NodeCollectionChangedHandler(object sender, NodeCollectionChangedEventArgs e);
 

@@ -12,7 +12,7 @@ using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
 
-    public class PluginManager : NodeManager<Plugin> {
+    public class PluginManager : NodeManager<Plugin>, INodeManager<Plugin> {
         private const string LIBRARY_EXTENSION = ".dll";
         private const string FACTORY_NAME = "Factory";
 

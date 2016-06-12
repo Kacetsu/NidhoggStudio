@@ -1,4 +1,7 @@
-﻿namespace ns.Core.Configuration {
+﻿using ns.Base.Configuration;
+
+namespace ns.Core.Configuration {
+
     public class ProjectBoxConfiguration : BaseConfiguration {
         private string _lastUsedProjectPath = string.Empty;
 

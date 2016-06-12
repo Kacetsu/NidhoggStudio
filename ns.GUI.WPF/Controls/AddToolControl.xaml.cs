@@ -1,23 +1,10 @@
-﻿using ns.Base;
-using ns.Base.Log;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
 
@@ -49,9 +36,9 @@ namespace ns.GUI.WPF.Controls {
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void HandleLoaded(object sender, RoutedEventArgs e) {
-            ToolManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ToolManager")) as ToolManager;
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            PluginManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
+            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
 
             if (manager == null) {
                 Base.Log.Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", TraceEventType.Error);
@@ -66,12 +53,9 @@ namespace ns.GUI.WPF.Controls {
             CategoryComboBox.Items.Clear();
             CategoryComboBox.Items.Add("All");
 
-            foreach (Node node in manager.Plugins) {
-                if (node is Tool) {
-                    Tool tool = node as Tool;
-                    if (!CategoryComboBox.Items.Contains(tool.Category)) {
-                        CategoryComboBox.Items.Add(tool.Category);
-                    }
+            foreach (Tool tool in manager.Nodes.Where(n => n is Tool)) {
+                if (!CategoryComboBox.Items.Contains(tool?.Category)) {
+                    CategoryComboBox.Items.Add(tool?.Category);
                 }
             }
 
@@ -79,18 +63,15 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ToolManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ToolManager")) as ToolManager;
+            PluginManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
 
             ToolGrid.Children.Clear();
 
-            foreach (Node node in manager.Plugins) {
-                if (node is Tool) {
-                    Tool tool = node as Tool;
-                    if (tool.Category.Equals(CategoryComboBox.SelectedItem)) {
-                        AddToolToControl(tool);
-                    } else if (CategoryComboBox.SelectedIndex == 0) {
-                        AddToolToControl(tool);
-                    }
+            foreach (Tool tool in manager.Nodes.Where(n => n is Tool)) {
+                if (tool.Category.Equals(CategoryComboBox.SelectedItem)) {
+                    AddToolToControl(tool);
+                } else if (CategoryComboBox.SelectedIndex == 0) {
+                    AddToolToControl(tool);
                 }
             }
         }

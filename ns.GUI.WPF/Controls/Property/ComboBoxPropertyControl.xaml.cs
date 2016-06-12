@@ -7,45 +7,36 @@ namespace ns.GUI.WPF.Controls.Property {
     /// <summary>
     /// Interaction logic for ComboBoxPropertyControl.xaml
     /// </summary>
-    public partial class ComboBoxPropertyControl : PropertyControl {
-        private Base.Plugins.Properties.Property _property;
-
-        public string DisplayName {
-            get { return _property.Name; }
-        }
+    public partial class ComboBoxPropertyControl : PropertyControl<ListProperty> {
 
         public ComboBoxPropertyControl() {
             InitializeComponent();
             DataContext = this;
         }
 
-        public ComboBoxPropertyControl(Base.Plugins.Properties.Property property, bool isConnectable)
+        public ComboBoxPropertyControl(ListProperty property, bool isConnectable)
             : base(property) {
             InitializeComponent();
-            _property = property;
             DataContext = this;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
-                if (property is ListProperty) {
-                    ListProperty listProperty = property as ListProperty;
-                    ContentBox.ItemsSource = listProperty.List;
+                ContentBox.ItemsSource = property.Value;
 
-                    if (listProperty.List.Count > 0) {
-                        ContentBox.SelectedItem = listProperty.Value;
+                if (property.Value.Count > 0) {
+                    ContentBox.SelectedItem = property.Value;
 
-                        // Value could be a number from any enum,
-                        // so we need to check if we found a correct field.
-                        if (ContentBox.SelectedItem == null) {
-                            if (listProperty.SelectedItem is int)
-                                ContentBox.SelectedIndex = (int)listProperty.SelectedItem;
-                            else if (listProperty.SelectedItem is string) {
-                                foreach (object o in listProperty.List) {
-                                    if (o.ToString() == listProperty.Value.ToString()) {
-                                        ContentBox.SelectedItem = o;
-                                        break;
-                                    }
+                    // Value could be a number from any enum,
+                    // so we need to check if we found a correct field.
+                    if (ContentBox.SelectedItem == null) {
+                        if (property.SelectedItem is int)
+                            ContentBox.SelectedIndex = (int)property.SelectedItem;
+                        else if (property.SelectedItem is string) {
+                            foreach (object o in property.Value) {
+                                if (o.ToString() == property.Value.ToString()) {
+                                    ContentBox.SelectedItem = o;
+                                    break;
                                 }
                             }
                         }

@@ -12,16 +12,18 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF {
+
     /// <summary>
     /// Interaction logic for DisplayArea.xaml
     /// </summary>
     public partial class DisplayArea : UserControl {
-        private DisplayManager _displayManager;
+
+        //private DisplayManager _displayManager;
         private bool _isDispatcherInactive = true;
+
         private Mutex _mutex = new Mutex();
         private GuiManager _guiManager;
         private ProjectManager _projectManager;
-
 
         public DisplayArea() {
             InitializeComponent();
@@ -29,25 +31,25 @@ namespace ns.GUI.WPF {
         }
 
         private void LoadedHandle(object sender, RoutedEventArgs e) {
-            if (DesignerProperties.GetIsInDesignMode(this)) return;
+            //if (DesignerProperties.GetIsInDesignMode(this)) return;
 
-            _displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            _projectManager.Loading += ProjectManagerLoading;
-            foreach (Operation operation in _displayManager.Nodes.Where(o => o is Operation)) {
-                AddTabParent(operation);
-            }
-            foreach(ImageProperty imageProperty in _displayManager.Nodes.Where(i => i is ImageProperty)) {
-                AddTabItem(imageProperty);
-            }
-            if (this.DisplayTabControl.Items.Count > 0)
-                this.DisplayTabControl.SelectedIndex = 0;
-            _displayManager.NodeAddedEvent += NodeAddedEvent;
-            _displayManager.ImageChangedEvent += ImageChangedEvent;
-            _displayManager.NodeRemovedEvent += DisplayManagerNodeRemovedEvent;
-            _displayManager.ClearEvent += ClearEvent;
-            _guiManager.SelectedItemChanged += GuiManagerSelectedItemChanged;
+            //_displayManager = CoreSystem.Managers.Find(m => m.Name.Contains("DisplayManager")) as DisplayManager;
+            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            //_projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            //_projectManager.Loading += ProjectManagerLoading;
+            //foreach (Operation operation in _displayManager.Nodes.Where(o => o is Operation)) {
+            //    AddTabParent(operation);
+            //}
+            //foreach(ImageProperty imageProperty in _displayManager.Nodes.Where(i => i is ImageProperty)) {
+            //    AddTabItem(imageProperty);
+            //}
+            //if (this.DisplayTabControl.Items.Count > 0)
+            //    this.DisplayTabControl.SelectedIndex = 0;
+            //_displayManager.NodeAddedEvent += NodeAddedEvent;
+            //_displayManager.ImageChangedEvent += ImageChangedEvent;
+            //_displayManager.NodeRemovedEvent += DisplayManagerNodeRemovedEvent;
+            //_displayManager.ClearEvent += ClearEvent;
+            //_guiManager.SelectedItemChanged += GuiManagerSelectedItemChanged;
         }
 
         private void ProjectManagerLoading() {
@@ -111,7 +113,6 @@ namespace ns.GUI.WPF {
             Operation parentOperation = image.ParentOperation as Operation;
             foreach (OperationDisplayTabItem item in this.DisplayTabControl.Items) {
                 if (item.Operation == parentOperation) {
-
                     foreach (DisplayTabItem child in ((TabControl)item.Content).Items) {
                         if (child.ImageProperty == image) {
                             target = child;
@@ -143,13 +144,13 @@ namespace ns.GUI.WPF {
         }
 
         private void NodeAddedEvent(object sender, NodeCollectionChangedEventArgs e) {
-            if(e.Node is Operation)
+            if (e.Node is Operation)
                 AddTabParent(e.Node as Operation);
 
             if (e.Node is ImageProperty)
                 AddTabItem(e.Node as ImageProperty);
 
-            if (this.DisplayTabControl.Items.Count == 1) 
+            if (this.DisplayTabControl.Items.Count == 1)
                 this.DisplayTabControl.SelectedIndex = 0;
         }
 

@@ -103,15 +103,6 @@ namespace ns.GUI.WPF {
             GuiHelper.DoubleAnimateControl(500, ProjectGrid, WidthProperty, TimeSpan.FromSeconds(0.3));
             GuiHelper.DoubleAnimateControl(60, LogHeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            if (projectManager == null) {
-                Base.Log.Trace.WriteLine("Could not find project manager!", TraceEventType.Error);
-            } else {
-                MemoryStream stream = new MemoryStream();
-                projectManager.Save(ref stream);
-                XmlContent = Encoding.UTF8.GetString(stream.ToArray());
-            }
-
             if (CoreSystem.LogListener != null) {
                 UpdateLog();
                 CoreSystem.LogListener.traceListenerEvent += AddLogEntry;

@@ -1,0 +1,21 @@
+﻿<Window x:Class="Nidhogg.Service.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nidhogg.Service"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525" Closing="Window_Closing" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Name="_configGrid">
+            <StackPanel Orientation="Horizontal" Height="30" Margin="10,0">
+                <TextBlock Text="Address:" MinWidth="100" Margin="0,5" />
+                <TextBox Text="{Binding Path=Address,FallbackValue=Empty,Mode=OneWay}" IsReadOnly="True" Margin="0,5" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

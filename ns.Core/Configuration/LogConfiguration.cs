@@ -1,14 +1,11 @@
-﻿using System;
+﻿using ns.Base.Configuration;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Core.Configuration {
-    public class LogConfiguration : BaseConfiguration {
 
+    public class LogConfiguration : BaseConfiguration {
         private List<string> _categories = new List<string>();
-             
+
         /// <summary>
         /// Gets or sets the log categories.
         /// </summary>

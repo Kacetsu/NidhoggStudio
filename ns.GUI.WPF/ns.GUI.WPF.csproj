@@ -110,6 +110,12 @@
     <Compile Include="Controls\PropertyEditor.xaml.cs">
       <DependentUpon>PropertyEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Property\IntegerPropertyControl.xaml.cs">
+      <DependentUpon>IntegerPropertyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Property\DoublePropertyControl.xaml.cs">
+      <DependentUpon>DoublePropertyControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
     </Compile>
@@ -154,9 +160,6 @@
     </Compile>
     <Compile Include="Controls\Property\DevicePropertyControl.xaml.cs">
       <DependentUpon>DevicePropertyControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Property\NumberPropertyControl.xaml.cs">
-      <DependentUpon>NumberPropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Property\PropertyControl.cs" />
     <Compile Include="Controls\Shell.xaml.cs">
@@ -253,9 +256,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\Property\NumberPropertyControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\Property\IntegerPropertyControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Property\DoublePropertyControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Property\RectanglePropertyControl.xaml">
       <SubType>Designer</SubType>

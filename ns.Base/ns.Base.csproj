@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attribute\Visible.cs" />
+    <Compile Include="Configuration\BaseConfiguration.cs" />
+    <Compile Include="Configuration\IBaseConfiguration.cs" />
     <Compile Include="DataStorageContainer.cs" />
     <Compile Include="Event\DataStorageContainerChangedEventArgs.cs" />
     <Compile Include="Event\NodeCollectionChangedEventArgs.cs" />
@@ -77,6 +79,9 @@
     <Compile Include="Imaging\Histogram.cs" />
     <Compile Include="LibraryInformation.cs" />
     <Compile Include="Manager\GenericConfigurationManager.cs" />
+    <Compile Include="Manager\IGenericConfigurationManager.cs" />
+    <Compile Include="Manager\IManager.cs" />
+    <Compile Include="Manager\INodeManager.cs" />
     <Compile Include="Manager\NodeManager.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Event\ChildCollectionChangedEventArgs.cs" />

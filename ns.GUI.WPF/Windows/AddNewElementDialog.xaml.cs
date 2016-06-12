@@ -58,14 +58,14 @@ namespace ns.GUI.WPF.Windows {
                     }
 
                     if (_guiManager.SelectedNode == null) {
-                        ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+                        ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
                         if (manager.Configuration.Operations.Count > 0)
                             _guiManager.SelectNode(manager.Configuration.Operations[0]);
                     }
 
                     if (_guiManager.SelectedNode != null && _guiManager.SelectedNode is Operation) {
-                        _lastAddedNode = tool.Clone() as Node;
-                        _projectManager.Add(_lastAddedNode, _guiManager.SelectedNode);
+                        _lastAddedNode = new Tool(tool);
+                        _projectManager.Add(_lastAddedNode as Tool, _guiManager.SelectedNode as Operation);
                     }
                 }
             } else if (this.AnyTabs.SelectedItem == this.MainOperationsTabs) {
@@ -76,8 +76,8 @@ namespace ns.GUI.WPF.Windows {
                 if (operation == null)
                     return;
 
-                _lastAddedNode = operation.Clone() as Operation;
-                _projectManager.Add(_lastAddedNode);
+                _lastAddedNode = new Operation(operation);
+                _projectManager.Add(_lastAddedNode as Operation);
                 _guiManager.SelectNode(_lastAddedNode);
             }
         }
@@ -88,11 +88,11 @@ namespace ns.GUI.WPF.Windows {
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void HandleLoaded(object sender, RoutedEventArgs e) {
-            ToolManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ToolManager")) as ToolManager;
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
+            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
 
-            if (manager == null) {
+            if (pluginManager == null) {
                 Base.Log.Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", TraceEventType.Error);
                 return;
             }
@@ -102,10 +102,12 @@ namespace ns.GUI.WPF.Windows {
                 return;
             }
 
-            foreach (Node node in manager.Plugins) {
-                if (node is Tool) {
-                    Tool tool = node as Tool;
-                    this.ListViewAll.Items.Add(node);
+            foreach (Plugin plugin in pluginManager.Nodes) {
+                Tool tool = plugin as Tool;
+                Operation operation = plugin as Operation;
+
+                if (tool != null) {
+                    ListViewAll.Items.Add(plugin);
 
                     bool contains = false;
 
@@ -120,7 +122,7 @@ namespace ns.GUI.WPF.Windows {
                     if (!contains) {
                         TabItem item = null;
                         string tabName = "Tool" + tool.Category.Replace(' ', '_');
-                        foreach (TabItem it in this.ToolTabs.Items) {
+                        foreach (TabItem it in ToolTabs.Items) {
                             if (it.Name == tabName) {
                                 item = it;
                                 break;
@@ -131,20 +133,21 @@ namespace ns.GUI.WPF.Windows {
                             item = new TabItem();
                             item.Name = tabName;
                             item.Header = tool.Category;
-                            this.ToolTabs.Items.Add(item);
+                            ToolTabs.Items.Add(item);
                         }
                         ListBox box = new ListBox();
                         item.Content = box;
                         _listBoxes.Add(new KeyValuePair<string, ListBox>(tool.Category, box));
                         box.Items.Add(tool);
                     }
-                } else if (node is Operation)
-                    this.ListViewAllOperations.Items.Add(node);
+                } else if (operation != null) {
+                    ListViewAllOperations.Items.Add(operation);
+                }
             }
         }
 
         private void HandleButtonClick(object sender, RoutedEventArgs e) {
-            if (sender == this.AddButton)
+            if (sender == AddButton)
                 AddTool();
         }
     }

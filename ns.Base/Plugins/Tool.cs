@@ -24,9 +24,14 @@ namespace ns.Base.Plugins {
             AddChild(executionTimeMs);
         }
 
+        public Tool(Tool other) : base(other) {
+            Name = other.Name;
+        }
+
         /// <summary>
         /// Gets or sets the Name.
         /// </summary>
+        [DataMember]
         public override string Name {
             get {
                 if (string.IsNullOrEmpty(_name)) {
@@ -48,6 +53,7 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The category.
         /// </value>
+        [DataMember]
         public virtual string Category {
             get { return string.Empty; }
         }

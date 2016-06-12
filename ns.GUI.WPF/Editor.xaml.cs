@@ -1,15 +1,15 @@
-﻿using ns.Base;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
+
     /// <summary>
     /// Interaktionslogik für Editor.xaml
     /// </summary>
@@ -28,9 +28,8 @@ namespace ns.GUI.WPF {
             set {
                 if (!_lockedToolName.Equals(value)) {
                     _lockedToolName = value;
-                    OnPropertyChanged("LockedToolName");
+                    OnPropertyChanged();
                 }
-
             }
         }
 
@@ -45,15 +44,12 @@ namespace ns.GUI.WPF {
             ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
         }
 
-        private void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-            if(e.SelectedNode is Tool) {
+            if (e.SelectedNode is Tool) {
                 LockedToolName = (e.SelectedNode as Tool).DisplayName;
-            }else if(e.SelectedNode is Operation) {
+            } else if (e.SelectedNode is Operation) {
                 LockedToolName = (e.SelectedNode as Operation).DisplayName;
             }
         }
@@ -66,21 +62,25 @@ namespace ns.GUI.WPF {
                     _propertyEditor.CloseButton.Click += CloseButton_Click;
                     _propertyEditor.RemoveToolButton.YesButton.Click += YesButton_Click;
                 }
-                if(!ControlGrid.Children.Contains(_propertyEditor))
+                if (!ControlGrid.Children.Contains(_propertyEditor))
                     ControlGrid.Children.Add(_propertyEditor);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
             };
-            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+            ControlGrid.BeginAnimation(WidthProperty, animation);
         }
 
         private void YesButton_Click(object sender, RoutedEventArgs e) {
-            if(_propertyEditor != null && sender == _propertyEditor.RemoveToolButton.YesButton) {
-                Node nodeToRemove = _propertyEditor.Node;
-                if(_projectManager == null)
-                    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            if (_propertyEditor != null && sender == _propertyEditor.RemoveToolButton.YesButton) {
+                Tool toolToRemove = _propertyEditor.Node as Tool;
+                Operation operationToRemove = _propertyEditor.Node as Operation;
+
+                if (_projectManager == null)
+                    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+
                 RemoveControl(_propertyEditor);
                 _propertyEditor = null;
-                _projectManager.Remove(nodeToRemove);
+                if (toolToRemove != null) _projectManager.Remove(toolToRemove);
+                else if (operationToRemove != null) _projectManager.Remove(operationToRemove);
             }
         }
 
@@ -100,48 +100,48 @@ namespace ns.GUI.WPF {
                 ControlGrid.Children.Remove(control);
                 if (!ControlGrid.Children.Contains(_projectExplorer))
                     ControlGrid.Children.Add(_projectExplorer);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
             };
-            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+            ControlGrid.BeginAnimation(WidthProperty, animation);
         }
 
         private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
             animation.Completed += delegate (object s, EventArgs ev) {
-                if(_addToolControl == null) {
+                if (_addToolControl == null) {
                     _addToolControl = new Controls.AddToolControl();
                     _addToolControl.CloseButton.Click += CloseButton_Click;
                 }
                 ControlGrid.Children.Add(_addToolControl);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty, TimeSpan.FromSeconds(0.2));
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
             };
-            ControlGrid.BeginAnimation(Rectangle.WidthProperty, animation);
+            ControlGrid.BeginAnimation(WidthProperty, animation);
         }
 
         private void Editor_Loaded(object sender, RoutedEventArgs e) {
-            GuiHelper.DoubleAnimateControl(300, ControlGrid, Rectangle.WidthProperty);
-            GuiHelper.DoubleAnimateControl(60, HeaderGrid, Rectangle.HeightProperty, TimeSpan.FromSeconds(0.3));
+            GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
+            GuiHelper.DoubleAnimateControl(60, HeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
             if (_guiManager != null)
                 _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
-            if(sender == ResultsViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(200, ResultsView, Rectangle.HeightProperty);
-            } else if(sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(200, HistogramView, Rectangle.HeightProperty);
-            } else if(sender == LoopExecutionToggleButton) {
+            if (sender == ResultsViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, ResultsView, HeightProperty);
+            } else if (sender == HistogramViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
+            } else if (sender == LoopExecutionToggleButton) {
                 CoreSystem.Processor.Start();
             }
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
             if (sender == ResultsViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, ResultsView, Rectangle.HeightProperty);
+                GuiHelper.DoubleAnimateControl(0, ResultsView, HeightProperty);
             } else if (sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, HistogramView, Rectangle.HeightProperty);
+                GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
             } else if (sender == LoopExecutionToggleButton) {
                 CoreSystem.Processor.Stop();
             }

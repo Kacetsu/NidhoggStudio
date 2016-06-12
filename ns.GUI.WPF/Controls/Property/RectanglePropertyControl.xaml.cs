@@ -1,23 +1,15 @@
-﻿using ns.Base.Log;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace ns.GUI.WPF.Controls.Property {
 
     /// <summary>
     /// Interaction logic for RectanglePropertyControl.xaml
     /// </summary>
-    public partial class RectanglePropertyControl : PropertyControl {
-        private ns.Base.Plugins.Properties.Property _property;
-
-        public string DisplayName {
-            get { return _property.Name; }
-        }
+    public partial class RectanglePropertyControl : PropertyControl<RectangleProperty> {
 
         public RectanglePropertyControl() {
             InitializeComponent();
@@ -29,37 +21,30 @@ namespace ns.GUI.WPF.Controls.Property {
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="isConnectable">if set to <c>true</c> [is connectable].</param>
-        public RectanglePropertyControl(ns.Base.Plugins.Properties.Property property, bool isConnectable)
+        public RectanglePropertyControl(RectangleProperty property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
             DataContext = this;
-            _property = property;
             property.PropertyChanged += Property_PropertyChanged;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
+                ConnectClicked(ContentGrid as Panel, ConnectImage);
             } else {
-                if (property is RectangleProperty) {
-                    RectangleProperty rectangleProperty = property as RectangleProperty;
-                    this.XNumberBox.Text = rectangleProperty.X.ToString();
-                    this.YNumberBox.Text = rectangleProperty.Y.ToString();
-                    this.WidthNumberBox.Text = rectangleProperty.Width.ToString();
-                    this.HeightNumberBox.Text = rectangleProperty.Height.ToString();
-                } else {
-                    Base.Log.Trace.WriteLine("Wrong property type " + property.GetType() + " in " + MethodBase.GetCurrentMethod() + "!", TraceEventType.Error);
-                }
+                RectangleProperty rectangleProperty = property as RectangleProperty;
+                XNumberBox.Text = rectangleProperty.X.ToString();
+                YNumberBox.Text = rectangleProperty.Y.ToString();
+                WidthNumberBox.Text = rectangleProperty.Width.ToString();
+                HeightNumberBox.Text = rectangleProperty.Height.ToString();
             }
         }
 
         private void Property_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (sender is RectangleProperty) {
-                RectangleProperty property = sender as RectangleProperty;
-                this.XNumberBox.Text = property.X.ToString();
-                this.YNumberBox.Text = property.Y.ToString();
-                this.WidthNumberBox.Text = property.Width.ToString();
-                this.HeightNumberBox.Text = property.Height.ToString();
-            }
+            RectangleProperty property = sender as RectangleProperty;
+            XNumberBox.Text = property.X.ToString();
+            YNumberBox.Text = property.Y.ToString();
+            WidthNumberBox.Text = property.Width.ToString();
+            HeightNumberBox.Text = property.Height.ToString();
         }
 
         /// <summary>
@@ -86,30 +71,27 @@ namespace ns.GUI.WPF.Controls.Property {
             if (string.IsNullOrEmpty(box.Text)) return;
             if (box.Text == "-") return;
             if (box.Text.EndsWith(",")) return;
-            try {
-                if (_property != null) {
-                    double value = Convert.ToDouble(box.Text);
-                    if (box == XNumberBox)
-                        ((RectangleProperty)_property).X = value;
-                    else if (box == YNumberBox)
-                        ((RectangleProperty)_property).Y = value;
-                    else if (box == WidthNumberBox)
-                        ((RectangleProperty)_property).Width = value;
-                    else if (box == HeightNumberBox)
-                        ((RectangleProperty)_property).Height = value;
-                }
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
-            } finally {
+
+            if (_property != null) {
+                double value = Convert.ToDouble(box.Text);
                 if (box == XNumberBox)
-                    box.Text = ((RectangleProperty)_property).X.ToString();
+                    _property.X = value;
                 else if (box == YNumberBox)
-                    box.Text = ((RectangleProperty)_property).Y.ToString();
+                    _property.Y = value;
                 else if (box == WidthNumberBox)
-                    box.Text = ((RectangleProperty)_property).Width.ToString();
+                    _property.Width = value;
                 else if (box == HeightNumberBox)
-                    box.Text = ((RectangleProperty)_property).Height.ToString();
+                    _property.Height = value;
             }
+
+            if (box == XNumberBox)
+                box.Text = _property.X.ToString();
+            else if (box == YNumberBox)
+                box.Text = _property.Y.ToString();
+            else if (box == WidthNumberBox)
+                box.Text = _property.Width.ToString();
+            else if (box == HeightNumberBox)
+                box.Text = _property.Height.ToString();
         }
 
         /// <summary>
@@ -118,23 +100,23 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Button_Click(object sender, RoutedEventArgs e) {
-            if (sender == this.ConnectButton) {
-                this.ConnectClicked(this.ContentGrid as Panel, this.ConnectImage);
-            } else if (sender == this.XPosButton) {
+            if (sender == ConnectButton) {
+                ConnectClicked(ContentGrid as Panel, ConnectImage);
+            } else if (sender == XPosButton) {
                 ChangeValue(1.0, XNumberBox);
-            } else if (sender == this.XNegButton) {
+            } else if (sender == XNegButton) {
                 ChangeValue(-1.0, XNumberBox);
-            } else if (sender == this.YPosButton) {
+            } else if (sender == YPosButton) {
                 ChangeValue(1.0, YNumberBox);
-            } else if (sender == this.YNegButton) {
+            } else if (sender == YNegButton) {
                 ChangeValue(-1.0, YNumberBox);
-            } else if (sender == this.WidthPosButton) {
+            } else if (sender == WidthPosButton) {
                 ChangeValue(1.0, WidthNumberBox);
-            } else if (sender == this.WidthNegButton) {
+            } else if (sender == WidthNegButton) {
                 ChangeValue(-1.0, WidthNumberBox);
-            } else if (sender == this.HeightPosButton) {
+            } else if (sender == HeightPosButton) {
                 ChangeValue(1.0, HeightNumberBox);
-            } else if (sender == this.HeightNegButton) {
+            } else if (sender == HeightNegButton) {
                 ChangeValue(-1.0, HeightNumberBox);
             }
         }

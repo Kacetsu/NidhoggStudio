@@ -25,6 +25,11 @@ namespace ns.Base.Plugins {
         public Plugin() : base() {
         }
 
+        public Plugin(Plugin other) : base(other) {
+            DisplayName = other.DisplayName;
+            Status = other.Status;
+        }
+
         /// <summary>
         /// Gets the assembly file.
         /// </summary>

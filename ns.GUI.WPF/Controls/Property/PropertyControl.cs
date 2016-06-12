@@ -1,15 +1,11 @@
-﻿using ns.Base;
-using ns.Base.Log;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,9 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ns.GUI.WPF.Controls.Property {
-    public class PropertyControl : UserControl, INotifyPropertyChanged {
+
+    public class PropertyControl<T> : UserControl, INotifyPropertyChanged where T : Base.Plugins.Properties.Property {
         private static Brush DEFAULT_BACKGROUNDBRUSH = Brushes.White;
-        private ns.Base.Plugins.Properties.Property _property;
+        protected T _property;
         private bool _isConnectable = false;
         private ComboBox _selectionComboBox = null;
         private Brush _backgroundBrush;
@@ -32,8 +29,18 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <value>
         /// The property.
         /// </value>
-        public ns.Base.Plugins.Properties.Property Property {
+        public T Property {
             get { return _property; }
+        }
+
+        /// <summary>
+        /// Gets the display name.
+        /// </summary>
+        /// <value>
+        /// The display name.
+        /// </value>
+        public string DisplayName {
+            get { return _property.Name; }
         }
 
         /// <summary>
@@ -51,7 +58,7 @@ namespace ns.GUI.WPF.Controls.Property {
             get { return _backgroundBrush; }
             set {
                 _backgroundBrush = value;
-                OnPropertyChanged("BackgroundBrush");
+                OnPropertyChanged();
             }
         }
 
@@ -67,7 +74,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// Initializes a new instance of the <see cref="PropertyControl"/> class.
         /// </summary>
         /// <param name="property">The property.</param>
-        public PropertyControl(ns.Base.Plugins.Properties.Property property)
+        public PropertyControl(T property)
             : base() {
             _property = property;
             this.MouseEnter += Control_MouseEnter;
@@ -82,8 +89,8 @@ namespace ns.GUI.WPF.Controls.Property {
             UIElement parentControl = control.Parent as UIElement;
             BitmapImage image = new BitmapImage();
 
-            if (control.Visibility == System.Windows.Visibility.Visible) {
-                control.Visibility = System.Windows.Visibility.Collapsed;
+            if (control.Visibility == Visibility.Visible) {
+                control.Visibility = Visibility.Collapsed;
                 image.BeginInit();
                 image.UriSource = new Uri("/ns.GUI.WPF;component/Images/Disconnect.png", UriKind.Relative);
                 image.EndInit();
@@ -107,14 +114,14 @@ namespace ns.GUI.WPF.Controls.Property {
             UIElement parentControl = panel.Parent as UIElement;
             BitmapImage image = new BitmapImage();
 
-            if (panel.Visibility == System.Windows.Visibility.Visible) {
-                panel.Visibility = System.Windows.Visibility.Collapsed;
+            if (panel.Visibility == Visibility.Visible) {
+                panel.Visibility = Visibility.Collapsed;
                 image.BeginInit();
                 image.UriSource = new Uri("/ns.GUI.WPF;component/Images/Disconnect.png", UriKind.Relative);
                 image.EndInit();
                 CreateSelection(panel, parentControl);
             } else {
-                panel.Visibility = System.Windows.Visibility.Visible;
+                panel.Visibility = Visibility.Visible;
                 image.BeginInit();
                 image.UriSource = new Uri("/ns.GUI.WPF;component/Images/Connect.png", UriKind.Relative);
                 image.EndInit();
@@ -124,10 +131,11 @@ namespace ns.GUI.WPF.Controls.Property {
             imageContainer.Source = image;
         }
 
-        protected void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Creates the selection.
@@ -160,7 +168,7 @@ namespace ns.GUI.WPF.Controls.Property {
             ns.Base.Plugins.Properties.Property targetProperty = c.SelectedItem as ns.Base.Plugins.Properties.Property;
             if (targetProperty != null) {
                 this.Property.Connect(targetProperty);
-            } else if(c.SelectedItem is Operation) {
+            } else if (c.SelectedItem is Operation) {
                 this.Property.Connect(((Operation)c.SelectedItem).UID);
             }
         }
@@ -184,7 +192,7 @@ namespace ns.GUI.WPF.Controls.Property {
         /// Updates the connectable property list.
         /// </summary>
         private void UpdateConnectablePropertyList() {
-            if (this.Property is OperationSelectionProperty) {
+            if (this.Property is StringProperty) {
                 ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
                 List<Operation> operations = (List<Operation>)projectManager.Configuration.Operations.FindAll(o => o.UID != this.Property.Parent.UID);
                 _selectionComboBox.ItemsSource = operations;
@@ -195,7 +203,6 @@ namespace ns.GUI.WPF.Controls.Property {
                     if (targetOperation != null)
                         _selectionComboBox.SelectedItem = targetOperation;
                 }
-
             } else {
                 PropertyManager propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
                 List<ns.Base.Plugins.Properties.Property> properties = propertyManager.GetConnectableProperties(this.Property);

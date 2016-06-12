@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ns.Base.Configuration;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Manager {
 
-    public class GenericConfigurationManager<T> : BaseManager {
+    public class GenericConfigurationManager<T> : BaseManager, IGenericConfigurationManager<T> where T : IBaseConfiguration {
 
         /// <summary>
         /// Gets or sets the configuration.
@@ -64,6 +65,7 @@ namespace ns.Base.Manager {
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
                 }
                 MemoryStream memoryStream = new MemoryStream();
+                Configuration.FileName.Value = path;
                 if ((result = Save(memoryStream)) == true) {
                     using (FileStream stream = new FileStream(path, FileMode.Create)) {
                         memoryStream.Position = 0;

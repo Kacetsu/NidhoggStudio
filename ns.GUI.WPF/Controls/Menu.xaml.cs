@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using ns.Base;
-using ns.Base.Log;
 using ns.Core;
 using ns.Core.Manager;
 using ns.GUI.WPF.Windows;
@@ -82,17 +81,17 @@ namespace ns.GUI.WPF.Controls {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = ProjectManager.FileFilter;
             if (dialog.ShowDialog() == true) {
-                ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+                ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
                 manager.Save(dialog.FileName);
             }
         }
 
         private void SaveProject() {
-            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            if (!manager.HasSavedProject) {
+            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            if (!string.IsNullOrEmpty(manager?.FileName)) {
                 ShowSaveProjectDialog();
             } else {
-                manager.Save(manager.FileName);
+                manager.Save(manager?.FileName);
             }
         }
 
@@ -107,7 +106,7 @@ namespace ns.GUI.WPF.Controls {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = ProjectManager.FileFilter;
             if (dialog.ShowDialog() == true) {
-                ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+                ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
                 manager.Load(dialog.FileName);
             }
         }
@@ -120,8 +119,8 @@ namespace ns.GUI.WPF.Controls {
                 return;
             }
 
-            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            manager.LoadLastUsedProject();
+            ProjectManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            manager.CreateDefaultProject();
         }
     }
 }

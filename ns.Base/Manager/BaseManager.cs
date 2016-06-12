@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace ns.Base.Manager {
 
-    public class BaseManager : NotifiableObject {
+    public class BaseManager : NotifiableObject, IManager {
         private const string APPLICATION_NAME = "Nidhogg Studio";
         private static string _assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static string _documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + Path.DirectorySeparatorChar + APPLICATION_NAME + Path.DirectorySeparatorChar;

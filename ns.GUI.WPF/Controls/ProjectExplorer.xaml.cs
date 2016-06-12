@@ -4,23 +4,13 @@ using ns.Base.Plugins;
 using ns.Core;
 using ns.Core.Manager;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für ProjectExplorer.xaml
     /// </summary>
@@ -29,6 +19,7 @@ namespace ns.GUI.WPF.Controls {
         private GuiManager _guiManager;
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
+
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         public ProjectExplorer() {
@@ -37,17 +28,15 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void OnConfigNode(Node node) {
-            if (ConfigNodeHandlerChanged != null)
-                ConfigNodeHandlerChanged(this, new NodeSelectionChangedEventArgs(node));
+            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs(node));
         }
 
         private void GenerateTree() {
             if (_projectManager != null) {
-                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-                _projectManager.Loading += ProjectManagerLoading;
+                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+                //_projectManager.Loading += ProjectManagerLoading;
             }
             if (_projectManager != null) {
-
                 this.ContentGrid.Children.Clear();
 
                 foreach (Operation operation in _projectManager.Configuration.Operations) {
@@ -73,15 +62,15 @@ namespace ns.GUI.WPF.Controls {
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this) == false) {
-                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
 
                 if (_projectManager == null)
                     throw new Exception("ProjectManager is NULL!");
 
-                _projectManager.OperationAddedEvent += HandleOperationCollectionChanged;
-                _projectManager.OperationRemovedEvent += HandleOperationCollectionChanged;
-                _projectManager.Loaded += HandleProjectLoaded;
+                //_projectManager.OperationAddedEvent += HandleOperationCollectionChanged;
+                //_projectManager.OperationRemovedEvent += HandleOperationCollectionChanged;
+                //_projectManager.Loaded += HandleProjectLoaded;
                 GenerateTree();
             }
         }
@@ -102,6 +91,5 @@ namespace ns.GUI.WPF.Controls {
             //}
             //this.ProjectTree.Items.Clear();
         }
-
     }
 }

@@ -52,6 +52,10 @@ namespace ns.Base.Plugins {
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
         }
 
+        public Operation(Operation other) : base(other) {
+            CaptureDevice = other.CaptureDevice;
+        }
+
         /// <summary>
         /// Clones the Node with all its Members.
         /// Will set a new UID.

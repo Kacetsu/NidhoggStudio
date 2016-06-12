@@ -1,0 +1,42 @@
+﻿<control:PropertyControl x:Class="ns.GUI.WPF.Controls.Property.DoublePropertyControl"
+             x:TypeArguments="application:DoubleProperty"
+             xmlns:application="clr-namespace:ns.Base.Plugins.Properties;assembly=ns.Base"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:control="clr-namespace:ns.GUI.WPF.Controls.Property"
+             mc:Ignorable="d"
+             d:DesignHeight="44" d:DesignWidth="300" Margin="0,2" Height="44">
+    <Grid Background="{Binding Path=BackgroundBrush,FallbackValue=Transparent}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*" />
+            <ColumnDefinition Width="60*" MinWidth="140" />
+            <ColumnDefinition Width="40" MinWidth="40" />
+        </Grid.ColumnDefinitions>
+        <TextBlock TextWrapping="Wrap" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" VerticalAlignment="Center" Margin="2,0" />
+        <Grid Grid.Column="1" Name="ContentGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="44" />
+                <ColumnDefinition Width="*" MinWidth="30" />
+                <ColumnDefinition Width="44" />
+            </Grid.ColumnDefinitions>
+            <RepeatButton Name="NegButton" Delay="500" Interval="100" Grid.Column="0" Style="{StaticResource NumberDownButton}" Click="Button_Click">
+                <RepeatButton.Content>
+                    <TextBlock Text="-" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Bold" Margin="0,0,0,11" />
+                </RepeatButton.Content>
+            </RepeatButton>
+            <TextBox Name="NumberBox" Grid.Column="1" Style="{DynamicResource NumberTextBox}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextChanged="NumberBox_TextChanged" FontSize="20" Text="{Binding Path=StringValue,FallbackValue=0}" />
+            <RepeatButton Name="PosButton" Delay="500" Interval="100" Grid.Column="2" Style="{StaticResource NumberUpButton}" Click="Button_Click">
+                <RepeatButton.Content>
+                    <TextBlock Text="+" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Bold" Margin="0,0,0,11" />
+                </RepeatButton.Content>
+            </RepeatButton>
+        </Grid>
+        <Button Name="ConnectButton" Grid.Column="2" Click="Button_Click">
+            <Button.Content>
+                <Image Name="ConnectImage" Source="/ns.GUI.WPF;component/Images/Connect.png" Margin="2" Opacity="0.5" />
+            </Button.Content>
+        </Button>
+    </Grid>
+</control:PropertyControl>

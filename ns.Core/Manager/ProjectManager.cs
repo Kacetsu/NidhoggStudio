@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
 
-    public class ProjectManager : GenericConfigurationManager<ProjectConfiguration> {
+    public class ProjectManager : GenericConfigurationManager<ProjectConfiguration>, IProjectManager {
         private static string _fileName = string.Empty;
 
         /// <summary>
@@ -103,11 +103,35 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
+        /// Removes the specified tool.
+        /// </summary>
+        /// <param name="tool">The tool.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        public void Remove(Tool tool) {
+            if (tool == null) throw new ArgumentNullException(nameof(tool));
+
+            Operation operation = tool.Parent as Operation;
+            if (operation != null) {
+                operation.Childs.Remove(tool);
+            }
+        }
+
+        /// <summary>
+        /// Removes the specified operation.
+        /// </summary>
+        /// <param name="operation">The operation.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        public void Remove(Operation operation) {
+            if (operation == null) throw new ArgumentNullException(nameof(operation));
+            Configuration.Operations.Remove(operation);
+        }
+
+        /// <summary>
         /// Creates the default project.
         /// </summary>
         public void CreateDefaultProject() {
             Configuration.Operations.Clear();
-            Configuration.ProjectName.Value = "Default";
+            Configuration.Name.Value = "Default";
 
             PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
 

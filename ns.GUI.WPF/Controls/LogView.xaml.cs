@@ -1,5 +1,4 @@
 ﻿using ns.Base.Log;
-using ns.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -35,10 +34,10 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
-            if (CoreSystem.LogListener != null) {
-                CoreSystem.LogListener.traceListenerEvent -= AddLogEntry;
-                CoreSystem.LogListener.traceListenerEvent += AddLogEntry;
-            }
+            //if (CoreSystem.LogListener != null) {
+            //    CoreSystem.LogListener.traceListenerEvent -= AddLogEntry;
+            //    CoreSystem.LogListener.traceListenerEvent += AddLogEntry;
+            //}
         }
 
         private void AddLogEntry(object sender, Base.Event.TraceListenerEventArgs e) {

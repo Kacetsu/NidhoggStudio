@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace ns.Base {
 
@@ -14,6 +15,7 @@ namespace ns.Base {
     [DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
     public class Node : NotifiableObject, ICloneable, INode {
         private bool _isInitialized = false;
+
         private bool _isSelected = false;
 
         /// <summary>
@@ -24,6 +26,7 @@ namespace ns.Base {
         public delegate void NodeChangedEventHandler(object sender, NodeChangedEventArgs e);
 
         protected string _name = string.Empty;
+
         private string _fullname = string.Empty;
 
         /// <summary>
@@ -97,7 +100,7 @@ namespace ns.Base {
         /// <value>
         /// The parent.
         /// </value>
-        [DataMember]
+        [XmlIgnore]
         public Node Parent { get; private set; }
 
         /// <summary>

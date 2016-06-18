@@ -3,7 +3,9 @@ using System.Linq;
 using System.Windows.Media;
 
 namespace ns.GUI.WPF {
-    public class Histogram : ns.Base.Imaging.Histogram, INotifyPropertyChanged {
+
+    public class Histogram : Base.Imaging.Histogram, INotifyPropertyChanged {
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private PointCollection _redPoints;
@@ -110,16 +112,17 @@ namespace ns.GUI.WPF {
         /// <param name="stride">The stride.</param>
         /// <param name="bytesPerPixel">The bytes per pixel.</param>
         protected override void GenerateHistogram(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
- 	        base.GenerateHistogram(imageData, width, height, stride, bytesPerPixel);
+            base.GenerateHistogram(imageData, width, height, stride, bytesPerPixel);
             switch (bytesPerPixel) {
                 case 3:
-                    RedPoints = GeneratePointCollection(SmoothHistogram(RedValues));
-                    GreenPoints = GeneratePointCollection(SmoothHistogram(GreenValues));
-                    BluePoints = GeneratePointCollection(SmoothHistogram(BlueValues));
-                    break;
+                RedPoints = GeneratePointCollection(SmoothHistogram(RedValues));
+                GreenPoints = GeneratePointCollection(SmoothHistogram(GreenValues));
+                BluePoints = GeneratePointCollection(SmoothHistogram(BlueValues));
+                break;
+
                 default:
-                    GrayPoints = GeneratePointCollection(SmoothHistogram(GrayValues));
-                    break;
+                GrayPoints = GeneratePointCollection(SmoothHistogram(GrayValues));
+                break;
             }
         }
 

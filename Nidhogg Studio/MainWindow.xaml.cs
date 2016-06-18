@@ -1,31 +1,25 @@
-﻿using ns.Core;
+﻿using ns.Communication.Client;
+using ns.GUI.WPF;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using ns.GUI.WPF;
 
 namespace Nidhogg_Studio {
+
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        private GuiManager _guiManager;
+
+        //private GuiManager _guiManager;
         private List<NavigationTarget> _mainNavigationTargtes;
 
         public MainWindow() {
             InitializeComponent();
             Loaded += HandleLoaded;
             Closing += HandleClosing;
-
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
-
-            if (_guiManager == null) {
-                _guiManager = new GuiManager();
-                _guiManager.Initialize();
-                CoreSystem.Managers.Add(_guiManager);
-            }
         }
 
         private void CreateNavigation() {
@@ -85,15 +79,19 @@ namespace Nidhogg_Studio {
                     case "Editor":
                     ContentGird.Children.Add(new Editor());
                     break;
+
                     case "Monitor":
                     case "Statistic":
                     break;
+
                     case "Log":
                     ContentGird.Children.Add(new LogView());
                     break;
+
                     case "Project":
                     ContentGird.Children.Add(new ProjectView());
                     break;
+
                     default:
                     throw new NotSupportedException(pageName + " is not supported!");
                 }
@@ -107,17 +105,7 @@ namespace Nidhogg_Studio {
         }
 
         private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
-            if (CoreSystem.Processor != null && CoreSystem.Processor.IsRunning) {
-                MessageBoxResult result = MessageBox.Show("Operation process still running, do you want to terminate the process?", "Process running", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes) {
-                    CoreSystem.Processor.Stop();
-                } else {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-            if (!CoreSystem.Finalize())
-                throw new Exception("Fatal error while closing CoreSystem!");
+            ClientCommunicationManager.PluginService?.Dispose();
         }
     }
 }

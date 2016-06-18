@@ -1,10 +1,11 @@
-﻿using ns.Core;
+﻿using ns.Communication.Client;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 
 namespace Nidhogg_Studio {
+
     /// <summary>
     /// Interaction logic for SplashWindow.xaml
     /// </summary>
@@ -23,8 +24,7 @@ namespace Nidhogg_Studio {
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                if (CoreSystem.Initialize(false) == false)
-                    throw new Exception("Fatal error while loading CoreSystem!");
+                ClientCommunicationManager.Instance.Initialize();
 
                 _stopwatch.Stop();
                 long elapsedMilliseconds = _stopwatch.ElapsedMilliseconds;
@@ -35,7 +35,7 @@ namespace Nidhogg_Studio {
 
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
-                this.Close();
+                Close();
             }));
         }
     }

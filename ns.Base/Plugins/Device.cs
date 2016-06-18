@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 namespace ns.Base.Plugins {
 
     [DataContract]
-    public class Device : Plugin/*, IXmlSerializable*/ {
+    public class Device : Plugin {
 
         /// <summary>
         /// Clones the Node with all its Members.

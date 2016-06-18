@@ -14,7 +14,7 @@
         <Grid Grid.Row="0" Name="_configGrid">
             <StackPanel Orientation="Horizontal" Height="30" Margin="10,0">
                 <TextBlock Text="Address:" MinWidth="100" Margin="0,5" />
-                <TextBox Text="{Binding Path=Address,FallbackValue=Empty,Mode=OneWay}" IsReadOnly="True" Margin="0,5" />
+                <TextBox Text="{Binding Path=Configuration.Address.Value,FallbackValue=Empty,Mode=OneWay}" IsReadOnly="True" Margin="0,5" />
             </StackPanel>
         </Grid>
     </Grid>

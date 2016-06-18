@@ -1,7 +1,5 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Core;
-using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -192,29 +190,29 @@ namespace ns.GUI.WPF.Controls.Property {
         /// Updates the connectable property list.
         /// </summary>
         private void UpdateConnectablePropertyList() {
-            if (this.Property is StringProperty) {
-                ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-                List<Operation> operations = (List<Operation>)projectManager.Configuration.Operations.FindAll(o => o.UID != this.Property.Parent.UID);
-                _selectionComboBox.ItemsSource = operations;
-                _selectionComboBox.DisplayMemberPath = "Name";
+            //if (this.Property is StringProperty) {
+            //    ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            //    List<Operation> operations = (List<Operation>)projectManager.Configuration.Operations.FindAll(o => o.UID != this.Property.Parent.UID);
+            //    _selectionComboBox.ItemsSource = operations;
+            //    _selectionComboBox.DisplayMemberPath = "Name";
 
-                if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                    Operation targetOperation = projectManager.Configuration.Operations.Find(p => p.UID == Property.ConnectedUID);
-                    if (targetOperation != null)
-                        _selectionComboBox.SelectedItem = targetOperation;
-                }
-            } else {
-                PropertyManager propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
-                List<ns.Base.Plugins.Properties.Property> properties = propertyManager.GetConnectableProperties(this.Property);
-                _selectionComboBox.ItemsSource = properties;
-                _selectionComboBox.DisplayMemberPath = "TreeName";
+            //    if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            //        Operation targetOperation = projectManager.Configuration.Operations.Find(p => p.UID == Property.ConnectedUID);
+            //        if (targetOperation != null)
+            //            _selectionComboBox.SelectedItem = targetOperation;
+            //    }
+            //} else {
+            //    PropertyManager propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
+            //    List<ns.Base.Plugins.Properties.Property> properties = propertyManager.GetConnectableProperties(this.Property);
+            //    _selectionComboBox.ItemsSource = properties;
+            //    _selectionComboBox.DisplayMemberPath = "TreeName";
 
-                if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                    ns.Base.Plugins.Properties.Property targetProperty = properties.Find(p => p.UID == Property.ConnectedUID);
-                    if (targetProperty != null)
-                        _selectionComboBox.SelectedItem = targetProperty;
-                }
-            }
+            //    if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            //        ns.Base.Plugins.Properties.Property targetProperty = properties.Find(p => p.UID == Property.ConnectedUID);
+            //        if (targetProperty != null)
+            //            _selectionComboBox.SelectedItem = targetProperty;
+            //    }
+            //}
         }
 
         private void Control_MouseLeave(object sender, MouseEventArgs e) {

@@ -1,6 +1,4 @@
 ﻿using ns.Base.Plugins;
-using ns.Core;
-using ns.Core.Manager;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -14,8 +12,7 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für Editor.xaml
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged {
-        private ProjectManager _projectManager;
-        private GuiManager _guiManager;
+        private FrontendManager _guiManager;
         private Controls.ProjectExplorer _projectExplorer;
         private Controls.AddToolControl _addToolControl;
         private Controls.PropertyEditor _propertyEditor;
@@ -36,7 +33,7 @@ namespace ns.GUI.WPF {
         public Editor() {
             InitializeComponent();
             DataContext = this;
-            LoopExecutionToggleButton.DataContext = CoreSystem.Processor;
+            //LoopExecutionToggleButton.DataContext = CoreSystem.Processor;
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = ProjectExplorer;
@@ -74,13 +71,13 @@ namespace ns.GUI.WPF {
                 Tool toolToRemove = _propertyEditor.Node as Tool;
                 Operation operationToRemove = _propertyEditor.Node as Operation;
 
-                if (_projectManager == null)
-                    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+                //if (_projectManager == null)
+                //    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
 
-                RemoveControl(_propertyEditor);
-                _propertyEditor = null;
-                if (toolToRemove != null) _projectManager.Remove(toolToRemove);
-                else if (operationToRemove != null) _projectManager.Remove(operationToRemove);
+                //RemoveControl(_propertyEditor);
+                //_propertyEditor = null;
+                //if (toolToRemove != null) _projectManager.Remove(toolToRemove);
+                //else if (operationToRemove != null) _projectManager.Remove(operationToRemove);
             }
         }
 
@@ -122,9 +119,9 @@ namespace ns.GUI.WPF {
             GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
             GuiHelper.DoubleAnimateControl(60, HeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-            if (_guiManager != null)
-                _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
+            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(FrontendManager))) as FrontendManager;
+            //if (_guiManager != null)
+            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
@@ -133,7 +130,7 @@ namespace ns.GUI.WPF {
             } else if (sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
             } else if (sender == LoopExecutionToggleButton) {
-                CoreSystem.Processor.Start();
+                //CoreSystem.Processor.Start();
             }
         }
 
@@ -143,7 +140,7 @@ namespace ns.GUI.WPF {
             } else if (sender == HistogramViewToggleButton) {
                 GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
             } else if (sender == LoopExecutionToggleButton) {
-                CoreSystem.Processor.Stop();
+                //CoreSystem.Processor.Stop();
             }
         }
     }

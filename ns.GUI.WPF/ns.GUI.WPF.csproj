@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ns.GUI.WPF</RootNamespace>
     <AssemblyName>ns.GUI.WPF</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +65,8 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Printing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -162,9 +165,6 @@
       <DependentUpon>DevicePropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Property\PropertyControl.cs" />
-    <Compile Include="Controls\Shell.xaml.cs">
-      <DependentUpon>Shell.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\Property\StringPropertyControl.xaml.cs">
       <DependentUpon>StringPropertyControl.xaml</DependentUpon>
     </Compile>
@@ -172,7 +172,7 @@
       <DependentUpon>DisplayArea.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ToolTreeItem.cs" />
-    <Compile Include="GuiManager.cs" />
+    <Compile Include="FrontendManager.cs" />
     <Compile Include="LockedObservableCollection.cs" />
     <Compile Include="LogView.xaml.cs">
       <DependentUpon>LogView.xaml</DependentUpon>
@@ -183,9 +183,6 @@
       <DependentUpon>ProjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Windows\AddNewElementDialog.xaml.cs">
-      <DependentUpon>AddNewElementDialog.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Accents\Light.xaml">
@@ -281,10 +278,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ResultViewContainer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Shell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -392,10 +385,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AddNewElementDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\window-close-dark.png" />
@@ -406,16 +395,6 @@
     <Resource Include="Images\window-minimize-light.png" />
     <Resource Include="Images\window-restore-dark.png" />
     <Resource Include="Images\window-restore-light.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ns.Base\ns.Base.csproj">
-      <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
-      <Name>ns.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ns.Core\ns.Core.csproj">
-      <Project>{f62cccb0-97e5-480f-8096-0448875179a8}</Project>
-      <Name>ns.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\window_active_shadow_bottom.PNG" />
@@ -504,6 +483,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ns.Base\ns.Base.csproj">
+      <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
+      <Name>ns.Base</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ns.Communication\ns.Communication.csproj">
+      <Project>{d2f28739-f6c4-40ce-93a6-46b9cb7b74ca}</Project>
+      <Name>ns.Communication</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

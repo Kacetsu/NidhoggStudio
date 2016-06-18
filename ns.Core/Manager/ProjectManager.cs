@@ -36,6 +36,7 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public override bool Initialize() {
             Configuration = new ProjectConfiguration();
+            CreateDefaultProject();
             return true;
         }
 

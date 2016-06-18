@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace ns.Base.Configuration {
 
+    [DataContract]
     public class BaseConfiguration : IBaseConfiguration {
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using ns.Base.Plugins;
-using ns.Core;
-using ns.Core.Manager;
+﻿using ns.Communication.CommunicationModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,18 +10,18 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für AddToolNodeControl.xaml
     /// </summary>
     public partial class AddToolNodeControl : UserControl {
-        private Plugin _plugin;
+        public ToolCommunicationModel Model { get; private set; }
 
         public AddToolNodeControl() {
             InitializeComponent();
         }
 
-        public AddToolNodeControl(Plugin plugin) {
+        public AddToolNodeControl(ToolCommunicationModel model) {
             InitializeComponent();
             DescriptionTextBlock.Height = 0;
             DescriptionToggleButton.IsChecked = false;
-            DataContext = plugin;
-            _plugin = plugin;
+            DataContext = model;
+            Model = model;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
@@ -43,22 +41,19 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e) {
-            GuiManager guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            //GuiManager guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
+            //ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
 
-            Tool tool = _plugin as Tool;
-            if (tool == null) throw new NotSupportedException(string.Format("{0} is not supported!", _plugin.GetType()));
+            //if (guiManager.SelectedNode == null) {
+            //    if (projectManager.Configuration.Operations.Count > 0)
+            //        guiManager.SelectNode(projectManager.Configuration.Operations[0]);
+            //} else if (guiManager.SelectedNode is Tool) {
+            //    guiManager.SelectNode(guiManager.SelectedNode.Parent);
+            //}
 
-            if (guiManager.SelectedNode == null) {
-                if (projectManager.Configuration.Operations.Count > 0)
-                    guiManager.SelectNode(projectManager.Configuration.Operations[0]);
-            } else if (guiManager.SelectedNode is Tool) {
-                guiManager.SelectNode(guiManager.SelectedNode.Parent);
-            }
-
-            Tool toolCopy = new Tool(tool);
-            projectManager.Add(toolCopy, guiManager.SelectedNode as Operation);
-            guiManager.SelectNode(toolCopy);
+            //Tool toolCopy = new Tool(tool);
+            //projectManager.Add(toolCopy, guiManager.SelectedNode as Operation);
+            //guiManager.SelectNode(toolCopy);
         }
     }
 }

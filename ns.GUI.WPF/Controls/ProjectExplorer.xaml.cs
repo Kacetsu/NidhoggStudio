@@ -1,11 +1,11 @@
 ﻿using ns.Base;
 using ns.Base.Event;
-using ns.Base.Plugins;
-using ns.Core;
-using ns.Core.Manager;
+using ns.Communication.Client;
+using ns.Communication.CommunicationModels;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,8 +15,9 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für ProjectExplorer.xaml
     /// </summary>
     public partial class ProjectExplorer : UserControl {
-        private ProjectManager _projectManager;
-        private GuiManager _guiManager;
+        //private GuiManager _guiManager;
+
+        private Task _task;
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
 
@@ -24,7 +25,7 @@ namespace ns.GUI.WPF.Controls {
 
         public ProjectExplorer() {
             InitializeComponent();
-            this.Loaded += HandleLoaded;
+            Loaded += HandleLoaded;
         }
 
         private void OnConfigNode(Node node) {
@@ -32,28 +33,41 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void GenerateTree() {
-            if (_projectManager != null) {
-                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
-                //_projectManager.Loading += ProjectManagerLoading;
-            }
-            if (_projectManager != null) {
-                this.ContentGrid.Children.Clear();
+            //if (_projectManager != null) {
+            //    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            //    //_projectManager.Loading += ProjectManagerLoading;
+            //}
+            //if (_projectManager != null) {
+            //    this.ContentGrid.Children.Clear();
 
-                foreach (Operation operation in _projectManager.Configuration.Operations) {
-                    OperationNodeControl operationItem = new OperationNodeControl(operation);
+            //    foreach (Operation operation in _projectManager.Configuration.Operations) {
+            //        OperationNodeControl operationItem = new OperationNodeControl(operation);
+            //        RowDefinition rowDefinition = new RowDefinition();
+            //        rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            //        this.ContentGrid.RowDefinitions.Add(rowDefinition);
+            //        Grid.SetRow(operationItem, this.ContentGrid.Children.Count);
+            //        this.ContentGrid.Children.Add(operationItem);
+            //        foreach (Tool tool in operation.Childs.Where(c => c is Tool)) {
+            //            _guiManager.SelectNode(tool);
+            //        }
+
+            //        operationItem.UpdateChildControls();
+            //        operationItem.ConfigNodeHandlerChanged += OperationItem_ConfigNodeHandlerChanged;
+            //    }
+            //}
+
+            List<OperationCommunicationModel> operationModels = ClientCommunicationManager.ProjectService.GetProjectOperations();
+
+            ContentGrid.Dispatcher.BeginInvoke(new Action(() => {
+                foreach (OperationCommunicationModel operationModel in operationModels) {
+                    OperationNodeControl operationItem = new OperationNodeControl(operationModel);
                     RowDefinition rowDefinition = new RowDefinition();
                     rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-                    this.ContentGrid.RowDefinitions.Add(rowDefinition);
-                    Grid.SetRow(operationItem, this.ContentGrid.Children.Count);
-                    this.ContentGrid.Children.Add(operationItem);
-                    foreach (Tool tool in operation.Childs.Where(c => c is Tool)) {
-                        _guiManager.SelectNode(tool);
-                    }
-
-                    operationItem.UpdateChildControls();
-                    operationItem.ConfigNodeHandlerChanged += OperationItem_ConfigNodeHandlerChanged;
+                    ContentGrid.RowDefinitions.Add(rowDefinition);
+                    Grid.SetRow(operationItem, ContentGrid.Children.Count);
+                    ContentGrid.Children.Add(operationItem);
                 }
-            }
+            }));
         }
 
         private void OperationItem_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs e) {
@@ -61,26 +75,20 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
-            if (DesignerProperties.GetIsInDesignMode(this) == false) {
-                _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
-                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
 
-                if (_projectManager == null)
-                    throw new Exception("ProjectManager is NULL!");
+            //_projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
 
-                //_projectManager.OperationAddedEvent += HandleOperationCollectionChanged;
-                //_projectManager.OperationRemovedEvent += HandleOperationCollectionChanged;
-                //_projectManager.Loaded += HandleProjectLoaded;
-                GenerateTree();
-            }
-        }
-
-        private void HandleOperationCollectionChanged(object sender, Base.Event.ChildCollectionChangedEventArgs e) {
-            this.GenerateTree();
+            //if (_projectManager == null)
+            //    throw new Exception("ProjectManager is NULL!");
+            //_projectManager.Loaded += HandleProjectLoaded;
+            _task = new Task(GenerateTree);
+            _task.Start();
         }
 
         private void HandleProjectLoaded() {
-            this.GenerateTree();
+            GenerateTree();
         }
 
         private void ProjectManagerLoading() {

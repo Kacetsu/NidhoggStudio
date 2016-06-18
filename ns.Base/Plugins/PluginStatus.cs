@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins {
+
+    [DataContract]
     public enum PluginStatus {
+
+        [EnumMember]
         Started,
+
+        [EnumMember]
         Finished,
+
+        [EnumMember]
         Failed,
+
+        [EnumMember]
         Aborted,
+
+        [EnumMember]
         Unknown
     }
 }

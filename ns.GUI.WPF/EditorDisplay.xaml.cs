@@ -1,7 +1,6 @@
 ﻿using ns.Base;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Core;
 using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,8 +17,10 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für EditorDisplay.xaml
     /// </summary>
     public partial class EditorDisplay : UserControl, INotifyPropertyChanged {
-        private GuiManager _guiManager = null;
+
+        //private GuiManager _guiManager = null;
         private ImageProperty _lastImageProperty = null;
+
         private BitmapSource _bitmap = null;
         private List<OverlayRectangle> _rectangles;
         private double _imageWidth = 0;
@@ -89,10 +90,10 @@ namespace ns.GUI.WPF {
         }
 
         private void EditorDisplay_Loaded(object sender, RoutedEventArgs e) {
-            if (_guiManager == null) {
-                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-                _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
-            }
+            //if (_guiManager == null) {
+            //    _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
+            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
+            //}
         }
 
         private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {

@@ -1,12 +1,8 @@
 ﻿using ns.Base.Event;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Core;
-using ns.Core.Manager;
 using ns.GUI.WPF.Controls;
 using System;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,8 +18,7 @@ namespace ns.GUI.WPF {
         private bool _isDispatcherInactive = true;
 
         private Mutex _mutex = new Mutex();
-        private GuiManager _guiManager;
-        private ProjectManager _projectManager;
+        private FrontendManager _guiManager;
 
         public DisplayArea() {
             InitializeComponent();

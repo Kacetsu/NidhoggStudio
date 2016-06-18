@@ -1,17 +1,11 @@
-﻿using ns.Base;
-using ns.Core;
-using ns.Core.Manager;
-using ns.GUI.WPF.Controls;
+﻿using ns.GUI.WPF.Controls;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF {
 
@@ -92,21 +86,21 @@ namespace ns.GUI.WPF {
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void UpdateLog() {
-            if (CoreSystem.LogListener == null) return;
-            LogCollection.Clear();
-            foreach (Base.Log.LogData logData in CoreSystem.LogListener.LogEntries) {
-                AddLogEntry(null, new Base.Event.TraceListenerEventArgs(logData.Timestamp, logData.Message, logData.Category));
-            }
+            //if (CoreSystem.LogListener == null) return;
+            //LogCollection.Clear();
+            //foreach (Base.Log.LogData logData in CoreSystem.LogListener.LogEntries) {
+            //    AddLogEntry(null, new Base.Event.TraceListenerEventArgs(logData.Timestamp, logData.Message, logData.Category));
+            //}
         }
 
         private void LogView_Loaded(object sender, RoutedEventArgs e) {
             GuiHelper.DoubleAnimateControl(500, ProjectGrid, WidthProperty, TimeSpan.FromSeconds(0.3));
             GuiHelper.DoubleAnimateControl(60, LogHeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
-            if (CoreSystem.LogListener != null) {
-                UpdateLog();
-                CoreSystem.LogListener.traceListenerEvent += AddLogEntry;
-            }
+            //if (CoreSystem.LogListener != null) {
+            //    UpdateLog();
+            //    CoreSystem.LogListener.traceListenerEvent += AddLogEntry;
+            //}
         }
 
         private void AddLogEntry(object sender, Base.Event.TraceListenerEventArgs e) {

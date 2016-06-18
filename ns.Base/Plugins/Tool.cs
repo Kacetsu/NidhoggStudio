@@ -53,7 +53,6 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The category.
         /// </value>
-        [DataMember]
         public virtual string Category {
             get { return string.Empty; }
         }

@@ -29,7 +29,6 @@ namespace Nidhogg.Service {
     public partial class MainWindow : Window {
         private CommunicationManager _communicationManager;
         private SemaphoreSlim _serviceStopSignal = new SemaphoreSlim(0, 1);
-        //private Task _serviceTask;
 
         public MainWindow() {
             InitializeComponent();

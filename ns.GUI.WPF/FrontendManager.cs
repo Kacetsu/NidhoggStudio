@@ -1,18 +1,15 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Manager;
-using ns.Core;
+using ns.Communication.CommunicationModels;
 using System;
 using System.Threading;
 using System.Windows;
 
 namespace ns.GUI.WPF {
-    public class GuiManager : BaseManager {
 
-        public delegate void SelectionChangedHandler(object sender, NodeSelectionChangedEventArgs e);
-        public virtual event SelectionChangedHandler SelectedItemChanged;
-
-        private Node _selectedNode;
+    public class FrontendManager : BaseManager {
+        private object _selectedNode;
         private bool _isRunning = false;
 
         /// <summary>
@@ -22,7 +19,7 @@ namespace ns.GUI.WPF {
             get { return _isRunning; }
             set {
                 _isRunning = value;
-                OnPropertyChanged("IsRunning");
+                OnPropertyChanged();
             }
         }
 
@@ -33,36 +30,34 @@ namespace ns.GUI.WPF {
             get { return !_isRunning; }
             set {
                 _isRunning = !value;
-                OnPropertyChanged("IsNotRunning");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
-        /// Gets the selected node.
+        /// Gets or sets the selected node.
         /// </summary>
         /// <value>
         /// The selected node.
         /// </value>
-        public Node SelectedNode {
+        public object SelectedNode {
             get { return _selectedNode; }
-        }
+            set {
+                if (_selectedNode != null && _selectedNode != value) {
+                    ISelectable selectable = (_selectedNode as ISelectable);
+                    if (selectable != null) {
+                        selectable.IsSelected = false;
+                    }
+                } else {
+                    _selectedNode = value;
+                    ISelectable selectable = (_selectedNode as ISelectable);
+                    if (selectable != null) {
+                        selectable.IsSelected = true;
+                    }
 
-        /// <summary>
-        /// Selects the node.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        public void SelectNode(Node node) {
-            if (node == _selectedNode) return;
-            if (_selectedNode != null)
-                _selectedNode.IsSelected = false;
-
-            _selectedNode = node;
-
-            if (_selectedNode == null) return;
-            
-            _selectedNode.IsSelected = true;
-            if (SelectedItemChanged != null)
-                SelectedItemChanged(this, new NodeSelectionChangedEventArgs(node));
+                    OnPropertyChanged();
+                }
+            }
         }
 
         /// <summary>
@@ -73,11 +68,12 @@ namespace ns.GUI.WPF {
             ResourceDictionary dict = new ResourceDictionary();
             switch (Thread.CurrentThread.CurrentCulture.ToString()) {
                 case "de-DE":
-                    dict.Source = new Uri("/ns.GUI.WPF;component/Languages/de_DE.xaml", UriKind.Relative);
-                    break;
+                dict.Source = new Uri("/ns.GUI.WPF;component/Languages/de_DE.xaml", UriKind.Relative);
+                break;
+
                 default:
-                    dict.Source = new Uri("/ns.GUI.WPF;component/Languages/en_US.xaml", UriKind.Relative);
-                    break;
+                dict.Source = new Uri("/ns.GUI.WPF;component/Languages/en_US.xaml", UriKind.Relative);
+                break;
             }
             Application.Current.Resources.MergedDictionaries.Add(dict);
         }
@@ -85,8 +81,8 @@ namespace ns.GUI.WPF {
         public override bool Initialize() {
             base.Initialize();
 
-            CoreSystem.Processor.Started += ProcessorStarted;
-            CoreSystem.Processor.Stopped += ProcessorStopped;
+            //CoreSystem.Processor.Started += ProcessorStarted;
+            //CoreSystem.Processor.Stopped += ProcessorStopped;
 
             return true;
         }

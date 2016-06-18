@@ -1,7 +1,7 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Plugins;
-using ns.Core;
+using ns.Communication.CommunicationModels;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -15,38 +15,43 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für OperationNodeControl.xaml
     /// </summary>
     public partial class OperationNodeControl : UserControl {
-        private Operation _operation;
+        private OperationCommunicationModel _operationModel;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
-        private GuiManager _guiManager;
+        //private GuiManager _guiManager;
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
 
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
-        public OperationNodeControl(Operation operation) {
+        public OperationNodeControl(OperationCommunicationModel operationModel) {
             InitializeComponent();
-            DataContext = operation;
-            _operation = operation;
+            DataContext = operationModel;
+            _operationModel = operationModel;
             ContentList.Height = double.NaN;
             ContentToggleButton.IsChecked = true;
             _toolControls = new LockedObservableCollection<ToolNodeControl>();
             ContentList.ItemsSource = _toolControls;
-            _operation.Childs.CollectionChanged += Operation_Childs_CollectionChanged;
+            //_operationModel.Childs.CollectionChanged += Operation_Childs_CollectionChanged;
             ContentList.SelectionChanged += ContentList_SelectionChanged;
 
-            if (_guiManager == null)
-                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            //if (_guiManager == null)
+            //    _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
 
-            _guiManager.SelectNode(operation);
+            //_guiManager.SelectNode(operationModel);
+
+            Loaded += OperationNodeControl_Loaded;
+        }
+
+        private void OperationNodeControl_Loaded(object sender, RoutedEventArgs e) {
         }
 
         private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (_guiManager == null)
-                _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
+            //if (_guiManager == null)
+            //    _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains("GuiManager")) as GuiManager;
 
-            if (ContentList.SelectedItem is ToolNodeControl && (ContentList.SelectedItem as ToolNodeControl).Tool != null) {
-                _guiManager.SelectNode((ContentList.SelectedItem as ToolNodeControl).Tool);
-            }
+            //if (ContentList.SelectedItem is ToolNodeControl && (ContentList.SelectedItem as ToolNodeControl).Tool != null) {
+            //    _guiManager.SelectNode((ContentList.SelectedItem as ToolNodeControl).Tool);
+            //}
         }
 
         private void OnConfigNode(Node node) {
@@ -54,21 +59,21 @@ namespace ns.GUI.WPF.Controls {
         }
 
         public void UpdateChildControls() {
-            ContentList.Dispatcher.BeginInvoke(new Action(() => {
-                _toolControls.Clear();
-                List<ToolNodeControl> toolControls = new List<ToolNodeControl>();
+            //ContentList.Dispatcher.BeginInvoke(new Action(() => {
+            //    _toolControls.Clear();
+            //    List<ToolNodeControl> toolControls = new List<ToolNodeControl>();
 
-                foreach (Node child in _operation.Childs) {
-                    if (child is Tool) {
-                        Tool tool = child as Tool;
-                        ToolNodeControl toolNodeControl = new ToolNodeControl(tool);
-                        toolNodeControl.ConfigNodeHandlerChanged += ToolNodeControl_ConfigNodeHandlerChanged;
-                        toolControls.Add(toolNodeControl);
-                    }
-                }
+            //    foreach (Node child in _operationModel.Childs) {
+            //        if (child is Tool) {
+            //            Tool tool = child as Tool;
+            //            ToolNodeControl toolNodeControl = new ToolNodeControl(tool);
+            //            toolNodeControl.ConfigNodeHandlerChanged += ToolNodeControl_ConfigNodeHandlerChanged;
+            //            toolControls.Add(toolNodeControl);
+            //        }
+            //    }
 
-                _toolControls.AddItems(toolControls);
-            }));
+            //    _toolControls.AddItems(toolControls);
+            //}));
         }
 
         private void ToolNodeControl_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs e) {

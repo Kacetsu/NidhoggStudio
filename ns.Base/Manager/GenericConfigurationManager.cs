@@ -17,6 +17,12 @@ namespace ns.Base.Manager {
         public T Configuration { get; set; }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GenericConfigurationManager{T}"/> class.
+        /// </summary>
+        public GenericConfigurationManager() : base() {
+        }
+
+        /// <summary>
         /// Load the manager from the given path.
         /// </summary>
         /// <param name="path"></param>

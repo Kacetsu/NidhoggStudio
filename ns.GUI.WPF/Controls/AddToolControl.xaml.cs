@@ -1,8 +1,8 @@
-﻿using ns.Base.Plugins;
-using ns.Core;
-using ns.Core.Manager;
-using System.Diagnostics;
-using System.Linq;
+﻿using ns.Communication.Client;
+using ns.Communication.CommunicationModels;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,16 +12,19 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für AddToolControl.xaml
     /// </summary>
     public partial class AddToolControl : UserControl {
-        private GuiManager _guiManager;
-        private ProjectManager _projectManager;
+        private Task _task;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddToolControl"/> class.
+        /// </summary>
         public AddToolControl() {
             InitializeComponent();
-            this.Loaded += HandleLoaded;
+            Loaded += HandleLoaded;
+            Unloaded += HandleUnloaded;
         }
 
-        private void AddToolToControl(Tool tool) {
-            AddToolNodeControl nodeControl = new AddToolNodeControl(tool);
+        private void AddToolToControl(ToolCommunicationModel model) {
+            AddToolNodeControl nodeControl = new AddToolNodeControl(model);
             int childCount = ToolGrid.Children.Count;
             RowDefinition rowDefinition = new RowDefinition();
             rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
@@ -30,48 +33,50 @@ namespace ns.GUI.WPF.Controls {
             ToolGrid.Children.Add(nodeControl);
         }
 
-        /// <summary>
-        /// Handles the loaded.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void HandleLoaded(object sender, RoutedEventArgs e) {
-            PluginManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
-            _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+        private void GeneratePluginList() {
+            CategoryComboBox.Dispatcher.Invoke(new Action(() => {
+                CategoryComboBox.Items.Clear();
+                CategoryComboBox.Items.Add("All");
+                CategoryComboBox.SelectedIndex = 0;
+            }));
 
-            if (manager == null) {
-                Base.Log.Trace.WriteLine("Could not find ToolManager instance in CoreSystem!", TraceEventType.Error);
-                return;
-            }
+            List<ToolCommunicationModel> models = ClientCommunicationManager.PluginService.GetAvailableTools();
 
-            if (_guiManager == null) {
-                Base.Log.Trace.WriteLine("Could not find NodeSelectionManager instance in CoreSystem!", TraceEventType.Error);
-                return;
-            }
-
-            CategoryComboBox.Items.Clear();
-            CategoryComboBox.Items.Add("All");
-
-            foreach (Tool tool in manager.Nodes.Where(n => n is Tool)) {
-                if (!CategoryComboBox.Items.Contains(tool?.Category)) {
-                    CategoryComboBox.Items.Add(tool?.Category);
+            ToolGrid.Dispatcher.BeginInvoke(new Action(() => {
+                foreach (ToolCommunicationModel model in models) {
+                    AddToolToControl(model);
                 }
-            }
+            }));
 
-            CategoryComboBox.SelectedIndex = 0;
+            CategoryComboBox.Dispatcher.BeginInvoke(new Action(() => {
+                foreach (ToolCommunicationModel model in models) {
+                    if (CategoryComboBox.Items.Contains(model.Category)) continue;
+
+                    CategoryComboBox.Items.Add(model.Category);
+                }
+            }));
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e) {
+            _task = new Task(GeneratePluginList);
+            _task.Start();
+        }
+
+        private void HandleUnloaded(object sender, RoutedEventArgs e) {
+            _task?.Wait(TimeSpan.FromSeconds(10));
         }
 
         private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            PluginManager manager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            string category = CategoryComboBox.SelectedItem as string;
+            foreach (AddToolNodeControl control in ToolGrid.Children) {
+                control.Visibility = Visibility.Visible;
+            }
 
-            ToolGrid.Children.Clear();
+            if (category == "All") return;
 
-            foreach (Tool tool in manager.Nodes.Where(n => n is Tool)) {
-                if (tool.Category.Equals(CategoryComboBox.SelectedItem)) {
-                    AddToolToControl(tool);
-                } else if (CategoryComboBox.SelectedIndex == 0) {
-                    AddToolToControl(tool);
+            foreach (AddToolNodeControl control in ToolGrid.Children) {
+                if (!control.Model.Category.Equals(category)) {
+                    control.Visibility = Visibility.Collapsed;
                 }
             }
         }

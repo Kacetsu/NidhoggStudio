@@ -11,11 +11,14 @@ namespace ns.Base.Plugins {
     /// <summary>
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
     /// </summary>
-    [DataContract(IsReference = true), KnownType(typeof(Operation)), KnownType(typeof(Tool))]
+    [DataContract(IsReference = true), KnownType(typeof(Operation)), KnownType(typeof(Tool)), KnownType(typeof(Device))]
     public class Plugin : Node, IPlugin, ICloneable {
         private string _version = string.Empty;
+
         private string _assemblyFile = string.Empty;
+
         private string _displayName = string.Empty;
+
         private PluginStatus _status = PluginStatus.Unknown;
 
         /// <summary>
@@ -95,6 +98,7 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The status.
         /// </value>
+        [DataMember]
         public PluginStatus Status {
             get { return _status; }
             set {

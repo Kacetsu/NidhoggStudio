@@ -1,11 +1,23 @@
 ﻿using ns.Base.Plugins;
 using ns.Communication.CommunicationModels;
+using ns.Core;
+using ns.Core.Manager;
 using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace ns.Communication.Services {
 
-    public partial class CommunicationService : IProjectService {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
+    public class ProjectService : IProjectService {
+        private ProjectManager _projectManager;
+        private PluginManager _pluginManager;
+
+        public INotificationServiceCallbacks Proxy { get { return OperationContext.Current.GetCallbackChannel<INotificationServiceCallbacks>(); } }
+
+        public ProjectService() {
+            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+        }
 
         /// <summary>
         /// Gets all operations.
@@ -49,6 +61,7 @@ namespace ns.Communication.Services {
 
             Tool copyTool = new Tool(tool);
             operation.AddChild(copyTool);
+            Proxy.OnToolAdded(new ToolCommunicationModel(copyTool));
         }
     }
 }

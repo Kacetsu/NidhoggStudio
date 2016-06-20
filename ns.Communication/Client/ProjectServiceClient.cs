@@ -6,14 +6,14 @@ using System.ServiceModel.Channels;
 
 namespace ns.Communication.Client {
 
-    public class ProjectServiceClient : GenericServiceClient<IProjectService>, IProjectService {
+    public class ProjectServiceClient : GenericDuplexServiceClient<IProjectService>, IProjectService {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectServiceClient"/> class.
         /// </summary>
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="binding">The binding.</param>
-        public ProjectServiceClient(EndpointAddress endpoint, Binding binding) : base(endpoint, binding) {
+        public ProjectServiceClient(EndpointAddress endpoint, Binding binding, NotificationServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
         }
 
         /// <summary>

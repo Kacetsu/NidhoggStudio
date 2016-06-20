@@ -1,6 +1,4 @@
-﻿using ns.Base;
-using ns.Base.Event;
-using ns.Base.Manager;
+﻿using ns.Base.Manager;
 using ns.Communication.CommunicationModels;
 using System;
 using System.Threading;
@@ -9,28 +7,37 @@ using System.Windows;
 namespace ns.GUI.WPF {
 
     public class FrontendManager : BaseManager {
-        private object _selectedNode;
-        private bool _isRunning = false;
+        private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
+        private static object _selectedModel;
+        private static bool _isRunning = false;
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
+        public static FrontendManager Instance { get { return _lazyInstance.Value; } }
 
         /// <summary>
         /// Gets or sets if the Processor is running.
         /// </summary>
-        public bool IsRunning {
+        public static bool IsRunning {
             get { return _isRunning; }
             set {
                 _isRunning = value;
-                OnPropertyChanged();
+                Instance.OnPropertyChanged();
             }
         }
 
         /// <summary>
         /// Used to simplify GUI binding usage.
         /// </summary>
-        public bool IsNotRunning {
+        public static bool IsNotRunning {
             get { return !_isRunning; }
             set {
                 _isRunning = !value;
-                OnPropertyChanged();
+                Instance.OnPropertyChanged();
             }
         }
 
@@ -40,24 +47,30 @@ namespace ns.GUI.WPF {
         /// <value>
         /// The selected node.
         /// </value>
-        public object SelectedNode {
-            get { return _selectedNode; }
+        public static object SelectedModel {
+            get { return _selectedModel; }
             set {
-                if (_selectedNode != null && _selectedNode != value) {
-                    ISelectable selectable = (_selectedNode as ISelectable);
+                if (_selectedModel != null && _selectedModel != value) {
+                    ISelectable selectable = (_selectedModel as ISelectable);
                     if (selectable != null) {
                         selectable.IsSelected = false;
                     }
                 } else {
-                    _selectedNode = value;
-                    ISelectable selectable = (_selectedNode as ISelectable);
+                    _selectedModel = value;
+                    ISelectable selectable = (_selectedModel as ISelectable);
                     if (selectable != null) {
                         selectable.IsSelected = true;
                     }
 
-                    OnPropertyChanged();
+                    Instance.OnPropertyChanged();
                 }
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FrontendManager"/> class.
+        /// </summary>
+        public FrontendManager() : base() {
         }
 
         /// <summary>

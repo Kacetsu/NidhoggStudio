@@ -16,6 +16,12 @@ namespace ns.Communication.Configuration {
         [DataMember]
         public StringProperty Address { get; set; } = new StringProperty(nameof(Address), "net.tcp://localhost:8080/");
 
+        public string PluginServiceAddress { get { return string.Format("{0}plugin", Address.Value); } }
+
+        public string ProjectServiceAddress { get { return string.Format("{0}project", Address.Value); } }
+
+        public string NotificationServiceAddress { get { return string.Format("{0}notification", Address.Value); } }
+
         /// <summary>
         /// Gets the maximum size of the received message.
         /// </summary>

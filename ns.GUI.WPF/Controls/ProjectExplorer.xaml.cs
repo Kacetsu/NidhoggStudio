@@ -67,6 +67,13 @@ namespace ns.GUI.WPF.Controls {
                     Grid.SetRow(operationItem, ContentGrid.Children.Count);
                     ContentGrid.Children.Add(operationItem);
                 }
+
+                if (ContentGrid.Children.Count > 0) {
+                    OperationNodeControl operationControl = ContentGrid.Children[0] as OperationNodeControl;
+                    if (operationControl != null) {
+                        FrontendManager.SelectedModel = operationControl.Model;
+                    }
+                }
             }));
         }
 

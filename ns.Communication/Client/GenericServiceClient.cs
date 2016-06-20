@@ -11,7 +11,10 @@ namespace ns.Communication.Client {
     public class GenericServiceClient<T> : IDisposable where T : class {
         private bool disposed = false;
 
-        protected T Channel { get; private set; }
+        public T Channel { get; protected set; }
+
+        public GenericServiceClient() {
+        }
 
         protected GenericServiceClient(EndpointAddress endpoint, Binding binding) {
             Channel = ChannelFactory<T>.CreateChannel(binding, endpoint);

@@ -19,6 +19,8 @@ namespace ns.GUI.WPF.Controls {
         private LockedObservableCollection<ToolNodeControl> _toolControls;
         //private GuiManager _guiManager;
 
+        public OperationCommunicationModel Model { get { return _operationModel; } }
+
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
 
         public event ConfigNodeHandler ConfigNodeHandlerChanged;

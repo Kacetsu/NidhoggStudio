@@ -4,20 +4,17 @@ using ns.Core;
 using ns.Core.Manager;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 
 namespace ns.Communication.Services {
 
-    public partial class CommunicationService : IPluginService {
-        private ProjectManager _projectManager;
+    public class PluginService : IPluginService {
         private PluginManager _pluginManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
         /// </summary>
-        public CommunicationService() {
+        public PluginService() {
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using ns.Base.Manager;
 using ns.Communication.Configuration;
+using ns.Communication.Services;
 using System;
 using System.ServiceModel;
 
@@ -33,6 +34,14 @@ namespace ns.Communication.Client {
         public static ProjectServiceClient ProjectService { get; private set; }
 
         /// <summary>
+        /// Gets the notification service.
+        /// </summary>
+        /// <value>
+        /// The notification service.
+        /// </value>
+        //public static NotificationServiceClient NotificationService { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ClientCommunicationManager"/> class.
         /// </summary>
         public ClientCommunicationManager() : base() {
@@ -49,8 +58,8 @@ namespace ns.Communication.Client {
                 NetTcpBinding binding = new NetTcpBinding();
                 binding.MaxReceivedMessageSize = Configuration.MaxReceivedMessageSize;
 
-                PluginService = new PluginServiceClient(new EndpointAddress(Configuration.Address.Value), binding);
-                ProjectService = new ProjectServiceClient(new EndpointAddress(Configuration.Address.Value), binding);
+                PluginService = new PluginServiceClient(new EndpointAddress(Configuration.PluginServiceAddress), binding);
+                ProjectService = new ProjectServiceClient(new EndpointAddress(Configuration.ProjectServiceAddress), binding, new NotificationServiceCallbacks());
             } catch (Exception) {
                 throw;
             }
@@ -64,6 +73,7 @@ namespace ns.Communication.Client {
         /// <returns></returns>
         public override bool Finalize() {
             PluginService?.Dispose();
+            ProjectService?.Dispose();
 
             return base.Finalize();
         }

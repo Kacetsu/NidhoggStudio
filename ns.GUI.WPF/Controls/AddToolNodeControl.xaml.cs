@@ -1,4 +1,5 @@
-﻿using ns.Communication.CommunicationModels;
+﻿using ns.Communication.Client;
+using ns.Communication.CommunicationModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,6 +55,11 @@ namespace ns.GUI.WPF.Controls {
             //Tool toolCopy = new Tool(tool);
             //projectManager.Add(toolCopy, guiManager.SelectedNode as Operation);
             //guiManager.SelectNode(toolCopy);
+
+            OperationCommunicationModel operationModel = FrontendManager.SelectedModel as OperationCommunicationModel;
+            if (operationModel != null) {
+                ClientCommunicationManager.ProjectService.AddToolToProject(Model, operationModel.UID);
+            }
         }
     }
 }

@@ -4,13 +4,13 @@ using System.ServiceModel;
 
 namespace ns.Communication.Services {
 
-    [ServiceContract(SessionMode = SessionMode.Allowed), ServiceKnownType(nameof(KnownTypesProvider.GetKnownTypes), typeof(KnownTypesProvider))]
+    [ServiceContract(SessionMode = SessionMode.Required, CallbackContract = typeof(INotificationServiceCallbacks)), ServiceKnownType(nameof(KnownTypesProvider.GetKnownTypes), typeof(KnownTypesProvider))]
     public interface IProjectService {
 
         [OperationContract]
         List<OperationCommunicationModel> GetProjectOperations();
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void AddToolToProject(ToolCommunicationModel model, string parentUID);
     }
 }

@@ -13,8 +13,10 @@ namespace ns.Communication {
     public class CommunicationManager : GenericConfigurationManager<CommunicationConfiguration>, IGenericConfigurationManager<CommunicationConfiguration> {
         private static Lazy<CommunicationManager> _lazyInstance = new Lazy<CommunicationManager>(() => new CommunicationManager());
 
-        private Task _serviceTask;
-        private SemaphoreSlim _serviceStopSignal = new SemaphoreSlim(0, 1);
+        private Task _pluginServiceTask;
+        private Task _projectServiceTask;
+        private SemaphoreSlim _pluginServiceStopSignal = new SemaphoreSlim(0, 1);
+        private SemaphoreSlim _projectServiceStopSignal = new SemaphoreSlim(0, 1);
         private Uri _uri;
 
         /// <summary>
@@ -41,8 +43,10 @@ namespace ns.Communication {
             base.Initialize();
             try {
                 _uri = new Uri(Configuration.Address.Value);
-                _serviceTask = new Task(StartService);
-                _serviceTask.Start();
+                _pluginServiceTask = new Task(StartPluginService);
+                _projectServiceTask = new Task(StartProjectService);
+                _pluginServiceTask.Start();
+                _projectServiceTask.Start();
             } catch (Exception ex) when (ex is ArgumentNullException || ex is ObjectDisposedException || ex is InvalidOperationException) {
                 Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
                 return false;
@@ -56,8 +60,11 @@ namespace ns.Communication {
         /// <returns></returns>
         public override bool Finalize() {
             try {
-                _serviceStopSignal.Release();
-                _serviceStopSignal.Wait();
+                _pluginServiceStopSignal.Release();
+                _projectServiceStopSignal.Release();
+
+                _pluginServiceStopSignal.Wait();
+                _projectServiceStopSignal.Wait();
             } catch (Exception ex) when (ex is ObjectDisposedException || ex is SemaphoreFullException) {
                 Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
                 return false;
@@ -77,21 +84,36 @@ namespace ns.Communication {
             return smb;
         }
 
-        private void StartService() {
-            Uri baseAddress = new Uri(Configuration.Address.Value);
+        private void StartPluginService() {
+            Uri baseAddress = new Uri(Configuration.PluginServiceAddress);
 
             // Create the ServiceHost.
-            using (ServiceHost host = new ServiceHost(typeof(CommunicationService), baseAddress)) {
+            using (ServiceHost host = new ServiceHost(typeof(PluginService), baseAddress)) {
                 NetTcpBinding binding = CreateNetTcpBinding();
                 host.AddServiceEndpoint(typeof(IPluginService), binding, baseAddress);
-                host.AddServiceEndpoint(typeof(IProjectService), binding, baseAddress);
                 host.Description.Behaviors.Add(CreateServiceMetadataBehavior());
                 host.Open();
-                _serviceStopSignal.Wait();
+                _pluginServiceStopSignal.Wait();
                 host.Close();
             }
 
-            _serviceStopSignal = new SemaphoreSlim(0, 1);
+            _pluginServiceStopSignal = new SemaphoreSlim(0, 1);
+        }
+
+        private void StartProjectService() {
+            Uri baseAddress = new Uri(Configuration.ProjectServiceAddress);
+
+            // Create the ServiceHost.
+            using (ServiceHost host = new ServiceHost(typeof(ProjectService), baseAddress)) {
+                NetTcpBinding binding = CreateNetTcpBinding();
+                host.AddServiceEndpoint(typeof(IProjectService), binding, baseAddress);
+                host.Description.Behaviors.Add(CreateServiceMetadataBehavior());
+                host.Open();
+                _projectServiceStopSignal.Wait();
+                host.Close();
+            }
+
+            _projectServiceStopSignal = new SemaphoreSlim(0, 1);
         }
     }
 }

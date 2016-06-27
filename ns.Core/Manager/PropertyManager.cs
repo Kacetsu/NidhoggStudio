@@ -10,14 +10,9 @@ using System.Linq;
 namespace ns.Core.Manager {
 
     public class PropertyManager : NodeManager<Property> {
-        private List<Property> _properties = new List<Property>();
         private DataStorageManager _dataStorageManager;
         private PluginManager _pluginManager;
-
-        public override bool Initialize() {
-            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
-            return _pluginManager != null;
-        }
+        private List<Property> _properties = new List<Property>();
 
         /// <summary>
         /// Adds the specified node.
@@ -32,7 +27,7 @@ namespace ns.Core.Manager {
                     }
 
                     DeviceProperty deviceProperty = node as DeviceProperty;
-                    deviceProperty.AddDeviceList(devices.DeepClone());
+                    deviceProperty.Value = devices.DeepClone();
                 }
 
                 if (node is Property) {
@@ -49,31 +44,6 @@ namespace ns.Core.Manager {
                 Base.Log.Trace.WriteLine("Property added: " + node.ToString(), TraceEventType.Verbose);
                 OnNodeAdded(node);
             }
-        }
-
-        private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "IsMonitored") {
-                if (_dataStorageManager == null)
-                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
-
-                Property property = sender as Property;
-                if (property.IsMonitored)
-                    _dataStorageManager.Add(property);
-                else
-                    _dataStorageManager.Remove(property);
-            }
-        }
-
-        /// <summary>
-        /// Removes the specified node.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        public override void Remove(Property node) {
-            foreach (Property child in node.Childs.Where(p => p is Property)) {
-                Remove(child);
-            }
-
-            base.Remove(node);
         }
 
         /// <summary>
@@ -135,6 +105,23 @@ namespace ns.Core.Manager {
             return result;
         }
 
+        public override bool Initialize() {
+            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            return _pluginManager != null;
+        }
+
+        /// <summary>
+        /// Removes the specified node.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        public override void Remove(Property node) {
+            foreach (Property child in node.Childs.Where(p => p is Property)) {
+                Remove(child);
+            }
+
+            base.Remove(node);
+        }
+
         /// <summary>
         /// Gets the target properties.
         /// </summary>
@@ -158,6 +145,19 @@ namespace ns.Core.Manager {
             }
 
             return properties;
+        }
+
+        private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "IsMonitored") {
+                if (_dataStorageManager == null)
+                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
+
+                Property property = sender as Property;
+                if (property.IsMonitored)
+                    _dataStorageManager.Add(property);
+                else
+                    _dataStorageManager.Remove(property);
+            }
         }
     }
 }

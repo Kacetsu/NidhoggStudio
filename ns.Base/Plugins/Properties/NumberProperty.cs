@@ -64,6 +64,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The maximum.
         /// </value>
+        [DataMember]
         public T Max { get; set; }
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The minimum.
         /// </value>
+        [DataMember]
         public T Min { get; set; }
 
         /// <summary>
@@ -88,6 +90,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The tolerance.
         /// </value>
+        [DataMember]
         public Tolerance<T> Tolerance { get; set; }
 
         /// <summary>

@@ -1,10 +1,14 @@
 ﻿using ns.Base.Plugins;
+using ns.Base.Plugins.Properties;
+using ns.Communication.CommunicationModels.Properties;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace ns.Communication.CommunicationModels {
 
     [DataContract]
-    public class ToolCommunicationModel : GenericCommunicationModel<Tool>, IGenericCommunicationModel<Tool>, IPluginCommunicationModel, ISelectable {
+    public class ToolModel : GenericModel<Tool>, IGenericModel<Tool>, IToolModel, IConfigurableModel {
 
         /// <summary>
         /// Gets the display name.
@@ -52,15 +56,38 @@ namespace ns.Communication.CommunicationModels {
         public string Version { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToolCommunicationModel"/> class.
+        /// Gets the parent uid.
+        /// </summary>
+        /// <value>
+        /// The parent uid.
+        /// </value>
+        [DataMember]
+        public string ParentUID { get; private set; }
+
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <value>
+        /// The properties.
+        /// </value>
+        [DataMember]
+        public List<PropertyModel> Properties { get; private set; } = new List<PropertyModel>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToolModel"/> class.
         /// </summary>
         /// <param name="tool">The tool.</param>
-        public ToolCommunicationModel(Tool tool) : base(tool) {
+        public ToolModel(Tool tool) : base(tool) {
             Category = tool.Category;
             Status = tool.Status;
             DisplayName = tool.DisplayName;
             Description = tool.Description;
             Version = tool.Version;
+            ParentUID = tool.Parent?.UID;
+
+            foreach (Property property in tool.Childs.Where(p => p is Property)) {
+                Properties.Add(new PropertyModel(property));
+            }
         }
     }
 }

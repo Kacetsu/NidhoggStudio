@@ -1,16 +1,20 @@
 ﻿using ns.Communication.CommunicationModels;
+using ns.Communication.Services.Callbacks;
 using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace ns.Communication.Services {
 
-    [ServiceContract(SessionMode = SessionMode.Required, CallbackContract = typeof(INotificationServiceCallbacks)), ServiceKnownType(nameof(KnownTypesProvider.GetKnownTypes), typeof(KnownTypesProvider))]
+    [ServiceContract(SessionMode = SessionMode.Required, CallbackContract = typeof(IProjectServiceCallbacks)), ServiceKnownType(nameof(KnownTypesProvider.GetKnownTypes), typeof(KnownTypesProvider))]
     public interface IProjectService {
 
         [OperationContract]
-        List<OperationCommunicationModel> GetProjectOperations();
+        OperationModel[] GetOperations();
 
         [OperationContract(IsOneWay = true)]
-        void AddToolToProject(ToolCommunicationModel model, string parentUID);
+        void AddToolToProject(ToolModel model, string parentUID);
+
+        [OperationContract]
+        void ChangePropertyValue(object newValue, string propertyUID);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ns.Base.Manager;
 using ns.Communication.Configuration;
 using ns.Communication.Services;
+using ns.Communication.Services.Callbacks;
 using System;
 using System.ServiceModel;
 
@@ -59,7 +60,7 @@ namespace ns.Communication.Client {
                 binding.MaxReceivedMessageSize = Configuration.MaxReceivedMessageSize;
 
                 PluginService = new PluginServiceClient(new EndpointAddress(Configuration.PluginServiceAddress), binding);
-                ProjectService = new ProjectServiceClient(new EndpointAddress(Configuration.ProjectServiceAddress), binding, new NotificationServiceCallbacks());
+                ProjectService = new ProjectServiceClient(new EndpointAddress(Configuration.ProjectServiceAddress), binding, new ProjectServiceCallbacks());
             } catch (Exception) {
                 throw;
             }

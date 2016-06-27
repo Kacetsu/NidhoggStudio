@@ -16,8 +16,12 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void ProjectManager_AddAndSaveOperation() {
+            PluginManager pluginManager = new PluginManager();
+            pluginManager.Initialize();
+            CoreSystem.Managers.Add(pluginManager);
             ProjectManager projectManager = new ProjectManager();
             Assert.IsTrue(projectManager.Initialize());
+            projectManager.CreateDefaultProject();
 
             projectManager.Add(new Base.Plugins.Operation("DummyOperation"));
             using (MemoryStream stream = new MemoryStream()) {

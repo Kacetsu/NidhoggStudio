@@ -1,8 +1,10 @@
 ﻿using ns.Base.Manager;
 using ns.Communication.CommunicationModels;
+using ns.GUI.WPF.Events;
 using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ns.GUI.WPF {
 
@@ -10,6 +12,10 @@ namespace ns.GUI.WPF {
         private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
         private static object _selectedModel;
         private static bool _isRunning = false;
+
+        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
+
+        public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         /// <summary>
         /// Gets the instance.
@@ -51,13 +57,13 @@ namespace ns.GUI.WPF {
             get { return _selectedModel; }
             set {
                 if (_selectedModel != null && _selectedModel != value) {
-                    ISelectable selectable = (_selectedModel as ISelectable);
+                    ISelectableModel selectable = (_selectedModel as ISelectableModel);
                     if (selectable != null) {
                         selectable.IsSelected = false;
                     }
                 } else {
                     _selectedModel = value;
-                    ISelectable selectable = (_selectedModel as ISelectable);
+                    ISelectableModel selectable = (_selectedModel as ISelectableModel);
                     if (selectable != null) {
                         selectable.IsSelected = true;
                     }
@@ -91,6 +97,10 @@ namespace ns.GUI.WPF {
             Application.Current.Resources.MergedDictionaries.Add(dict);
         }
 
+        /// <summary>
+        /// Initialize the instance of the manager.
+        /// </summary>
+        /// <returns></returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -98,6 +108,10 @@ namespace ns.GUI.WPF {
             //CoreSystem.Processor.Stopped += ProcessorStopped;
 
             return true;
+        }
+
+        public static void OnNodeConfigurationClicked(INodeControl control) {
+            Instance.ConfigNodeHandlerChanged?.Invoke(control, new NodeSelectionChangedEventArgs<object>(control.Model));
         }
 
         private void ProcessorStarted() {

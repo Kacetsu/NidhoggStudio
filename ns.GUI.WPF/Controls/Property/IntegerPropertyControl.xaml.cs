@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
+using ns.Communication.Client;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -73,6 +74,8 @@ namespace ns.GUI.WPF.Controls.Property {
                 int newValue = currentValue + step;
                 if (newValue > _property.Max) newValue = _property.Max;
                 else if (newValue < _property.Min) newValue = _property.Min;
+
+                ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.UID);
 
                 StringValue = newValue.ToString();
                 _property.Value = newValue;

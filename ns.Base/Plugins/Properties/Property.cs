@@ -67,6 +67,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets or sets if the property is used as output.
         /// </summary>
+        [DataMember]
         public bool IsOutput {
             get { return _isOutput; }
             set {

@@ -1,6 +1,6 @@
 ﻿namespace ns.Communication.CommunicationModels {
 
-    public interface ISelectable {
+    public interface ISelectableModel {
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is selected.

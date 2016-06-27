@@ -21,11 +21,11 @@ namespace ns.Communication.Services {
         /// Gets the available plugins.
         /// </summary>
         /// <returns></returns>
-        public List<PluginCommunicationModel> GetAvailablePlugins() {
-            List<PluginCommunicationModel> result = new List<PluginCommunicationModel>();
+        public List<PluginModel> GetAvailablePlugins() {
+            List<PluginModel> result = new List<PluginModel>();
 
             foreach (Plugin plugin in _pluginManager.Nodes) {
-                result.Add(new PluginCommunicationModel(plugin));
+                result.Add(new PluginModel(plugin));
             }
 
             return result;
@@ -35,11 +35,11 @@ namespace ns.Communication.Services {
         /// Gets the available tools.
         /// </summary>
         /// <returns></returns>
-        public List<ToolCommunicationModel> GetAvailableTools() {
-            List<ToolCommunicationModel> result = new List<ToolCommunicationModel>();
+        public List<ToolModel> GetAvailableTools() {
+            List<ToolModel> result = new List<ToolModel>();
 
             foreach (Tool tool in _pluginManager.Nodes.Where(t => t is Tool)) {
-                result.Add(new ToolCommunicationModel(tool));
+                result.Add(new ToolModel(tool));
             }
 
             return result;

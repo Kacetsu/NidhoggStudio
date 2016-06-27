@@ -1,10 +1,12 @@
 ﻿using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Properties;
 using ns.Core.Configuration;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
@@ -65,6 +67,13 @@ namespace ns.Core.Manager {
 
             if (Configuration.Operations.Contains(operation)) throw new OperationAlreadyExistsException(operation.Name);
 
+            PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+
+            if (pluginManager == null) {
+                throw new ManagerInitialisationFailedException(nameof(pluginManager));
+            }
+
+            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
             Configuration.Operations.Add(operation);
         }
 
@@ -128,6 +137,41 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
+        /// Finds the tool.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public Tool FindTool(string uid) {
+            foreach (Operation operation in Configuration.Operations) {
+                Tool tool = operation.Childs.Find(t => t.UID.Equals(uid)) as Tool;
+                return tool;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the property.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public Property FindProperty(string uid) {
+            Property property = null;
+            foreach (Operation operation in Configuration.Operations) {
+                property = operation.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                if (property != null) {
+                    break;
+                }
+                foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
+                    property = tool.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                    if (property != null) {
+                        break;
+                    }
+                }
+            }
+            return property;
+        }
+
+        /// <summary>
         /// Creates the default project.
         /// </summary>
         public void CreateDefaultProject() {
@@ -147,7 +191,7 @@ namespace ns.Core.Manager {
                 Add(device, operation);
             }
 
-            Configuration.Operations.Add(operation);
+            Add(operation);
         }
 
         /// <summary>

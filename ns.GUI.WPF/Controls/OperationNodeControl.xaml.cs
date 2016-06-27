@@ -2,8 +2,10 @@
 using ns.Base.Event;
 using ns.Base.Plugins;
 using ns.Communication.CommunicationModels;
+using ns.GUI.WPF.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -14,18 +16,14 @@ namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für OperationNodeControl.xaml
     /// </summary>
-    public partial class OperationNodeControl : UserControl {
-        private OperationCommunicationModel _operationModel;
+    public partial class OperationNodeControl : UserControl, INodeControl {
+        private OperationModel _operationModel;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
         //private GuiManager _guiManager;
 
-        public OperationCommunicationModel Model { get { return _operationModel; } }
+        public object Model { get { return _operationModel; } }
 
-        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
-
-        public event ConfigNodeHandler ConfigNodeHandlerChanged;
-
-        public OperationNodeControl(OperationCommunicationModel operationModel) {
+        public OperationNodeControl(OperationModel operationModel) {
             InitializeComponent();
             DataContext = operationModel;
             _operationModel = operationModel;
@@ -45,6 +43,7 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void OperationNodeControl_Loaded(object sender, RoutedEventArgs e) {
+            UpdateChildControls();
         }
 
         private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -56,30 +55,19 @@ namespace ns.GUI.WPF.Controls {
             //}
         }
 
-        private void OnConfigNode(Node node) {
-            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs(node));
+        private void UpdateChildControls() {
+            ContentList.Dispatcher.BeginInvoke(new Action(() => {
+                _toolControls.Clear();
+                foreach (ToolModel toolModel in _operationModel.ChildTools.Where(t => t is ToolModel)) {
+                    ToolNodeControl toolNodeControl = new ToolNodeControl(toolModel);
+                    _toolControls.Add(toolNodeControl);
+                }
+            }));
         }
 
-        public void UpdateChildControls() {
-            //ContentList.Dispatcher.BeginInvoke(new Action(() => {
-            //    _toolControls.Clear();
-            //    List<ToolNodeControl> toolControls = new List<ToolNodeControl>();
-
-            //    foreach (Node child in _operationModel.Childs) {
-            //        if (child is Tool) {
-            //            Tool tool = child as Tool;
-            //            ToolNodeControl toolNodeControl = new ToolNodeControl(tool);
-            //            toolNodeControl.ConfigNodeHandlerChanged += ToolNodeControl_ConfigNodeHandlerChanged;
-            //            toolControls.Add(toolNodeControl);
-            //        }
-            //    }
-
-            //    _toolControls.AddItems(toolControls);
-            //}));
-        }
-
-        private void ToolNodeControl_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs e) {
-            OnConfigNode(e.SelectedNode);
+        public void UpdateChildControls(IEnumerable<ToolModel> toolModels) {
+            (Model as IOperationModel).ChildTools.AddRange(toolModels);
+            UpdateChildControls();
         }
 
         private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
@@ -92,14 +80,18 @@ namespace ns.GUI.WPF.Controls {
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
             ContentList.Height = ContentList.ActualHeight;
-            this.ContentToggleButton.IsEnabled = false;
+            ContentToggleButton.IsEnabled = false;
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
             animation.Completed += delegate (object s, EventArgs ev) {
-                this.ContentList.Height = 0;
-                this.ContentList.ApplyAnimationClock(HeightProperty, null);
-                this.ContentToggleButton.IsEnabled = true;
+                ContentList.Height = 0;
+                ContentList.ApplyAnimationClock(HeightProperty, null);
+                ContentToggleButton.IsEnabled = true;
             };
             ContentList.BeginAnimation(HeightProperty, animation);
+        }
+
+        private void ConfigButton_Click(object sender, RoutedEventArgs e) {
+            FrontendManager.OnNodeConfigurationClicked(this);
         }
     }
 }

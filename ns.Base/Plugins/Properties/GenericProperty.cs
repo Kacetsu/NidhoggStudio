@@ -24,6 +24,17 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
+        /// Gets the value object.
+        /// </summary>
+        /// <value>
+        /// The value object.
+        /// </value>
+        public object ValueObj {
+            get { return Value; }
+            set { Value = (T)value; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
         public GenericProperty() : base() {
@@ -45,6 +56,14 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="name">Name of the property.</param>
         /// <param name="isOutput">True if the property is a output.</param>
         public GenericProperty(string name, bool isOutput) : base(name, isOutput) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public GenericProperty(GenericProperty<T> other) : base(other) {
+            Value = other.Value;
         }
 
         /// <summary>

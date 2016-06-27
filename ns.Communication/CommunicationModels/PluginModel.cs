@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace ns.Communication.CommunicationModels {
 
     [DataContract]
-    public class PluginCommunicationModel : GenericCommunicationModel<Plugin>, IGenericCommunicationModel<Plugin>, IPluginCommunicationModel {
+    public class PluginModel : GenericModel<Plugin>, IGenericModel<Plugin>, IPluginModel {
 
         /// <summary>
         /// Gets or sets the display name.
@@ -34,10 +34,10 @@ namespace ns.Communication.CommunicationModels {
         public string Version { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginCommunicationModel"/> class.
+        /// Initializes a new instance of the <see cref="PluginModel"/> class.
         /// </summary>
         /// <param name="plugin">The plugin.</param>
-        public PluginCommunicationModel(Plugin plugin) : base(plugin) {
+        public PluginModel(Plugin plugin) : base(plugin) {
             DisplayName = plugin.DisplayName;
             Description = plugin.Description;
             Version = plugin.Version;

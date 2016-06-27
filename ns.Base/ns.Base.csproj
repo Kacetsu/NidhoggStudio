@@ -88,7 +88,6 @@
     <Compile Include="Node.cs" />
     <Compile Include="Event\ChildCollectionChangedEventArgs.cs" />
     <Compile Include="Event\DeviceSelectionChangedEventArgs.cs" />
-    <Compile Include="Event\NodeSelectionChangedEventArgs.cs" />
     <Compile Include="Event\OperationModuleCollectionChangedEventArgs.cs" />
     <Compile Include="Event\PluginStatusChangedEventArgs.cs" />
     <Compile Include="Event\NodeChangedEventArgs.cs" />
@@ -109,6 +108,7 @@
     <Compile Include="Plugins\Device.cs" />
     <Compile Include="Plugins\Extension.cs" />
     <Compile Include="Plugins\Properties\IConnectable.cs" />
+    <Compile Include="Plugins\Properties\IListProperty.cs" />
     <Compile Include="Plugins\Properties\ImageContainer.cs" />
     <Compile Include="Plugins\Properties\IMonitorable.cs" />
     <Compile Include="Plugins\Properties\INumerical.cs" />

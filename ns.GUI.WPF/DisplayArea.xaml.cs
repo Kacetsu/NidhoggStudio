@@ -53,31 +53,31 @@ namespace ns.GUI.WPF {
             this.DisplayTabControl.Items.Clear();
         }
 
-        private void GuiManagerSelectedItemChanged(object sender, NodeSelectionChangedEventArgs e) {
-            if (e.SelectedNode is Operation)
-                return;
-            else if (e.SelectedNode is Tool) {
-                Operation operationParent = ((Tool)e.SelectedNode).Parent as Operation;
-                if (operationParent == null)
-                    return;
-                foreach (OperationDisplayTabItem oItem in this.DisplayTabControl.Items) {
-                    if (oItem.Operation == operationParent) {
-                        foreach (DisplayTabItem dItem in ((TabControl)oItem.Content).Items) {
-#if DEBUG
-                            if (dItem.ImageProperty == null)
-                                throw new NullReferenceException("DisplayTabItem ImageProperty");
-#else
-                            if (dItem.ImageProperty == null) continue;
-#endif
-                            if (dItem.ImageProperty.ParentTool == e.SelectedNode) {
-                                this.DisplayTabControl.SelectedItem = oItem;
-                                ((TabControl)oItem.Content).SelectedItem = dItem;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //        private void GuiManagerSelectedItemChanged(object sender, NodeSelectionChangedEventArgs e) {
+        //            if (e.SelectedNode is Operation)
+        //                return;
+        //            else if (e.SelectedNode is Tool) {
+        //                Operation operationParent = ((Tool)e.SelectedNode).Parent as Operation;
+        //                if (operationParent == null)
+        //                    return;
+        //                foreach (OperationDisplayTabItem oItem in this.DisplayTabControl.Items) {
+        //                    if (oItem.Operation == operationParent) {
+        //                        foreach (DisplayTabItem dItem in ((TabControl)oItem.Content).Items) {
+        //#if DEBUG
+        //                            if (dItem.ImageProperty == null)
+        //                                throw new NullReferenceException("DisplayTabItem ImageProperty");
+        //#else
+        //                            if (dItem.ImageProperty == null) continue;
+        //#endif
+        //                            if (dItem.ImageProperty.ParentTool == e.SelectedNode) {
+        //                                this.DisplayTabControl.SelectedItem = oItem;
+        //                                ((TabControl)oItem.Content).SelectedItem = dItem;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
 
         private void DisplayManagerNodeRemovedEvent(object sender, NodeCollectionChangedEventArgs e) {
             if (e.Node is Operation)

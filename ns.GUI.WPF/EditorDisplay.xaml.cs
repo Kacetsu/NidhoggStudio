@@ -96,49 +96,49 @@ namespace ns.GUI.WPF {
             //}
         }
 
-        private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-            if (e.SelectedNode == null) return;
+        //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+        //    if (e.SelectedNode == null) return;
 
-            if (_rectangles != null) _rectangles.Clear();
-            Image oldImageDisplay = ImageDisplay;
-            ImageCanvas.Children.Clear();
-            ImageCanvas.Children.Add(oldImageDisplay);
+        //    if (_rectangles != null) _rectangles.Clear();
+        //    Image oldImageDisplay = ImageDisplay;
+        //    ImageCanvas.Children.Clear();
+        //    ImageCanvas.Children.Add(oldImageDisplay);
 
-            if (_lastImageProperty != null) {
-                _lastImageProperty.PropertyChanged -= _lastImageProperty_PropertyChanged;
-            }
+        //    if (_lastImageProperty != null) {
+        //        _lastImageProperty.PropertyChanged -= _lastImageProperty_PropertyChanged;
+        //    }
 
-            if (e.SelectedNode is Plugin) {
-                bool containsNewImage = false;
-                Plugin plugin = e.SelectedNode as Plugin;
-                foreach (Node child in plugin.Childs) {
-                    if (child is ImageProperty) {
-                        ImageProperty imageProperty = child as ImageProperty;
-                        if (imageProperty.IsOutput || imageProperty.IsVisible) {
-                            if (!imageProperty.IsOutput && imageProperty.ConnectedProperty != null) {
-                                _lastImageProperty = imageProperty.ConnectedProperty as ImageProperty;
-                            } else {
-                                _lastImageProperty = imageProperty;
-                            }
-                            containsNewImage = true;
-                            break;
-                        }
-                    }
-                }
+        //    if (e.SelectedNode is Plugin) {
+        //        bool containsNewImage = false;
+        //        Plugin plugin = e.SelectedNode as Plugin;
+        //        foreach (Node child in plugin.Childs) {
+        //            if (child is ImageProperty) {
+        //                ImageProperty imageProperty = child as ImageProperty;
+        //                if (imageProperty.IsOutput || imageProperty.IsVisible) {
+        //                    if (!imageProperty.IsOutput && imageProperty.ConnectedProperty != null) {
+        //                        _lastImageProperty = imageProperty.ConnectedProperty as ImageProperty;
+        //                    } else {
+        //                        _lastImageProperty = imageProperty;
+        //                    }
+        //                    containsNewImage = true;
+        //                    break;
+        //                }
+        //            }
+        //        }
 
-                if (!containsNewImage) {
-                    _lastImageProperty = null;
-                    ImageDisplay.Visibility = Visibility.Hidden;
-                } else {
-                    ImageDisplay.Visibility = Visibility.Visible;
-                }
-            }
+        //        if (!containsNewImage) {
+        //            _lastImageProperty = null;
+        //            ImageDisplay.Visibility = Visibility.Hidden;
+        //        } else {
+        //            ImageDisplay.Visibility = Visibility.Visible;
+        //        }
+        //    }
 
-            if (_lastImageProperty != null) {
-                _lastImageProperty.PropertyChanged += _lastImageProperty_PropertyChanged;
-                AddOverlayProperties(e.SelectedNode as Tool);
-            }
-        }
+        //    if (_lastImageProperty != null) {
+        //        _lastImageProperty.PropertyChanged += _lastImageProperty_PropertyChanged;
+        //        AddOverlayProperties(e.SelectedNode as Tool);
+        //    }
+        //}
 
         private void _lastImageProperty_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(ImageProperty.Value))) {

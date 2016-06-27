@@ -28,32 +28,32 @@ namespace ns.GUI.WPF.Controls.Property {
             IsConnectable = isConnectable;
             DataContext = this;
 
-            this.SelectionBox.ItemsSource = _property.DevicePlugins;
-            this.SelectionBox.DisplayMemberPath = "DisplayName";
+            SelectionBox.ItemsSource = _property.Value;
+            SelectionBox.DisplayMemberPath = "DisplayName";
 
             Device device = null;
             if (_property.Value == null) {
-                if ((device = _property.DevicePlugins.Find(d => d.Name.Contains("ImageFileDevice")) as Device) != null)
-                    this.SelectionBox.SelectedItem = device;
+                if ((device = _property.Value.Find(d => d.Name.Contains("ImageFileDevice")) as Device) != null)
+                    SelectionBox.SelectedItem = device;
             } else {
-                device = _property.Value as Device;
-                this.SelectionBox.SelectedItem = device;
+                device = _property.SelectedItem as Device;
+                SelectionBox.SelectedItem = device;
             }
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-                ConnectClicked(this.SelectionBox as Control, this.ConnectImage);
+                ConnectClicked(SelectionBox as Control, ConnectImage);
             }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
-            if (sender == this.ConnectButton) {
-                this.ConnectClicked(this.SelectionBox as Control, this.ConnectImage);
+            if (sender == ConnectButton) {
+                ConnectClicked(SelectionBox as Control, ConnectImage);
             }
         }
 
         private void SelectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (_property.Value != this.SelectionBox.SelectedItem as Device)
-                _property.SetDevice(this.SelectionBox.SelectedItem as Device);
+            if (_property.SelectedItem != SelectionBox.SelectedItem as Device)
+                _property.SelectedItem = SelectionBox.SelectedItem as Device;
         }
     }
 }

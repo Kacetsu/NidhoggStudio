@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ns.Base.Plugins.Properties {
 
     [Serializable, DataContract]
-    public class ListProperty : GenericProperty<List<object>> {
+    public class ListProperty : GenericProperty<List<object>>, IListProperty<object> {
         private List<object> _list = new List<object>();
 
         /// <summary>
@@ -35,14 +35,9 @@ namespace ns.Base.Plugins.Properties {
             : base(name, isOutput) {
         }
 
-        /// <summary>
-        /// Gets or sets the selected item.
-        /// </summary>
-        /// <value>
-        /// The selected item.
-        /// </value>
-        [DataMember]
-        public object SelectedItem { get; set; }
+        public ListProperty(ListProperty other) : base(other) {
+            SelectedItem = other.SelectedItem;
+        }
 
         /// <summary>
         /// Gets the index.
@@ -55,12 +50,21 @@ namespace ns.Base.Plugins.Properties {
                 if (Value == null) return -1;
                 int index = 0;
                 for (; index < _list.Count; index++) {
-                    if (_list[index].ToString() == Value.ToString()) break;
-                    else if (_list[index] == Value) break;
+                    if (_list[index].ToString() == SelectedItem?.ToString()) break;
+                    else if (_list[index] == SelectedItem) break;
                 }
                 return index;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the selected item.
+        /// </summary>
+        /// <value>
+        /// The selected item.
+        /// </value>
+        [DataMember]
+        public object SelectedItem { get; set; }
 
         /// <summary>
         /// Gets the type of the property.

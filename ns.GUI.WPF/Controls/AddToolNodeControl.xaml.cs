@@ -11,13 +11,13 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für AddToolNodeControl.xaml
     /// </summary>
     public partial class AddToolNodeControl : UserControl {
-        public ToolCommunicationModel Model { get; private set; }
+        public ToolModel Model { get; private set; }
 
         public AddToolNodeControl() {
             InitializeComponent();
         }
 
-        public AddToolNodeControl(ToolCommunicationModel model) {
+        public AddToolNodeControl(ToolModel model) {
             InitializeComponent();
             DescriptionTextBlock.Height = 0;
             DescriptionToggleButton.IsChecked = false;
@@ -56,7 +56,7 @@ namespace ns.GUI.WPF.Controls {
             //projectManager.Add(toolCopy, guiManager.SelectedNode as Operation);
             //guiManager.SelectNode(toolCopy);
 
-            OperationCommunicationModel operationModel = FrontendManager.SelectedModel as OperationCommunicationModel;
+            OperationModel operationModel = FrontendManager.SelectedModel as OperationModel;
             if (operationModel != null) {
                 ClientCommunicationManager.ProjectService.AddToolToProject(Model, operationModel.UID);
             }

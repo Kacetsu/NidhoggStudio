@@ -35,29 +35,29 @@ namespace ns.GUI.WPF.Controls {
             //_guiManager.SelectedItemChanged += guiManager_SelectedItemChanged;
         }
 
-        private void guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-            if (e.SelectedNode == null) {
-                _collection.Clear();
-                return;
-            }
+        //private void guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+        //    if (e.SelectedNode == null) {
+        //        _collection.Clear();
+        //        return;
+        //    }
 
-            List<Node> properties = e.SelectedNode.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
-            _collection.Clear();
-            foreach (ns.Base.Plugins.Properties.Property property in properties) {
-                if (!property.IsOutput || !(property.Parent is Tool)) continue;
+        //    List<Node> properties = e.SelectedNode.Childs.FindAll(c => c is ns.Base.Plugins.Properties.Property);
+        //    _collection.Clear();
+        //    foreach (ns.Base.Plugins.Properties.Property property in properties) {
+        //        if (!property.IsOutput || !(property.Parent is Tool)) continue;
 
-                bool contains = false;
-                foreach (ResultViewContainer container in _collection) {
-                    if (container.Property == property) {
-                        contains = true;
-                        break;
-                    }
-                }
+        //        bool contains = false;
+        //        foreach (ResultViewContainer container in _collection) {
+        //            if (container.Property == property) {
+        //                contains = true;
+        //                break;
+        //            }
+        //        }
 
-                if (!contains)
-                    _collection.Add(new ResultViewContainer(property));
-            }
-        }
+        //        if (!contains)
+        //            _collection.Add(new ResultViewContainer(property));
+        //    }
+        //}
 
         private void ProjectManagerLoading() {
             _collection.Clear();

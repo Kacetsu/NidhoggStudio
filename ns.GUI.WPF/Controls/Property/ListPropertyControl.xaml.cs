@@ -7,14 +7,14 @@ namespace ns.GUI.WPF.Controls.Property {
     /// <summary>
     /// Interaction logic for ComboBoxPropertyControl.xaml
     /// </summary>
-    public partial class ComboBoxPropertyControl : PropertyControl<ListProperty> {
+    public partial class ListPropertyControl : PropertyControl<ListProperty> {
 
-        public ComboBoxPropertyControl() {
+        public ListPropertyControl() {
             InitializeComponent();
             DataContext = this;
         }
 
-        public ComboBoxPropertyControl(ListProperty property, bool isConnectable)
+        public ListPropertyControl(ListProperty property, bool isConnectable)
             : base(property) {
             InitializeComponent();
             DataContext = this;

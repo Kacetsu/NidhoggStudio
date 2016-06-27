@@ -1,4 +1,6 @@
 ﻿using ns.Base.Plugins;
+using ns.Communication.CommunicationModels;
+using ns.GUI.WPF.Events;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -37,25 +39,29 @@ namespace ns.GUI.WPF {
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = ProjectExplorer;
-            _projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
+            //_projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
             ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
+            FrontendManager.Instance.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-            if (e.SelectedNode is Tool) {
-                LockedToolName = (e.SelectedNode as Tool).DisplayName;
-            } else if (e.SelectedNode is Operation) {
-                LockedToolName = (e.SelectedNode as Operation).DisplayName;
-            }
-        }
+        //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+        //    if (e.SelectedNode is Tool) {
+        //        LockedToolName = (e.SelectedNode as Tool).DisplayName;
+        //    } else if (e.SelectedNode is Operation) {
+        //        LockedToolName = (e.SelectedNode as Operation).DisplayName;
+        //    }
+        //}
 
-        private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
+        private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs<object> e) {
+            IPluginModel model = e.SelectedNode as IPluginModel;
+            if (model == null) return;
+
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
             animation.Completed += delegate (object s, EventArgs ev) {
                 if (_propertyEditor == null) {
-                    _propertyEditor = new Controls.PropertyEditor(e.SelectedNode);
+                    _propertyEditor = new Controls.PropertyEditor(model);
                     _propertyEditor.CloseButton.Click += CloseButton_Click;
                     _propertyEditor.RemoveToolButton.YesButton.Click += YesButton_Click;
                 }
@@ -68,8 +74,8 @@ namespace ns.GUI.WPF {
 
         private void YesButton_Click(object sender, RoutedEventArgs e) {
             if (_propertyEditor != null && sender == _propertyEditor.RemoveToolButton.YesButton) {
-                Tool toolToRemove = _propertyEditor.Node as Tool;
-                Operation operationToRemove = _propertyEditor.Node as Operation;
+                Tool toolToRemove = _propertyEditor.Model as Tool;
+                Operation operationToRemove = _propertyEditor.Model as Operation;
 
                 //if (_projectManager == null)
                 //    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;

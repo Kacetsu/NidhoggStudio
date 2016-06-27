@@ -23,7 +23,7 @@ namespace ns.GUI.WPF.Controls {
             Unloaded += HandleUnloaded;
         }
 
-        private void AddToolToControl(ToolCommunicationModel model) {
+        private void AddToolToControl(ToolModel model) {
             AddToolNodeControl nodeControl = new AddToolNodeControl(model);
             int childCount = ToolGrid.Children.Count;
             RowDefinition rowDefinition = new RowDefinition();
@@ -40,16 +40,16 @@ namespace ns.GUI.WPF.Controls {
                 CategoryComboBox.SelectedIndex = 0;
             }));
 
-            List<ToolCommunicationModel> models = ClientCommunicationManager.PluginService.GetAvailableTools();
+            List<ToolModel> models = ClientCommunicationManager.PluginService.GetAvailableTools();
 
             ToolGrid.Dispatcher.BeginInvoke(new Action(() => {
-                foreach (ToolCommunicationModel model in models) {
+                foreach (ToolModel model in models) {
                     AddToolToControl(model);
                 }
             }));
 
             CategoryComboBox.Dispatcher.BeginInvoke(new Action(() => {
-                foreach (ToolCommunicationModel model in models) {
+                foreach (ToolModel model in models) {
                     if (CategoryComboBox.Items.Contains(model.Category)) continue;
 
                     CategoryComboBox.Items.Add(model.Category);

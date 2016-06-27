@@ -42,7 +42,7 @@ namespace ns.Base.Plugins {
         public string AssemblyFile {
             get {
                 if (string.IsNullOrEmpty(_assemblyFile)) {
-                    Assembly assembly = Assembly.GetAssembly(this.GetType());
+                    Assembly assembly = Assembly.GetAssembly(GetType());
                     _assemblyFile = Path.GetFileNameWithoutExtension(assembly.Location);
                 }
                 return _assemblyFile;

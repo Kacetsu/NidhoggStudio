@@ -12,13 +12,13 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <returns></returns>
         [OperationContract]
-        List<PluginCommunicationModel> GetAvailablePlugins();
+        List<PluginModel> GetAvailablePlugins();
 
         /// <summary>
         /// Gets the available tools.
         /// </summary>
         /// <returns></returns>
         [OperationContract]
-        List<ToolCommunicationModel> GetAvailableTools();
+        List<ToolModel> GetAvailableTools();
     }
 }

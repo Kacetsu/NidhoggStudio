@@ -119,6 +119,9 @@
     <Compile Include="Controls\Property\DoublePropertyControl.xaml.cs">
       <DependentUpon>DoublePropertyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Property\ImagePropertyControl.xaml.cs">
+      <DependentUpon>ImagePropertyControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
     </Compile>
@@ -143,6 +146,7 @@
     <Compile Include="EditorDisplay.xaml.cs">
       <DependentUpon>EditorDisplay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Events\NodeSelectionChangedEventArgs.cs" />
     <Compile Include="GuiHelper.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="Controls\LibraryInformationMenuItem.cs" />
@@ -158,8 +162,8 @@
     <Compile Include="Controls\NodeTreeItem.cs" />
     <Compile Include="Controls\OperationDisplayTabItem.cs" />
     <Compile Include="Controls\OperationTreeItem.cs" />
-    <Compile Include="Controls\Property\ComboBoxPropertyControl.xaml.cs">
-      <DependentUpon>ComboBoxPropertyControl.xaml</DependentUpon>
+    <Compile Include="Controls\Property\ListPropertyControl.xaml.cs">
+      <DependentUpon>ListPropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Property\DevicePropertyControl.xaml.cs">
       <DependentUpon>DevicePropertyControl.xaml</DependentUpon>
@@ -173,6 +177,7 @@
     </Compile>
     <Compile Include="Controls\ToolTreeItem.cs" />
     <Compile Include="FrontendManager.cs" />
+    <Compile Include="INodeControl.cs" />
     <Compile Include="LockedObservableCollection.cs" />
     <Compile Include="LogView.xaml.cs">
       <DependentUpon>LogView.xaml</DependentUpon>
@@ -245,7 +250,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\Property\ComboBoxPropertyControl.xaml">
+    <Page Include="Controls\Property\ImagePropertyControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Property\ListPropertyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

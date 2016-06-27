@@ -20,12 +20,12 @@ namespace ns.Communication.Client {
         /// Gets the available plugins.
         /// </summary>
         /// <returns></returns>
-        public List<PluginCommunicationModel> GetAvailablePlugins() => Channel?.GetAvailablePlugins();
+        public List<PluginModel> GetAvailablePlugins() => Channel?.GetAvailablePlugins();
 
         /// <summary>
         /// Gets the available tools.
         /// </summary>
         /// <returns></returns>
-        public List<ToolCommunicationModel> GetAvailableTools() => Channel?.GetAvailableTools();
+        public List<ToolModel> GetAvailableTools() => Channel?.GetAvailableTools();
     }
 }

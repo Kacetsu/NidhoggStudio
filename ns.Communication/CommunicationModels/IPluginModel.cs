@@ -1,6 +1,6 @@
 ﻿namespace ns.Communication.CommunicationModels {
 
-    public interface IPluginCommunicationModel {
+    public interface IPluginModel : IUidModel {
 
         /// <summary>
         /// Gets the description.

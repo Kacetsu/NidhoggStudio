@@ -1,57 +1,63 @@
-﻿using ns.Base;
-using ns.Base.Event;
-using ns.Base.Plugins;
+﻿using ns.Communication.CommunicationModels;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für ToolNodeControl.xaml
     /// </summary>
-    public partial class ToolNodeControl : UserControl, INotifyPropertyChanged {
-        private Tool _tool;
+    public partial class ToolNodeControl : UserControl, INotifyPropertyChanged, INodeControl {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
-        public event ConfigNodeHandler ConfigNodeHandlerChanged;
-
+        /// <summary>
+        /// Gets or sets the display name.
+        /// </summary>
+        /// <value>
+        /// The display name.
+        /// </value>
         public string DisplayName {
-            get { return _tool.Name; }
+            get { return (Model as IToolModel).DisplayName; }
             protected set {
-                OnPropertyChanged("DisplayName");
+                OnPropertyChanged();
             }
         }
 
-        public Tool Tool {
-            get { return _tool; }
-        }
+        /// <summary>
+        /// Gets the tool.
+        /// </summary>
+        /// <value>
+        /// The tool.
+        /// </value>
+        public object Model { get; private set; }
 
-        public ToolNodeControl(Tool tool) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToolNodeControl"/> class.
+        /// </summary>
+        /// <param name="model">The tool.</param>
+        public ToolNodeControl(ToolModel model) {
             InitializeComponent();
-            _tool = tool;
-            _tool.PropertyChanged += _tool_PropertyChanged;
+            Model = model;
+            model.PropertyChanged += _model_PropertyChanged;
             DataContext = this;
         }
 
-        private void _tool_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == "Name")
-                DisplayName = _tool.Name;
+        private void _model_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(ToolModel.Name))
+                DisplayName = (Model as IToolModel).DisplayName;
         }
 
-        private void OnConfigNode(Node node) {
-            if (ConfigNodeHandlerChanged != null)
-                ConfigNodeHandlerChanged(this, new NodeSelectionChangedEventArgs(node));
-        }
-
-        private void OnPropertyChanged(string name) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="name">The name.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void ConfigButton_Click(object sender, RoutedEventArgs e) {
-            OnConfigNode(_tool);
+            FrontendManager.OnNodeConfigurationClicked(this);
         }
     }
 }

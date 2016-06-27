@@ -10,9 +10,18 @@ namespace ns.Plugin.Base {
     [Visible, DataContract]
     public class GetImage : Tool {
         private ImageDevice _device;
-        private ImageProperty _imageProperty;
         private DeviceProperty _deviceProperty;
+        private ImageProperty _imageProperty;
         private bool _isRunning = false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetImage"/> class.
+        /// </summary>
+        public GetImage() {
+            DisplayName = "Get Image";
+            AddChild(new DeviceProperty("Interface", "Device", typeof(ImageDevice)));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         /// <summary>
         /// Gets the category.
@@ -37,12 +46,22 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetImage"/> class.
+        /// Finalize the Node.
         /// </summary>
-        public GetImage() {
-            DisplayName = "Get Image";
-            AddChild(new DeviceProperty("Interface", "Device", typeof(ImageDevice)));
-            AddChild(new ImageProperty("ImageOutput", true));
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Finalize() {
+            _isRunning = false;
+            if (_device != null) {
+                lock (_device) {
+                    _device.Finalize();
+                    _device = null;
+                }
+            }
+            if (_imageProperty != null)
+                _imageProperty = null;
+            return base.Finalize();
         }
 
         /// <summary>
@@ -62,7 +81,7 @@ namespace ns.Plugin.Base {
             }
             _deviceProperty.PropertyChanged -= DeviceProperty_PropertyChanged;
             _deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
-            _device = _deviceProperty.Value as ImageDevice;
+            _device = _deviceProperty.SelectedItem as ImageDevice;
             if (_device == null) {
                 ns.Base.Log.Trace.WriteLine("Device is null!", TraceEventType.Error);
                 return false;
@@ -81,11 +100,15 @@ namespace ns.Plugin.Base {
             return result;
         }
 
-        private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "Device" && _isRunning) {
-                this.Finalize();
-                this.Initialize();
-            }
+        /// <summary>
+        /// Posts the run.
+        /// </summary>
+        /// <returns></returns>
+        public override bool PostRun() {
+            bool result = true;
+            if (_isRunning)
+                result = base.PostRun() && _device.PostRun();
+            return result;
         }
 
         /// <summary>
@@ -121,34 +144,11 @@ namespace ns.Plugin.Base {
             return result;
         }
 
-        /// <summary>
-        /// Posts the run.
-        /// </summary>
-        /// <returns></returns>
-        public override bool PostRun() {
-            bool result = true;
-            if (_isRunning)
-                result = base.PostRun() && _device.PostRun();
-            return result;
-        }
-
-        /// <summary>
-        /// Finalize the Node.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            _isRunning = false;
-            if (_device != null) {
-                lock (_device) {
-                    _device.Finalize();
-                    _device = null;
-                }
+        private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Device" && _isRunning) {
+                this.Finalize();
+                this.Initialize();
             }
-            if (_imageProperty != null)
-                _imageProperty = null;
-            return base.Finalize();
         }
     }
 }

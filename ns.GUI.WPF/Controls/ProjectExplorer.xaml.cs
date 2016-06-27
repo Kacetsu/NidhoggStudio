@@ -2,9 +2,11 @@
 using ns.Base.Event;
 using ns.Communication.Client;
 using ns.Communication.CommunicationModels;
+using ns.GUI.WPF.Events;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,8 +20,9 @@ namespace ns.GUI.WPF.Controls {
         //private GuiManager _guiManager;
 
         private Task _task;
+        private IEnumerable<OperationModel> _operationModels;
 
-        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs e);
+        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
 
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
@@ -28,38 +31,17 @@ namespace ns.GUI.WPF.Controls {
             Loaded += HandleLoaded;
         }
 
-        private void OnConfigNode(Node node) {
-            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs(node));
+        private void OnConfigNode(object node) {
+            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs<object>(node));
         }
 
         private void GenerateTree() {
-            //if (_projectManager != null) {
-            //    _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
-            //    //_projectManager.Loading += ProjectManagerLoading;
-            //}
-            //if (_projectManager != null) {
-            //    this.ContentGrid.Children.Clear();
+            OperationModel[] operationModels = ClientCommunicationManager.ProjectService.GetOperations();
 
-            //    foreach (Operation operation in _projectManager.Configuration.Operations) {
-            //        OperationNodeControl operationItem = new OperationNodeControl(operation);
-            //        RowDefinition rowDefinition = new RowDefinition();
-            //        rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            //        this.ContentGrid.RowDefinitions.Add(rowDefinition);
-            //        Grid.SetRow(operationItem, this.ContentGrid.Children.Count);
-            //        this.ContentGrid.Children.Add(operationItem);
-            //        foreach (Tool tool in operation.Childs.Where(c => c is Tool)) {
-            //            _guiManager.SelectNode(tool);
-            //        }
-
-            //        operationItem.UpdateChildControls();
-            //        operationItem.ConfigNodeHandlerChanged += OperationItem_ConfigNodeHandlerChanged;
-            //    }
-            //}
-
-            List<OperationCommunicationModel> operationModels = ClientCommunicationManager.ProjectService.GetProjectOperations();
+            _operationModels = operationModels;
 
             ContentGrid.Dispatcher.BeginInvoke(new Action(() => {
-                foreach (OperationCommunicationModel operationModel in operationModels) {
+                foreach (OperationModel operationModel in operationModels) {
                     OperationNodeControl operationItem = new OperationNodeControl(operationModel);
                     RowDefinition rowDefinition = new RowDefinition();
                     rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
@@ -75,10 +57,19 @@ namespace ns.GUI.WPF.Controls {
                     }
                 }
             }));
+
+            ClientCommunicationManager.ProjectService.Callback.ToolAdded -= ProjectServiceCallback_ToolAdded;
+            ClientCommunicationManager.ProjectService.Callback.ToolAdded += ProjectServiceCallback_ToolAdded;
         }
 
-        private void OperationItem_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs e) {
-            OnConfigNode(e.SelectedNode);
+        private void ProjectServiceCallback_ToolAdded(object sender, Communication.Events.CollectionChangedEventArgs e) {
+            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
+            foreach (UIElement element in ContentGrid.Children) {
+                OperationNodeControl operationControl = element as OperationNodeControl;
+                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
+                operationControl.UpdateChildControls(e.NewObjects as IEnumerable<ToolModel>);
+                break;
+            }
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {

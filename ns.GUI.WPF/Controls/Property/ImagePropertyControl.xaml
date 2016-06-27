@@ -1,5 +1,5 @@
-﻿<control:PropertyControl  x:Class="ns.GUI.WPF.Controls.Property.ComboBoxPropertyControl"
-             x:TypeArguments="application:ListProperty"
+﻿<control:PropertyControl  x:Class="ns.GUI.WPF.Controls.Property.ImagePropertyControl"
+             x:TypeArguments="application:ImageProperty"
              xmlns:application="clr-namespace:ns.Base.Plugins.Properties;assembly=ns.Base"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock TextWrapping="Wrap" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" VerticalAlignment="Center" Margin="2,0" />
         <ComboBox Name="ContentBox" Grid.Column="1" SelectionChanged="ContentBox_SelectionChanged" />
-        <Button Name="ConnectButton" Grid.Column="2" Click="Button_Click">
+        <Button Name="ConnectButton" Grid.Column="2" Click="Button_Click" Visibility="Hidden">
             <Button.Content>
                 <Image Name="ConnectImage" Source="/ns.GUI.WPF;component/Images/Connect.png" Margin="2" Opacity="0.5" />
             </Button.Content>

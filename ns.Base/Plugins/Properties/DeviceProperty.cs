@@ -7,7 +7,8 @@ namespace ns.Base.Plugins.Properties {
     [DataContract]
     public class DeviceProperty : GenericProperty<List<Device>>, IListProperty<Device> {
         private Type _filterType;
-        private List<Device> _list = new List<Device>();
+
+        private Device _selectedItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceProperty"/> class.
@@ -69,20 +70,53 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The index.
         /// </value>
+        [DataMember]
         public int Index {
             get {
                 if (Value == null) return -1;
                 int index = 0;
-                for (; index < _list.Count; index++) {
-                    if (_list[index].ToString() == SelectedItem?.ToString()) break;
-                    else if (_list[index] == SelectedItem) break;
+                for (; index < Value.Count; index++) {
+                    if (Value[index].UID == SelectedItem.UID) break;
+                    else if (Value[index] == SelectedItem) break;
                 }
                 return index;
             }
+            set {
+                SelectedItem = Value[value];
+            }
         }
 
+        /// <summary>
+        /// Gets or sets the selected item.
+        /// </summary>
+        /// <value>
+        /// The selected item.
+        /// </value>
         [DataMember]
-        public Device SelectedItem { get; set; }
+        public Device SelectedItem {
+            get { return _selectedItem; }
+            set {
+                if (_selectedItem != value) {
+                    _selectedItem = value;
+                    SelectedObjItem = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the selected object item.
+        /// </summary>
+        /// <value>
+        /// The selected object item.
+        /// </value>
+        public object SelectedObjItem {
+            get { return SelectedItem; }
+            set {
+                Device device = value as Device;
+                SelectedItem = device;
+            }
+        }
 
         /// <summary>
         /// Gets the type of the property.

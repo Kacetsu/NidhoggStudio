@@ -1,5 +1,8 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Log;
+using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using ns.Communication.Client;
+using System.ServiceModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,10 +36,16 @@ namespace ns.GUI.WPF.Controls.Property {
 
             Device device = null;
             if (_property.Value == null) {
-                if ((device = _property.Value.Find(d => d.Name.Contains("ImageFileDevice")) as Device) != null)
+                if ((device = _property.Value.Find(d => d.Name.Contains("ImageFileDevice")) as Device) != null) {
                     SelectionBox.SelectedItem = device;
+                }
             } else {
                 device = _property.SelectedItem as Device;
+                if (device == null) {
+                    if ((device = _property.Value.Find(d => d.Name.Contains("ImageFileDevice")) as Device) == null) {
+                        device = _property.Value[0];
+                    }
+                }
                 SelectionBox.SelectedItem = device;
             }
 
@@ -52,8 +61,17 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         private void SelectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (_property.SelectedItem != SelectionBox.SelectedItem as Device)
-                _property.SelectedItem = SelectionBox.SelectedItem as Device;
+            Device device = SelectionBox.SelectedItem as Device;
+            if (_property.SelectedItem != device) {
+                try {
+                    ClientCommunicationManager.ProjectService.ChangeListPropertySelectedIndex(SelectionBox.SelectedIndex, _property.UID);
+                    _property.SelectedItem = device;
+                } catch (FaultException ex) {
+                    Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                } finally {
+                    SelectionBox.SelectedItem = _property.SelectedItem;
+                }
+            }
         }
     }
 }

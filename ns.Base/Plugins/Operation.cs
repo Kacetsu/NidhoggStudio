@@ -55,12 +55,20 @@ namespace ns.Base.Plugins {
             set {
                 DeviceProperty property = GetProperty(nameof(CaptureDevice)) as DeviceProperty;
                 Device device = property?.SelectedItem;
-                if (device != null && device != value && property != null) {
+                if (device != value && property != null) {
                     device = value;
                     property.SelectedItem = device;
                     OnPropertyChanged();
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds the device list.
+        /// </summary>
+        /// <param name="devices">The devices.</param>
+        public void AddDeviceList(List<Device> devices) {
+            (GetProperty(nameof(CaptureDevice)) as DeviceProperty).Value = devices;
         }
 
         /// <summary>
@@ -112,10 +120,6 @@ namespace ns.Base.Plugins {
         /// </returns>
         public override bool Run() {
             return RunChilds();
-        }
-
-        public void AddDeviceList(List<Device> devices) {
-            (GetProperty(nameof(CaptureDevice)) as DeviceProperty).Value = devices;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ns.Base.Plugins.Properties {
 
-    public interface IListProperty<T> : IValue<List<T>> {
+    public interface IListProperty<T> : IListProperty, IValue<List<T>> {
 
         /// <summary>
         /// Gets the index.
@@ -19,5 +19,16 @@ namespace ns.Base.Plugins.Properties {
         /// The selected item.
         /// </value>
         T SelectedItem { get; set; }
+    }
+
+    public interface IListProperty {
+
+        /// <summary>
+        /// Gets or sets the selected object item.
+        /// </summary>
+        /// <value>
+        /// The selected object item.
+        /// </value>
+        object SelectedObjItem { get; set; }
     }
 }

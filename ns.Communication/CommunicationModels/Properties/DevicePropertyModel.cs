@@ -15,20 +15,18 @@ namespace ns.Communication.CommunicationModels.Properties {
         /// <param name="property">The property.</param>
         public DevicePropertyModel(Property property) : base(property) {
             IListProperty<Device> valueProperty = property as IListProperty<Device>;
-
             IListProperty<Device> listProperty = property as IListProperty<Device>;
 
             DeviceProperty propertyCopy = new DeviceProperty(property.Name, listProperty.Value);
-            propertyCopy.SelectedItem = listProperty.SelectedItem;
-
-            if (valueProperty.SelectedItem != null) {
-                Device device = new Device(valueProperty.SelectedItem);
-                listProperty.SelectedItem = device;
-            }
+            propertyCopy.UID = property.UID;
 
             List<Device> devices = new List<Device>();
-            foreach (Device d in valueProperty.Value) {
-                devices.Add(new Device(d));
+            foreach (Device device in valueProperty.Value) {
+                Device deviceCopy = new Device(device);
+                devices.Add(deviceCopy);
+                if (deviceCopy.UID.Equals(listProperty.SelectedItem?.UID)) {
+                    propertyCopy.SelectedItem = deviceCopy;
+                }
             }
 
             propertyCopy.Value = devices;

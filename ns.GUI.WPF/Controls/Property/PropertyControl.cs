@@ -1,7 +1,5 @@
 ﻿using ns.Base.Plugins;
-using ns.Base.Plugins.Properties;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -13,22 +11,39 @@ using System.Windows.Media.Imaging;
 namespace ns.GUI.WPF.Controls.Property {
 
     public class PropertyControl<T> : UserControl, INotifyPropertyChanged where T : Base.Plugins.Properties.Property {
-        private static Brush DEFAULT_BACKGROUNDBRUSH = Brushes.White;
         protected T _property;
+        private static Brush DEFAULT_BACKGROUNDBRUSH = Brushes.White;
+        private Brush _backgroundBrush;
         private bool _isConnectable = false;
         private ComboBox _selectionComboBox = null;
-        private Brush _backgroundBrush;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyControl"/> class.
+        /// </summary>
+        public PropertyControl() : base() {
+            this.MouseEnter += Control_MouseEnter;
+            this.MouseLeave += Control_MouseLeave;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyControl"/> class.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        public PropertyControl(T property)
+            : base() {
+            _property = property;
+            this.MouseEnter += Control_MouseEnter;
+            this.MouseLeave += Control_MouseLeave;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Gets the property.
-        /// </summary>
-        /// <value>
-        /// The property.
-        /// </value>
-        public T Property {
-            get { return _property; }
+        public Brush BackgroundBrush {
+            get { return _backgroundBrush; }
+            set {
+                _backgroundBrush = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -52,31 +67,14 @@ namespace ns.GUI.WPF.Controls.Property {
             set { _isConnectable = value; }
         }
 
-        public Brush BackgroundBrush {
-            get { return _backgroundBrush; }
-            set {
-                _backgroundBrush = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyControl"/> class.
+        /// Gets the property.
         /// </summary>
-        public PropertyControl() : base() {
-            this.MouseEnter += Control_MouseEnter;
-            this.MouseLeave += Control_MouseLeave;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyControl"/> class.
-        /// </summary>
-        /// <param name="property">The property.</param>
-        public PropertyControl(T property)
-            : base() {
-            _property = property;
-            this.MouseEnter += Control_MouseEnter;
-            this.MouseLeave += Control_MouseLeave;
+        /// <value>
+        /// The property.
+        /// </value>
+        public T Property {
+            get { return _property; }
         }
 
         /// <summary>
@@ -94,7 +92,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 image.EndInit();
                 CreateSelection(control, parentControl);
             } else {
-                control.Visibility = System.Windows.Visibility.Visible;
+                control.Visibility = Visibility.Visible;
                 image.BeginInit();
                 image.UriSource = new Uri("/ns.GUI.WPF;component/Images/Connect.png", UriKind.Relative);
                 image.EndInit();
@@ -135,6 +133,14 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="propertyName">Name of the property.</param>
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        private void Control_MouseEnter(object sender, MouseEventArgs e) {
+            BackgroundBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+        }
+
+        private void Control_MouseLeave(object sender, MouseEventArgs e) {
+            BackgroundBrush = DEFAULT_BACKGROUNDBRUSH;
+        }
+
         /// <summary>
         /// Creates the selection.
         /// </summary>
@@ -161,16 +167,6 @@ namespace ns.GUI.WPF.Controls.Property {
             }
         }
 
-        private void SelectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ComboBox c = sender as ComboBox;
-            ns.Base.Plugins.Properties.Property targetProperty = c.SelectedItem as ns.Base.Plugins.Properties.Property;
-            if (targetProperty != null) {
-                this.Property.Connect(targetProperty);
-            } else if (c.SelectedItem is Operation) {
-                this.Property.Connect(((Operation)c.SelectedItem).UID);
-            }
-        }
-
         /// <summary>
         /// Destroys the selection.
         /// </summary>
@@ -183,6 +179,16 @@ namespace ns.GUI.WPF.Controls.Property {
                     gridParent.Children.Remove(_selectionComboBox);
                 _selectionComboBox.SelectionChanged -= SelectionComboBox_SelectionChanged;
                 _selectionComboBox = null;
+            }
+        }
+
+        private void SelectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            ComboBox c = sender as ComboBox;
+            Base.Plugins.Properties.Property targetProperty = c.SelectedItem as ns.Base.Plugins.Properties.Property;
+            if (targetProperty != null) {
+                this.Property.Connect(targetProperty);
+            } else if (c.SelectedItem is Operation) {
+                this.Property.Connect(((Operation)c.SelectedItem).UID);
             }
         }
 
@@ -213,14 +219,6 @@ namespace ns.GUI.WPF.Controls.Property {
             //            _selectionComboBox.SelectedItem = targetProperty;
             //    }
             //}
-        }
-
-        private void Control_MouseLeave(object sender, MouseEventArgs e) {
-            BackgroundBrush = DEFAULT_BACKGROUNDBRUSH;
-        }
-
-        private void Control_MouseEnter(object sender, MouseEventArgs e) {
-            BackgroundBrush = new SolidColorBrush(Color.FromRgb(240, 240, 240));
         }
     }
 }

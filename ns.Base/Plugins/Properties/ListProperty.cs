@@ -8,6 +8,8 @@ namespace ns.Base.Plugins.Properties {
     public class ListProperty : GenericProperty<List<object>>, IListProperty<object> {
         private List<object> _list = new List<object>();
 
+        private object _selectedItem;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ListProperty"/> class.
         /// </summary>
@@ -35,6 +37,10 @@ namespace ns.Base.Plugins.Properties {
             : base(name, isOutput) {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListProperty"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
         public ListProperty(ListProperty other) : base(other) {
             SelectedItem = other.SelectedItem;
         }
@@ -64,11 +70,38 @@ namespace ns.Base.Plugins.Properties {
         /// The selected item.
         /// </value>
         [DataMember]
-        public object SelectedItem { get; set; }
+        public object SelectedItem {
+            get { return _selectedItem; }
+            set {
+                if (_selectedItem != value) {
+                    _selectedItem = value;
+                    SelectedObjItem = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// Gets or sets the selected object item.
+        /// </summary>
+        /// <value>
+        /// The selected object item.
+        /// </value>
+        public object SelectedObjItem {
+            get { return SelectedItem; }
+            set {
+                if (SelectedItem != value) {
+                    SelectedItem = value;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets the type of the property.
+        /// Gets or sets the name of the selected type.
         /// </summary>
+        /// <value>
+        /// The name of the selected type.
+        /// </value>
+        [DataMember]
         public override Type Type {
             get {
                 return typeof(List<object>);

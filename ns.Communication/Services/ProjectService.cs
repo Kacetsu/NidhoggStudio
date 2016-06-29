@@ -13,29 +13,15 @@ namespace ns.Communication.Services {
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public class ProjectService : IProjectService {
-        private ProjectManager _projectManager;
         private PluginManager _pluginManager;
-
-        public IProjectServiceCallbacks Proxy { get { return OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>(); } }
+        private ProjectManager _projectManager;
 
         public ProjectService() {
             _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
             _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
         }
 
-        /// <summary>
-        /// Gets all operations.
-        /// </summary>
-        /// <returns></returns>
-        public OperationModel[] GetOperations() {
-            List<OperationModel> result = new List<OperationModel>();
-
-            foreach (Operation operation in _projectManager.Configuration.Operations) {
-                result.Add(new OperationModel(operation));
-            }
-
-            return result.ToArray();
-        }
+        public IProjectServiceCallbacks Proxy { get { return OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>(); } }
 
         /// <summary>
         /// Adds the tool.
@@ -71,24 +57,38 @@ namespace ns.Communication.Services {
         }
 
         /// <summary>
-        /// Gets the tool properties.
+        /// Changes the index of the list property selected.
         /// </summary>
-        /// <param name="toolUID">The tool uid.</param>
-        /// <returns></returns>
-        /// <exception cref="FaultException"></exception>
-        public PropertyModel[] GetToolProperties(string toolUID) {
-            List<PropertyModel> properties = new List<PropertyModel>();
-
-            Tool tool = _projectManager.FindTool(toolUID);
-            if (tool == null) {
-                throw new FaultException(string.Format("Could not find tool {0}.", toolUID));
+        /// <param name="index">The index.</param>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <exception cref="FaultException">
+        /// </exception>
+        public void ChangeListPropertySelectedIndex(int index, string propertyUID) {
+            if (string.IsNullOrEmpty(propertyUID)) {
+                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
             }
 
-            foreach (Property property in tool.Childs.Where(p => p is Property)) {
-                properties.Add(new PropertyModel(property));
+            Property property = _projectManager.FindProperty(propertyUID);
+
+            IValue valueProperty = property as IValue;
+            IListProperty listProperty = property as IListProperty;
+            IEnumerable<object> listObj = null;
+
+            if (valueProperty != null && valueProperty.ValueObj.GetType().IsGenericType) {
+                listObj = valueProperty.ValueObj as IEnumerable<object>;
+            } else {
+                throw new FaultException(string.Format("Property is not a generic list."));
             }
 
-            return properties.ToArray();
+            if (property == null || listObj == null || listProperty == null) {
+                throw new FaultException(string.Format("Could not find property {0}.", propertyUID));
+            }
+
+            if (index > listObj.Count() - 1 || index < 0) {
+                throw new FaultException(string.Format("Index out of bound."));
+            }
+
+            listProperty.SelectedObjItem = listObj.ElementAt(index);
         }
 
         /// <summary>
@@ -120,6 +120,41 @@ namespace ns.Communication.Services {
             }
 
             valueProperty.ValueObj = newValue;
+        }
+
+        /// <summary>
+        /// Gets all operations.
+        /// </summary>
+        /// <returns></returns>
+        public OperationModel[] GetOperations() {
+            List<OperationModel> result = new List<OperationModel>();
+
+            foreach (Operation operation in _projectManager.Configuration.Operations) {
+                result.Add(new OperationModel(operation));
+            }
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the tool properties.
+        /// </summary>
+        /// <param name="toolUID">The tool uid.</param>
+        /// <returns></returns>
+        /// <exception cref="FaultException"></exception>
+        public PropertyModel[] GetToolProperties(string toolUID) {
+            List<PropertyModel> properties = new List<PropertyModel>();
+
+            Tool tool = _projectManager.FindTool(toolUID);
+            if (tool == null) {
+                throw new FaultException(string.Format("Could not find tool {0}.", toolUID));
+            }
+
+            foreach (Property property in tool.Childs.Where(p => p is Property)) {
+                properties.Add(new PropertyModel(property));
+            }
+
+            return properties.ToArray();
         }
     }
 }

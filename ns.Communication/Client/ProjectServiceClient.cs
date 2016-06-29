@@ -1,6 +1,7 @@
 ﻿using ns.Communication.CommunicationModels;
 using ns.Communication.Services;
 using ns.Communication.Services.Callbacks;
+using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
@@ -22,6 +23,13 @@ namespace ns.Communication.Client {
         /// <param name="model">The model.</param>
         /// <param name="parentUID">The parent uid.</param>
         public void AddToolToProject(ToolModel model, string parentUID) => Channel?.AddToolToProject(model, parentUID);
+
+        /// <summary>
+        /// Changes the index of the list property selected.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="propertyUID">The property uid.</param>
+        public void ChangeListPropertySelectedIndex(int index, string propertyUID) => Channel?.ChangeListPropertySelectedIndex(index, propertyUID);
 
         /// <summary>
         /// Changes the property value.

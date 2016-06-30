@@ -14,8 +14,15 @@ namespace ns.Plugin.AForge.Filters {
     [Visible, DataContract]
     public class Add : Tool {
         private ImageProperty _imageInput;
-        private ImageProperty _imageOverlay;
         private ImageProperty _imageOutput;
+        private ImageProperty _imageOverlay;
+
+        public Add() {
+            DisplayName = "AForge Add";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new ImageProperty("ImageOverlay", false));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         public override string Category {
             get {
@@ -33,19 +40,12 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public Add() {
-            DisplayName = "AForge Add";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new ImageProperty("ImageOverlay", false));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _imageOverlay = GetProperty("ImageOverlay") as ImageProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _imageOverlay = GetProperty<ImageProperty>("ImageOverlay");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

@@ -29,21 +29,13 @@ namespace ns.Plugin.Base {
         /// <value>
         /// The category.
         /// </value>
-        public override string Category {
-            get {
-                return ToolCategory.Acquisition.GetDescription();
-            }
-        }
+        public override string Category => ToolCategory.Acquisition.GetDescription();
 
         /// <summary>
         /// Gets or sets the Description.
         /// The Description is used for the Application User to visualize a human readable Name.
         /// </summary>
-        public override string Description {
-            get {
-                return "Configurates the device and acquires a images.";
-            }
-        }
+        public override string Description => "Configurates the device and acquires a images.";
 
         /// <summary>
         /// Finalize the Node.
@@ -74,7 +66,7 @@ namespace ns.Plugin.Base {
             base.Initialize();
 
             bool result = false;
-            _deviceProperty = GetProperty("Interface") as DeviceProperty;
+            _deviceProperty = GetProperty<DeviceProperty>("Interface");
             if (_deviceProperty == null) {
                 ns.Base.Log.Trace.WriteLine("Device interface is null!", TraceEventType.Error);
                 return false;
@@ -86,7 +78,7 @@ namespace ns.Plugin.Base {
                 ns.Base.Log.Trace.WriteLine("Device is null!", TraceEventType.Error);
                 return false;
             }
-            _imageProperty = GetProperty(typeof(ImageProperty)) as ImageProperty;
+            _imageProperty = GetProperty<ImageProperty>();
 
             if (_device == null) {
                 ns.Base.Log.Trace.WriteLine("Device interface is null!", TraceEventType.Error);
@@ -135,7 +127,7 @@ namespace ns.Plugin.Base {
             if (_device != null) {
                 lock (_device) {
                     if (result = _device.Run()) {
-                        ImageProperty deviceImage = _device.GetProperty(typeof(ImageProperty)) as ImageProperty;
+                        ImageProperty deviceImage = _device.GetProperty<ImageProperty>();
                         _imageProperty.Value = deviceImage.Value;
                     }
                 }
@@ -146,8 +138,8 @@ namespace ns.Plugin.Base {
 
         private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "Device" && _isRunning) {
-                this.Finalize();
-                this.Initialize();
+                Finalize();
+                Initialize();
             }
         }
     }

@@ -14,36 +14,20 @@ namespace ns.Plugin.AForge.Imaging {
         private ImageProperty _imageInput;
 
         private IntegerProperty _maxBlue;
-        private IntegerProperty _minBlue;
-        private IntegerProperty _medianBlue;
-        private DoubleProperty _meanBlue;
-        private DoubleProperty _stdDevBlue;
-
         private IntegerProperty _maxGreen;
-        private IntegerProperty _minGreen;
-        private IntegerProperty _medianGreen;
-        private DoubleProperty _meanGreen;
-        private DoubleProperty _stdDevGreen;
-
         private IntegerProperty _maxRed;
-        private IntegerProperty _minRed;
-        private IntegerProperty _medianRed;
+        private DoubleProperty _meanBlue;
+        private DoubleProperty _meanGreen;
         private DoubleProperty _meanRed;
+        private IntegerProperty _medianBlue;
+        private IntegerProperty _medianGreen;
+        private IntegerProperty _medianRed;
+        private IntegerProperty _minBlue;
+        private IntegerProperty _minGreen;
+        private IntegerProperty _minRed;
+        private DoubleProperty _stdDevBlue;
+        private DoubleProperty _stdDevGreen;
         private DoubleProperty _stdDevRed;
-
-        public override string Category {
-            get {
-                return "AForge Imaging";
-            }
-        }
-
-        public override string Description {
-            get {
-                return "The class is used to accumulate statistical values about images,\n"
-                    + "like histogram, mean, standard deviation, etc. for each color channel in RGB color space.\n"
-                    + "The class accepts 8 bpp grayscale and 24/32 bpp color images for processing.";
-            }
-        }
 
         public ImageStatistics() {
             DisplayName = "AForge Image Statistics";
@@ -68,29 +52,43 @@ namespace ns.Plugin.AForge.Imaging {
             AddChild(new DoubleProperty("StdDevRed", true));
         }
 
+        public override string Category {
+            get {
+                return "AForge Imaging";
+            }
+        }
+
+        public override string Description {
+            get {
+                return "The class is used to accumulate statistical values about images,\n"
+                    + "like histogram, mean, standard deviation, etc. for each color channel in RGB color space.\n"
+                    + "The class accepts 8 bpp grayscale and 24/32 bpp color images for processing.";
+            }
+        }
+
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
             _imageInput.IsVisible = true;
 
-            _maxBlue = GetProperty("MaxBlue") as IntegerProperty;
-            _minBlue = GetProperty("MinBlue") as IntegerProperty;
-            _medianBlue = GetProperty("MedianBlue") as IntegerProperty;
-            _meanBlue = GetProperty("MeanBlue") as DoubleProperty;
-            _stdDevBlue = GetProperty("StdDevBlue") as DoubleProperty;
+            _maxBlue = GetProperty<IntegerProperty>("MaxBlue");
+            _minBlue = GetProperty<IntegerProperty>("MinBlue");
+            _medianBlue = GetProperty<IntegerProperty>("MedianBlue");
+            _meanBlue = GetProperty<DoubleProperty>("MeanBlue");
+            _stdDevBlue = GetProperty<DoubleProperty>("StdDevBlue");
 
-            _maxGreen = GetProperty("MaxGreen") as IntegerProperty;
-            _minGreen = GetProperty("MinGreen") as IntegerProperty;
-            _medianGreen = GetProperty("MedianGreen") as IntegerProperty;
-            _meanGreen = GetProperty("MeanGreen") as DoubleProperty;
-            _stdDevGreen = GetProperty("StdDevGreen") as DoubleProperty;
+            _maxGreen = GetProperty<IntegerProperty>("MaxGreen");
+            _minGreen = GetProperty<IntegerProperty>("MinGreen");
+            _medianGreen = GetProperty<IntegerProperty>("MedianGreen");
+            _meanGreen = GetProperty<DoubleProperty>("MeanGreen");
+            _stdDevGreen = GetProperty<DoubleProperty>("StdDevGreen");
 
-            _maxRed = GetProperty("MaxRed") as IntegerProperty;
-            _minRed = GetProperty("MinRed") as IntegerProperty;
-            _medianRed = GetProperty("MedianRed") as IntegerProperty;
-            _meanRed = GetProperty("MeanRed") as DoubleProperty;
-            _stdDevRed = GetProperty("StdDevRed") as DoubleProperty;
+            _maxRed = GetProperty<IntegerProperty>("MaxRed");
+            _minRed = GetProperty<IntegerProperty>("MinRed");
+            _medianRed = GetProperty<IntegerProperty>("MedianRed");
+            _meanRed = GetProperty<DoubleProperty>("MeanRed");
+            _stdDevRed = GetProperty<DoubleProperty>("StdDevRed");
             return true;
         }
 

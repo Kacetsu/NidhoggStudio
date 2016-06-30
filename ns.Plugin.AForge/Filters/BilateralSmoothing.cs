@@ -12,12 +12,22 @@ namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
     public class BilateralSmoothing : Tool {
-        private ImageProperty _imageInput;
-        private IntegerProperty _kernelSize;
-        private IntegerProperty _spatialFactor;
         private IntegerProperty _colorFactor;
         private DoubleProperty _colorPower;
+        private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
+        private IntegerProperty _kernelSize;
+        private IntegerProperty _spatialFactor;
+
+        public BilateralSmoothing() {
+            DisplayName = "AForge Bilateral Smoothing";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new IntegerProperty("KernelSize", 7));
+            AddChild(new IntegerProperty("SpatialFactor", 10));
+            AddChild(new IntegerProperty("ColorFactor", 60));
+            AddChild(new DoubleProperty("ColorPower", 0.5));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         public override string Category {
             get {
@@ -33,25 +43,15 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public BilateralSmoothing() {
-            DisplayName = "AForge Bilateral Smoothing";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new IntegerProperty("KernelSize", 7));
-            AddChild(new IntegerProperty("SpatialFactor", 10));
-            AddChild(new IntegerProperty("ColorFactor", 60));
-            AddChild(new DoubleProperty("ColorPower", 0.5));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _kernelSize = GetProperty("KernelSize") as IntegerProperty;
-            _spatialFactor = GetProperty("SpatialFactor") as IntegerProperty;
-            _colorFactor = GetProperty("ColorFactor") as IntegerProperty;
-            _colorPower = GetProperty("ColorPower") as DoubleProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _kernelSize = GetProperty<IntegerProperty>("KernelSize");
+            _spatialFactor = GetProperty<IntegerProperty>("SpatialFactor");
+            _colorFactor = GetProperty<IntegerProperty>("ColorFactor");
+            _colorPower = GetProperty<DoubleProperty>("ColorPower");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

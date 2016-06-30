@@ -12,9 +12,16 @@ namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
     public class BrightnessCorrection : Tool {
+        private IntegerProperty _adjustValue;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
-        private IntegerProperty _adjustValue;
+
+        public BrightnessCorrection() {
+            DisplayName = "AForge Brightness Correction";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new IntegerProperty("AdjustValue", 0, -255, 255));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         public override string Category {
             get {
@@ -29,19 +36,12 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public BrightnessCorrection() {
-            DisplayName = "AForge Brightness Correction";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new IntegerProperty("AdjustValue", 0, -255, 255));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _adjustValue = GetProperty("AdjustValue") as IntegerProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _adjustValue = GetProperty<IntegerProperty>("AdjustValue");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

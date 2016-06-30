@@ -11,8 +11,8 @@ namespace ns.Base.Plugins {
     /// </summary>
     [DataContract]
     public class Tool : Plugin {
-        private DateTime _timeMeasureStart;
         private DoubleProperty _executionTimeMs;
+        private DateTime _timeMeasureStart;
 
         /// <summary>
         /// Base Class for all Tools.
@@ -26,6 +26,16 @@ namespace ns.Base.Plugins {
 
         public Tool(Tool other) : base(other) {
             Name = other.Name;
+        }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
+        public virtual string Category {
+            get { return string.Empty; }
         }
 
         /// <summary>
@@ -48,16 +58,6 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Gets the category.
-        /// </summary>
-        /// <value>
-        /// The category.
-        /// </value>
-        public virtual string Category {
-            get { return string.Empty; }
-        }
-
-        /// <summary>
         /// Clones the Tools as deep Clone.
         /// Generates a new UID for the clones Tool.
         /// </summary>
@@ -66,17 +66,6 @@ namespace ns.Base.Plugins {
             Tool clone = this.DeepClone();
             clone.UID = GenerateUID();
             return clone;
-        }
-
-        /// <summary>
-        /// Initialze the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Initialize() {
-            _executionTimeMs = GetProperty("ExecutionTimeMs") as DoubleProperty;
-            return base.Initialize();
         }
 
         /// <summary>
@@ -106,13 +95,14 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Pres the run.
+        /// Initialze the Plugin.
         /// </summary>
-        /// <returns></returns>
-        public override bool PreRun() {
-            _timeMeasureStart = DateTime.Now;
-
-            return base.PreRun();
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Initialize() {
+            _executionTimeMs = GetProperty<DoubleProperty>("ExecutionTimeMs");
+            return base.Initialize();
         }
 
         /// <summary>
@@ -124,6 +114,16 @@ namespace ns.Base.Plugins {
                 _executionTimeMs.Value = DateTime.Now.Subtract(_timeMeasureStart).TotalMilliseconds;
 
             return base.PostRun();
+        }
+
+        /// <summary>
+        /// Pres the run.
+        /// </summary>
+        /// <returns></returns>
+        public override bool PreRun() {
+            _timeMeasureStart = DateTime.Now;
+
+            return base.PreRun();
         }
     }
 }

@@ -15,6 +15,14 @@ namespace ns.Plugin.Base {
         private ImageProperty _outputImage;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Grayscale"/> class.
+        /// </summary>
+        public Grayscale() {
+            AddChild(new ImageProperty("InputImage", false));
+            AddChild(new ImageProperty("OuputImage", true));
+        }
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
@@ -37,14 +45,6 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Grayscale"/> class.
-        /// </summary>
-        public Grayscale() {
-            AddChild(new ImageProperty("InputImage", false));
-            AddChild(new ImageProperty("OuputImage", true));
-        }
-
-        /// <summary>
         /// Initialze the Plugin.
         /// </summary>
         /// <returns>
@@ -53,8 +53,8 @@ namespace ns.Plugin.Base {
         public override bool Initialize() {
             base.Initialize();
 
-            _inputImage = GetProperty("InputImage") as ImageProperty;
-            _outputImage = GetProperty("OuputImage") as ImageProperty;
+            _inputImage = GetProperty<ImageProperty>("InputImage");
+            _outputImage = GetProperty<ImageProperty>("OuputImage");
             return true;
         }
 
@@ -63,7 +63,7 @@ namespace ns.Plugin.Base {
         /// </summary>
         /// <returns></returns>
         public override bool Run() {
-            ImageContainer inputContainer = (ImageContainer)_inputImage.Value;
+            ImageContainer inputContainer = _inputImage.Value;
             byte[] data = inputContainer.Data;
             byte bpp = inputContainer.BytesPerPixel;
 

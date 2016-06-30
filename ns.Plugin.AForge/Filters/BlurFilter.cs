@@ -12,10 +12,18 @@ namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
     public class BlurFilter : Tool {
+        private IntegerProperty _divisor;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
-        private IntegerProperty _divisor;
         private IntegerProperty _threshold;
+
+        public BlurFilter() {
+            DisplayName = "AForge Blur Filter";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new IntegerProperty("Divisor", 50, int.MinValue, int.MaxValue));
+            AddChild(new IntegerProperty("Threshold", 0));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         public override string Category {
             get {
@@ -29,21 +37,13 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public BlurFilter() {
-            DisplayName = "AForge Blur Filter";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new IntegerProperty("Divisor", 50, int.MinValue, int.MaxValue));
-            AddChild(new IntegerProperty("Threshold", 0));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _divisor = GetProperty("Divisor") as IntegerProperty;
-            _threshold = GetProperty("Threshold") as IntegerProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _divisor = GetProperty<IntegerProperty>("Divisor");
+            _threshold = GetProperty<IntegerProperty>("Threshold");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

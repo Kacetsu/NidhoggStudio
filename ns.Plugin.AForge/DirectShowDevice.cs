@@ -16,10 +16,12 @@ namespace ns.Plugin.AForge {
 
     [Visible, DataContract]
     public class DirectShowDevice : ImageDevice {
-        private ImageProperty _imageProperty;
+        private Bitmap _bitmap;
         private ListProperty _deviceListProperty;
-        private ListProperty _resolutionListProperty;
+        private bool _imageAcquired = false;
+        private ImageProperty _imageProperty;
         private bool _isTerminated = true;
+        private ListProperty _resolutionListProperty;
         private VideoCaptureDevice _videoDevice = null;
 
         /// <summary>
@@ -61,10 +63,18 @@ namespace ns.Plugin.AForge {
             }
         }
 
-        private void DeviceListProperty_PropertyChangedEvent(object sender, Base.Event.NodeChangedEventArgs e) {
-            if (sender == _deviceListProperty && e.Name == "Value") {
-                Base.Log.Trace.WriteLine(MethodBase.GetCurrentMethod().Name + " not implemented!", TraceEventType.Warning);
-            }
+        /// <summary>
+        /// Finalize the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Finalize() {
+            _videoDevice.SignalToStop();
+            _videoDevice.WaitForStop();
+            base.Finalize();
+            _isTerminated = true;
+            return true;
         }
 
         /// <summary>
@@ -75,9 +85,9 @@ namespace ns.Plugin.AForge {
         /// </returns>
         public override bool Initialize() {
             try {
-                _imageProperty = GetProperty("Image") as ImageProperty;
-                _deviceListProperty = GetProperty("Selected") as ListProperty;
-                _resolutionListProperty = GetProperty("Resolution") as ListProperty;
+                _imageProperty = GetProperty<ImageProperty>("Image");
+                _deviceListProperty = GetProperty<ListProperty>("Selected");
+                _resolutionListProperty = GetProperty<ListProperty>("Resolution");
 
                 _resolutionListProperty.PropertyChanged += ResolutionListProperty_PropertyChanged;
 
@@ -106,16 +116,6 @@ namespace ns.Plugin.AForge {
             }
         }
 
-        private void ResolutionListProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "Value" && !_isTerminated) {
-                _videoDevice.Stop();
-                _videoDevice.VideoResolution = _videoDevice.VideoCapabilities[_resolutionListProperty.Index];
-                _videoDevice.Start();
-            }
-        }
-
-        private bool _imageAcquired = false;
-
         /// <summary>
         /// Run the Plugin.
         /// </summary>
@@ -136,25 +136,15 @@ namespace ns.Plugin.AForge {
             return true;
         }
 
-        /// <summary>
-        /// Finalize the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            _videoDevice.SignalToStop();
-            _videoDevice.WaitForStop();
-            base.Finalize();
-            _isTerminated = true;
-            return true;
-        }
-
-        private Bitmap _bitmap;
-
         private void _videoDevice_NewFrame(object sender, global::AForge.Video.NewFrameEventArgs eventArgs) {
             _bitmap = eventArgs.Frame.Clone() as Bitmap;
             _imageAcquired = true;
+        }
+
+        private void DeviceListProperty_PropertyChangedEvent(object sender, Base.Event.NodeChangedEventArgs e) {
+            if (sender == _deviceListProperty && e.Name == "Value") {
+                Base.Log.Trace.WriteLine(MethodBase.GetCurrentMethod().Name + " not implemented!", TraceEventType.Warning);
+            }
         }
 
         private byte[] ImageToByteArray(Bitmap img, out int stride) {
@@ -178,6 +168,14 @@ namespace ns.Plugin.AForge {
             Base.Log.Trace.WriteLine("Stopwatch: ImageToByteArray: " + stopwatch.ElapsedMilliseconds.ToString(), TraceEventType.Verbose);
 #endif
             return byteArray;
+        }
+
+        private void ResolutionListProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Value" && !_isTerminated) {
+                _videoDevice.Stop();
+                _videoDevice.VideoResolution = _videoDevice.VideoCapabilities[_resolutionListProperty.Index];
+                _videoDevice.Start();
+            }
         }
     }
 }

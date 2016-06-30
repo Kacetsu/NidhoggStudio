@@ -12,9 +12,19 @@ namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
     public class ContrastCorrection : Tool {
+        private IntegerProperty _factor;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
-        private IntegerProperty _factor;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContrastCorrection"/> class.
+        /// </summary>
+        public ContrastCorrection() {
+            DisplayName = "AForge Contrast Correction";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new IntegerProperty("Factor", 0, -127, 127));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         /// <summary>
         /// Gets the category.
@@ -46,25 +56,15 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContrastCorrection"/> class.
-        /// </summary>
-        public ContrastCorrection() {
-            DisplayName = "AForge Contrast Correction";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new IntegerProperty("Factor", 0, -127, 127));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
-        /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <returns></returns>
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _factor = GetProperty("Factor") as IntegerProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _factor = GetProperty<IntegerProperty>("Factor");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

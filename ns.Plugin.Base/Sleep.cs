@@ -14,20 +14,20 @@ namespace ns.Plugin.Base {
         private int _milliseconds;
 
         /// <summary>
-        /// Gets the category.
-        /// </summary>
-        /// <value>
-        /// The category.
-        /// </value>
-        public override string Category => ToolCategory.Common.GetDescription();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Sleep"/> class.
         /// </summary>
         public Sleep() {
             DisplayName = "Sleep";
             AddChild(new IntegerProperty("Milliseconds", 1000));
         }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
+        public override string Category => ToolCategory.Common.GetDescription();
 
         /// <summary>
         /// Initializes this instance.
@@ -37,7 +37,7 @@ namespace ns.Plugin.Base {
             base.Initialize();
 
             try {
-                _milliseconds = (GetProperty("Milliseconds") as IntegerProperty).Value;
+                _milliseconds = GetProperty<IntegerProperty>("Milliseconds").Value;
                 return true;
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
@@ -53,7 +53,7 @@ namespace ns.Plugin.Base {
             base.PreRun();
 
             try {
-                _milliseconds = (GetProperty("Milliseconds") as IntegerProperty).Value;
+                _milliseconds = GetProperty<IntegerProperty>("Milliseconds").Value;
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;

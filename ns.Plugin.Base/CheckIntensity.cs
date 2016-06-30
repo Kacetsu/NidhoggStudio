@@ -17,6 +17,15 @@ namespace ns.Plugin.Base {
         private ImageProperty _inputImage;
         private DoubleProperty _intensityProperty;
 
+        public CheckIntensity() {
+            DisplayName = "Check Intensity";
+            AddChild(new ImageProperty("InputImage", false));
+            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
+            DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
+            intensityProperty.Tolerance = new Tolerance<double>(0, 100);
+            AddChild(intensityProperty);
+        }
+
         public override string Category {
             get {
                 return ToolCategory.Common.GetDescription();
@@ -29,22 +38,13 @@ namespace ns.Plugin.Base {
             }
         }
 
-        public CheckIntensity() {
-            DisplayName = "Check Intensity";
-            AddChild(new ImageProperty("InputImage", false));
-            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
-            DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
-            intensityProperty.Tolerance = new Tolerance<double>(0, 100);
-            AddChild(intensityProperty);
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _aoiProperty = GetProperty("AOI") as RectangleProperty;
-            _inputImage = GetProperty("InputImage") as ImageProperty;
+            _aoiProperty = GetProperty<RectangleProperty>("AOI");
+            _inputImage = GetProperty<ImageProperty>("InputImage");
             _inputImage.IsVisible = true;
-            _intensityProperty = GetProperty("Intensity") as DoubleProperty;
+            _intensityProperty = GetProperty<DoubleProperty>("Intensity");
             return true;
         }
 

@@ -16,6 +16,13 @@ namespace ns.Plugin.AForge.Filters {
         private ImageProperty _imageOutput;
         private IntegerProperty _kernelSize;
 
+        public ConservativeSmoothing() {
+            DisplayName = "AForge Conservative Smoothing";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new IntegerProperty("KernelSize", 7, 3, 25));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
+
         public override string Category {
             get {
                 return "AForge Filter";
@@ -33,19 +40,12 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public ConservativeSmoothing() {
-            DisplayName = "AForge Conservative Smoothing";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new IntegerProperty("KernelSize", 7, 3, 25));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _kernelSize = GetProperty("KernelSize") as IntegerProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _kernelSize = GetProperty<IntegerProperty>("KernelSize");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

@@ -15,10 +15,10 @@ namespace ns.Plugin.Base {
 
     [Visible, DataContract]
     public class ImageFileDevice : ImageDevice {
-        private string _directory = string.Empty;
-        private ImageProperty _imageProperty;
         private List<Bitmap> _bitmaps;
+        private string _directory = string.Empty;
         private int _imageIndex = 0;
+        private ImageProperty _imageProperty;
         private List<string> _openImageFilenames;
 
         /// <summary>
@@ -29,51 +29,6 @@ namespace ns.Plugin.Base {
             AddChild(new StringProperty("Directory", BaseManager.DocumentsPath + "Images"));
             AddChild(new ImageProperty("Image", true));
             _openImageFilenames = new List<string>();
-        }
-
-        /// <summary>
-        /// Initialze the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Initialize() {
-            _bitmaps = new List<Bitmap>();
-            _directory = (GetProperty("Directory") as StringProperty).Value;
-            _imageProperty = GetProperty("Image") as ImageProperty;
-
-            if (!Directory.Exists(_directory)) {
-                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
-                Directory.CreateDirectory(_directory);
-            }
-
-            int imageCount = UpdateImageFiles();
-
-            if (imageCount == 0) {
-                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Warning);
-            }
-
-            return true;
-        }
-
-        private int UpdateImageFiles() {
-            int imageCount = 0;
-
-            string[] filenames = Directory.GetFiles(_directory);
-
-            foreach (string filename in filenames) {
-                if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)
-                    || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)
-                    || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)) {
-                    if (_openImageFilenames.Contains(filename)) continue;
-
-                    Bitmap bitmap = new Bitmap(filename);
-                    _bitmaps.Add(bitmap);
-                    imageCount++;
-                }
-            }
-
-            return imageCount;
         }
 
         /// <summary>
@@ -88,6 +43,31 @@ namespace ns.Plugin.Base {
             }
             _bitmaps = null;
             _imageIndex = 0;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Initialize() {
+            _bitmaps = new List<Bitmap>();
+            _directory = GetProperty<StringProperty>("Directory")?.Value;
+            _imageProperty = GetProperty<ImageProperty>("Image");
+
+            if (!Directory.Exists(_directory)) {
+                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
+                Directory.CreateDirectory(_directory);
+            }
+
+            int imageCount = UpdateImageFiles();
+
+            if (imageCount == 0) {
+                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Warning);
+            }
 
             return true;
         }
@@ -147,6 +127,26 @@ namespace ns.Plugin.Base {
                 stride = 0;
                 return new byte[0];
             }
+        }
+
+        private int UpdateImageFiles() {
+            int imageCount = 0;
+
+            string[] filenames = Directory.GetFiles(_directory);
+
+            foreach (string filename in filenames) {
+                if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)
+                    || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)
+                    || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)) {
+                    if (_openImageFilenames.Contains(filename)) continue;
+
+                    Bitmap bitmap = new Bitmap(filename);
+                    _bitmaps.Add(bitmap);
+                    imageCount++;
+                }
+            }
+
+            return imageCount;
         }
     }
 }

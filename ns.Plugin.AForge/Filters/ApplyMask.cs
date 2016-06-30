@@ -17,6 +17,13 @@ namespace ns.Plugin.AForge.Filters {
         private ImageProperty _imageMask;
         private ImageProperty _imageOutput;
 
+        public ApplyMask() {
+            DisplayName = "AForge Apply Mask";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new ImageProperty("ImageMask", false));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
+
         public override string Category {
             get {
                 return "AForge Filter";
@@ -32,19 +39,12 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public ApplyMask() {
-            DisplayName = "AForge Apply Mask";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new ImageProperty("ImageMask", false));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _imageMask = GetProperty("ImageMask") as ImageProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _imageMask = GetProperty<ImageProperty>("ImageMask");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

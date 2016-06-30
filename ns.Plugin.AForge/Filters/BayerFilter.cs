@@ -15,6 +15,12 @@ namespace ns.Plugin.AForge.Filters {
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
 
+        public BayerFilter() {
+            DisplayName = "AForge Bayer Filter";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
+
         public override string Category {
             get {
                 return "AForge Filter";
@@ -29,17 +35,11 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public BayerFilter() {
-            DisplayName = "AForge Bayer Filter";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

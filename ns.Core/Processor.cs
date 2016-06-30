@@ -17,19 +17,31 @@ namespace ns.Core {
     /// Handles the use of all operations.
     /// </summary>
     public class Processor : NotifiableObject {
-        private ProjectManager _projectManager;
-        private DataStorageManager _dataStorageManager;
-        private PropertyManager _propertyManager;
-        private ExtensionManager _extensionManager;
-        private List<AsyncNanoProcessor> _nexuses;
-        private bool _isFinalize = false;
-        private bool _isRunning = false;
+
+        [XmlIgnore]
+        public Action Started;
 
         [XmlIgnore]
         public Action Stopped;
 
-        [XmlIgnore]
-        public Action Started;
+        private DataStorageManager _dataStorageManager;
+        private ExtensionManager _extensionManager;
+        private bool _isFinalize = false;
+        private bool _isRunning = false;
+        private List<AsyncNanoProcessor> _nexuses;
+        private ProjectManager _projectManager;
+        private PropertyManager _propertyManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Processor"/> class.
+        /// </summary>
+        public Processor() {
+            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+            _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
+            _extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
+            _nexuses = new List<AsyncNanoProcessor>();
+        }
 
         /// <summary>
         /// Gets a value indicating whether this instance is running.
@@ -48,14 +60,19 @@ namespace ns.Core {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Processor"/> class.
+        /// Pauses this instance.
         /// </summary>
-        public Processor() {
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
-            _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
-            _extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
-            _nexuses = new List<AsyncNanoProcessor>();
+        /// <returns>Success of the operation.</returns>
+        public bool Pause() {
+            return true;
+        }
+
+        /// <summary>
+        /// Restarts this instance.
+        /// </summary>
+        /// <returns>Success of the operation.</returns>
+        public bool Restart() {
+            return true;
         }
 
         /// <summary>
@@ -105,39 +122,6 @@ namespace ns.Core {
         }
 
         /// <summary>
-        /// Pauses this instance.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        public bool Pause() {
-            return true;
-        }
-
-        /// <summary>
-        /// Restarts this instance.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        public bool Restart() {
-            return true;
-        }
-
-        /// <summary>
-        /// Initializes the operations.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        private bool InitializeOperations() {
-            _isFinalize = false;
-            foreach (Operation operation in _projectManager.Configuration.Operations) {
-                if (operation.Childs.Count < 1 || operation.Initialize() == false) {
-                    Base.Log.Trace.WriteLine("Cannot start operation [" + operation.Name + "]!"
-                        + Environment.NewLine + "May the operation is empty or something happend while initializing it.", TraceEventType.Warning);
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Finalizes the operations.
         /// </summary>
         /// <returns>Success of the operation.</returns>
@@ -158,30 +142,78 @@ namespace ns.Core {
         }
 
         /// <summary>
-        /// Terminates the operations.
+        /// Initializes the operations.
         /// </summary>
         /// <returns>Success of the operation.</returns>
-        private bool TerminateOperations() {
-            bool result = true;
-            foreach (AsyncNanoProcessor nanoProcessor in _nexuses) {
-                nanoProcessor.Operation.PropertyChanged -= OperationPropertyChangedHandle;
-                bool tmpResult = false;
-                tmpResult = nanoProcessor.Stop();
-                result = !tmpResult ? false : true;
+        private bool InitializeOperations() {
+            _isFinalize = false;
+            foreach (Operation operation in _projectManager.Configuration.Operations) {
+                if (operation.Childs.Count < 1 || operation.Initialize() == false) {
+                    Base.Log.Trace.WriteLine("Cannot start operation [" + operation.Name + "]!"
+                        + Environment.NewLine + "May the operation is empty or something happend while initializing it.", TraceEventType.Warning);
+                    return false;
+                }
             }
-            return result;
+
+            return true;
         }
 
         /// <summary>
-        /// Starts the operations.
+        /// Operations the status changed handle.
         /// </summary>
-        private void StartOperations() {
-            foreach (Operation operation in _projectManager.Configuration.Operations) {
-                ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
-                string trigger = triggerList.Value.ToString();
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void OperationPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName != "Status") return;
 
-                if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
-                StartOperation(operation);
+            Operation operation = sender as Operation;
+            PluginStatus status = operation.Status;
+
+            if (_isFinalize == true)
+                return;
+
+            List<Operation> connectedOperations = new List<Operation>();
+
+            foreach (Operation o in _projectManager.Configuration.Operations) {
+                Property linkedProperty = o.GetProperty<Property>("LinkedOperation");
+                if (linkedProperty.ConnectedUID == operation.UID)
+                    connectedOperations.Add(o);
+            }
+
+            switch (status) {
+                case PluginStatus.Failed:
+                case PluginStatus.Finished:
+                if (_nexuses.Count > 0) {
+                    AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
+                    if (executionContext != null && _nexuses.Contains(executionContext)) {
+                        ListProperty triggerList = operation.GetProperty<ListProperty>("Trigger");
+                        string trigger = triggerList.Value.ToString();
+
+                        foreach (Operation o in connectedOperations) {
+                            Property triggerProperty = o.GetProperty<Property>("Trigger");
+                            if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
+                                NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                                nanoProcessor.Start();
+                            }
+                        }
+                    } else
+                        Base.Log.Trace.WriteLine("Unknown execution context! Careful this could end in memory leak!", TraceEventType.Error);
+                }
+                _extensionManager.RunAll();
+                break;
+
+                case PluginStatus.Started:
+                foreach (Operation o in connectedOperations) {
+                    Property triggerProperty = o.GetProperty<Property>("Trigger");
+                    if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Started.GetDescription()) {
+                        NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                        nanoProcessor.Start();
+                    }
+                }
+                break;
+
+                default:
+                break;
             }
         }
 
@@ -204,62 +236,31 @@ namespace ns.Core {
         }
 
         /// <summary>
-        /// Operations the status changed handle.
+        /// Starts the operations.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void OperationPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName != "Status") return;
+        private void StartOperations() {
+            foreach (Operation operation in _projectManager.Configuration.Operations) {
+                ListProperty triggerList = operation.GetProperty<ListProperty>("Trigger");
+                string trigger = triggerList.Value.ToString();
 
-            Operation operation = sender as Operation;
-            PluginStatus status = operation.Status;
-
-            if (_isFinalize == true)
-                return;
-
-            List<Operation> connectedOperations = new List<Operation>();
-
-            foreach (Operation o in _projectManager.Configuration.Operations) {
-                Property linkedProperty = o.GetProperty("LinkedOperation");
-                if (linkedProperty.ConnectedUID == operation.UID)
-                    connectedOperations.Add(o);
+                if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
+                StartOperation(operation);
             }
+        }
 
-            switch (status) {
-                case PluginStatus.Failed:
-                case PluginStatus.Finished:
-                if (_nexuses.Count > 0) {
-                    AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
-                    if (executionContext != null && _nexuses.Contains(executionContext)) {
-                        ListProperty triggerList = operation.GetProperty("Trigger") as ListProperty;
-                        string trigger = triggerList.Value.ToString();
-
-                        foreach (Operation o in connectedOperations) {
-                            Property triggerProperty = o.GetProperty("Trigger");
-                            if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
-                                NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
-                                nanoProcessor.Start();
-                            }
-                        }
-                    } else
-                        Base.Log.Trace.WriteLine("Unknown execution context! Careful this could end in memory leak!", TraceEventType.Error);
-                }
-                _extensionManager.RunAll();
-                break;
-
-                case PluginStatus.Started:
-                foreach (Operation o in connectedOperations) {
-                    Property triggerProperty = o.GetProperty("Trigger");
-                    if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Started.GetDescription()) {
-                        NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
-                        nanoProcessor.Start();
-                    }
-                }
-                break;
-
-                default:
-                break;
+        /// <summary>
+        /// Terminates the operations.
+        /// </summary>
+        /// <returns>Success of the operation.</returns>
+        private bool TerminateOperations() {
+            bool result = true;
+            foreach (AsyncNanoProcessor nanoProcessor in _nexuses) {
+                nanoProcessor.Operation.PropertyChanged -= OperationPropertyChangedHandle;
+                bool tmpResult = false;
+                tmpResult = nanoProcessor.Stop();
+                result = !tmpResult ? false : true;
             }
+            return result;
         }
     }
 }

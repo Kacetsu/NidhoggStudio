@@ -13,6 +13,15 @@ namespace ns.Plugin.Base {
         private DateTime _lastTime;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="IterationCounter"/> class.
+        /// </summary>
+        public IterationCounter() {
+            DisplayName = "Iteration Counter";
+            AddChild(new IntegerProperty("Iterations", true));
+            AddChild(new DoubleProperty("ElapsedMs", true));
+        }
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
@@ -35,12 +44,16 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IterationCounter"/> class.
+        /// Finalize the Node.
         /// </summary>
-        public IterationCounter() {
-            DisplayName = "Iteration Counter";
-            AddChild(new IntegerProperty("Iterations", true));
-            AddChild(new DoubleProperty("ElapsedMs", true));
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool Finalize() {
+            base.Finalize();
+
+            _iterations = 0;
+            return true;
         }
 
         /// <summary>
@@ -57,26 +70,14 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Run the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Run() {
-            if (_iterations == int.MaxValue) _iterations = 0;
-            _iterations++;
-            return true;
-        }
-
-        /// <summary>
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
         public override bool PostRun() {
             base.PostRun();
 
-            IntegerProperty propIteration = GetProperty("Iterations") as IntegerProperty;
-            DoubleProperty propElapsedMs = GetProperty("ElapsedMs") as DoubleProperty;
+            IntegerProperty propIteration = GetProperty<IntegerProperty>("Iterations");
+            DoubleProperty propElapsedMs = GetProperty<DoubleProperty>("ElapsedMs");
             propIteration.Value = _iterations;
 
             DateTime endTime = DateTime.Now;
@@ -88,15 +89,14 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Finalize the Node.
+        /// Run the Plugin.
         /// </summary>
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Finalize() {
-            base.Finalize();
-
-            _iterations = 0;
+        public override bool Run() {
+            if (_iterations == int.MaxValue) _iterations = 0;
+            _iterations++;
             return true;
         }
     }

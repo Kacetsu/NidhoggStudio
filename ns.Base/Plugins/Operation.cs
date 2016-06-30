@@ -15,6 +15,7 @@ namespace ns.Base.Plugins {
     public class Operation : Plugin {
         private Device _captureDevice;
         private string _linkedOperation = string.Empty;
+        private ImageProperty _outImageProperty;
 
         /// <summary>
         /// Base Class for all Operations.
@@ -25,6 +26,7 @@ namespace ns.Base.Plugins {
             AddChild(new DeviceProperty(nameof(CaptureDevice)));
             AddChild(new StringProperty("LinkedOperation", false));
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
+            AddChild(new ImageProperty("OutImage", true));
         }
 
         /// <summary>
@@ -53,11 +55,13 @@ namespace ns.Base.Plugins {
         public Device CaptureDevice {
             get { return _captureDevice; }
             set {
-                DeviceProperty property = GetProperty(nameof(CaptureDevice)) as DeviceProperty;
+                DeviceProperty property = GetProperty<DeviceProperty>(nameof(CaptureDevice));
                 Device device = property?.SelectedItem;
                 if (device != value && property != null) {
+                    device?.Finalize();
                     device = value;
                     property.SelectedItem = device;
+                    device?.Initialize();
                     OnPropertyChanged();
                 }
             }
@@ -68,7 +72,7 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <param name="devices">The devices.</param>
         public void AddDeviceList(List<Device> devices) {
-            (GetProperty(nameof(CaptureDevice)) as DeviceProperty).Value = devices;
+            GetProperty<DeviceProperty>(nameof(CaptureDevice)).Value = devices;
         }
 
         /// <summary>
@@ -91,7 +95,7 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Finalize() {
-            return base.Finalize();
+            return _captureDevice?.Finalize() == true && base.Finalize();
         }
 
         /// <summary>
@@ -101,15 +105,22 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Initialize() {
-            base.Initialize();
+            bool result = base.Initialize();
 
-            _captureDevice = (GetProperty(nameof(CaptureDevice)) as DeviceProperty)?.SelectedItem;
+            _captureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
+            _outImageProperty = GetProperty<ImageProperty>("OutImage");
+
+            result = _captureDevice?.Initialize() == true;
+
+            if (!result) return result;
 
             foreach (Tool tool in Childs.Where(t => t is Tool)) {
-                if (!tool.Initialize())
-                    return false;
+                if (!(result = tool.Initialize())) {
+                    break;
+                }
             }
-            return true;
+
+            return result;
         }
 
         /// <summary>
@@ -119,7 +130,17 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Run() {
-            return RunChilds();
+            bool result = _captureDevice?.PreRun() == true;
+
+            if (result) {
+                _captureDevice.Run();
+                ImageProperty deviceImage = _captureDevice.GetProperty<ImageProperty>();
+                _outImageProperty.Value = deviceImage.Value;
+                result = RunChilds();
+            }
+
+            result = _captureDevice?.PostRun() == true;
+            return result;
         }
     }
 }

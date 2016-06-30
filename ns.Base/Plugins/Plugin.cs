@@ -13,13 +13,10 @@ namespace ns.Base.Plugins {
     /// </summary>
     [DataContract(IsReference = true), KnownType(typeof(Operation)), KnownType(typeof(Tool)), KnownType(typeof(Device))]
     public class Plugin : Node, IPlugin, ICloneable {
-        private string _version = string.Empty;
-
         private string _assemblyFile = string.Empty;
-
         private string _displayName = string.Empty;
-
         private PluginStatus _status = PluginStatus.Unknown;
+        private string _version = string.Empty;
 
         /// <summary>
         /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
@@ -50,19 +47,11 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Gets or sets the Version.
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
         /// </summary>
-        [DataMember]
-        public string Version {
-            get {
-                if (string.IsNullOrEmpty(_version)) {
-                    Assembly assembly = Assembly.GetAssembly(GetType());
-                    AssemblyFileVersionAttribute attribute = (AssemblyFileVersionAttribute)assembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute));
-                    _version = attribute.Version;
-                }
-                return _version;
-            }
-            set { _version = value; }
+        public virtual string Description {
+            get { return string.Empty; }
         }
 
         /// <summary>
@@ -85,14 +74,6 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Gets or sets the Description.
-        /// The Description is used for the Application User to visualize a human readable Name.
-        /// </summary>
-        public virtual string Description {
-            get { return string.Empty; }
-        }
-
-        /// <summary>
         /// Gets or sets the status.
         /// </summary>
         /// <value>
@@ -105,6 +86,71 @@ namespace ns.Base.Plugins {
                 _status = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the Version.
+        /// </summary>
+        [DataMember]
+        public string Version {
+            get {
+                if (string.IsNullOrEmpty(_version)) {
+                    Assembly assembly = Assembly.GetAssembly(GetType());
+                    AssemblyFileVersionAttribute attribute = (AssemblyFileVersionAttribute)assembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute));
+                    _version = attribute.Version;
+                }
+                return _version;
+            }
+            set { _version = value; }
+        }
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        public T GetProperty<T>(string name) where T : Property {
+            T result = null;
+
+            foreach (T property in Childs.Where(p => p is T)) {
+                if (property.Name == name) {
+                    result = property;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetProperty<T>() where T : Property => (T)Childs.First(p => p is T);
+
+        /// <summary>
+        /// Called when [finished].
+        /// </summary>
+        public void OnFinished() {
+            if (Status != PluginStatus.Failed) Status = PluginStatus.Finished;
+        }
+
+        /// <summary>
+        /// Called when [started].
+        /// </summary>
+        public void OnStarted() {
+            Status = PluginStatus.Started;
+        }
+
+        /// <summary>
+        /// Posts the run.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool PostRun() {
+            OnFinished();
+            return true;
         }
 
         /// <summary>
@@ -121,23 +167,6 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <returns>Success of the Operation.</returns>
         public virtual bool Run() {
-            return true;
-        }
-
-        /// <summary>
-        /// Posts the run.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool PostRun() {
-            OnFinished();
-            return true;
-        }
-
-        /// <summary>
-        /// Terminates this instance.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Terminate() {
             return true;
         }
 
@@ -179,53 +208,11 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Gets the first property with the name.
+        /// Terminates this instance.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <returns></returns>
-        public Property GetProperty(string name) {
-            Property result = null;
-
-            foreach (Property property in Childs.Where(p => p is Property)) {
-                if (property.Name == name) {
-                    result = property;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the first property with the matching type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
-        public Property GetProperty(Type type) {
-            Property result = null;
-
-            foreach (Property property in Childs.Where(p => p is Property)) {
-                if (property.GetType() == type) {
-                    result = property;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Called when [started].
-        /// </summary>
-        public void OnStarted() {
-            Status = PluginStatus.Started;
-        }
-
-        /// <summary>
-        /// Called when [finished].
-        /// </summary>
-        public void OnFinished() {
-            if (Status != PluginStatus.Failed) Status = PluginStatus.Finished;
+        public virtual bool Terminate() {
+            return true;
         }
     }
 }

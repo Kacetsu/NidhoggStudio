@@ -12,11 +12,20 @@ namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
     public class Grayscale : Tool {
+        private DoubleProperty _blueCoefficient;
+        private DoubleProperty _greenCoefficient;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
         private DoubleProperty _redCoefficient;
-        private DoubleProperty _greenCoefficient;
-        private DoubleProperty _blueCoefficient;
+
+        public Grayscale() {
+            DisplayName = "AForge Grayscale";
+            AddChild(new ImageProperty("ImageInput", false));
+            AddChild(new DoubleProperty("RedCoefficient", 0.333, 0, 1));
+            AddChild(new DoubleProperty("GreenCoefficient", 0.333, 0, 1));
+            AddChild(new DoubleProperty("BlueCoefficient", 0.333, 0, 1));
+            AddChild(new ImageProperty("ImageOutput", true));
+        }
 
         public override string Category {
             get {
@@ -33,23 +42,14 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
-        public Grayscale() {
-            DisplayName = "AForge Grayscale";
-            AddChild(new ImageProperty("ImageInput", false));
-            AddChild(new DoubleProperty("RedCoefficient", 0.333, 0, 1));
-            AddChild(new DoubleProperty("GreenCoefficient", 0.333, 0, 1));
-            AddChild(new DoubleProperty("BlueCoefficient", 0.333, 0, 1));
-            AddChild(new ImageProperty("ImageOutput", true));
-        }
-
         public override bool Initialize() {
             base.Initialize();
 
-            _imageInput = GetProperty("ImageInput") as ImageProperty;
-            _redCoefficient = GetProperty("RedCoefficient") as DoubleProperty;
-            _greenCoefficient = GetProperty("GreenCoefficient") as DoubleProperty;
-            _blueCoefficient = GetProperty("BlueCoefficient") as DoubleProperty;
-            _imageOutput = GetProperty("ImageOutput") as ImageProperty;
+            _imageInput = GetProperty<ImageProperty>("ImageInput");
+            _redCoefficient = GetProperty<DoubleProperty>("RedCoefficient");
+            _greenCoefficient = GetProperty<DoubleProperty>("GreenCoefficient");
+            _blueCoefficient = GetProperty<DoubleProperty>("BlueCoefficient");
+            _imageOutput = GetProperty<ImageProperty>("ImageOutput");
             return true;
         }
 

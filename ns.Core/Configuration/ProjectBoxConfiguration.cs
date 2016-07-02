@@ -1,13 +1,18 @@
 ﻿using ns.Base.Configuration;
+using System.Runtime.Serialization;
 
 namespace ns.Core.Configuration {
 
+    [DataContract]
     public class ProjectBoxConfiguration : BaseConfiguration {
-        private string _lastUsedProjectPath = string.Empty;
 
-        public string LastUsedProjectPath {
-            get { return _lastUsedProjectPath; }
-            set { _lastUsedProjectPath = value; }
-        }
+        /// <summary>
+        /// Gets or sets the last used project path.
+        /// </summary>
+        /// <value>
+        /// The last used project path.
+        /// </value>
+        [DataMember]
+        public string LastUsedProjectPath { get; set; }
     }
 }

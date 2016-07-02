@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Xml.Serialization;
 
 namespace ns.Core.Manager.ProjectBox {
 
@@ -12,15 +11,46 @@ namespace ns.Core.Manager.ProjectBox {
         public const string EXTENSION_XML = ".xml";
         public const string PROJECTBOX_NAME = "ProjectBox";
         public const string PROJECTFILE_NAME = "Project";
+
+        /// <summary>
+        /// Gets the default project directory.
+        /// </summary>
+        /// <value>
+        /// The default project directory.
+        /// </value>
         public string DefaultProjectDirectory => ProjectsDirectory + "Default" + Path.DirectorySeparatorChar;
-        public List<ProjectInfoContainer> ProjectInfos => new List<ProjectInfoContainer>();
+
+        /// <summary>
+        /// Gets the project infos.
+        /// </summary>
+        /// <value>
+        /// The project infos.
+        /// </value>
+        public List<ProjectInfoContainer> ProjectInfos { get; private set; } = new List<ProjectInfoContainer>();
+
+        /// <summary>
+        /// Gets the projects directory.
+        /// </summary>
+        /// <value>
+        /// The projects directory.
+        /// </value>
         public string ProjectsDirectory => DocumentsPath + "Projects" + Path.DirectorySeparatorChar;
 
+        /// <summary>
+        /// Creates the new project.
+        /// </summary>
+        /// <returns></returns>
         public bool CreateNewProject() {
             return SaveDefaultProjectBoxConfiguration();
         }
 
+        /// <summary>
+        /// Initialize the instance of the manager.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.IO.FileLoadException"></exception>
         public override bool Initialize() {
+            Configuration = new ProjectBoxConfiguration();
             bool resultCreateDirectory = false;
             bool resultCreateDefaultProject = true;
             bool resultGenerateInfoList = false;
@@ -30,10 +60,10 @@ namespace ns.Core.Manager.ProjectBox {
                 if (!Base.FileInfo.CreateDirectory(DefaultProjectDirectory + "Images"))
                     resultCreateDefaultProject = false;
                 else {
-                    resultCreateDefaultProject = CopyDefaultProject();
+                    resultCreateDefaultProject = SaveDefaultProject();
                 }
             } else if (!File.Exists(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
-                resultCreateDefaultProject = CopyDefaultProject();
+                resultCreateDefaultProject = SaveDefaultProject();
             }
 
             if (!File.Exists(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML) && resultCreateDefaultProject) {
@@ -46,24 +76,17 @@ namespace ns.Core.Manager.ProjectBox {
 
             resultGenerateInfoList = GenerateInfoList();
 
-            return resultCreateDirectory && resultCreateDefaultProject && resultGenerateInfoList;
+            return resultCreateDirectory && resultCreateDefaultProject && resultGenerateInfoList && LoadProject(Configuration.LastUsedProjectPath);
         }
 
-        public override ProjectBoxConfiguration Load(Stream stream) {
-            try {
-                ProjectBoxConfiguration obj;
-                XmlSerializer serializer = new XmlSerializer(typeof(ProjectBoxConfiguration));
-                obj = serializer.Deserialize(stream) as ProjectBoxConfiguration;
-                return obj;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return null;
-            }
-        }
-
+        /// <summary>
+        /// Loads the project.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public bool LoadProject(string path) {
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
-            if (Load(path)) {
+            if (projectManager.Load(path)) {
                 SetUsedProject(path);
                 return true;
             } else {
@@ -72,26 +95,31 @@ namespace ns.Core.Manager.ProjectBox {
             }
         }
 
+        /// <summary>
+        /// Saves this instance.
+        /// </summary>
+        /// <returns></returns>
         public override bool Save() {
             return Save(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML);
         }
 
+        /// <summary>
+        /// Saves the project.
+        /// </summary>
+        /// <returns></returns>
         public bool SaveProject() {
             string path = Configuration.LastUsedProjectPath;
             bool wasDefault = false;
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
 
             if (path.Equals(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
-                if (!Load(path))
-                    return false;
-
                 path = ProjectsDirectory + PROJECTFILE_NAME + "_" + DateTime.Now.ToFileTime().ToString() + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
                 wasDefault = true;
             }
 
             if (projectManager.Save(path)) {
                 if (wasDefault) {
-                    if (!Load(path)) {
+                    if (!projectManager.Load(path)) {
                         return false;
                     } else {
                         Base.FileInfo.CopyDirectory(DefaultProjectDirectory + "Images", Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + "Images");
@@ -118,15 +146,6 @@ namespace ns.Core.Manager.ProjectBox {
             }
         }
 
-        private bool CopyDefaultProject() {
-            string assemblyPath = AssemblyPath + Path.DirectorySeparatorChar;
-            string defaultProjectPathSource = assemblyPath + "DefaultProject" + EXTENSION_XML;
-            if (Base.FileInfo.CopyFile(defaultProjectPathSource, DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
-                return SaveDefaultProjectBoxConfiguration();
-            }
-            return false;
-        }
-
         private bool GenerateInfoList() {
             try {
                 ProjectInfos.Clear();
@@ -135,14 +154,16 @@ namespace ns.Core.Manager.ProjectBox {
                 foreach (string directory in directories) {
                     string projectFilePath = directory + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
                     if (File.Exists(projectFilePath) && !Path.GetDirectoryName(projectFilePath).Equals(Path.GetDirectoryName(DefaultProjectDirectory))) {
-                        // ToDo: Refactor!ProjectConfiguration
-                        //ProjectManager tmpManager = dummyManager.LoadManager(projectFilePath);
-                        //string projectName = tmpManager.Configuration.ProjectName.Value as string;
-                        //ProjectInfoContainer container = new ProjectInfoContainer(projectFilePath, projectName);
-                        //container.PropertyChanged += Container_PropertyChanged;
-                        //if (container.Path.Equals(Configuration.LastUsedProjectPath)) container.IsUsed = true;
+                        dummyManager.Load(projectFilePath);
+                        ProjectConfiguration tmpConfiguration = dummyManager.Configuration;
+                        string projectName = tmpConfiguration.FileName.Value;
+                        ProjectInfoContainer container = new ProjectInfoContainer(projectFilePath, projectName);
+                        container.PropertyChanged += Container_PropertyChanged;
+                        if (container.Path.Equals(Configuration.LastUsedProjectPath)) {
+                            container.IsUsed = true;
+                        }
 
-                        //ProjectInfos.Add(container);
+                        ProjectInfos.Add(container);
                     }
                 }
             } catch (Exception ex) {
@@ -150,6 +171,12 @@ namespace ns.Core.Manager.ProjectBox {
                 return false;
             }
             return true;
+        }
+
+        private bool SaveDefaultProject() {
+            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
+            projectManager.CreateDefaultProject();
+            return projectManager.Save(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML);
         }
 
         private bool SaveDefaultProjectBoxConfiguration() {

@@ -164,19 +164,19 @@ namespace ns.Core {
 
             if (!pluginManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
 
-            if (!propertyManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
-
-            if (!projectBoxManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
+            if (!propertyManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PropertyManager));
 
             if (!dataStorageManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(DataStorageManager));
 
-            ExtensionManager extensionManager = _managers.Find(m => m.Name.Contains(nameof(ExtensionManager))) as ExtensionManager;
+            ExtensionManager extensionManager = FindManager<ExtensionManager>();
 
             if (!extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
 
             if (!deviceManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(DeviceManager));
 
             if (!projectManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
+
+            if (!projectBoxManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ProjectBoxManager));
         }
 
         /// <summary>

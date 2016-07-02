@@ -11,6 +11,7 @@ namespace ns.Core.Test {
             Assert.IsTrue(CoreSystem.Initialize());
             PluginManager pluginManager = new PluginManager();
             Assert.IsTrue(pluginManager.Initialize());
+            Assert.IsTrue(CoreSystem.Finalize());
         }
     }
 }

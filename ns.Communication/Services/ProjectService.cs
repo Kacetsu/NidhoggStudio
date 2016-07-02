@@ -17,8 +17,8 @@ namespace ns.Communication.Services {
         private ProjectManager _projectManager;
 
         public ProjectService() {
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
-            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            _projectManager = CoreSystem.FindManager<ProjectManager>();
+            _pluginManager = CoreSystem.FindManager<PluginManager>();
         }
 
         public IProjectServiceCallbacks Proxy { get { return OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>(); } }

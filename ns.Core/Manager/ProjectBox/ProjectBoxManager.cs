@@ -10,14 +10,15 @@ namespace ns.Core.Manager.ProjectBox {
 
     public class ProjectBoxManager : GenericConfigurationManager<ProjectBoxConfiguration> {
         public const string EXTENSION_XML = ".xml";
-        public const string PROJECTFILE_NAME = "Project";
         public const string PROJECTBOX_NAME = "ProjectBox";
-
+        public const string PROJECTFILE_NAME = "Project";
+        public string DefaultProjectDirectory => ProjectsDirectory + "Default" + Path.DirectorySeparatorChar;
+        public List<ProjectInfoContainer> ProjectInfos => new List<ProjectInfoContainer>();
         public string ProjectsDirectory => DocumentsPath + "Projects" + Path.DirectorySeparatorChar;
 
-        public string DefaultProjectDirectory => ProjectsDirectory + "Default" + Path.DirectorySeparatorChar;
-
-        public List<ProjectInfoContainer> ProjectInfos => new List<ProjectInfoContainer>();
+        public bool CreateNewProject() {
+            return SaveDefaultProjectBoxConfiguration();
+        }
 
         public override bool Initialize() {
             bool resultCreateDirectory = false;
@@ -60,6 +61,17 @@ namespace ns.Core.Manager.ProjectBox {
             }
         }
 
+        public bool LoadProject(string path) {
+            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
+            if (Load(path)) {
+                SetUsedProject(path);
+                return true;
+            } else {
+                Base.Log.Trace.WriteLine("Could not load project!", TraceEventType.Error);
+                return false;
+            }
+        }
+
         public override bool Save() {
             return Save(ProjectsDirectory + PROJECTBOX_NAME + EXTENSION_XML);
         }
@@ -67,7 +79,7 @@ namespace ns.Core.Manager.ProjectBox {
         public bool SaveProject() {
             string path = Configuration.LastUsedProjectPath;
             bool wasDefault = false;
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
+            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
 
             if (path.Equals(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
                 if (!Load(path))
@@ -95,24 +107,15 @@ namespace ns.Core.Manager.ProjectBox {
             return false;
         }
 
-        public bool LoadProject(string path) {
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            if (Load(path)) {
-                SetUsedProject(path);
-                return true;
-            } else {
-                Base.Log.Trace.WriteLine("Could not load project!", TraceEventType.Error);
-                return false;
+        private void Container_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals("Name")) {
+                ProjectInfoContainer container = sender as ProjectInfoContainer;
+                ProjectManager dummyManager = new ProjectManager();
+                // ToDo: Refactor!ProjectConfiguration
+                //ProjectManager tmpManager = dummyManager.LoadManager(container.Path);
+                //tmpManager.Configuration.ProjectName.Value = container.Name;
+                //tmpManager.Save(container.Path);
             }
-        }
-
-        public bool CreateNewProject() {
-            return SaveDefaultProjectBoxConfiguration();
-        }
-
-        private bool SaveDefaultProjectBoxConfiguration() {
-            Configuration.LastUsedProjectPath = DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML;
-            return SaveProject();
         }
 
         private bool CopyDefaultProject() {
@@ -122,15 +125,6 @@ namespace ns.Core.Manager.ProjectBox {
                 return SaveDefaultProjectBoxConfiguration();
             }
             return false;
-        }
-
-        private void SetUsedProject(string path) {
-            foreach (ProjectInfoContainer container in ProjectInfos) {
-                if (container.Path.Equals(path))
-                    container.IsUsed = true;
-                else
-                    container.IsUsed = false;
-            }
         }
 
         private bool GenerateInfoList() {
@@ -158,14 +152,17 @@ namespace ns.Core.Manager.ProjectBox {
             return true;
         }
 
-        private void Container_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName.Equals("Name")) {
-                ProjectInfoContainer container = sender as ProjectInfoContainer;
-                ProjectManager dummyManager = new ProjectManager();
-                // ToDo: Refactor!ProjectConfiguration
-                //ProjectManager tmpManager = dummyManager.LoadManager(container.Path);
-                //tmpManager.Configuration.ProjectName.Value = container.Name;
-                //tmpManager.Save(container.Path);
+        private bool SaveDefaultProjectBoxConfiguration() {
+            Configuration.LastUsedProjectPath = DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML;
+            return SaveProject();
+        }
+
+        private void SetUsedProject(string path) {
+            foreach (ProjectInfoContainer container in ProjectInfos) {
+                if (container.Path.Equals(path))
+                    container.IsUsed = true;
+                else
+                    container.IsUsed = false;
             }
         }
     }

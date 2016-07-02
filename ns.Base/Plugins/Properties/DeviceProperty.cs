@@ -76,13 +76,15 @@ namespace ns.Base.Plugins.Properties {
                 if (Value == null) return -1;
                 int index = 0;
                 for (; index < Value.Count; index++) {
-                    if (Value[index].UID == SelectedItem.UID) break;
+                    if (Value[index].UID == SelectedItem?.UID) break;
                     else if (Value[index] == SelectedItem) break;
                 }
                 return index;
             }
             set {
-                SelectedItem = Value[value];
+                if (Value.Count > 0) {
+                    SelectedItem = Value[value];
+                }
             }
         }
 

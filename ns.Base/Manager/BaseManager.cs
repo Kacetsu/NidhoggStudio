@@ -10,11 +10,6 @@ namespace ns.Base.Manager {
         private static string _documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + Path.DirectorySeparatorChar + APPLICATION_NAME + Path.DirectorySeparatorChar;
 
         /// <summary>
-        /// Gets the Typename.
-        /// </summary>
-        public string Name => GetType().ToString();
-
-        /// <summary>
         /// Gets the application name.
         /// </summary>
         public static string ApplicationName => APPLICATION_NAME;
@@ -22,14 +17,12 @@ namespace ns.Base.Manager {
         /// <summary>
         /// Gets the path to the application assembly.
         /// </summary>
-        public static string AssemblyPath {
-            get {
-                if (IsWebservice)
-                    return Environment.GetEnvironmentVariable("NEUROSTUDIO_BIN");
-                else
-                    return _assemblyPath;
-            }
-        }
+        public static string AssemblyPath => _assemblyPath;
+
+        /// <summary>
+        /// Gets the days the log files will be stored.
+        /// </summary>
+        public static uint DaysToKeepLogFiles => 30;
 
         /// <summary>
         /// Gets the default documents path.
@@ -42,28 +35,20 @@ namespace ns.Base.Manager {
         public static string LogPath => _documentsPath + "Log\\";
 
         /// <summary>
-        /// Gets the days the log files will be stored.
+        /// Gets the Typename.
         /// </summary>
-        public static uint DaysToKeepLogFiles => 30;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is webservice.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is webservice; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsWebservice { get; set; } = false;
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Initialize() => true;
+        public string Name => GetType().ToString();
 
         /// <summary>
         /// Finalizes this instance.
         /// </summary>
         /// <returns></returns>
         public virtual bool Finalize() => true;
+
+        /// <summary>
+        /// Initialize the instance of the manager.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Initialize() => true;
     }
 }

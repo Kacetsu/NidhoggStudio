@@ -13,28 +13,16 @@ using System.Runtime.Serialization;
 namespace ns.Core.Manager {
 
     public class PluginManager : NodeManager<Plugin>, INodeManager<Plugin> {
-        private const string LIBRARY_EXTENSION = ".dll";
         private const string FACTORY_NAME = "Factory";
-
+        private const string LIBRARY_EXTENSION = ".dll";
         private static string _pluginPath = AssemblyPath + "\\Plugins";
 
-        private List<string> _fileList = new List<string>();
         private List<Assembly> _assemblyList = new List<Assembly>();
-        private List<Plugin> _plugins = new List<Plugin>();
-        private List<LibraryInformation> _libraryInformations = new List<LibraryInformation>();
         private ExtensionManager _extensionManager;
-
-        /// <summary>
-        /// Gets the path to the plugins.
-        /// </summary>
-        public string PluginPath {
-            get {
-                if (IsWebservice)
-                    return Environment.GetEnvironmentVariable("NIDHOGGSTUDIO_BIN") + Path.DirectorySeparatorChar + "Plugins";
-                else
-                    return _pluginPath;
-            }
-        }
+        private List<string> _fileList = new List<string>();
+        private List<LibraryInformation> _libraryInformations = new List<LibraryInformation>();
+        private List<Plugin> _plugins = new List<Plugin>();
+        public List<Type> KnownTypes { get; } = new List<Type>();
 
         /// <summary>
         /// Gets the library informations.
@@ -42,11 +30,12 @@ namespace ns.Core.Manager {
         /// <value>
         /// The library informations.
         /// </value>
-        public List<LibraryInformation> LibraryInformations {
-            get { return _libraryInformations; }
-        }
+        public List<LibraryInformation> LibraryInformations => _libraryInformations;
 
-        public List<Type> KnownTypes { get; } = new List<Type>();
+        /// <summary>
+        /// Gets the path to the plugins.
+        /// </summary>
+        public string PluginPath => _pluginPath;
 
         /// <summary>
         /// Initialize the instance of the manager.
@@ -68,7 +57,7 @@ namespace ns.Core.Manager {
 
                 if (!_extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
 
-                CoreSystem.Managers.Add(_extensionManager);
+                CoreSystem.AddManager(_extensionManager);
 
                 if (UpdatePlugins() == false)
                     throw new Exception("Could not get any plugins!");
@@ -151,17 +140,17 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Validates the plugin.
+        /// Validates the device.
         /// </summary>
-        /// <param name="plugin">The plugin.</param>
+        /// <param name="device">The device.</param>
         /// <returns></returns>
-        private bool ValidatePlugin(Plugin plugin) {
+        private bool ValidateDevice(Device device) {
             bool result = false;
 
             try {
-                string displayName = plugin.DisplayName;
-
-                result = true;
+                if (ValidatePlugin(device) == true) {
+                    result = true;
+                }
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
@@ -170,15 +159,15 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Validates the tool.
+        /// Validates the extension.
         /// </summary>
-        /// <param name="tool">The tool.</param>
+        /// <param name="extension">The extension.</param>
         /// <returns></returns>
-        private bool ValidateTool(Tool tool) {
+        private bool ValidateExtension(Extension extension) {
             bool result = false;
 
             try {
-                if (ValidatePlugin(tool) == true) {
+                if (ValidatePlugin(extension) == true) {
                     result = true;
                 }
             } catch (Exception ex) {
@@ -208,17 +197,17 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Validates the device.
+        /// Validates the plugin.
         /// </summary>
-        /// <param name="device">The device.</param>
+        /// <param name="plugin">The plugin.</param>
         /// <returns></returns>
-        private bool ValidateDevice(Device device) {
+        private bool ValidatePlugin(Plugin plugin) {
             bool result = false;
 
             try {
-                if (ValidatePlugin(device) == true) {
-                    result = true;
-                }
+                string displayName = plugin.DisplayName;
+
+                result = true;
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
             }
@@ -227,15 +216,15 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Validates the extension.
+        /// Validates the tool.
         /// </summary>
-        /// <param name="extension">The extension.</param>
+        /// <param name="tool">The tool.</param>
         /// <returns></returns>
-        private bool ValidateExtension(Extension extension) {
+        private bool ValidateTool(Tool tool) {
             bool result = false;
 
             try {
-                if (ValidatePlugin(extension) == true) {
+                if (ValidatePlugin(tool) == true) {
                     result = true;
                 }
             } catch (Exception ex) {

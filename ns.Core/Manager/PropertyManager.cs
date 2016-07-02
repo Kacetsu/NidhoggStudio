@@ -35,7 +35,7 @@ namespace ns.Core.Manager {
                     property.PropertyChanged += PropertyPropertyChanged;
                     if (property.IsMonitored) {
                         if (_dataStorageManager == null)
-                            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
+                            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
                         _dataStorageManager.Add(property);
                     }
                 }
@@ -106,7 +106,7 @@ namespace ns.Core.Manager {
         }
 
         public override bool Initialize() {
-            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            _pluginManager = CoreSystem.FindManager<PluginManager>();
             return _pluginManager != null;
         }
 
@@ -150,7 +150,7 @@ namespace ns.Core.Manager {
         private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName == "IsMonitored") {
                 if (_dataStorageManager == null)
-                    _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(DataStorageManager))) as DataStorageManager;
+                    _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
 
                 Property property = sender as Property;
                 if (property.IsMonitored)

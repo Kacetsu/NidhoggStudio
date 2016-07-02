@@ -9,16 +9,10 @@ namespace ns.Core.Test {
     public class ProjectManagerTest {
 
         [TestMethod]
-        public void ProjectManager_Initialize() {
-            ProjectManager projectManager = new ProjectManager();
-            Assert.IsTrue(projectManager.Initialize());
-        }
-
-        [TestMethod]
         public void ProjectManager_AddAndSaveOperation() {
             PluginManager pluginManager = new PluginManager();
             pluginManager.Initialize();
-            CoreSystem.Managers.Add(pluginManager);
+            CoreSystem.AddManager(pluginManager);
             ProjectManager projectManager = new ProjectManager();
             Assert.IsTrue(projectManager.Initialize());
             projectManager.CreateDefaultProject();
@@ -33,9 +27,15 @@ namespace ns.Core.Test {
         }
 
         [TestMethod]
+        public void ProjectManager_Initialize() {
+            ProjectManager projectManager = new ProjectManager();
+            Assert.IsTrue(projectManager.Initialize());
+        }
+
+        [TestMethod]
         public void ProjectManager_SaveLoadDefaultProject() {
             Assert.IsTrue(CoreSystem.Initialize());
-            ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
+            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
             projectManager.CreateDefaultProject();
 
             using (MemoryStream stream = new MemoryStream()) {
@@ -50,6 +50,8 @@ namespace ns.Core.Test {
                 Assert.IsNotNull(projectManager.Configuration);
                 Assert.AreEqual(projectManager.Configuration.Operations.Count, 1);
             }
+
+            Assert.IsTrue(CoreSystem.Finalize());
         }
     }
 }

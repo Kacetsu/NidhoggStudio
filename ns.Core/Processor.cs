@@ -1,6 +1,5 @@
 ﻿using ns.Base;
 using ns.Base.Extensions;
-using ns.Base.Log;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core.Manager;
@@ -36,10 +35,10 @@ namespace ns.Core {
         /// Initializes a new instance of the <see cref="Processor"/> class.
         /// </summary>
         public Processor() {
-            _projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
-            _propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
-            _extensionManager = CoreSystem.Managers.Find(m => m.Name.Contains("ExtensionManager")) as ExtensionManager;
+            _projectManager = CoreSystem.FindManager<ProjectManager>();
+            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
+            _propertyManager = CoreSystem.FindManager<PropertyManager>();
+            _extensionManager = CoreSystem.FindManager<ExtensionManager>();
             _nexuses = new List<AsyncNanoProcessor>();
         }
 

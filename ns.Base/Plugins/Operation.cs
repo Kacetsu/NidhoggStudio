@@ -107,7 +107,12 @@ namespace ns.Base.Plugins {
         public override bool Initialize() {
             bool result = base.Initialize();
 
-            _captureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
+            DeviceProperty deviceProperty = GetProperty<DeviceProperty>(nameof(CaptureDevice));
+
+            if (deviceProperty != null) {
+                deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
+                _captureDevice = deviceProperty.SelectedItem;
+            }
             _outImageProperty = GetProperty<ImageProperty>("OutImage");
 
             result = _captureDevice?.Initialize() == true;
@@ -141,6 +146,14 @@ namespace ns.Base.Plugins {
 
             result = _captureDevice?.PostRun() == true;
             return result;
+        }
+
+        private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(DeviceProperty.SelectedItem))) {
+                _captureDevice?.Finalize();
+                _captureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
+                _captureDevice.Initialize();
+            }
         }
     }
 }

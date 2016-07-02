@@ -12,17 +12,16 @@ using System.Runtime.Serialization;
 namespace ns.Core.Manager {
 
     public class ProjectManager : GenericConfigurationManager<ProjectConfiguration>, IProjectManager {
-        private static string _fileName = string.Empty;
-
-        /// <summary>
-        /// The file extension
-        /// </summary>
-        public const string FileExtension = ".xml";
 
         /// <summary>
         /// The default project file
         /// </summary>
         public const string DefaultProjectFile = "DefaultProject" + FileExtension;
+
+        /// <summary>
+        /// The file extension
+        /// </summary>
+        public const string FileExtension = ".xml";
 
         /// <summary>
         /// Gets the file filter.
@@ -32,15 +31,7 @@ namespace ns.Core.Manager {
         /// </value>
         public const string FileFilter = "Project File (*.xml) | *.xml";
 
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            Configuration = new ProjectConfiguration();
-            CreateDefaultProject();
-            return true;
-        }
+        private static string _fileName = string.Empty;
 
         /// <summary>
         /// Gets or sets the FileName.
@@ -67,7 +58,7 @@ namespace ns.Core.Manager {
 
             if (Configuration.Operations.Contains(operation)) throw new OperationAlreadyExistsException(operation.Name);
 
-            PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
 
             if (pluginManager == null) {
                 throw new ManagerInitialisationFailedException(nameof(pluginManager));
@@ -109,7 +100,119 @@ namespace ns.Core.Manager {
 
             if (parent == null) throw new ArgumentNullException(nameof(parent));
 
+            DeviceManager deviceManager = CoreSystem.FindManager<DeviceManager>();
+
+            if (deviceManager == null) throw new ManagerInitialisationFailedException(nameof(deviceManager));
+
+            deviceManager.Add(device);
+
             parent.CaptureDevice = device;
+        }
+
+        /// <summary>
+        /// Creates the default project.
+        /// </summary>
+        public void CreateDefaultProject() {
+            Configuration.Operations.Clear();
+            Configuration.Name.Value = "Default";
+
+            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+
+            if (pluginManager == null) {
+                throw new ManagerInitialisationFailedException(nameof(pluginManager));
+            }
+
+            Operation operation = new Operation("Unknown Operation");
+
+            Device device = pluginManager.Nodes.Find(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
+            if (device != null) {
+                Add(device, operation);
+            }
+
+            Add(operation);
+        }
+
+        /// <summary>
+        /// Finds the property.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public Property FindProperty(string uid) {
+            Property property = null;
+            foreach (Operation operation in Configuration.Operations) {
+                property = operation.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                if (property != null) {
+                    break;
+                }
+                foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
+                    property = tool.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                    if (property != null) {
+                        break;
+                    }
+                }
+            }
+            return property;
+        }
+
+        /// <summary>
+        /// Finds the tool.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public Tool FindTool(string uid) {
+            foreach (Operation operation in Configuration.Operations) {
+                Tool tool = operation.Childs.Find(t => t.UID.Equals(uid)) as Tool;
+                return tool;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Initialize the instance of the manager.
+        /// </summary>
+        /// <returns></returns>
+        public override bool Initialize() {
+            Configuration = new ProjectConfiguration();
+            CreateDefaultProject();
+            return true;
+        }
+
+        /// <summary>
+        /// Loads the manager from a FileStream.
+        /// </summary>
+        /// <param name="stream">The FileStream.</param>
+        /// <returns>
+        /// The manager object. NULL if any error happend.
+        /// </returns>
+        /// <exception cref="ManagerInitialisationFailedException"></exception>
+        /// <exception cref="PluginNotFoundException"></exception>
+        /// <exception cref="DeviceInitialisationFailedException"></exception>
+        public override ProjectConfiguration Load(Stream stream) {
+            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+
+            try {
+                stream.Position = 0;
+                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
+                Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
+            } catch (SerializationException ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
+            }
+
+            if (pluginManager == null) {
+                throw new ManagerInitialisationFailedException(nameof(pluginManager));
+            }
+
+            foreach (Operation operation in Configuration.Operations) {
+                Device device = operation.CaptureDevice;
+                if (device != null) {
+                    if (!device.Initialize()) {
+                        throw new DeviceInitialisationFailedException(device.Name);
+                    }
+                }
+            }
+
+            return Configuration;
         }
 
         /// <summary>
@@ -137,64 +240,6 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Finds the tool.
-        /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <returns></returns>
-        public Tool FindTool(string uid) {
-            foreach (Operation operation in Configuration.Operations) {
-                Tool tool = operation.Childs.Find(t => t.UID.Equals(uid)) as Tool;
-                return tool;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Finds the property.
-        /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <returns></returns>
-        public Property FindProperty(string uid) {
-            Property property = null;
-            foreach (Operation operation in Configuration.Operations) {
-                property = operation.Childs.Find(p => p.UID.Equals(uid)) as Property;
-                if (property != null) {
-                    break;
-                }
-                foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
-                    property = tool.Childs.Find(p => p.UID.Equals(uid)) as Property;
-                    if (property != null) {
-                        break;
-                    }
-                }
-            }
-            return property;
-        }
-
-        /// <summary>
-        /// Creates the default project.
-        /// </summary>
-        public void CreateDefaultProject() {
-            Configuration.Operations.Clear();
-            Configuration.Name.Value = "Default";
-
-            PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
-
-            if (pluginManager == null) {
-                throw new ManagerInitialisationFailedException(nameof(pluginManager));
-            }
-
-            Operation operation = new Operation("Unknown Operation");
-
-            Device device = pluginManager.Nodes.Find(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
-            if (device != null) {
-                Add(device, operation);
-            }
-
-            Add(operation);
-        }
-
-        /// <summary>
         /// Saves the manager to a MemoryStream.
         /// </summary>
         /// <param name="stream">Reference to the MemoryStream.</param>
@@ -203,7 +248,7 @@ namespace ns.Core.Manager {
         /// </returns>
         public override bool Save(Stream stream) {
             try {
-                PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+                PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
                 DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
                 serializer.WriteObject(stream, Configuration);
                 stream.Flush();
@@ -212,44 +257,6 @@ namespace ns.Core.Manager {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Loads the manager from a FileStream.
-        /// </summary>
-        /// <param name="stream">The FileStream.</param>
-        /// <returns>
-        /// The manager object. NULL if any error happend.
-        /// </returns>
-        /// <exception cref="ManagerInitialisationFailedException"></exception>
-        /// <exception cref="PluginNotFoundException"></exception>
-        /// <exception cref="DeviceInitialisationFailedException"></exception>
-        public override ProjectConfiguration Load(Stream stream) {
-            PluginManager pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
-
-            try {
-                stream.Position = 0;
-                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
-                Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
-            } catch (SerializationException ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                throw;
-            }
-
-            if (pluginManager == null) {
-                throw new ManagerInitialisationFailedException(nameof(pluginManager));
-            }
-
-            foreach (Operation operation in Configuration.Operations) {
-                Device device = operation.CaptureDevice;
-                if (device != null) {
-                    if (!device.Initialize()) {
-                        throw new DeviceInitialisationFailedException(device.Name);
-                    }
-                }
-            }
-
-            return Configuration;
         }
     }
 }

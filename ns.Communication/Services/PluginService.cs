@@ -14,7 +14,7 @@ namespace ns.Communication.Services {
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
         /// </summary>
         public PluginService() {
-            _pluginManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(PluginManager))) as PluginManager;
+            _pluginManager = CoreSystem.FindManager<PluginManager>();
         }
 
         /// <summary>

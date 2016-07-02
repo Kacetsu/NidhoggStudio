@@ -10,25 +10,9 @@ namespace ns.Core {
     /// Runs the Operation on a sync way.
     /// </summary>
     public class NanoProcessor : NotifiableObject {
+        private DataStorageManager _dataStorageManager;
         private Operation _operation;
         private bool _result = false;
-        private DataStorageManager _dataStorageManager;
-
-        /// <summary>
-        /// Gets the Result.
-        /// </summary>
-        public bool Result {
-            get { return _result; }
-            private set {
-                _result = value;
-                OnPropertyChanged("Result");
-            }
-        }
-
-        /// <summary>
-        /// Gets the the referred Operation.
-        /// </summary>
-        public Operation Operation => _operation;
 
         /// <summary>
         /// Base Constructor.
@@ -37,13 +21,29 @@ namespace ns.Core {
         public NanoProcessor(Operation operation) {
             _operation = operation;
             _operation.PropertyChanged += OperationPropertyChanged;
-            _dataStorageManager = CoreSystem.Managers.Find(m => m.Name.Contains("DataStorageManager")) as DataStorageManager;
+            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
         }
 
         public NanoProcessor(Operation operation, DataStorageManager dataStorageManager) {
             _operation = operation;
             _operation.PropertyChanged += OperationPropertyChanged;
             _dataStorageManager = dataStorageManager;
+        }
+
+        /// <summary>
+        /// Gets the the referred Operation.
+        /// </summary>
+        public Operation Operation => _operation;
+
+        /// <summary>
+        /// Gets the Result.
+        /// </summary>
+        public bool Result {
+            get { return _result; }
+            private set {
+                _result = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>

@@ -40,15 +40,9 @@ namespace ns.Base.Manager {
         public string Name => GetType().ToString();
 
         /// <summary>
-        /// Finalizes this instance.
+        /// Closes this instance.
         /// </summary>
-        /// <returns></returns>
-        public virtual bool Finalize() => true;
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Initialize() => true;
+        public virtual void Close() {
+        }
     }
 }

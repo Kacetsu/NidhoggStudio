@@ -1,12 +1,6 @@
-﻿using ns.Communication.CommunicationModels;
-using ns.Communication.Events;
-using System;
+﻿using ns.Communication.Events;
+using ns.Communication.Models;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Communication.Services.Callbacks {
 

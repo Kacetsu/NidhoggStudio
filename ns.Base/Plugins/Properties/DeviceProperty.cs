@@ -82,7 +82,7 @@ namespace ns.Base.Plugins.Properties {
                 return index;
             }
             set {
-                if (Value.Count > 0) {
+                if (Value?.Count > 0) {
                     SelectedItem = Value[value];
                 }
             }

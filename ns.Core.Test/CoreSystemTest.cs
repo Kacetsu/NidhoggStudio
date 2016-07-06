@@ -10,8 +10,6 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void CoreSystem_AddAndSaveProject() {
-            Assert.IsTrue(CoreSystem.Initialize());
-
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
 
             using (MemoryStream projectStream = new MemoryStream()) {
@@ -24,8 +22,7 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void CoreSystem_InitializeFinalize() {
-            Assert.IsTrue(CoreSystem.Initialize());
-            Assert.IsTrue(CoreSystem.Finalize());
+            CoreSystem.Close();
         }
     }
 }

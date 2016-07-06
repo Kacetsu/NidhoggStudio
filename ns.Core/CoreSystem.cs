@@ -16,10 +16,30 @@ namespace ns.Core {
     /// The core, from here you should access any necessary system component.
     /// </summary>
     public class CoreSystem {
-        private static CoreSystem _instance = new CoreSystem();
+        private static Lazy<CoreSystem> _lazyInstance = new Lazy<CoreSystem>(() => new CoreSystem());
         private static List<BaseManager> _managers = new List<BaseManager>();
         private static Processor _processor;
         private static Base.Log.TraceListener _traceListener;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CoreSystem"/> class.
+        /// </summary>
+        public CoreSystem() {
+            try {
+                CreateAssemblyResolver();
+
+                CreateTraceListener();
+
+                CreateManagers();
+
+                _processor = new Processor();
+
+                IsInitialized = true;
+            } catch (Exception ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
+            }
+        }
 
         /// <summary>
         /// Gets the instance.
@@ -27,7 +47,15 @@ namespace ns.Core {
         /// <value>
         /// The instance.
         /// </value>
-        public static CoreSystem Instance => _instance;
+        public static CoreSystem Instance => _lazyInstance.Value;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is initialized.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is initialized; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsInitialized { get; } = false;
 
         /// <summary>
         /// Gets the log listener.
@@ -59,14 +87,14 @@ namespace ns.Core {
         /// Finalizes the CoreSystem.
         /// </summary>
         /// <returns>True if successful.</returns>
-        public static bool Finalize() {
-            foreach (BaseManager manager in _managers)
-                manager.Finalize();
+        public static void Close() {
+            foreach (BaseManager manager in _managers) {
+                manager.Close();
+            }
 
-            if (_traceListener != null)
+            if (_traceListener != null) {
                 _traceListener.Close();
-
-            return true;
+            }
         }
 
         /// <summary>
@@ -91,30 +119,6 @@ namespace ns.Core {
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static T FindManager<T>() where T : BaseManager { return (T)_managers.Find(m => m is T); }
-
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <returns></returns>
-        public static bool Initialize() {
-            bool result = false;
-
-            try {
-                CreateAssemblyResolver();
-
-                CreateTraceListener();
-
-                CreateManagers();
-
-                _processor = new Processor();
-
-                result = true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-            }
-
-            return result;
-        }
 
         private static void CreateAssemblyResolver() {
             AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args) {
@@ -142,41 +146,26 @@ namespace ns.Core {
         /// <summary>
         /// Creates the managers.
         /// </summary>
-        /// <exception cref="ManagerInitialisationFailedException">
+        /// <exception cref="ManagerInitializeException">
         /// </exception>
         private static void CreateManagers() {
             _managers.Clear();
 
             // Default managers must be added to the CoreSystem.
-            ProjectManager projectManager = new ProjectManager();
-            PropertyManager propertyManager = new PropertyManager();
+            ExtensionManager extensionManager = new ExtensionManager();
+            AddManager(extensionManager);
             PluginManager pluginManager = new PluginManager();
-            DataStorageManager dataStorageManager = new DataStorageManager();
-            ProjectBoxManager projectBoxManager = new ProjectBoxManager();
-            DeviceManager deviceManager = new DeviceManager();
-
-            AddManager(projectManager);
             AddManager(pluginManager);
+            PropertyManager propertyManager = new PropertyManager();
             AddManager(propertyManager);
+            DataStorageManager dataStorageManager = new DataStorageManager();
             AddManager(dataStorageManager);
-            AddManager(projectBoxManager);
+            DeviceManager deviceManager = new DeviceManager();
             AddManager(deviceManager);
-
-            if (!pluginManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
-
-            if (!propertyManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PropertyManager));
-
-            if (!dataStorageManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(DataStorageManager));
-
-            ExtensionManager extensionManager = FindManager<ExtensionManager>();
-
-            if (!extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
-
-            if (!deviceManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(DeviceManager));
-
-            if (!projectManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(PluginManager));
-
-            if (!projectBoxManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ProjectBoxManager));
+            ProjectManager projectManager = new ProjectManager();
+            AddManager(projectManager);
+            ProjectBoxManager projectBoxManager = new ProjectBoxManager();
+            AddManager(projectBoxManager);
         }
 
         /// <summary>

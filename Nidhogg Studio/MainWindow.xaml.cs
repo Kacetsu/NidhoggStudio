@@ -105,7 +105,7 @@ namespace Nidhogg_Studio {
         }
 
         private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
-            ClientCommunicationManager.Instance.Finalize();
+            ClientCommunicationManager.Instance.Close();
         }
     }
 }

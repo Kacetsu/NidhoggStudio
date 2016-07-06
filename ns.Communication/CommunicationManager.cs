@@ -3,6 +3,7 @@ using ns.Base.Manager;
 using ns.Communication.Configuration;
 using ns.Communication.Services;
 using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
@@ -10,14 +11,17 @@ using System.Threading.Tasks;
 
 namespace ns.Communication {
 
-    public class CommunicationManager : GenericConfigurationManager<CommunicationConfiguration>, IGenericConfigurationManager<CommunicationConfiguration> {
+    public class CommunicationManager : GenericConfigurationManager<CommunicationConfiguration>, IGenericConfigurationManager<CommunicationConfiguration>, ICommunicationManager {
         private static Lazy<CommunicationManager> _lazyInstance = new Lazy<CommunicationManager>(() => new CommunicationManager());
-
-        private Task _pluginServiceTask;
-        private Task _projectServiceTask;
-        private SemaphoreSlim _pluginServiceStopSignal = new SemaphoreSlim(0, 1);
-        private SemaphoreSlim _projectServiceStopSignal = new SemaphoreSlim(0, 1);
+        private List<Task> _serviceTasks = new List<Task>();
+        private List<SemaphoreSlim> _stopSignals = new List<SemaphoreSlim>();
         private Uri _uri;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationManager"/> class.
+        /// </summary>
+        private CommunicationManager() : base() {
+        }
 
         /// <summary>
         /// Gets the instance.
@@ -28,48 +32,54 @@ namespace ns.Communication {
         public static CommunicationManager Instance { get; } = _lazyInstance.Value;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationManager"/> class.
+        /// Gets a value indicating whether this instance is connected.
         /// </summary>
-        public CommunicationManager() : base() {
-            Configuration = new CommunicationConfiguration();
-            _uri = new Uri(Configuration.Address.Value);
-        }
-
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            base.Initialize();
-            try {
-                _uri = new Uri(Configuration.Address.Value);
-                _pluginServiceTask = new Task(StartPluginService);
-                _projectServiceTask = new Task(StartProjectService);
-                _pluginServiceTask.Start();
-                _projectServiceTask.Start();
-            } catch (Exception ex) when (ex is ArgumentNullException || ex is ObjectDisposedException || ex is InvalidOperationException) {
-                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
-                return false;
-            }
-            return true;
-        }
+        /// <value>
+        /// <c>true</c> if this instance is connected; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsConnected { get; private set; } = false;
 
         /// <summary>
         /// Finalizes this instance.
         /// </summary>
         /// <returns></returns>
-        public override bool Finalize() {
+        public override void Close() {
             try {
-                _pluginServiceStopSignal.Release();
-                _projectServiceStopSignal.Release();
-
-                _pluginServiceStopSignal.Wait();
-                _projectServiceStopSignal.Wait();
+                Parallel.ForEach(_stopSignals, (stopSignal) => {
+                    stopSignal.Release();
+                    stopSignal.Wait();
+                });
             } catch (Exception ex) when (ex is ObjectDisposedException || ex is SemaphoreFullException) {
                 Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
-                return false;
+                throw;
             }
-            return base.Finalize();
+            base.Close();
+        }
+
+        /// <summary>
+        /// Connects this instance.
+        /// </summary>
+        public void Connect() {
+            if (IsConnected) return;
+            Configuration = new CommunicationConfiguration();
+            _uri = new Uri(Configuration.Address.Value);
+
+            try {
+                _uri = new Uri(Configuration.Address.Value);
+                _serviceTasks.Add(new Task(StartPluginService));
+                _serviceTasks.Add(new Task(StartProjectService));
+                _serviceTasks.Add(new Task(StartProcessorService));
+                _serviceTasks.Add(new Task(StartDataStorageService));
+
+                foreach (Task service in _serviceTasks) {
+                    service.Start();
+                }
+
+                IsConnected = true;
+            } catch (Exception ex) when (ex is ArgumentNullException || ex is ObjectDisposedException || ex is InvalidOperationException) {
+                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                throw;
+            }
         }
 
         private NetTcpBinding CreateNetTcpBinding() {
@@ -84,36 +94,44 @@ namespace ns.Communication {
             return smb;
         }
 
+        private void StartDataStorageService() {
+            SemaphoreSlim stopSignal = new SemaphoreSlim(0, 1);
+            _stopSignals.Add(stopSignal);
+            StartService<DataStorageService, IDataStorageService>(Configuration.DataStorageServiceAddress, stopSignal);
+        }
+
         private void StartPluginService() {
-            Uri baseAddress = new Uri(Configuration.PluginServiceAddress);
+            SemaphoreSlim stopSignal = new SemaphoreSlim(0, 1);
+            _stopSignals.Add(stopSignal);
+            StartService<PluginService, IPluginService>(Configuration.PluginServiceAddress, stopSignal);
+        }
 
-            // Create the ServiceHost.
-            using (ServiceHost host = new ServiceHost(typeof(PluginService), baseAddress)) {
-                NetTcpBinding binding = CreateNetTcpBinding();
-                host.AddServiceEndpoint(typeof(IPluginService), binding, baseAddress);
-                host.Description.Behaviors.Add(CreateServiceMetadataBehavior());
-                host.Open();
-                _pluginServiceStopSignal.Wait();
-                host.Close();
-            }
-
-            _pluginServiceStopSignal = new SemaphoreSlim(0, 1);
+        private void StartProcessorService() {
+            SemaphoreSlim stopSignal = new SemaphoreSlim(0, 1);
+            _stopSignals.Add(stopSignal);
+            StartService<ProcessorService, IProcessorService>(Configuration.ProcessorServiceAddress, stopSignal);
         }
 
         private void StartProjectService() {
-            Uri baseAddress = new Uri(Configuration.ProjectServiceAddress);
+            SemaphoreSlim stopSignal = new SemaphoreSlim(0, 1);
+            _stopSignals.Add(stopSignal);
+            StartService<ProjectService, IProjectService>(Configuration.ProjectServiceAddress, stopSignal);
+        }
+
+        private void StartService<T, U>(string address, SemaphoreSlim semaphore) where T : class {
+            Uri baseAddress = new Uri(address);
 
             // Create the ServiceHost.
-            using (ServiceHost host = new ServiceHost(typeof(ProjectService), baseAddress)) {
+            using (ServiceHost host = new ServiceHost(typeof(T), baseAddress)) {
                 NetTcpBinding binding = CreateNetTcpBinding();
-                host.AddServiceEndpoint(typeof(IProjectService), binding, baseAddress);
+                host.AddServiceEndpoint(typeof(U), binding, baseAddress);
                 host.Description.Behaviors.Add(CreateServiceMetadataBehavior());
                 host.Open();
-                _projectServiceStopSignal.Wait();
+                semaphore.Wait();
                 host.Close();
             }
 
-            _projectServiceStopSignal = new SemaphoreSlim(0, 1);
+            semaphore = new SemaphoreSlim(0, 1);
         }
     }
 }

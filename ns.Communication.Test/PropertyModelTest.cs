@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Communication.CommunicationModels;
-using ns.Communication.CommunicationModels.Properties;
+using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;

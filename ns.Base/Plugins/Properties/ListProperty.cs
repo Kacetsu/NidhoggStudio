@@ -6,8 +6,6 @@ namespace ns.Base.Plugins.Properties {
 
     [Serializable, DataContract]
     public class ListProperty : GenericProperty<List<object>>, IListProperty<object> {
-        private List<object> _list = new List<object>();
-
         private object _selectedItem;
 
         /// <summary>
@@ -21,8 +19,8 @@ namespace ns.Base.Plugins.Properties {
         /// <param name="name">The name.</param>
         /// <param name="values">The values.</param>
         public ListProperty(string name, List<object> values) : base(name, values) {
-            _list = values;
-            if (values.Count == 0)
+            Value = values;
+            if (Value.Count == 0)
                 SelectedItem = "INVALID";
             else
                 SelectedItem = values[0];
@@ -55,9 +53,9 @@ namespace ns.Base.Plugins.Properties {
             get {
                 if (Value == null) return -1;
                 int index = 0;
-                for (; index < _list.Count; index++) {
-                    if (_list[index].ToString() == SelectedItem?.ToString()) break;
-                    else if (_list[index] == SelectedItem) break;
+                for (; index < Value.Count; index++) {
+                    if (Value[index].ToString() == SelectedItem?.ToString()) break;
+                    else if (Value[index] == SelectedItem) break;
                 }
                 return index;
             }

@@ -1,5 +1,6 @@
 ﻿using ns.Base.Plugins;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Client;
+using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
 using System.ComponentModel;
@@ -14,23 +15,11 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für Editor.xaml
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged {
-        private FrontendManager _guiManager;
-        private Controls.ProjectExplorer _projectExplorer;
         private Controls.AddToolControl _addToolControl;
-        private Controls.PropertyEditor _propertyEditor;
+        private FrontendManager _guiManager;
         private string _lockedToolName = string.Empty;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string LockedToolName {
-            get { return _lockedToolName; }
-            set {
-                if (!_lockedToolName.Equals(value)) {
-                    _lockedToolName = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        private Controls.ProjectExplorer _projectExplorer;
+        private Controls.PropertyEditor _propertyEditor;
 
         public Editor() {
             InitializeComponent();
@@ -44,6 +33,49 @@ namespace ns.GUI.WPF {
             FrontendManager.Instance.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string LockedToolName {
+            get { return _lockedToolName; }
+            set {
+                if (!_lockedToolName.Equals(value)) {
+                    _lockedToolName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void Callback_ProcessorStateChanged(object sender, Communication.Events.ProcessorStateEventArgs e) {
+            LoopExecutionToggleButton.IsChecked = e.ProcessorInfoModel.State == Base.ProcessorState.Running;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e) {
+            if (_addToolControl != null && sender == _addToolControl.CloseButton) {
+                RemoveControl(_addToolControl);
+                _addToolControl = null;
+            } else if (_propertyEditor != null && sender == _propertyEditor.CloseButton) {
+                RemoveControl(_propertyEditor);
+                _propertyEditor = null;
+            }
+        }
+
+        private void Editor_Loaded(object sender, RoutedEventArgs e) {
+            GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
+            GuiHelper.DoubleAnimateControl(60, HeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
+
+            try {
+                ClientCommunicationManager.ProcessorService.Callback.ProcessorStateChanged += Callback_ProcessorStateChanged;
+                ProcessorInfoModel processorInfoModel = ClientCommunicationManager.ProcessorService.GetState();
+                LoopExecutionToggleButton.IsChecked = processorInfoModel.State == Base.ProcessorState.Running;
+            } catch (Exception) {
+                throw;
+            }
+
+            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(FrontendManager))) as FrontendManager;
+            //if (_guiManager != null)
+            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
+        }
+
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
@@ -53,6 +85,19 @@ namespace ns.GUI.WPF {
         //        LockedToolName = (e.SelectedNode as Operation).DisplayName;
         //    }
         //}
+
+        private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                if (_addToolControl == null) {
+                    _addToolControl = new Controls.AddToolControl();
+                    _addToolControl.CloseButton.Click += CloseButton_Click;
+                }
+                ControlGrid.Children.Add(_addToolControl);
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
+            };
+            ControlGrid.BeginAnimation(WidthProperty, animation);
+        }
 
         private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs<object> e) {
             IPluginModel model = e.SelectedNode as IPluginModel;
@@ -72,6 +117,37 @@ namespace ns.GUI.WPF {
             ControlGrid.BeginAnimation(WidthProperty, animation);
         }
 
+        private void RemoveControl(UIElement control) {
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                ControlGrid.Children.Remove(control);
+                if (!ControlGrid.Children.Contains(_projectExplorer))
+                    ControlGrid.Children.Add(_projectExplorer);
+                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
+            };
+            ControlGrid.BeginAnimation(WidthProperty, animation);
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
+            if (sender == ResultsViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, ResultsView, HeightProperty);
+            } else if (sender == HistogramViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
+            } else if (sender == LoopExecutionToggleButton) {
+                ClientCommunicationManager.ProcessorService.Start();
+            }
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
+            if (sender == ResultsViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(0, ResultsView, HeightProperty);
+            } else if (sender == HistogramViewToggleButton) {
+                GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
+            } else if (sender == LoopExecutionToggleButton) {
+                ClientCommunicationManager.ProcessorService.Stop();
+            }
+        }
+
         private void YesButton_Click(object sender, RoutedEventArgs e) {
             if (_propertyEditor != null && sender == _propertyEditor.RemoveToolButton.YesButton) {
                 Tool toolToRemove = _propertyEditor.Model as Tool;
@@ -84,69 +160,6 @@ namespace ns.GUI.WPF {
                 //_propertyEditor = null;
                 //if (toolToRemove != null) _projectManager.Remove(toolToRemove);
                 //else if (operationToRemove != null) _projectManager.Remove(operationToRemove);
-            }
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e) {
-            if (_addToolControl != null && sender == _addToolControl.CloseButton) {
-                RemoveControl(_addToolControl);
-                _addToolControl = null;
-            } else if (_propertyEditor != null && sender == _propertyEditor.CloseButton) {
-                RemoveControl(_propertyEditor);
-                _propertyEditor = null;
-            }
-        }
-
-        private void RemoveControl(UIElement control) {
-            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
-            animation.Completed += delegate (object s, EventArgs ev) {
-                ControlGrid.Children.Remove(control);
-                if (!ControlGrid.Children.Contains(_projectExplorer))
-                    ControlGrid.Children.Add(_projectExplorer);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
-            };
-            ControlGrid.BeginAnimation(WidthProperty, animation);
-        }
-
-        private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
-            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
-            animation.Completed += delegate (object s, EventArgs ev) {
-                if (_addToolControl == null) {
-                    _addToolControl = new Controls.AddToolControl();
-                    _addToolControl.CloseButton.Click += CloseButton_Click;
-                }
-                ControlGrid.Children.Add(_addToolControl);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
-            };
-            ControlGrid.BeginAnimation(WidthProperty, animation);
-        }
-
-        private void Editor_Loaded(object sender, RoutedEventArgs e) {
-            GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
-            GuiHelper.DoubleAnimateControl(60, HeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
-
-            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(FrontendManager))) as FrontendManager;
-            //if (_guiManager != null)
-            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
-        }
-
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
-            if (sender == ResultsViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(200, ResultsView, HeightProperty);
-            } else if (sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
-            } else if (sender == LoopExecutionToggleButton) {
-                //CoreSystem.Processor.Start();
-            }
-        }
-
-        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
-            if (sender == ResultsViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, ResultsView, HeightProperty);
-            } else if (sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
-            } else if (sender == LoopExecutionToggleButton) {
-                //CoreSystem.Processor.Stop();
             }
         }
     }

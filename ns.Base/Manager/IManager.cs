@@ -11,15 +11,8 @@
         string Name { get; }
 
         /// <summary>
-        /// Finalizes this instance.
+        /// Closes this instance.
         /// </summary>
-        /// <returns></returns>
-        bool Finalize();
-
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <returns></returns>
-        bool Initialize();
+        void Close();
     }
 }

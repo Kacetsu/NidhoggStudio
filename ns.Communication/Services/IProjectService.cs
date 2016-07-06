@@ -1,6 +1,5 @@
-﻿using ns.Communication.CommunicationModels;
+﻿using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
-using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace ns.Communication.Services {
@@ -38,5 +37,12 @@ namespace ns.Communication.Services {
         /// <returns></returns>
         [OperationContract]
         OperationModel[] GetOperations();
+
+        /// <summary>
+        /// Registers the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        [OperationContract]
+        void RegisterClient(string uid);
     }
 }

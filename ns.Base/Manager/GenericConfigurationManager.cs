@@ -9,6 +9,12 @@ namespace ns.Base.Manager {
     public class GenericConfigurationManager<T> : BaseManager, IGenericConfigurationManager<T> where T : IBaseConfiguration {
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GenericConfigurationManager{T}"/> class.
+        /// </summary>
+        public GenericConfigurationManager() : base() {
+        }
+
+        /// <summary>
         /// Gets or sets the configuration.
         /// </summary>
         /// <value>
@@ -17,27 +23,19 @@ namespace ns.Base.Manager {
         public T Configuration { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericConfigurationManager{T}"/> class.
+        /// Loads the specified path.
         /// </summary>
-        public GenericConfigurationManager() : base() {
-        }
-
-        /// <summary>
-        /// Load the manager from the given path.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns>Success of the operation.</returns>
-        public virtual bool Load(string path) {
+        /// <param name="path">The path.</param>
+        public virtual void Load(string path) {
             try {
                 T obj;
                 using (FileStream stream = new FileStream(path, FileMode.Open)) {
                     obj = Load(stream);
                 }
                 Configuration = obj;
-                return true;
             } catch (SerializationException ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
+                throw;
             }
         }
 
@@ -59,33 +57,28 @@ namespace ns.Base.Manager {
             }
         }
 
+        public virtual void Load() {
+            throw new NotImplementedException("[Load] must be implemented!");
+        }
+
         /// <summary>
         /// Saves the manager from the given path.
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Success of the operation.</returns>
-        public virtual bool Save(string path) {
-            bool result = false;
-            try {
-                if (Directory.Exists(Path.GetDirectoryName(path)) == false) {
-                    Directory.CreateDirectory(Path.GetDirectoryName(path));
-                }
-                MemoryStream memoryStream = new MemoryStream();
-                Configuration.FileName.Value = path;
-                if ((result = Save(memoryStream)) == true) {
-                    using (FileStream stream = new FileStream(path, FileMode.Create)) {
-                        memoryStream.Position = 0;
-                        memoryStream.CopyTo(stream);
-                        stream.Flush();
-                    }
-                }
-                memoryStream.Close();
-            } catch (Exception ex) {
-                Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                result = false;
+        public virtual void Save(string path) {
+            if (Directory.Exists(Path.GetDirectoryName(path)) == false) {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
             }
-
-            return result;
+            using (MemoryStream memoryStream = new MemoryStream()) {
+                Configuration.FileName.Value = path;
+                Save(memoryStream);
+                using (FileStream stream = new FileStream(path, FileMode.Create)) {
+                    memoryStream.Position = 0;
+                    memoryStream.CopyTo(stream);
+                    stream.Flush();
+                }
+            }
         }
 
         /// <summary>
@@ -93,23 +86,18 @@ namespace ns.Base.Manager {
         /// </summary>
         /// <param name="stream">Reference to the MemoryStream.</param>
         /// <returns>Success of the operation.</returns>
-        public virtual bool Save(Stream stream) {
+        public virtual void Save(Stream stream) {
             try {
                 DataContractSerializer serializer = new DataContractSerializer(typeof(T));
                 serializer.WriteObject(stream, Configuration);
                 stream.Flush();
-                return true;
             } catch (SerializationException ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
+                throw;
             }
         }
 
-        public virtual bool Load() {
-            throw new NotImplementedException("[Load] must be implemented!");
-        }
-
-        public virtual bool Save() {
+        public virtual void Save() {
             throw new NotImplementedException("[Load] must be implemented!");
         }
     }

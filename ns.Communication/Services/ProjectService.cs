@@ -1,7 +1,7 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Communication.CommunicationModels;
-using ns.Communication.CommunicationModels.Properties;
+using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
@@ -11,8 +11,9 @@ using System.ServiceModel;
 
 namespace ns.Communication.Services {
 
-    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class ProjectService : IProjectService {
+        private Dictionary<string, IProjectServiceCallbacks> _clients = new Dictionary<string, IProjectServiceCallbacks>();
         private PluginManager _pluginManager;
         private ProjectManager _projectManager;
 
@@ -52,8 +53,10 @@ namespace ns.Communication.Services {
             Tool copyTool = new Tool(tool);
             operation.AddChild(copyTool);
 
-            // Notify client.
-            Proxy.OnToolAdded(new ToolModel(copyTool));
+            // Notify clients.
+            foreach (var client in _clients) {
+                client.Value?.OnToolAdded(new ToolModel(copyTool));
+            }
         }
 
         /// <summary>
@@ -155,6 +158,18 @@ namespace ns.Communication.Services {
             }
 
             return properties.ToArray();
+        }
+
+        /// <summary>
+        /// Registers the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <exception cref="FaultException"></exception>
+        public void RegisterClient(string uid) {
+            if (_clients.ContainsKey(uid)) {
+                throw new FaultException(string.Format("Client [0] already exists!", uid));
+            }
+            _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>());
         }
     }
 }

@@ -34,6 +34,14 @@ namespace ns.Core.Manager {
         private static string _fileName = string.Empty;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectManager"/> class.
+        /// </summary>
+        public ProjectManager() : base() {
+            Configuration = new ProjectConfiguration();
+            CreateDefaultProject();
+        }
+
+        /// <summary>
         /// Gets or sets the FileName.
         /// </summary>
         public string FileName {
@@ -61,7 +69,7 @@ namespace ns.Core.Manager {
             PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
 
             if (pluginManager == null) {
-                throw new ManagerInitialisationFailedException(nameof(pluginManager));
+                throw new ManagerInitializeException(nameof(pluginManager));
             }
 
             operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
@@ -102,7 +110,7 @@ namespace ns.Core.Manager {
 
             DeviceManager deviceManager = CoreSystem.FindManager<DeviceManager>();
 
-            if (deviceManager == null) throw new ManagerInitialisationFailedException(nameof(deviceManager));
+            if (deviceManager == null) throw new ManagerInitializeException(nameof(deviceManager));
 
             deviceManager.Add(device);
 
@@ -119,7 +127,7 @@ namespace ns.Core.Manager {
             PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
 
             if (pluginManager == null) {
-                throw new ManagerInitialisationFailedException(nameof(pluginManager));
+                throw new ManagerInitializeException(nameof(pluginManager));
             }
 
             Operation operation = new Operation("Unknown Operation");
@@ -168,13 +176,15 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Initialize the instance of the manager.
+        /// Initializes the operations.
         /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            Configuration = new ProjectConfiguration();
-            CreateDefaultProject();
-            return true;
+        /// <exception cref="OperationInitializeException"></exception>
+        public void InitializeOperations() {
+            foreach (Operation operation in Configuration.Operations) {
+                if (!operation.Initialize()) {
+                    throw new OperationInitializeException(operation.Name);
+                }
+            }
         }
 
         /// <summary>
@@ -184,9 +194,9 @@ namespace ns.Core.Manager {
         /// <returns>
         /// The manager object. NULL if any error happend.
         /// </returns>
-        /// <exception cref="ManagerInitialisationFailedException"></exception>
+        /// <exception cref="ManagerInitializeException"></exception>
         /// <exception cref="PluginNotFoundException"></exception>
-        /// <exception cref="DeviceInitialisationFailedException"></exception>
+        /// <exception cref="DeviceInitializeException"></exception>
         public override ProjectConfiguration Load(Stream stream) {
             PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
 
@@ -200,16 +210,7 @@ namespace ns.Core.Manager {
             }
 
             if (pluginManager == null) {
-                throw new ManagerInitialisationFailedException(nameof(pluginManager));
-            }
-
-            foreach (Operation operation in Configuration.Operations) {
-                Device device = operation.CaptureDevice;
-                if (device != null) {
-                    if (!device.Initialize()) {
-                        throw new DeviceInitialisationFailedException(device.Name);
-                    }
-                }
+                throw new ManagerInitializeException(nameof(pluginManager));
             }
 
             return Configuration;
@@ -246,16 +247,15 @@ namespace ns.Core.Manager {
         /// <returns>
         /// Success of the operation.
         /// </returns>
-        public override bool Save(Stream stream) {
+        public override void Save(Stream stream) {
             try {
                 PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
                 DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
                 serializer.WriteObject(stream, Configuration);
                 stream.Flush();
-                return true;
             } catch (SerializationException ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
+                throw;
             }
         }
     }

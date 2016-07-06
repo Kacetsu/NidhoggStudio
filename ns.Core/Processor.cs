@@ -16,17 +16,8 @@ namespace ns.Core {
     /// Handles the use of all operations.
     /// </summary>
     public class Processor : NotifiableObject {
-
-        [XmlIgnore]
-        public Action Started;
-
-        [XmlIgnore]
-        public Action Stopped;
-
-        private DataStorageManager _dataStorageManager;
         private ExtensionManager _extensionManager;
         private bool _isFinalize = false;
-        private bool _isRunning = false;
         private List<AsyncNanoProcessor> _nexuses;
         private ProjectManager _projectManager;
         private PropertyManager _propertyManager;
@@ -36,27 +27,18 @@ namespace ns.Core {
         /// </summary>
         public Processor() {
             _projectManager = CoreSystem.FindManager<ProjectManager>();
-            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
             _propertyManager = CoreSystem.FindManager<PropertyManager>();
             _extensionManager = CoreSystem.FindManager<ExtensionManager>();
             _nexuses = new List<AsyncNanoProcessor>();
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is running.
+        /// Gets the state.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this instance is running; otherwise, <c>false</c>.
+        /// The state.
         /// </value>
-        public bool IsRunning {
-            get { return _isRunning; }
-            protected set {
-                if (_isRunning != value) {
-                    _isRunning = value;
-                    OnPropertyChanged("IsRunning");
-                }
-            }
-        }
+        public ProcessorState State { get; private set; } = ProcessorState.Idle;
 
         /// <summary>
         /// Pauses this instance.
@@ -79,19 +61,16 @@ namespace ns.Core {
         /// </summary>
         /// <returns>Success of the operation.</returns>
         public bool Start() {
-            if (IsRunning) return true;
+            if (State == ProcessorState.Running) return true;
             bool initializeResult = InitializeOperations();
             if (initializeResult == true)
                 StartOperations();
 
-            if (initializeResult) {
-                if (this.Started != null)
-                    this.Started();
-            } else {
+            if (!initializeResult) {
                 FinalizeOperations();
             }
 
-            IsRunning = initializeResult;
+            State = initializeResult ? ProcessorState.Running : ProcessorState.StartFailed;
 
             return initializeResult;
         }
@@ -110,12 +89,10 @@ namespace ns.Core {
             _nexuses.Clear();
 
             if (resultFinalize && resultTerminate) {
-                if (this.Stopped != null)
-                    this.Stopped();
-                IsRunning = false;
+                State = ProcessorState.Idle;
                 return true;
             } else {
-                IsRunning = false;
+                State = ProcessorState.Idle;
                 return false;
             }
         }
@@ -191,7 +168,7 @@ namespace ns.Core {
                         foreach (Operation o in connectedOperations) {
                             Property triggerProperty = o.GetProperty<Property>("Trigger");
                             if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
-                                NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                                NanoProcessor nanoProcessor = new NanoProcessor(o);
                                 nanoProcessor.Start();
                             }
                         }
@@ -205,7 +182,7 @@ namespace ns.Core {
                 foreach (Operation o in connectedOperations) {
                     Property triggerProperty = o.GetProperty<Property>("Trigger");
                     if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Started.GetDescription()) {
-                        NanoProcessor nanoProcessor = new NanoProcessor(o, _dataStorageManager);
+                        NanoProcessor nanoProcessor = new NanoProcessor(o);
                         nanoProcessor.Start();
                     }
                 }
@@ -239,10 +216,10 @@ namespace ns.Core {
         /// </summary>
         private void StartOperations() {
             foreach (Operation operation in _projectManager.Configuration.Operations) {
-                ListProperty triggerList = operation.GetProperty<ListProperty>("Trigger");
-                string trigger = triggerList.Value.ToString();
-
-                if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
+                // ToDo: Refactor!
+                //ListProperty triggerList = operation.GetProperty<ListProperty>("Trigger");
+                //string trigger = triggerList.Value.ToString();
+                //if (trigger != OperationTrigger.Continuous.GetDescription()) continue;
                 StartOperation(operation);
             }
         }

@@ -1,8 +1,7 @@
 ﻿using ns.Communication;
 using ns.Core;
-using ns.Core.Manager.ProjectBox;
 using System;
-using System.Threading;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Nidhogg.Service {
@@ -11,8 +10,6 @@ namespace Nidhogg.Service {
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        private CommunicationManager _communicationManager;
-        private SemaphoreSlim _serviceStopSignal = new SemaphoreSlim(0, 1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -22,16 +19,16 @@ namespace Nidhogg.Service {
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            _communicationManager.Finalize();
+            CommunicationManager.Instance?.Close();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            if (!CoreSystem.Initialize()) {
-                throw new Exception(string.Format("{0} could not be initialized!", nameof(CoreSystem)));
+            if (!CoreSystem.Instance.IsInitialized) {
+                throw new TypeInitializationException(nameof(CoreSystem), null);
             }
-            _communicationManager = new CommunicationManager();
-            _communicationManager.Initialize();
-            DataContext = _communicationManager;
+            CommunicationManager.Instance.Connect();
+            ns.Base.Log.Trace.WriteLine(string.Format("Connected establised [{0}]!", CommunicationManager.Instance.IsConnected), CommunicationManager.Instance.IsConnected ? TraceEventType.Information : TraceEventType.Warning);
+            DataContext = CommunicationManager.Instance;
         }
     }
 }

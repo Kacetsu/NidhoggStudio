@@ -1,5 +1,5 @@
 ﻿using ns.Base.Plugins;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using ns.Core;
 using ns.Core.Manager;
 using System.Collections.Generic;

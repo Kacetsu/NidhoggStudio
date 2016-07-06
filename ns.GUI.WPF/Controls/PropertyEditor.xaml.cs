@@ -1,8 +1,8 @@
 ﻿using ns.Base;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using ns.Communication.CommunicationModels;
-using ns.Communication.CommunicationModels.Properties;
+using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.GUI.WPF.Controls.Property;
 using System.Linq;
 using System.Windows;
@@ -16,12 +16,15 @@ namespace ns.GUI.WPF.Controls {
     public partial class PropertyEditor : UserControl {
 
         /// <summary>
-        /// Gets the node.
+        /// Initializes a new instance of the <see cref="PropertyEditor"/> class.
         /// </summary>
-        /// <value>
-        /// The node.
-        /// </value>
-        public IPluginModel Model { get; private set; }
+        /// <param name="model">The node.</param>
+        public PropertyEditor(IPluginModel model) {
+            InitializeComponent();
+            Model = model;
+            DataContext = this;
+            UpdateContentGrid();
+        }
 
         /// <summary>
         /// Gets or sets the display name.
@@ -41,29 +44,90 @@ namespace ns.GUI.WPF.Controls {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyEditor"/> class.
+        /// Gets the node.
         /// </summary>
-        /// <param name="model">The node.</param>
-        public PropertyEditor(IPluginModel model) {
-            InitializeComponent();
-            Model = model;
-            DataContext = this;
-            UpdateContentGrid();
+        /// <value>
+        /// The node.
+        /// </value>
+        public IPluginModel Model { get; private set; }
+
+        private DevicePropertyControl AddDeviceProperty(Grid grid, Node property, bool isConnectable) {
+            DevicePropertyControl control = new DevicePropertyControl(property as DeviceProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            DeviceProperty deviceProperty = property as DeviceProperty;
+
+            control.SelectionBox.SelectionChanged += SelectionBoxSelectionChanged;
+            return control;
+        }
+
+        private DoublePropertyControl AddDoubleProperty(Grid grid, Node property, bool isConnectable) {
+            DoublePropertyControl control = new DoublePropertyControl(property as DoubleProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
+        }
+
+        private ImagePropertyControl AddImageProperty(Grid grid, Node property, bool isConnectable) {
+            ImagePropertyControl control = new ImagePropertyControl(property as ImageProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
+        }
+
+        private IntegerPropertyControl AddIntegerProperty(Grid grid, Node property, bool isConnectable) {
+            IntegerPropertyControl control = new IntegerPropertyControl(property as IntegerProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
+        }
+
+        private ListPropertyControl AddListProperty(Grid grid, Node property, bool isConnectable) {
+            ListPropertyControl control = new ListPropertyControl(property as ListProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
+        }
+
+        private RectanglePropertyControl AddRectangleProperty(Grid grid, Node property, bool isConnectable) {
+            RectanglePropertyControl control = new RectanglePropertyControl(property as RectangleProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
+        }
+
+        private StringPropertyControl AddStringProperty(Grid grid, Node property, bool isConnectable) {
+            StringPropertyControl control = new StringPropertyControl(property as StringProperty, isConnectable);
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
+            grid.RowDefinitions.Add(rowDefinition);
+            Grid.SetRow(control, grid.Children.Count);
+            grid.Children.Add(control);
+            return control;
         }
 
         private bool IsNumberProperty(Base.Plugins.Properties.Property property) => property is INumerical;
 
-        private void UpdateContentGrid() {
-            ContentGrid.RowDefinitions.Clear();
-            ContentGrid.Children.Clear();
-
-            IConfigurableModel configModel = Model as IConfigurableModel;
-
-            foreach (PropertyModel propertyModel in configModel.Properties) {
-                if (!propertyModel.Property.IsOutput) {
-                    UpdateContenGridByProperty(propertyModel.Property);
-                }
-            }
+        private void SelectionBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            UpdateContentGrid();
         }
 
         private void UpdateContenGridByProperty(Base.Plugins.Properties.Property property) {
@@ -97,81 +161,17 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        private DoublePropertyControl AddDoubleProperty(Grid grid, Node property, bool isConnectable) {
-            DoublePropertyControl control = new DoublePropertyControl(property as DoubleProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
+        private void UpdateContentGrid() {
+            ContentGrid.RowDefinitions.Clear();
+            ContentGrid.Children.Clear();
 
-        private IntegerPropertyControl AddIntegerProperty(Grid grid, Node property, bool isConnectable) {
-            IntegerPropertyControl control = new IntegerPropertyControl(property as IntegerProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
+            IConfigurableModel configModel = Model as IConfigurableModel;
 
-        private StringPropertyControl AddStringProperty(Grid grid, Node property, bool isConnectable) {
-            StringPropertyControl control = new StringPropertyControl(property as StringProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
-
-        private ListPropertyControl AddListProperty(Grid grid, Node property, bool isConnectable) {
-            ListPropertyControl control = new ListPropertyControl(property as ListProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
-
-        private ImagePropertyControl AddImageProperty(Grid grid, Node property, bool isConnectable) {
-            ImagePropertyControl control = new ImagePropertyControl(property as ImageProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
-
-        private RectanglePropertyControl AddRectangleProperty(Grid grid, Node property, bool isConnectable) {
-            RectanglePropertyControl control = new RectanglePropertyControl(property as RectangleProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            return control;
-        }
-
-        private DevicePropertyControl AddDeviceProperty(Grid grid, Node property, bool isConnectable) {
-            DevicePropertyControl control = new DevicePropertyControl(property as DeviceProperty, isConnectable);
-            RowDefinition rowDefinition = new RowDefinition();
-            rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
-            grid.RowDefinitions.Add(rowDefinition);
-            Grid.SetRow(control, grid.Children.Count);
-            grid.Children.Add(control);
-            DeviceProperty deviceProperty = property as DeviceProperty;
-
-            control.SelectionBox.SelectionChanged += SelectionBoxSelectionChanged;
-            return control;
-        }
-
-        private void SelectionBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            UpdateContentGrid();
+            foreach (PropertyModel propertyModel in configModel.Properties) {
+                if (!propertyModel.Property.IsOutput) {
+                    UpdateContenGridByProperty(propertyModel.Property);
+                }
+            }
         }
     }
 }

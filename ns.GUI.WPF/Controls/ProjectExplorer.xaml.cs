@@ -1,7 +1,7 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Communication.Client;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
 using System.Collections.Generic;
@@ -19,21 +19,17 @@ namespace ns.GUI.WPF.Controls {
     public partial class ProjectExplorer : UserControl {
         //private GuiManager _guiManager;
 
-        private Task _task;
         private IEnumerable<OperationModel> _operationModels;
-
-        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
-
-        public event ConfigNodeHandler ConfigNodeHandlerChanged;
+        private Task _task;
 
         public ProjectExplorer() {
             InitializeComponent();
             Loaded += HandleLoaded;
         }
 
-        private void OnConfigNode(object node) {
-            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs<object>(node));
-        }
+        public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
+
+        public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         private void GenerateTree() {
             OperationModel[] operationModels = ClientCommunicationManager.ProjectService.GetOperations();
@@ -62,16 +58,6 @@ namespace ns.GUI.WPF.Controls {
             ClientCommunicationManager.ProjectService.Callback.ToolAdded += ProjectServiceCallback_ToolAdded;
         }
 
-        private void ProjectServiceCallback_ToolAdded(object sender, Communication.Events.CollectionChangedEventArgs e) {
-            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
-            foreach (UIElement element in ContentGrid.Children) {
-                OperationNodeControl operationControl = element as OperationNodeControl;
-                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
-                operationControl.UpdateChildControls(e.NewObjects as IEnumerable<ToolModel>);
-                break;
-            }
-        }
-
         private void HandleLoaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
 
@@ -89,6 +75,10 @@ namespace ns.GUI.WPF.Controls {
             GenerateTree();
         }
 
+        private void OnConfigNode(object node) {
+            ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs<object>(node));
+        }
+
         private void ProjectManagerLoading() {
             //foreach (NodeTreeItem item in this.ProjectTree.Items) {
             //    if (item is OperationTreeItem) {
@@ -96,6 +86,16 @@ namespace ns.GUI.WPF.Controls {
             //    }
             //}
             //this.ProjectTree.Items.Clear();
+        }
+
+        private void ProjectServiceCallback_ToolAdded(object sender, Communication.Events.CollectionChangedEventArgs e) {
+            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
+            foreach (UIElement element in ContentGrid.Children) {
+                OperationNodeControl operationControl = element as OperationNodeControl;
+                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
+                operationControl.UpdateChildControls(e.NewObjects as IEnumerable<ToolModel>);
+                break;
+            }
         }
     }
 }

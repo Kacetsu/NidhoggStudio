@@ -1,4 +1,4 @@
-﻿using ns.Communication.CommunicationModels;
+﻿using ns.Communication.Models;
 using System.Collections.Generic;
 using System.ServiceModel;
 

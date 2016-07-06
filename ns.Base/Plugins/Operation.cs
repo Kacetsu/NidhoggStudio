@@ -55,13 +55,8 @@ namespace ns.Base.Plugins {
         public Device CaptureDevice {
             get { return _captureDevice; }
             set {
-                DeviceProperty property = GetProperty<DeviceProperty>(nameof(CaptureDevice));
-                Device device = property?.SelectedItem;
-                if (device != value && property != null) {
-                    device?.Finalize();
-                    device = value;
-                    property.SelectedItem = device;
-                    device?.Initialize();
+                if (_captureDevice != value) {
+                    _captureDevice = value;
                     OnPropertyChanged();
                 }
             }
@@ -95,7 +90,7 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Finalize() {
-            return _captureDevice?.Finalize() == true && base.Finalize();
+            return CaptureDevice?.Finalize() == true && base.Finalize();
         }
 
         /// <summary>
@@ -111,13 +106,12 @@ namespace ns.Base.Plugins {
 
             if (deviceProperty != null) {
                 deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
-                _captureDevice = deviceProperty.SelectedItem;
+                CaptureDevice?.Finalize();
+                CaptureDevice = deviceProperty.SelectedItem;
+                CaptureDevice?.Initialize();
             }
+
             _outImageProperty = GetProperty<ImageProperty>("OutImage");
-
-            result = _captureDevice?.Initialize() == true;
-
-            if (!result) return result;
 
             foreach (Tool tool in Childs.Where(t => t is Tool)) {
                 if (!(result = tool.Initialize())) {
@@ -135,24 +129,22 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Run() {
-            bool result = _captureDevice?.PreRun() == true;
+            bool result = CaptureDevice?.PreRun() == true;
 
             if (result) {
-                _captureDevice.Run();
-                ImageProperty deviceImage = _captureDevice.GetProperty<ImageProperty>();
+                CaptureDevice.Run();
+                ImageProperty deviceImage = CaptureDevice.GetProperty<ImageProperty>();
                 _outImageProperty.Value = deviceImage.Value;
                 result = RunChilds();
             }
 
-            result = _captureDevice?.PostRun() == true;
+            result = CaptureDevice?.PostRun() == true;
             return result;
         }
 
         private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(DeviceProperty.SelectedItem))) {
-                _captureDevice?.Finalize();
-                _captureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
-                _captureDevice.Initialize();
+                CaptureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
             }
         }
     }

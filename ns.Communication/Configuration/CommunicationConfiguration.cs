@@ -16,11 +16,13 @@ namespace ns.Communication.Configuration {
         [DataMember]
         public StringProperty Address { get; set; } = new StringProperty(nameof(Address), "net.tcp://localhost:8080/");
 
-        public string PluginServiceAddress { get { return string.Format("{0}plugin", Address.Value); } }
-
-        public string ProjectServiceAddress { get { return string.Format("{0}project", Address.Value); } }
-
-        public string NotificationServiceAddress { get { return string.Format("{0}notification", Address.Value); } }
+        /// <summary>
+        /// Gets the data storage service address.
+        /// </summary>
+        /// <value>
+        /// The data storage service address.
+        /// </value>
+        public string DataStorageServiceAddress { get { return string.Format("{0}DataStorage", Address.Value); } }
 
         /// <summary>
         /// Gets the maximum size of the received message.
@@ -29,5 +31,29 @@ namespace ns.Communication.Configuration {
         /// The maximum size of the received message.
         /// </value>
         public long MaxReceivedMessageSize { get; } = 67108864;
+
+        /// <summary>
+        /// Gets the plugin service address.
+        /// </summary>
+        /// <value>
+        /// The plugin service address.
+        /// </value>
+        public string PluginServiceAddress { get { return string.Format("{0}Plugin", Address.Value); } }
+
+        /// <summary>
+        /// Gets the processor service address.
+        /// </summary>
+        /// <value>
+        /// The processor service address.
+        /// </value>
+        public string ProcessorServiceAddress { get { return string.Format("{0}Processor", Address.Value); } }
+
+        /// <summary>
+        /// Gets the project service address.
+        /// </summary>
+        /// <value>
+        /// The project service address.
+        /// </value>
+        public string ProjectServiceAddress { get { return string.Format("{0}Project", Address.Value); } }
     }
 }

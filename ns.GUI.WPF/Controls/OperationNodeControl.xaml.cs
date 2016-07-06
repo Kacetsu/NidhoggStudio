@@ -1,7 +1,7 @@
 ﻿using ns.Base;
 using ns.Base.Event;
 using ns.Base.Plugins;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
 using System.Collections.Generic;
@@ -20,8 +20,6 @@ namespace ns.GUI.WPF.Controls {
         private OperationModel _operationModel;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
         //private GuiManager _guiManager;
-
-        public object Model { get { return _operationModel; } }
 
         public OperationNodeControl(OperationModel operationModel) {
             InitializeComponent();
@@ -42,8 +40,15 @@ namespace ns.GUI.WPF.Controls {
             Loaded += OperationNodeControl_Loaded;
         }
 
-        private void OperationNodeControl_Loaded(object sender, RoutedEventArgs e) {
+        public object Model { get { return _operationModel; } }
+
+        public void UpdateChildControls(IEnumerable<ToolModel> toolModels) {
+            (Model as IOperationModel).ChildTools.AddRange(toolModels);
             UpdateChildControls();
+        }
+
+        private void ConfigButton_Click(object sender, RoutedEventArgs e) {
+            FrontendManager.OnNodeConfigurationClicked(this);
         }
 
         private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -55,22 +60,11 @@ namespace ns.GUI.WPF.Controls {
             //}
         }
 
-        private void UpdateChildControls() {
-            ContentList.Dispatcher.BeginInvoke(new Action(() => {
-                _toolControls.Clear();
-                foreach (ToolModel toolModel in _operationModel.ChildTools.Where(t => t is ToolModel)) {
-                    ToolNodeControl toolNodeControl = new ToolNodeControl(toolModel);
-                    _toolControls.Add(toolNodeControl);
-                }
-            }));
-        }
-
-        public void UpdateChildControls(IEnumerable<ToolModel> toolModels) {
-            (Model as IOperationModel).ChildTools.AddRange(toolModels);
+        private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
             UpdateChildControls();
         }
 
-        private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+        private void OperationNodeControl_Loaded(object sender, RoutedEventArgs e) {
             UpdateChildControls();
         }
 
@@ -90,8 +84,14 @@ namespace ns.GUI.WPF.Controls {
             ContentList.BeginAnimation(HeightProperty, animation);
         }
 
-        private void ConfigButton_Click(object sender, RoutedEventArgs e) {
-            FrontendManager.OnNodeConfigurationClicked(this);
+        private void UpdateChildControls() {
+            ContentList.Dispatcher.BeginInvoke(new Action(() => {
+                _toolControls.Clear();
+                foreach (ToolModel toolModel in _operationModel.ChildTools.Where(t => t is ToolModel)) {
+                    ToolNodeControl toolNodeControl = new ToolNodeControl(toolModel);
+                    _toolControls.Add(toolNodeControl);
+                }
+            }));
         }
     }
 }

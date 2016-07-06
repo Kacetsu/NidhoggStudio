@@ -1,6 +1,5 @@
 ﻿using ns.Base;
 using ns.Base.Attribute;
-using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using System;
@@ -22,6 +21,21 @@ namespace ns.Core.Manager {
         private List<string> _fileList = new List<string>();
         private List<LibraryInformation> _libraryInformations = new List<LibraryInformation>();
         private List<Plugin> _plugins = new List<Plugin>();
+
+        public PluginManager() : base() {
+            try {
+                Base.Log.Trace.WriteLine("Initialize PluginManager ...", TraceEventType.Information);
+                _extensionManager = CoreSystem.FindManager<ExtensionManager>();
+
+                if (!UpdatePlugins()) {
+                    throw new Exception("Could not get any plugins!");
+                }
+            } catch (Exception ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
+            }
+        }
+
         public List<Type> KnownTypes { get; } = new List<Type>();
 
         /// <summary>
@@ -36,38 +50,6 @@ namespace ns.Core.Manager {
         /// Gets the path to the plugins.
         /// </summary>
         public string PluginPath => _pluginPath;
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">
-        /// Could not initialize ToolManager!
-        /// or
-        /// Could not initialize DeviceManager!
-        /// or
-        /// Could not initialize ExtensionManager!
-        /// or
-        /// Could not get any plugins!
-        /// </exception>
-        public override bool Initialize() {
-            try {
-                Base.Log.Trace.WriteLine("Initialize PluginManager ...", TraceEventType.Information);
-                _extensionManager = new ExtensionManager();
-
-                if (!_extensionManager.Initialize()) throw new ManagerInitialisationFailedException(nameof(ExtensionManager));
-
-                CoreSystem.AddManager(_extensionManager);
-
-                if (UpdatePlugins() == false)
-                    throw new Exception("Could not get any plugins!");
-
-                return true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
-            }
-        }
 
         /// <summary>
         /// Loads all Plugins.

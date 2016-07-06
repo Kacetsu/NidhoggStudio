@@ -15,15 +15,13 @@ namespace ns.Base.Manager {
         /// <summary>
         /// Loads this instance.
         /// </summary>
-        /// <returns></returns>
-        bool Load();
+        void Load();
 
         /// <summary>
         /// Loads the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns></returns>
-        bool Load(string path);
+        void Load(string path);
 
         /// <summary>
         /// Loads the specified stream.
@@ -35,21 +33,18 @@ namespace ns.Base.Manager {
         /// <summary>
         /// Saves this instance.
         /// </summary>
-        /// <returns></returns>
-        bool Save();
+        void Save();
 
         /// <summary>
         /// Saves the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns></returns>
-        bool Save(string path);
+        void Save(string path);
 
         /// <summary>
         /// Saves the specified stream.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        /// <returns></returns>
-        bool Save(Stream stream);
+        void Save(Stream stream);
     }
 }

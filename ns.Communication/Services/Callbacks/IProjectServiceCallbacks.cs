@@ -1,5 +1,5 @@
-﻿using ns.Communication.CommunicationModels;
-using ns.Communication.Events;
+﻿using ns.Communication.Events;
+using ns.Communication.Models;
 using System.ServiceModel;
 
 namespace ns.Communication.Services.Callbacks {

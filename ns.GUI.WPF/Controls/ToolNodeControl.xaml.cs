@@ -1,4 +1,4 @@
-﻿using ns.Communication.CommunicationModels;
+﻿using ns.Communication.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -10,6 +10,17 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für ToolNodeControl.xaml
     /// </summary>
     public partial class ToolNodeControl : UserControl, INotifyPropertyChanged, INodeControl {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToolNodeControl"/> class.
+        /// </summary>
+        /// <param name="model">The tool.</param>
+        public ToolNodeControl(ToolModel model) {
+            InitializeComponent();
+            Model = model;
+            model.PropertyChanged += _model_PropertyChanged;
+            DataContext = this;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,26 +46,15 @@ namespace ns.GUI.WPF.Controls {
         public object Model { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToolNodeControl"/> class.
+        /// Called when [property changed].
         /// </summary>
-        /// <param name="model">The tool.</param>
-        public ToolNodeControl(ToolModel model) {
-            InitializeComponent();
-            Model = model;
-            model.PropertyChanged += _model_PropertyChanged;
-            DataContext = this;
-        }
+        /// <param name="name">The name.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void _model_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(ToolModel.Name))
                 DisplayName = (Model as IToolModel).DisplayName;
         }
-
-        /// <summary>
-        /// Called when [property changed].
-        /// </summary>
-        /// <param name="name">The name.</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void ConfigButton_Click(object sender, RoutedEventArgs e) {
             FrontendManager.OnNodeConfigurationClicked(this);

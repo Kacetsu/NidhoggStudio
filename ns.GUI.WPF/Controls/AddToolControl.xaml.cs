@@ -1,5 +1,5 @@
 ﻿using ns.Communication.Client;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,6 +33,21 @@ namespace ns.GUI.WPF.Controls {
             ToolGrid.Children.Add(nodeControl);
         }
 
+        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            string category = CategoryComboBox.SelectedItem as string;
+            foreach (AddToolNodeControl control in ToolGrid.Children) {
+                control.Visibility = Visibility.Visible;
+            }
+
+            if (category == "All") return;
+
+            foreach (AddToolNodeControl control in ToolGrid.Children) {
+                if (!control.Model.Category.Equals(category)) {
+                    control.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
         private void GeneratePluginList() {
             CategoryComboBox.Dispatcher.Invoke(new Action(() => {
                 CategoryComboBox.Items.Clear();
@@ -64,21 +79,6 @@ namespace ns.GUI.WPF.Controls {
 
         private void HandleUnloaded(object sender, RoutedEventArgs e) {
             _task?.Wait(TimeSpan.FromSeconds(10));
-        }
-
-        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            string category = CategoryComboBox.SelectedItem as string;
-            foreach (AddToolNodeControl control in ToolGrid.Children) {
-                control.Visibility = Visibility.Visible;
-            }
-
-            if (category == "All") return;
-
-            foreach (AddToolNodeControl control in ToolGrid.Children) {
-                if (!control.Model.Category.Equals(category)) {
-                    control.Visibility = Visibility.Collapsed;
-                }
-            }
         }
     }
 }

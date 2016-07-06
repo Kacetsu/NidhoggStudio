@@ -28,7 +28,6 @@ namespace ns.Plugin.Base {
             DisplayName = "Image File Device";
             AddChild(new StringProperty("Directory", BaseManager.DocumentsPath + "Images"));
             AddChild(new ImageProperty("Image", true));
-            _openImageFilenames = new List<string>();
         }
 
         /// <summary>
@@ -54,6 +53,7 @@ namespace ns.Plugin.Base {
         /// Success of the Operation.
         /// </returns>
         public override bool Initialize() {
+            _openImageFilenames = new List<string>();
             _bitmaps = new List<Bitmap>();
             _directory = GetProperty<StringProperty>("Directory")?.Value;
             _imageProperty = GetProperty<ImageProperty>("Image");

@@ -8,22 +8,6 @@ namespace ns.Communication.Client {
         private bool disposed = false;
 
         /// <summary>
-        /// Gets the channel.
-        /// </summary>
-        /// <value>
-        /// The channel.
-        /// </value>
-        protected T Channel { get; private set; }
-
-        /// <summary>
-        /// Gets the callback.
-        /// </summary>
-        /// <value>
-        /// The callback.
-        /// </value>
-        public U Callback { get; private set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GenericDuplexServiceClient{T}" /> class.
         /// </summary>
         /// <param name="endpoint">The endpoint.</param>
@@ -41,11 +25,25 @@ namespace ns.Communication.Client {
         }
 
         /// <summary>
+        /// Gets the callback.
+        /// </summary>
+        /// <value>
+        /// The callback.
+        /// </value>
+        public U Callback { get; private set; }
+
+        /// <summary>
+        /// Gets the channel.
+        /// </summary>
+        /// <value>
+        /// The channel.
+        /// </value>
+        protected T Channel { get; private set; }
+
+        /// <summary>
         /// Closes this instance.
         /// </summary>
-        public void Close() {
-            (Channel as ICommunicationObject)?.Close();
-        }
+        public void Close() => (Channel as ICommunicationObject)?.Close();
 
         /// <summary>
         /// Führt anwendungsspezifische Aufgaben aus, die mit dem Freigeben, Zurückgeben oder Zurücksetzen von nicht verwalteten Ressourcen zusammenhängen.

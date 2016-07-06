@@ -1,5 +1,7 @@
 ﻿using ns.Base.Plugins.Properties;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -102,6 +104,37 @@ namespace ns.Base.Plugins {
                 return _version;
             }
             set { _version = value; }
+        }
+
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetProperties<T>() where T : Property {
+            List<T> result = new List<T>();
+
+            foreach (T property in Childs.Where(p => p is T)) {
+                result.Add(property);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
+        /// <returns></returns>
+        public IEnumerable<T> GetProperties<T>(bool isOutput) where T : Property {
+            List<T> result = new List<T>();
+
+            foreach (T property in Childs.Where(p => p is T && (p as T).IsOutput == isOutput)) {
+                result.Add(property);
+            }
+
+            return result;
         }
 
         /// <summary>

@@ -11,15 +11,13 @@ namespace ns.Core.Test {
         [TestMethod]
         public void ProjectManager_AddAndSaveOperation() {
             PluginManager pluginManager = new PluginManager();
-            pluginManager.Initialize();
             CoreSystem.AddManager(pluginManager);
             ProjectManager projectManager = new ProjectManager();
-            Assert.IsTrue(projectManager.Initialize());
             projectManager.CreateDefaultProject();
 
             projectManager.Add(new Base.Plugins.Operation("DummyOperation"));
             using (MemoryStream stream = new MemoryStream()) {
-                Assert.IsTrue(projectManager.Save(stream));
+                projectManager.Save(stream);
                 stream.Position = 0;
                 StreamReader reader = new StreamReader(stream);
                 Trace.WriteLine(reader.ReadToEnd());
@@ -29,17 +27,15 @@ namespace ns.Core.Test {
         [TestMethod]
         public void ProjectManager_Initialize() {
             ProjectManager projectManager = new ProjectManager();
-            Assert.IsTrue(projectManager.Initialize());
         }
 
         [TestMethod]
         public void ProjectManager_SaveLoadDefaultProject() {
-            Assert.IsTrue(CoreSystem.Initialize());
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
             projectManager.CreateDefaultProject();
 
             using (MemoryStream stream = new MemoryStream()) {
-                Assert.IsTrue(projectManager.Save(stream));
+                projectManager.Save(stream);
                 stream.Position = 0;
                 StreamReader reader = new StreamReader(stream);
                 Trace.WriteLine(reader.ReadToEnd());
@@ -51,7 +47,7 @@ namespace ns.Core.Test {
                 Assert.AreEqual(projectManager.Configuration.Operations.Count, 1);
             }
 
-            Assert.IsTrue(CoreSystem.Finalize());
+            CoreSystem.Close();
         }
     }
 }

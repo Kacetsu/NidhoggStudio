@@ -1,5 +1,5 @@
 ﻿using ns.Communication.Client;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +11,6 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für AddToolNodeControl.xaml
     /// </summary>
     public partial class AddToolNodeControl : UserControl {
-        public ToolModel Model { get; private set; }
 
         public AddToolNodeControl() {
             InitializeComponent();
@@ -25,21 +24,7 @@ namespace ns.GUI.WPF.Controls {
             Model = model;
         }
 
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
-            DescriptionTextBlock.Height = double.NaN;
-        }
-
-        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
-            DescriptionTextBlock.Height = DescriptionTextBlock.ActualHeight;
-            DescriptionToggleButton.IsEnabled = false;
-            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
-            animation.Completed += delegate (object s, EventArgs ev) {
-                DescriptionTextBlock.Height = 0;
-                DescriptionTextBlock.ApplyAnimationClock(HeightProperty, null);
-                DescriptionToggleButton.IsEnabled = true;
-            };
-            DescriptionTextBlock.BeginAnimation(HeightProperty, animation);
-        }
+        public ToolModel Model { get; private set; }
 
         private void AddButton_Click(object sender, RoutedEventArgs e) {
             //GuiManager guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
@@ -60,6 +45,22 @@ namespace ns.GUI.WPF.Controls {
             if (operationModel != null) {
                 ClientCommunicationManager.ProjectService.AddToolToProject(Model, operationModel.UID);
             }
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
+            DescriptionTextBlock.Height = double.NaN;
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
+            DescriptionTextBlock.Height = DescriptionTextBlock.ActualHeight;
+            DescriptionToggleButton.IsEnabled = false;
+            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            animation.Completed += delegate (object s, EventArgs ev) {
+                DescriptionTextBlock.Height = 0;
+                DescriptionTextBlock.ApplyAnimationClock(HeightProperty, null);
+                DescriptionToggleButton.IsEnabled = true;
+            };
+            DescriptionTextBlock.BeginAnimation(HeightProperty, animation);
         }
     }
 }

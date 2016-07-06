@@ -64,7 +64,6 @@
     <Compile Include="Configuration\LogConfiguration.cs" />
     <Compile Include="Configuration\ProjectBoxConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
-    <Compile Include="DataStorage.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Manager\DataStorageManager.cs" />
     <Compile Include="Manager\DeviceManager.cs" />
@@ -87,6 +86,7 @@
       <Name>ns.Base</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

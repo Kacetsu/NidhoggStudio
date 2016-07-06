@@ -1,4 +1,4 @@
-﻿using ns.Communication.CommunicationModels;
+﻿using ns.Communication.Models;
 using ns.Communication.Services;
 using ns.Communication.Services.Callbacks;
 using System;
@@ -15,6 +15,7 @@ namespace ns.Communication.Client {
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="binding">The binding.</param>
         public ProjectServiceClient(EndpointAddress endpoint, Binding binding, ProjectServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
+            RegisterClient(Guid.NewGuid().ToString());
         }
 
         /// <summary>
@@ -43,5 +44,11 @@ namespace ns.Communication.Client {
         /// </summary>
         /// <returns></returns>
         public OperationModel[] GetOperations() => Channel?.GetOperations();
+
+        /// <summary>
+        /// Registers the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        public void RegisterClient(string uid) => Channel?.RegisterClient(uid);
     }
 }

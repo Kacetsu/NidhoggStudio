@@ -10,9 +10,15 @@ using System.Linq;
 namespace ns.Core.Manager {
 
     public class PropertyManager : NodeManager<Property> {
-        private DataStorageManager _dataStorageManager;
         private PluginManager _pluginManager;
         private List<Property> _properties = new List<Property>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyManager"/> class.
+        /// </summary>
+        public PropertyManager() : base() {
+            _pluginManager = CoreSystem.FindManager<PluginManager>();
+        }
 
         /// <summary>
         /// Adds the specified node.
@@ -28,16 +34,6 @@ namespace ns.Core.Manager {
 
                     DeviceProperty deviceProperty = node as DeviceProperty;
                     deviceProperty.Value = devices.DeepClone();
-                }
-
-                if (node is Property) {
-                    Property property = node as Property;
-                    property.PropertyChanged += PropertyPropertyChanged;
-                    if (property.IsMonitored) {
-                        if (_dataStorageManager == null)
-                            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
-                        _dataStorageManager.Add(property);
-                    }
                 }
 
                 Nodes.Add(node);
@@ -105,11 +101,6 @@ namespace ns.Core.Manager {
             return result;
         }
 
-        public override bool Initialize() {
-            _pluginManager = CoreSystem.FindManager<PluginManager>();
-            return _pluginManager != null;
-        }
-
         /// <summary>
         /// Removes the specified node.
         /// </summary>
@@ -145,19 +136,6 @@ namespace ns.Core.Manager {
             }
 
             return properties;
-        }
-
-        private void PropertyPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "IsMonitored") {
-                if (_dataStorageManager == null)
-                    _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
-
-                Property property = sender as Property;
-                if (property.IsMonitored)
-                    _dataStorageManager.Add(property);
-                else
-                    _dataStorageManager.Remove(property);
-            }
         }
     }
 }

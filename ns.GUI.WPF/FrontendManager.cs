@@ -1,20 +1,28 @@
 ﻿using ns.Base.Manager;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace ns.GUI.WPF {
 
     public class FrontendManager : BaseManager {
+        private static bool _isRunning = false;
         private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
         private static object _selectedModel;
-        private static bool _isRunning = false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FrontendManager"/> class.
+        /// </summary>
+        public FrontendManager() : base() {
+        }
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
 
+        /// <summary>
+        /// Occurs when [configuration node handler changed].
+        /// </summary>
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
         /// <summary>
@@ -26,23 +34,23 @@ namespace ns.GUI.WPF {
         public static FrontendManager Instance { get { return _lazyInstance.Value; } }
 
         /// <summary>
-        /// Gets or sets if the Processor is running.
-        /// </summary>
-        public static bool IsRunning {
-            get { return _isRunning; }
-            set {
-                _isRunning = value;
-                Instance.OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Used to simplify GUI binding usage.
         /// </summary>
         public static bool IsNotRunning {
             get { return !_isRunning; }
             set {
                 _isRunning = !value;
+                Instance.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets if the Processor is running.
+        /// </summary>
+        public static bool IsRunning {
+            get { return _isRunning; }
+            set {
+                _isRunning = value;
                 Instance.OnPropertyChanged();
             }
         }
@@ -74,9 +82,11 @@ namespace ns.GUI.WPF {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FrontendManager"/> class.
+        /// Called when [node configuration clicked].
         /// </summary>
-        public FrontendManager() : base() {
+        /// <param name="control">The control.</param>
+        public static void OnNodeConfigurationClicked(INodeControl control) {
+            Instance.ConfigNodeHandlerChanged?.Invoke(control, new NodeSelectionChangedEventArgs<object>(control.Model));
         }
 
         /// <summary>
@@ -95,23 +105,6 @@ namespace ns.GUI.WPF {
                 break;
             }
             Application.Current.Resources.MergedDictionaries.Add(dict);
-        }
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            base.Initialize();
-
-            //CoreSystem.Processor.Started += ProcessorStarted;
-            //CoreSystem.Processor.Stopped += ProcessorStopped;
-
-            return true;
-        }
-
-        public static void OnNodeConfigurationClicked(INodeControl control) {
-            Instance.ConfigNodeHandlerChanged?.Invoke(control, new NodeSelectionChangedEventArgs<object>(control.Model));
         }
 
         private void ProcessorStarted() {

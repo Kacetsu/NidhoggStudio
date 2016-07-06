@@ -1,29 +1,27 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Manager;
+using ns.Base.Plugins;
 
 namespace ns.Core.Manager {
 
-    public class ExtensionManager : PluginManager {
+    public class ExtensionManager : NodeManager<Extension>, INodeManager<Extension> {
 
         /// <summary>
-        /// Initialize the instance of the manager.
+        /// Initializes a new instance of the <see cref="ExtensionManager"/> class.
         /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
+        public ExtensionManager() {
             foreach (Extension extension in Nodes) {
                 extension.Initialize();
             }
-            return true;
         }
 
         /// <summary>
         /// Finalizes this instance.
         /// </summary>
         /// <returns></returns>
-        public override bool Finalize() {
+        public override void Close() {
             foreach (Extension extension in Nodes) {
                 extension.Finalize();
             }
-            return true;
         }
 
         /// <summary>

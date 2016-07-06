@@ -8,10 +8,9 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void PluginManager_Initialize() {
-            Assert.IsTrue(CoreSystem.Initialize());
+            Assert.IsTrue(CoreSystem.Instance.IsInitialized);
             PluginManager pluginManager = new PluginManager();
-            Assert.IsTrue(pluginManager.Initialize());
-            Assert.IsTrue(CoreSystem.Finalize());
+            CoreSystem.Close();
         }
     }
 }

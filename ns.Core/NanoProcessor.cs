@@ -1,8 +1,10 @@
 ﻿using ns.Base;
+using ns.Base.Manager.DataStorage;
 using ns.Base.Plugins;
 using ns.Core.Manager;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ns.Core {
 
@@ -10,7 +12,7 @@ namespace ns.Core {
     /// Runs the Operation on a sync way.
     /// </summary>
     public class NanoProcessor : NotifiableObject {
-        private DataStorageManager _dataStorageManager;
+        private DataStorageManager _dataStorageManager = null;
         private Operation _operation;
         private bool _result = false;
 
@@ -20,14 +22,7 @@ namespace ns.Core {
         /// <param name="operation">The Operation to run.</param>
         public NanoProcessor(Operation operation) {
             _operation = operation;
-            _operation.PropertyChanged += OperationPropertyChanged;
             _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
-        }
-
-        public NanoProcessor(Operation operation, DataStorageManager dataStorageManager) {
-            _operation = operation;
-            _operation.PropertyChanged += OperationPropertyChanged;
-            _dataStorageManager = dataStorageManager;
         }
 
         /// <summary>
@@ -54,6 +49,10 @@ namespace ns.Core {
             return Execute();
         }
 
+        /// <summary>
+        /// Executes this instance.
+        /// </summary>
+        /// <returns></returns>
         protected bool Execute() {
             bool preResult = false;
             bool postResult = false;
@@ -67,8 +66,14 @@ namespace ns.Core {
                     Base.Log.Trace.WriteLine("Prerun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 }
 
-                if ((postResult = _operation.PostRun()) == false)
+                if ((postResult = _operation.PostRun()) == false) {
                     Base.Log.Trace.WriteLine("Postrun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
+                }
+
+                _dataStorageManager.Add(new OperationDataContainer(_operation));
+                foreach (Tool tool in _operation.Childs.Where(t => t is Tool)) {
+                    _dataStorageManager.Add(new ToolDataContainer(tool));
+                }
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 preResult = false;
@@ -78,20 +83,6 @@ namespace ns.Core {
 
             Result = preResult && runResult && postResult;
             return Result;
-        }
-
-        private void OperationPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName != "Status") return;
-
-            switch (_operation.Status) {
-                case PluginStatus.Failed:
-                case PluginStatus.Finished:
-                _dataStorageManager.AddContext(_operation);
-                break;
-
-                default:
-                break;
-            }
         }
     }
 }

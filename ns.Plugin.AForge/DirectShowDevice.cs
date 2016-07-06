@@ -70,8 +70,8 @@ namespace ns.Plugin.AForge {
         /// Success of the Operation.
         /// </returns>
         public override bool Finalize() {
-            _videoDevice.SignalToStop();
-            _videoDevice.WaitForStop();
+            _videoDevice?.SignalToStop();
+            _videoDevice?.WaitForStop();
             base.Finalize();
             _isTerminated = true;
             return true;

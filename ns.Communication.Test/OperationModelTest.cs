@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ns.Base.Plugins;
-using ns.Communication.CommunicationModels;
+using ns.Communication.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;

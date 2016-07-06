@@ -1,108 +1,60 @@
-﻿using ns.Base;
-using ns.Base.Event;
+﻿using ns.Base.Event;
 using ns.Base.Manager;
-using ns.Base.Plugins.Properties;
-using System;
-using System.Diagnostics;
+using ns.Base.Manager.DataStorage;
+using System.Collections.Generic;
 
 namespace ns.Core.Manager {
 
-    public class DataStorageManager : NodeManager<Node> {
+    public class DataStorageManager : NodeManager<DataContainer>, IDataStorageCollectionChangedEventHandler {
+        private List<string> _containerUIDs = new List<string>();
+        private List<ToolDataContainer> _toolContainers = new List<ToolDataContainer>();
 
         /// <summary>
-        ///
+        /// Occurs when [data storage collection changed].
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="DataStorageContainerChangedEventArgs"/> instance containing the event data.</param>
-        public delegate void ContainerCollectionChangedHandler(object sender, DataStorageContainerChangedEventArgs e);
-
-        /// <summary>
-        /// Occurs when [container added event].
-        /// </summary>
-        public event ContainerCollectionChangedHandler ContainerAddedEvent;
-
-        /// <summary>
-        /// Occurs when [container removed event].
-        /// </summary>
-        public event ContainerCollectionChangedHandler ContainerRemovedEvent;
-
-        /// <summary>
-        /// Occurs when [container changed event].
-        /// </summary>
-        public event ContainerCollectionChangedHandler ContainerChangedEvent;
-
-        private const int MAX_VALUES = 100;
-        private DataStorage _dataStorage;
-
-        /// <summary>
-        /// Initialize the instance of the manager.
-        /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            _dataStorage = new DataStorage();
-            return true;
-        }
+        public event DataStorageCollectionChangedEventHandler DataStorageCollectionChanged;
 
         /// <summary>
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
-        public override void Add(Node node) {
-            if (node is Property) {
-                Property property = node as Property;
-                DataStorageContainer container;
-
-                lock (_dataStorage.Containers) {
-                    try {
-                        container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
-                        if (container.Values.Count > MAX_VALUES) container.Values.RemoveAt(0);
-
-                        container.Values.Add((property as IValue<object>)?.Value);
-                        ContainerChangedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
-                    } catch {
-                        container = new DataStorageContainer(property.Name, property.TreeName, property.UID);
-                        _dataStorage.Containers.Add(container);
-                        ContainerAddedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
-                    }
+        public override void Add(DataContainer node) {
+            if (node is ToolDataContainer) {
+                lock (_toolContainers) {
+                    _toolContainers.Add(node as ToolDataContainer);
+                }
+            } else {
+                lock (Nodes) {
+                    base.Add(node);
                 }
             }
+
+            lock (_containerUIDs) {
+                _containerUIDs.Add(node.UID);
+            }
+
+            DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID));
         }
 
         /// <summary>
-        /// Removes the specified node.
+        /// Finds the specified uid.
         /// </summary>
-        /// <param name="node">The node.</param>
-        public override void Remove(Node node) {
-            if (node is Property) {
-                Property property = node as Property;
-                DataStorageContainer container;
-
-                lock (_dataStorage.Containers) {
-                    try {
-                        container = _dataStorage.Containers.Find(c => c.TreeName == property.TreeName);
-                        ContainerRemovedEvent?.Invoke(this, new DataStorageContainerChangedEventArgs(property, container));
-                        _dataStorage.Containers.Remove(container);
-                    } catch (ArgumentNullException ex) {
-                        Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                    }
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public DataContainer Find(string uid) {
+            foreach (ToolDataContainer toolContainer in _toolContainers) {
+                if (toolContainer.UID.Equals(uid)) {
+                    return toolContainer;
                 }
             }
-        }
 
-        /// <summary>
-        /// Adds the Node context to DataStorage.
-        /// </summary>
-        /// <param name="node">The Node containing the needed context.</param>
-        public void AddContext(Node node) {
-            foreach (Node child in node.Childs) {
-                if (child is Property) {
-                    Property property = child as Property;
-                    if (property.IsOutput && property.IsMonitored) {
-                        Add(property);
-                    }
+            foreach (OperationDataContainer operationContainer in Nodes) {
+                if (operationContainer.UID.Equals(uid)) {
+                    return operationContainer;
                 }
-                AddContext(child);
             }
+
+            return null;
         }
     }
 }

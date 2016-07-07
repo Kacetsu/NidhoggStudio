@@ -43,7 +43,7 @@ namespace ns.GUI.WPF.Controls {
         /// <value>
         /// The tool.
         /// </value>
-        public object Model { get; private set; }
+        public IPluginModel Model { get; private set; }
 
         /// <summary>
         /// Called when [property changed].

@@ -140,6 +140,7 @@
     <Compile Include="Controls\ToolNodeControl.xaml.cs">
       <DependentUpon>ToolNodeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataStorageConsumer.cs" />
     <Compile Include="Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>

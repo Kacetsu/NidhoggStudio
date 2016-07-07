@@ -1,4 +1,5 @@
 ﻿using ns.Base.Manager;
+using ns.Communication.Client;
 using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
@@ -8,14 +9,16 @@ using System.Windows;
 namespace ns.GUI.WPF {
 
     public class FrontendManager : BaseManager {
+        private static DataStorageConsumer _dataStorageConsumer;
         private static bool _isRunning = false;
         private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
-        private static object _selectedModel;
+        private static IPluginModel _selectedModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FrontendManager"/> class.
         /// </summary>
         public FrontendManager() : base() {
+            _dataStorageConsumer = new DataStorageConsumer();
         }
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
@@ -61,7 +64,7 @@ namespace ns.GUI.WPF {
         /// <value>
         /// The selected node.
         /// </value>
-        public static object SelectedModel {
+        public static IPluginModel SelectedModel {
             get { return _selectedModel; }
             set {
                 if (_selectedModel != null && _selectedModel != value) {

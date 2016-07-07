@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ns.Communication.Models;
 
 namespace ns.GUI.WPF {
 
@@ -14,6 +10,6 @@ namespace ns.GUI.WPF {
         /// <value>
         /// The model.
         /// </value>
-        object Model { get; }
+        IPluginModel Model { get; }
     }
 }

@@ -1,15 +1,10 @@
-﻿using ns.Base;
-using ns.Base.Event;
-using ns.Base.Plugins;
-using ns.Communication.Models;
-using ns.GUI.WPF.Events;
+﻿using ns.Communication.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
 
@@ -17,7 +12,7 @@ namespace ns.GUI.WPF.Controls {
     /// Interaktionslogik für OperationNodeControl.xaml
     /// </summary>
     public partial class OperationNodeControl : UserControl, INodeControl {
-        private OperationModel _operationModel;
+        private IOperationModel _operationModel;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
         //private GuiManager _guiManager;
 
@@ -40,7 +35,7 @@ namespace ns.GUI.WPF.Controls {
             Loaded += OperationNodeControl_Loaded;
         }
 
-        public object Model { get { return _operationModel; } }
+        public IPluginModel Model { get { return _operationModel; } }
 
         public void UpdateChildControls(IEnumerable<ToolModel> toolModels) {
             (Model as IOperationModel).ChildTools.AddRange(toolModels);

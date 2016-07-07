@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -10,16 +11,16 @@ namespace ns.Base.Plugins.Properties {
     public struct ImageContainer {
 
         /// <summary>
+        /// The bytes per pixel
+        /// </summary>
+        [DataMember]
+        public byte BytesPerPixel;
+
+        /// <summary>
         /// The data
         /// </summary>
         [DataMember]
         public byte[] Data;
-
-        /// <summary>
-        /// The width
-        /// </summary>
-        [DataMember]
-        public int Width;
 
         /// <summary>
         /// The height
@@ -34,10 +35,10 @@ namespace ns.Base.Plugins.Properties {
         public int Stride;
 
         /// <summary>
-        /// The bytes per pixel
+        /// The width
         /// </summary>
         [DataMember]
-        public byte BytesPerPixel;
+        public int Width;
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

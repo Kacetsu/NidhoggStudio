@@ -1,6 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -223,8 +222,8 @@ namespace ns.Base.Plugins {
                     }
 
                     foreach (Property property in child.Childs) {
-                        ITolerance<object> tolerancProperty = property as ITolerance<object>;
-                        if (tolerancProperty?.IsToleranceEnabled == false) continue;
+                        ITolerance tolerancProperty = property as ITolerance;
+                        if (tolerancProperty == null || tolerancProperty.IsToleranceEnabled == false) continue;
 
                         result = tolerancProperty.InTolerance;
                     }

@@ -49,7 +49,7 @@ namespace ns.GUI.WPF.Controls {
                 if (ContentGrid.Children.Count > 0) {
                     OperationNodeControl operationControl = ContentGrid.Children[0] as OperationNodeControl;
                     if (operationControl != null) {
-                        FrontendManager.SelectedModel = operationControl.Model;
+                        FrontendManager.SelectedModel = operationControl.Model as IPluginModel;
                     }
                 }
             }));

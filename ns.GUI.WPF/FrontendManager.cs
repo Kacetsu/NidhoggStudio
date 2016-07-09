@@ -1,8 +1,10 @@
 ﻿using ns.Base.Manager;
-using ns.Communication.Client;
+using ns.Base.Plugins.Properties;
 using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.GUI.WPF.Events;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 
@@ -14,11 +16,14 @@ namespace ns.GUI.WPF {
         private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
         private static IPluginModel _selectedModel;
 
+        private ImageProperty _selectedPluginImage;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FrontendManager"/> class.
         /// </summary>
         public FrontendManager() : base() {
             _dataStorageConsumer = new DataStorageConsumer();
+            _dataStorageConsumer.DataStorageAdded += _dataStorageConsumer_DataStorageAdded;
         }
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
@@ -79,7 +84,24 @@ namespace ns.GUI.WPF {
                         selectable.IsSelected = true;
                     }
 
+                    _dataStorageConsumer.SelectedUID = _selectedModel.UID;
                     Instance.OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the selected plugin image.
+        /// </summary>
+        /// <value>
+        /// The selected plugin image.
+        /// </value>
+        public ImageProperty SelectedPluginImage {
+            get { return _selectedPluginImage; }
+            private set {
+                if (_selectedPluginImage != value) {
+                    _selectedPluginImage = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -108,6 +130,12 @@ namespace ns.GUI.WPF {
                 break;
             }
             Application.Current.Resources.MergedDictionaries.Add(dict);
+        }
+
+        private void _dataStorageConsumer_DataStorageAdded(object sender, DataStorageContainerModelAddedEventArgs e) {
+            foreach (PropertyModel propertyModel in e.ContainerModel.Properties.Where(p => p.Property is ImageProperty)) {
+                SelectedPluginImage = propertyModel.Property as ImageProperty;
+            }
         }
 
         private void ProcessorStarted() {

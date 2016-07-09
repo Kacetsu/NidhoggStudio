@@ -1,4 +1,5 @@
-﻿using ns.Communication.Event;
+﻿using ns.Base.Event;
+using System.Collections.Generic;
 
 namespace ns.Communication.Services.Callbacks {
 
@@ -12,7 +13,7 @@ namespace ns.Communication.Services.Callbacks {
         /// <summary>
         /// Called when [data storage collection changed].
         /// </summary>
-        /// <param name="newUID"></param>
-        public void OnDataStorageCollectionChanged(string newUID) => DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(newUID));
+        /// <param name="newContainers">The new containers.</param>
+        public void OnDataStorageCollectionChanged(Dictionary<string, string> newContainers) => DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(newContainers));
     }
 }

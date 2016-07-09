@@ -52,9 +52,6 @@
     <Compile Include="Client\ProjectServiceClient.cs" />
     <Compile Include="CommunicationManager.cs" />
     <Compile Include="CoreComHelper.cs" />
-    <Compile Include="Events\DataStorageCollectionChangedEventArgs.cs" />
-    <Compile Include="Events\DataStorageCollectionChangedEventHandler.cs" />
-    <Compile Include="Events\IDataStorageCollectionChangedEventHandler.cs" />
     <Compile Include="Events\IProcessorStateChangedEventHandler.cs" />
     <Compile Include="Events\ProcessorStateChangedEventHandler.cs" />
     <Compile Include="Events\ProcessorStateEventArgs.cs" />

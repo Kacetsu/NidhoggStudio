@@ -33,7 +33,7 @@ namespace ns.Core.Manager {
                 _containerUIDs.Add(node.UID);
             }
 
-            DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID));
+            DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID, node.ParentUID));
         }
 
         /// <summary>

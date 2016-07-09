@@ -15,20 +15,11 @@ namespace ns.Communication.Models {
         /// </summary>
         /// <param name="container">The container.</param>
         public DataStorageContainerModel(DataContainer container) : base(container) {
-            ParentUID = container.ParentUID;
+            UID = container.ParentUID;
             foreach (Property property in container.Properties.Where(c => c.IsOutput)) {
                 Properties.Add(new PropertyModel(property));
             }
         }
-
-        /// <summary>
-        /// Gets the parent uid.
-        /// </summary>
-        /// <value>
-        /// The parent uid.
-        /// </value>
-        [DataMember]
-        public string ParentUID { get; private set; }
 
         /// <summary>
         /// Gets the properties.

@@ -64,7 +64,7 @@ namespace ns.Communication.Models {
         /// The uid.
         /// </value>
         [DataMember]
-        public string UID { get; private set; }
+        public string UID { get; protected set; }
 
         /// <summary>
         /// Called when [property changed].

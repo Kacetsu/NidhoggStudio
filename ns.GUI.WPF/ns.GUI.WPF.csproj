@@ -85,9 +85,6 @@
     <Compile Include="Controls\AddToolNodeControl.xaml.cs">
       <DependentUpon>AddToolNodeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DisplayTabItem.xaml.cs">
-      <DependentUpon>DisplayTabItem.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\HistogramControl.xaml.cs">
       <DependentUpon>HistogramControl.xaml</DependentUpon>
     </Compile>
@@ -147,6 +144,7 @@
     <Compile Include="EditorDisplay.xaml.cs">
       <DependentUpon>EditorDisplay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Events\DataStorageContainerModelAddedEventArgs.cs" />
     <Compile Include="Events\NodeSelectionChangedEventArgs.cs" />
     <Compile Include="GuiHelper.cs" />
     <Compile Include="Histogram.cs" />
@@ -161,7 +159,6 @@
       <DependentUpon>Menu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\NodeTreeItem.cs" />
-    <Compile Include="Controls\OperationDisplayTabItem.cs" />
     <Compile Include="Controls\OperationTreeItem.cs" />
     <Compile Include="Controls\Property\ListPropertyControl.xaml.cs">
       <DependentUpon>ListPropertyControl.xaml</DependentUpon>
@@ -172,9 +169,6 @@
     <Compile Include="Controls\Property\PropertyControl.cs" />
     <Compile Include="Controls\Property\StringPropertyControl.xaml.cs">
       <DependentUpon>StringPropertyControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DisplayArea.xaml.cs">
-      <DependentUpon>DisplayArea.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ToolTreeItem.cs" />
     <Compile Include="FrontendManager.cs" />
@@ -200,10 +194,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AddToolNodeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\DisplayTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -296,10 +286,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ToolNodeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DisplayArea.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

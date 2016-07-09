@@ -1,5 +1,4 @@
-﻿using ns.Base;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
@@ -17,38 +16,50 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für EditorDisplay.xaml
     /// </summary>
     public partial class EditorDisplay : UserControl, INotifyPropertyChanged {
-
-        //private GuiManager _guiManager = null;
-        private ImageProperty _lastImageProperty = null;
-
-        private BitmapSource _bitmap = null;
-        private List<OverlayRectangle> _rectangles;
-        private double _imageWidth = 0;
+        private BitmapSource _image = null;
         private double _imageHeight = 0;
+        private double _imageWidth = 0;
+
+        private List<OverlayRectangle> _rectangles;
         private double _scalingFactor = 1;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditorDisplay"/> class.
+        /// </summary>
+        public EditorDisplay() {
+            InitializeComponent();
+            ImageDisplay.DataContext = this;
+            ImageCanvas.DataContext = this;
+            Loaded += EditorDisplay_Loaded;
+        }
+
+        /// <summary>
+        /// Tritt ein, wenn sich ein Eigenschaftswert ändert.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public BitmapSource Bitmap {
-            get { return _bitmap; }
+        /// <summary>
+        /// Gets or sets the image.
+        /// </summary>
+        /// <value>
+        /// The image.
+        /// </value>
+        public BitmapSource Image {
+            get { return _image; }
             set {
-                if (_bitmap != value) {
-                    _bitmap = value;
+                if (_image != value) {
+                    _image = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public double ImageWidth {
-            get { return _imageWidth; }
-            set {
-                if (_imageWidth != value) {
-                    _imageWidth = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets or sets the height of the image.
+        /// </summary>
+        /// <value>
+        /// The height of the image.
+        /// </value>
         public double ImageHeight {
             get { return _imageHeight; }
             set {
@@ -59,6 +70,28 @@ namespace ns.GUI.WPF {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the width of the image.
+        /// </summary>
+        /// <value>
+        /// The width of the image.
+        /// </value>
+        public double ImageWidth {
+            get { return _imageWidth; }
+            set {
+                if (_imageWidth != value) {
+                    _imageWidth = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the scaling factor.
+        /// </summary>
+        /// <value>
+        /// The scaling factor.
+        /// </value>
         public double ScalingFactor {
             get { return _scalingFactor; }
             set {
@@ -67,13 +100,6 @@ namespace ns.GUI.WPF {
                     OnPropertyChanged();
                 }
             }
-        }
-
-        public EditorDisplay() {
-            InitializeComponent();
-            ImageDisplay.DataContext = this;
-            ImageCanvas.DataContext = this;
-            Loaded += EditorDisplay_Loaded;
         }
 
         private void AddOverlayProperties(Tool parent) {
@@ -90,10 +116,17 @@ namespace ns.GUI.WPF {
         }
 
         private void EditorDisplay_Loaded(object sender, RoutedEventArgs e) {
-            //if (_guiManager == null) {
-            //    _guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
-            //}
+            FrontendManager.Instance.PropertyChanged += FrontendManager_PropertyChanged;
+        }
+
+        private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(FrontendManager.SelectedPluginImage))) {
+                ImageContainer imageContainer = FrontendManager.Instance.SelectedPluginImage.Value;
+                Image = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
+                Image.Freeze();
+                ImageHeight = Image.Height;
+                ImageWidth = Image.Width;
+            }
         }
 
         //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
@@ -134,27 +167,6 @@ namespace ns.GUI.WPF {
         //        }
         //    }
 
-        //    if (_lastImageProperty != null) {
-        //        _lastImageProperty.PropertyChanged += _lastImageProperty_PropertyChanged;
-        //        AddOverlayProperties(e.SelectedNode as Tool);
-        //    }
-        //}
-
-        private void _lastImageProperty_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName.Equals(nameof(ImageProperty.Value))) {
-                if (_lastImageProperty.Value.Data == null || _lastImageProperty.Value.Data.Count() < 1) return;
-
-                ImageContainer container = _lastImageProperty.Value;
-                BitmapSource tmpBitmap = ImageContainerToBitmapSource(container.Data, container.Width, container.Height, container.Stride, container.BytesPerPixel);
-                tmpBitmap.Freeze();
-                Bitmap = tmpBitmap;
-                ImageWidth = Bitmap.Width;
-                ImageHeight = Bitmap.Height;
-            }
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
         private BitmapSource ImageContainerToBitmapSource(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
             PixelFormat pixelFormat = PixelFormats.Bgr24;
 
@@ -171,5 +183,7 @@ namespace ns.GUI.WPF {
                 imageData,
                 stride);
         }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

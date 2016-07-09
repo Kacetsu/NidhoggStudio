@@ -1,4 +1,5 @@
-﻿using ns.Communication.Event;
+﻿using ns.Base.Event;
+using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace ns.Communication.Services.Callbacks {
@@ -8,8 +9,8 @@ namespace ns.Communication.Services.Callbacks {
         /// <summary>
         /// Called when [data storage collection changed].
         /// </summary>
-        /// <param name="dataStorageContainerModel">The data storage container model.</param>
+        /// <param name="newContainers">The new containers.</param>
         [OperationContract(IsOneWay = true)]
-        void OnDataStorageCollectionChanged(string newUID);
+        void OnDataStorageCollectionChanged(Dictionary<string, string> newContainers);
     }
 }

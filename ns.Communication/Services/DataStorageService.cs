@@ -64,12 +64,10 @@ namespace ns.Communication.Services {
         }
 
         private void _dataStorageManager_DataStorageCollectionChanged(object sender, Base.Event.DataStorageCollectionChangedEventArgs e) {
-            if (e.NewUIDs.Count == 0) return;
-
-            string newUID = e.NewUIDs[0];
+            if (e.NewContainers.Count == 0) return;
 
             foreach (var client in _clients) {
-                client.Value?.OnDataStorageCollectionChanged(newUID);
+                client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace ns.GUI.WPF {
         private static Lazy<FrontendManager> _lazyInstance = new Lazy<FrontendManager>(() => new FrontendManager());
         private static IPluginModel _selectedModel;
 
-        private ImageProperty _selectedPluginImage;
+        private static ImageProperty _selectedPluginImage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FrontendManager"/> class.
@@ -84,12 +84,12 @@ namespace ns.GUI.WPF {
         /// <value>
         /// The selected plugin image.
         /// </value>
-        public ImageProperty SelectedPluginImage {
+        public static ImageProperty SelectedPluginImage {
             get { return _selectedPluginImage; }
             private set {
                 if (_selectedPluginImage != value) {
                     _selectedPluginImage = value;
-                    OnPropertyChanged();
+                    Instance.OnPropertyChanged();
                 }
             }
         }

@@ -155,9 +155,6 @@
     <Compile Include="Controls\LogViewItem.xaml.cs">
       <DependentUpon>LogViewItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Menu.xaml.cs">
-      <DependentUpon>Menu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\Property\ListPropertyControl.xaml.cs">
       <DependentUpon>ListPropertyControl.xaml</DependentUpon>
     </Compile>
@@ -207,10 +204,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LogViewItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Menu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

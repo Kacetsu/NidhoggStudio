@@ -121,7 +121,7 @@ namespace ns.GUI.WPF {
 
         private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(FrontendManager.SelectedPluginImage))) {
-                ImageContainer imageContainer = FrontendManager.Instance.SelectedPluginImage.Value;
+                ImageContainer imageContainer = FrontendManager.SelectedPluginImage.Value;
                 Image = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
                 Image.Freeze();
                 ImageHeight = Image.Height;

@@ -16,30 +16,39 @@ namespace ns.GUI.WPF {
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged {
         private Controls.AddToolControl _addToolControl;
-        private FrontendManager _guiManager;
         private string _lockedToolName = string.Empty;
         private Controls.ProjectExplorer _projectExplorer;
         private Controls.PropertyEditor _propertyEditor;
+        private string _selectedPluginName = string.Empty;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Editor"/> class.
+        /// </summary>
         public Editor() {
             InitializeComponent();
             DataContext = this;
-            //LoopExecutionToggleButton.DataContext = CoreSystem.Processor;
             HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = ProjectExplorer;
-            //_projectExplorer.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
+            _pluginName.DataContext = this;
             ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
+            FrontendManager.Instance.PropertyChanged += FrontendManager_PropertyChanged;
             FrontendManager.Instance.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string LockedToolName {
-            get { return _lockedToolName; }
+        /// <summary>
+        /// Gets or sets the name of the selected plugin.
+        /// </summary>
+        /// <value>
+        /// The name of the selected plugin.
+        /// </value>
+        public string SelectedPluginName {
+            get { return _selectedPluginName; }
             set {
-                if (!_lockedToolName.Equals(value)) {
-                    _lockedToolName = value;
+                if (_selectedPluginName != value) {
+                    _selectedPluginName = value;
                     OnPropertyChanged();
                 }
             }
@@ -70,21 +79,15 @@ namespace ns.GUI.WPF {
             } catch (Exception) {
                 throw;
             }
+        }
 
-            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(FrontendManager))) as FrontendManager;
-            //if (_guiManager != null)
-            //    _guiManager.SelectedItemChanged += _guiManager_SelectedItemChanged;
+        private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(FrontendManager.SelectedModel))) {
+                SelectedPluginName = FrontendManager.SelectedModel?.DisplayName;
+            }
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-        //    if (e.SelectedNode is Tool) {
-        //        LockedToolName = (e.SelectedNode as Tool).DisplayName;
-        //    } else if (e.SelectedNode is Operation) {
-        //        LockedToolName = (e.SelectedNode as Operation).DisplayName;
-        //    }
-        //}
 
         private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));

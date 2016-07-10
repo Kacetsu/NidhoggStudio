@@ -65,20 +65,18 @@ namespace ns.Plugin.Base {
 
             int imageCount = UpdateImageFiles();
 
+            FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(_directory);
+            fileSystemWatcher.Changed += new FileSystemEventHandler(OnChanged);
+            fileSystemWatcher.Created += new FileSystemEventHandler(OnChanged);
+            fileSystemWatcher.Deleted += new FileSystemEventHandler(OnChanged);
+            fileSystemWatcher.Renamed += new RenamedEventHandler(OnRenamed);
+            fileSystemWatcher.EnableRaisingEvents = true;
+
             if (imageCount == 0) {
                 ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Warning);
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Pre run.
-        /// </summary>
-        /// <returns></returns>
-        public override bool TryPreRun() {
-            UpdateImageFiles();
-            return base.TryPreRun();
         }
 
         /// <summary>
@@ -116,7 +114,7 @@ namespace ns.Plugin.Base {
                 int size = img.Width * img.Height * bpp;
                 byte[] byteArray = new byte[size];
                 lock (img) {
-                    BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, img.PixelFormat);
+                    BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
                     stride = data.Stride;
                     Marshal.Copy(data.Scan0, byteArray, 0, size);
                     img.UnlockBits(data);
@@ -128,6 +126,10 @@ namespace ns.Plugin.Base {
                 return new byte[0];
             }
         }
+
+        private void OnChanged(object source, FileSystemEventArgs e) => UpdateImageFiles();
+
+        private void OnRenamed(object source, RenamedEventArgs e) => UpdateImageFiles();
 
         private int UpdateImageFiles() {
             int imageCount = 0;

@@ -42,15 +42,19 @@ namespace ns.Core.Manager {
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
         public DataContainer Find(string uid) {
-            foreach (ToolDataContainer toolContainer in _toolContainers) {
-                if (toolContainer.UID.Equals(uid)) {
-                    return toolContainer;
+            lock (_toolContainers) {
+                foreach (ToolDataContainer toolContainer in _toolContainers) {
+                    if (toolContainer.UID.Equals(uid)) {
+                        return toolContainer;
+                    }
                 }
             }
 
-            foreach (OperationDataContainer operationContainer in Nodes) {
-                if (operationContainer.UID.Equals(uid)) {
-                    return operationContainer;
+            lock (Nodes) {
+                foreach (OperationDataContainer operationContainer in Nodes) {
+                    if (operationContainer.UID.Equals(uid)) {
+                        return operationContainer;
+                    }
                 }
             }
 

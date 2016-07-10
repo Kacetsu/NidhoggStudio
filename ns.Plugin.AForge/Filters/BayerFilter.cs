@@ -15,18 +15,37 @@ namespace ns.Plugin.AForge.Filters {
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BayerFilter"/> class.
+        /// </summary>
         public BayerFilter() {
             DisplayName = "AForge Bayer Filter";
             AddChild(new ImageProperty("ImageInput", false));
             AddChild(new ImageProperty("ImageOutput", true));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BayerFilter"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public BayerFilter(BayerFilter other) : base(other) { }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
         public override string Category {
             get {
                 return "AForge Filter";
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
+        /// </summary>
         public override string Description {
             get {
                 return "The class implements Bayer filter routine, which creates color image\n"
@@ -35,6 +54,20 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new BayerFilter(this);
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -43,7 +76,13 @@ namespace ns.Plugin.AForge.Filters {
             return true;
         }
 
-        public override bool Run() {
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _imageInput.Value;
 
@@ -62,6 +101,7 @@ namespace ns.Plugin.AForge.Filters {
                 _imageOutput.Value = outputContainer;
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                return false;
             }
 
             return true;

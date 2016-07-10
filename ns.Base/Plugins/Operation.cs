@@ -128,17 +128,17 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
-            bool result = CaptureDevice?.PreRun() == true;
+        public override bool TryRun() {
+            bool result = CaptureDevice?.TryPreRun() == true;
 
             if (result) {
-                CaptureDevice.Run();
+                CaptureDevice.TryRun();
                 ImageProperty deviceImage = CaptureDevice.GetProperty<ImageProperty>();
                 _outImageProperty.Value = deviceImage.Value;
-                result = RunChilds();
+                result = TryRunChilds();
             }
 
-            result = CaptureDevice?.PostRun() == true;
+            result = CaptureDevice?.TryPostRun() == true;
             return result;
         }
 

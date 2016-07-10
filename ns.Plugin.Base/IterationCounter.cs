@@ -73,8 +73,8 @@ namespace ns.Plugin.Base {
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
-        public override bool PostRun() {
-            base.PostRun();
+        public override bool TryPostRun() {
+            base.TryPostRun();
 
             IntegerProperty propIteration = GetProperty<IntegerProperty>("Iterations");
             DoubleProperty propElapsedMs = GetProperty<DoubleProperty>("ElapsedMs");
@@ -94,7 +94,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
+        public override bool TryRun() {
             if (_iterations == int.MaxValue) _iterations = 0;
             _iterations++;
             return true;

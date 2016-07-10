@@ -42,17 +42,6 @@ namespace ns.GUI.WPF {
         public static FrontendManager Instance { get { return _lazyInstance.Value; } }
 
         /// <summary>
-        /// Used to simplify GUI binding usage.
-        /// </summary>
-        public static bool IsNotRunning {
-            get { return !_isRunning; }
-            set {
-                _isRunning = !value;
-                Instance.OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets if the Processor is running.
         /// </summary>
         public static bool IsRunning {
@@ -72,14 +61,13 @@ namespace ns.GUI.WPF {
         public static IPluginModel SelectedModel {
             get { return _selectedModel; }
             set {
-                if (_selectedModel != null && _selectedModel != value) {
+                if (_selectedModel != value && value != null) {
                     ISelectableModel selectable = (_selectedModel as ISelectableModel);
                     if (selectable != null) {
                         selectable.IsSelected = false;
                     }
-                } else {
                     _selectedModel = value;
-                    ISelectableModel selectable = (_selectedModel as ISelectableModel);
+                    selectable = (_selectedModel as ISelectableModel);
                     if (selectable != null) {
                         selectable.IsSelected = true;
                     }
@@ -140,12 +128,10 @@ namespace ns.GUI.WPF {
 
         private void ProcessorStarted() {
             IsRunning = true;
-            IsNotRunning = !IsRunning;
         }
 
         private void ProcessorStopped() {
             IsRunning = false;
-            IsNotRunning = !IsRunning;
         }
     }
 }

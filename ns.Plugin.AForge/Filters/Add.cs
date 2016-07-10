@@ -17,6 +17,9 @@ namespace ns.Plugin.AForge.Filters {
         private ImageProperty _imageOutput;
         private ImageProperty _imageOverlay;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Add"/> class.
+        /// </summary>
         public Add() {
             DisplayName = "AForge Add";
             AddChild(new ImageProperty("ImageInput", false));
@@ -24,12 +27,28 @@ namespace ns.Plugin.AForge.Filters {
             AddChild(new ImageProperty("ImageOutput", true));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Add"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public Add(Add other) : base(other) { }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
         public override string Category {
             get {
                 return "AForge Filter";
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
+        /// </summary>
         public override string Description {
             get {
                 return "The add filter takes two images (source and overlay images)\n"
@@ -40,6 +59,20 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new Add(this);
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -49,7 +82,13 @@ namespace ns.Plugin.AForge.Filters {
             return true;
         }
 
-        public override bool Run() {
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _imageInput.Value.DeepClone();
                 ImageContainer overlayContainer = _imageOverlay.Value.DeepClone();

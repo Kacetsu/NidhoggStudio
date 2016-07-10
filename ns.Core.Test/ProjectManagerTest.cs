@@ -31,6 +31,7 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void ProjectManager_SaveLoadDefaultProject() {
+            Assert.IsTrue(CoreSystem.Instance.IsInitialized);
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
             projectManager.CreateDefaultProject();
 

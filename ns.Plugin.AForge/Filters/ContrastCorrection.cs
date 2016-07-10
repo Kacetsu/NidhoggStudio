@@ -27,6 +27,12 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ContrastCorrection"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public ContrastCorrection(ContrastCorrection other) : base(other) { }
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
@@ -56,6 +62,14 @@ namespace ns.Plugin.AForge.Filters {
         }
 
         /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new ContrastCorrection(this);
+
+        /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <returns></returns>
@@ -74,7 +88,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _imageInput.Value;
 
@@ -91,6 +105,7 @@ namespace ns.Plugin.AForge.Filters {
                 _imageOutput.Value = Converter.ToImageContainer(destination as Bitmap);
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                return false;
             }
 
             return true;

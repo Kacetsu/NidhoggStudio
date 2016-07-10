@@ -11,21 +11,25 @@ namespace ns.Base.Plugins {
 
     /// <summary>
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
+    /// Creates additional to the BaseNode the following fields: AssemblyFile and Version.
     /// </summary>
     [DataContract(IsReference = true), KnownType(typeof(Operation)), KnownType(typeof(Tool)), KnownType(typeof(Device))]
-    public class Plugin : Node, IPlugin, ICloneable {
+    public class Plugin : Node, IPlugin {
         private string _assemblyFile = string.Empty;
         private string _displayName = string.Empty;
         private PluginStatus _status = PluginStatus.Unknown;
         private string _version = string.Empty;
 
         /// <summary>
-        /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
-        /// Creates additional to the BaseNode the following fields: AssemblyFile and Version.
+        /// Initializes a new instance of the <see cref="Plugin"/> class.
         /// </summary>
         public Plugin() : base() {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plugin"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
         public Plugin(Plugin other) : base(other) {
             DisplayName = other.DisplayName;
             Status = other.Status;
@@ -106,6 +110,14 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new Plugin(this);
+
+        /// <summary>
         /// Gets the properties.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -177,10 +189,18 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
+        /// Terminates this instance.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Terminate() {
+            return true;
+        }
+
+        /// <summary>
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
-        public virtual bool PostRun() {
+        public virtual bool TryPostRun() {
             OnFinished();
             return true;
         }
@@ -189,7 +209,7 @@ namespace ns.Base.Plugins {
         /// Pres the run.
         /// </summary>
         /// <returns></returns>
-        public virtual bool PreRun() {
+        public virtual bool TryPreRun() {
             OnStarted();
             return true;
         }
@@ -198,7 +218,7 @@ namespace ns.Base.Plugins {
         /// Run the Plugin.
         /// </summary>
         /// <returns>Success of the Operation.</returns>
-        public virtual bool Run() {
+        public virtual bool TryRun() {
             return true;
         }
 
@@ -206,18 +226,18 @@ namespace ns.Base.Plugins {
         /// Runs the childs.
         /// </summary>
         /// <returns></returns>
-        public virtual bool RunChilds() {
+        public virtual bool TryRunChilds() {
             bool result = true;
             lock (Childs) {
-                foreach (Plugin child in Childs.Where(p => p is Plugin)) {
-                    if (child.PreRun() == false) {
-                        Log.Trace.WriteLine("Plugin " + child.Name + " pre run failed!", TraceEventType.Error);
+                foreach (Tool child in Childs.Where(p => p is Tool)) {
+                    if (child.TryPreRun() == false) {
+                        Log.Trace.WriteLine(string.Format("Tool {0} pre run failed!", child.Name), TraceEventType.Error);
                         result = false;
-                    } else if (child.Run() == false) {
-                        Log.Trace.WriteLine("Plugin " + child.Name + " run failed!", TraceEventType.Error);
+                    } else if (child.TryRun() == false) {
+                        Log.Trace.WriteLine(string.Format("Tool {0} run failed!", child.Name), TraceEventType.Error);
                         result = false;
-                    } else if (child.PostRun() == false) {
-                        Log.Trace.WriteLine("Plugin " + child.Name + " post run failed!", TraceEventType.Error);
+                    } else if (child.TryPostRun() == false) {
+                        Log.Trace.WriteLine(string.Format("Tool {0} post run failed!", child.Name), TraceEventType.Error);
                         result = false;
                     }
 
@@ -237,14 +257,6 @@ namespace ns.Base.Plugins {
                 }
             }
             return result;
-        }
-
-        /// <summary>
-        /// Terminates this instance.
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Terminate() {
-            return true;
         }
     }
 }

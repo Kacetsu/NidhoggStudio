@@ -84,7 +84,6 @@
     <Compile Include="DirectShowDevice.cs" />
     <Compile Include="Filters\ContrastCorrection.cs" />
     <Compile Include="Filters\ConservativeSmoothing.cs" />
-    <Compile Include="Filters\Grayscale.cs" />
     <Compile Include="Filters\BrightnessCorrection.cs" />
     <Compile Include="Filters\BlurFilter.cs" />
     <Compile Include="Filters\BilateralSmoothing.cs" />

@@ -58,15 +58,12 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Clones the Tools as deep Clone.
-        /// Generates a new UID for the clones Tool.
+        /// Clones the Node with all its Members.
         /// </summary>
-        /// <returns>Returns the cloned Tool.</returns>
-        public override object Clone() {
-            Tool clone = this.DeepClone();
-            clone.UID = GenerateUID();
-            return clone;
-        }
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new Tool(this);
 
         /// <summary>
         /// Finalize the Node.
@@ -109,21 +106,21 @@ namespace ns.Base.Plugins {
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
-        public override bool PostRun() {
+        public override bool TryPostRun() {
             if (_timeMeasureStart != null)
                 _executionTimeMs.Value = DateTime.Now.Subtract(_timeMeasureStart).TotalMilliseconds;
 
-            return base.PostRun();
+            return base.TryPostRun();
         }
 
         /// <summary>
         /// Pres the run.
         /// </summary>
         /// <returns></returns>
-        public override bool PreRun() {
+        public override bool TryPreRun() {
             _timeMeasureStart = DateTime.Now;
 
-            return base.PreRun();
+            return base.TryPreRun();
         }
     }
 }

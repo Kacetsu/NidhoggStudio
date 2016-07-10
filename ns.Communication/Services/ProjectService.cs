@@ -50,7 +50,7 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
             }
 
-            Tool copyTool = new Tool(tool);
+            Tool copyTool = tool.Clone() as Tool;
             operation.AddChild(copyTool);
 
             // Notify clients.

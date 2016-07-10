@@ -22,12 +22,27 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Sleep"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public Sleep(Sleep other) : base(other) {
+        }
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
         /// The category.
         /// </value>
         public override string Category => ToolCategory.Common.GetDescription();
+
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new Sleep(this);
 
         /// <summary>
         /// Initializes this instance.
@@ -49,8 +64,8 @@ namespace ns.Plugin.Base {
         /// Pres the run.
         /// </summary>
         /// <returns></returns>
-        public override bool PreRun() {
-            base.PreRun();
+        public override bool TryPreRun() {
+            base.TryPreRun();
 
             try {
                 _milliseconds = GetProperty<IntegerProperty>("Milliseconds").Value;
@@ -67,7 +82,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
+        public override bool TryRun() {
             Thread.Sleep(_milliseconds);
             return true;
         }

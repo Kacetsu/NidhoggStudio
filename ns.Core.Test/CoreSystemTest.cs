@@ -10,6 +10,7 @@ namespace ns.Core.Test {
 
         [TestMethod]
         public void CoreSystem_AddAndSaveProject() {
+            Assert.IsTrue(CoreSystem.Instance.IsInitialized);
             ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
 
             using (MemoryStream projectStream = new MemoryStream()) {

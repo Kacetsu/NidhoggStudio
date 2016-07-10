@@ -29,6 +29,9 @@ namespace ns.Plugin.AForge.Imaging {
         private DoubleProperty _stdDevGreen;
         private DoubleProperty _stdDevRed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageStatistics"/> class.
+        /// </summary>
         public ImageStatistics() {
             DisplayName = "AForge Image Statistics";
             AddChild(new ImageProperty("ImageInput", false));
@@ -52,12 +55,28 @@ namespace ns.Plugin.AForge.Imaging {
             AddChild(new DoubleProperty("StdDevRed", true));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageStatistics"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public ImageStatistics(ImageStatistics other) : base(other) { }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
         public override string Category {
             get {
                 return "AForge Imaging";
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
+        /// </summary>
         public override string Description {
             get {
                 return "The class is used to accumulate statistical values about images,\n"
@@ -66,6 +85,20 @@ namespace ns.Plugin.AForge.Imaging {
             }
         }
 
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new ImageStatistics(this);
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -92,7 +125,13 @@ namespace ns.Plugin.AForge.Imaging {
             return true;
         }
 
-        public override bool Run() {
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _imageInput.Value;
 
@@ -127,6 +166,7 @@ namespace ns.Plugin.AForge.Imaging {
                 _stdDevRed.Value = redHistogram.StdDev;
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                return false;
             }
 
             return true;

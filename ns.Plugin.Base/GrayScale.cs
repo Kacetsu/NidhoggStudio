@@ -23,6 +23,13 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Grayscale"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public Grayscale(Grayscale other) : base(other) {
+        }
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
@@ -45,6 +52,14 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new Grayscale(this);
+
+        /// <summary>
         /// Initialze the Plugin.
         /// </summary>
         /// <returns>
@@ -62,7 +77,7 @@ namespace ns.Plugin.Base {
         /// Converts a RGB image into grayscale 8 bit.
         /// </summary>
         /// <returns></returns>
-        public override bool Run() {
+        public override bool TryRun() {
             ImageContainer inputContainer = _inputImage.Value;
             byte[] data = inputContainer.Data;
             byte bpp = inputContainer.BytesPerPixel;

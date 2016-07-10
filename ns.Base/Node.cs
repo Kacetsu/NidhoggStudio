@@ -14,20 +14,11 @@ namespace ns.Base {
     /// </summary>
     [DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
     public class Node : NotifiableObject, ICloneable, INode {
+        protected string _name = string.Empty;
+        private string _fullname = string.Empty;
         private bool _isInitialized = false;
 
         private bool _isSelected = false;
-
-        /// <summary>
-        /// Will be triggered if the Property did changed.
-        /// </summary>
-        /// <param name="sender">The object that this changed.</param>
-        /// <param name="e">The Informations about the changed Property.</param>
-        public delegate void NodeChangedEventHandler(object sender, NodeChangedEventArgs e);
-
-        protected string _name = string.Empty;
-
-        private string _fullname = string.Empty;
 
         /// <summary>
         /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
@@ -51,6 +42,19 @@ namespace ns.Base {
         }
 
         /// <summary>
+        /// Will be triggered if the Property did changed.
+        /// </summary>
+        /// <param name="sender">The object that this changed.</param>
+        /// <param name="e">The Informations about the changed Property.</param>
+        public delegate void NodeChangedEventHandler(object sender, NodeChangedEventArgs e);
+
+        /// <summary>
+        /// Gets or sets the list with all Childs.
+        /// </summary>
+        [DataMember]
+        public ObservableList<Node> Childs { get; set; } = new ObservableList<Node>();
+
+        /// <summary>
         /// Gets or sets the Fullname.
         /// </summary>
         [DataMember]
@@ -62,6 +66,24 @@ namespace ns.Base {
             }
             set {
                 _fullname = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets if the Plugin is inizialized.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInitialized { get { return _isInitialized; } }
+
+        /// <summary>
+        /// Gets or sets if the Node is selected;
+        /// </summary>
+        [DataMember]
+        public bool IsSelected {
+            get { return _isSelected; }
+            set {
+                _isSelected = value;
                 OnPropertyChanged();
             }
         }
@@ -81,18 +103,6 @@ namespace ns.Base {
                 OnPropertyChanged();
             }
         }
-
-        /// <summary>
-        /// Gets or sets the unified identification.
-        /// </summary>
-        [DataMember]
-        public string UID { get; set; } = GenerateUID();
-
-        /// <summary>
-        /// Gets or sets the list with all Childs.
-        /// </summary>
-        [DataMember]
-        public ObservableList<Node> Childs { get; set; } = new ObservableList<Node>();
 
         /// <summary>
         /// Gets the parent.
@@ -125,48 +135,17 @@ namespace ns.Base {
         }
 
         /// <summary>
-        /// Gets if the Plugin is inizialized.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsInitialized { get { return _isInitialized; } }
-
-        /// <summary>
-        /// Gets or sets if the Node is selected;
+        /// Gets or sets the unified identification.
         /// </summary>
         [DataMember]
-        public bool IsSelected {
-            get { return _isSelected; }
-            set {
-                _isSelected = value;
-                OnPropertyChanged();
-            }
-        }
+        public string UID { get; set; } = GenerateUID();
 
         /// <summary>
-        /// Initialze the Plugin.
+        /// Generates a new UID.
         /// </summary>
-        /// <returns>Success of the Operation.</returns>
-        public virtual bool Initialize() {
-            _isInitialized = true;
-            return true;
-        }
-
-        /// <summary>
-        /// Finalize the Node.
-        /// </summary>
-        /// <returns>Success of the Operation.</returns>
-        public virtual bool Finalize() {
-            _isInitialized = false;
-
-            bool result = true;
-
-            foreach (Node child in Childs) {
-                if (!child.IsInitialized) continue;
-                if (!child.Finalize())
-                    result = false;
-            }
-
-            return result;
+        /// <returns>The new UID.</returns>
+        public static string GenerateUID() {
+            return Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -197,6 +176,39 @@ namespace ns.Base {
                     addedChilds.Add(child);
                 }
             }
+        }
+
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>The cloned Node.</returns>
+        public virtual object Clone() => new Node(this);
+
+        /// <summary>
+        /// Finalize the Node.
+        /// </summary>
+        /// <returns>Success of the Operation.</returns>
+        public virtual bool Finalize() {
+            _isInitialized = false;
+
+            bool result = true;
+
+            foreach (Node child in Childs) {
+                if (!child.IsInitialized) continue;
+                if (!child.Finalize())
+                    result = false;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>Success of the Operation.</returns>
+        public virtual bool Initialize() {
+            _isInitialized = true;
+            return true;
         }
 
         /// <summary>
@@ -243,27 +255,6 @@ namespace ns.Base {
             if (e.PropertyName == "Name" || e.PropertyName == "TreeName") {
                 OnPropertyChanged(e.PropertyName);
             }
-        }
-
-        /// <summary>
-        /// Generates a new UID.
-        /// </summary>
-        /// <returns>The new UID.</returns>
-        public static string GenerateUID() {
-            return Guid.NewGuid().ToString();
-        }
-
-        /// <summary>
-        /// Clones the Node with all its Members.
-        /// Will set a new UID.
-        /// </summary>
-        /// <returns>The cloned Node.</returns>
-        public virtual object Clone() {
-            Node nodeClone = (Node)MemberwiseClone();
-            nodeClone.UID = GenerateUID();
-            nodeClone.Name = Name;
-            nodeClone.Fullname = Fullname;
-            return nodeClone;
         }
     }
 }

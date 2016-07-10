@@ -29,9 +29,9 @@ namespace ns.Core.Manager {
         /// </summary>
         public void RunAll() {
             foreach (Extension extension in Nodes) {
-                if (extension.PreRun())
-                    extension.Run();
-                extension.PostRun();
+                if (extension.TryPreRun())
+                    extension.TryRun();
+                extension.TryPostRun();
             }
         }
     }

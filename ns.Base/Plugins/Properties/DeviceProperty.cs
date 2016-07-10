@@ -75,14 +75,22 @@ namespace ns.Base.Plugins.Properties {
             get {
                 if (Value == null) return -1;
                 int index = 0;
+                bool exists = false;
                 for (; index < Value.Count; index++) {
-                    if (Value[index].UID == SelectedItem?.UID) break;
-                    else if (Value[index] == SelectedItem) break;
+                    if (Value[index].UID == SelectedItem?.UID) {
+                        exists = true;
+                        break;
+                    } else if (Value[index] == SelectedItem) {
+                        exists = true;
+                        break;
+                    }
                 }
+
+                if (!exists) index = -1;
                 return index;
             }
             set {
-                if (Value?.Count > 0) {
+                if (Value?.Count > 0 && value > -1) {
                     SelectedItem = Value[value];
                 }
             }

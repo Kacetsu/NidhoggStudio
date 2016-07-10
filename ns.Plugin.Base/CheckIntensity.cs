@@ -26,18 +26,49 @@ namespace ns.Plugin.Base {
             AddChild(intensityProperty);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CheckIntensity"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public CheckIntensity(CheckIntensity other) : base(other) {
+        }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
         public override string Category {
             get {
                 return ToolCategory.Common.GetDescription();
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
+        /// </summary>
         public override string Description {
             get {
                 return "Calculates the intensity. Return value (Intensity) will be in percent.";
             }
         }
 
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new CheckIntensity(this);
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -52,7 +83,7 @@ namespace ns.Plugin.Base {
         /// Calculates the intensity from the given aoi.
         /// </summary>
         /// <returns></returns>
-        public override bool Run() {
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _inputImage.Value;
                 byte[] data = inputContainer.Data;

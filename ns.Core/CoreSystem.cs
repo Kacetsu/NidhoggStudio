@@ -1,5 +1,4 @@
-﻿using ns.Base.Exceptions;
-using ns.Base.Extensions;
+﻿using ns.Base.Extensions;
 using ns.Base.Manager;
 using ns.Core.Manager;
 using ns.Core.Manager.ProjectBox;

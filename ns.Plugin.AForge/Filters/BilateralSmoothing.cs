@@ -19,6 +19,9 @@ namespace ns.Plugin.AForge.Filters {
         private IntegerProperty _kernelSize;
         private IntegerProperty _spatialFactor;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BilateralSmoothing"/> class.
+        /// </summary>
         public BilateralSmoothing() {
             DisplayName = "AForge Bilateral Smoothing";
             AddChild(new ImageProperty("ImageInput", false));
@@ -29,12 +32,28 @@ namespace ns.Plugin.AForge.Filters {
             AddChild(new ImageProperty("ImageOutput", true));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BilateralSmoothing"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public BilateralSmoothing(BilateralSmoothing other) : base(other) { }
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>
+        /// The category.
+        /// </value>
         public override string Category {
             get {
                 return "AForge Filter";
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Description.
+        /// The Description is used for the Application User to visualize a human readable Name.
+        /// </summary>
         public override string Description {
             get {
                 return "Bilateral filter conducts 'selective' Gaussian smoothing of areas of same color (domains)\n"
@@ -43,6 +62,20 @@ namespace ns.Plugin.AForge.Filters {
             }
         }
 
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new BilateralSmoothing(this);
+
+        /// <summary>
+        /// Initialze the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
         public override bool Initialize() {
             base.Initialize();
 
@@ -55,7 +88,13 @@ namespace ns.Plugin.AForge.Filters {
             return true;
         }
 
-        public override bool Run() {
+        /// <summary>
+        /// Run the Plugin.
+        /// </summary>
+        /// <returns>
+        /// Success of the Operation.
+        /// </returns>
+        public override bool TryRun() {
             try {
                 ImageContainer inputContainer = _imageInput.Value;
                 int kernelSize = _kernelSize.Value;
@@ -82,6 +121,7 @@ namespace ns.Plugin.AForge.Filters {
                 _imageOutput.Value = Converter.ToImageContainer(filter.Apply(source));
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                return false;
             }
 
             return true;

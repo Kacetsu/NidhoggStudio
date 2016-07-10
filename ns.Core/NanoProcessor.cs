@@ -59,14 +59,14 @@ namespace ns.Core {
             bool runResult = false;
 
             try {
-                if ((preResult = _operation.PreRun()) == true) {
-                    if ((runResult = _operation.Run()) == false)
+                if ((preResult = _operation.TryPreRun()) == true) {
+                    if ((runResult = _operation.TryRun()) == false)
                         Base.Log.Trace.WriteLine("Run operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 } else {
                     Base.Log.Trace.WriteLine("Prerun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 }
 
-                if ((postResult = _operation.PostRun()) == false) {
+                if ((postResult = _operation.TryPostRun()) == false) {
                     Base.Log.Trace.WriteLine("Postrun operation [" + _operation.Name + "] failed!", TraceEventType.Error);
                 }
 

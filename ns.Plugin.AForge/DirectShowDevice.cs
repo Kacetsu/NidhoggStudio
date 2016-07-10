@@ -122,7 +122,7 @@ namespace ns.Plugin.AForge {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
+        public override bool TryRun() {
             while (!_imageAcquired && !_isTerminated)
                 Thread.Sleep(1);
             if (_isTerminated)

@@ -76,9 +76,9 @@ namespace ns.Plugin.Base {
         /// Pre run.
         /// </summary>
         /// <returns></returns>
-        public override bool PreRun() {
+        public override bool TryPreRun() {
             UpdateImageFiles();
-            return base.PreRun();
+            return base.TryPreRun();
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Run() {
+        public override bool TryRun() {
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;
             Bitmap bitmap = _bitmaps[_imageIndex];

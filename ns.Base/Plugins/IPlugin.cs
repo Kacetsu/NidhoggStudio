@@ -6,19 +6,19 @@
         /// Pres the run.
         /// </summary>
         /// <returns></returns>
-        bool PreRun();
+        bool TryPreRun();
 
         /// <summary>
         /// Runs this instance.
         /// </summary>
         /// <returns></returns>
-        bool Run();
+        bool TryRun();
 
         /// <summary>
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
-        bool PostRun();
+        bool TryPostRun();
 
         /// <summary>
         /// Terminates this instance.

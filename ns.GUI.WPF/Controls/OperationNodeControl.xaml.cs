@@ -38,6 +38,11 @@ namespace ns.GUI.WPF.Controls {
 
         private void ContentList_SelectionChanged(object sender, SelectionChangedEventArgs e) => FrontendManager.SelectedModel = (ContentList.SelectedItem as ToolNodeControl)?.Model;
 
+        private void Grid_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            FrontendManager.SelectedModel = Model;
+            ContentList.SelectedItem = null;
+        }
+
         private void Operation_Childs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => UpdateChildControls();
 
         private void OperationNodeControl_Loaded(object sender, RoutedEventArgs e) => UpdateChildControls();

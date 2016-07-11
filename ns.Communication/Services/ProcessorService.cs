@@ -1,6 +1,7 @@
 ﻿using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 
@@ -63,5 +64,12 @@ namespace ns.Communication.Services {
                 }
             }
         }
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void UnregisterClient(string uid) => _clients?.Remove(uid);
     }
 }

@@ -2,6 +2,8 @@
 using ns.Communication.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,8 +13,11 @@ namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für AddToolControl.xaml
     /// </summary>
-    public partial class AddToolControl : UserControl {
+    public partial class AddToolControl : UserControl, INotifyPropertyChanged {
+        private bool _isCollapsed = true;
         private Task _task;
+        private Thickness _toggleButtonMargin = new Thickness(0, 12, 0, 0);
+        private double _toggleButtonRotation = 180d;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddToolControl"/> class.
@@ -21,7 +26,48 @@ namespace ns.GUI.WPF.Controls {
             InitializeComponent();
             Loaded += HandleLoaded;
             Unloaded += HandleUnloaded;
+            ToggleButton.DataContext = this;
+            Height = 60d;
         }
+
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Gets or sets the toggle button margin.
+        /// </summary>
+        /// <value>
+        /// The toggle button margin.
+        /// </value>
+        public Thickness ToggleButtonMargin {
+            get { return _toggleButtonMargin; }
+            set {
+                _toggleButtonMargin = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the toggle button rotation.
+        /// </summary>
+        /// <value>
+        /// The toggle button rotation.
+        /// </value>
+        public double ToggleButtonRotation {
+            get { return _toggleButtonRotation; }
+            set {
+                _toggleButtonRotation = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="name">The name.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void AddToolToControl(ToolModel model) {
             AddToolNodeControl nodeControl = new AddToolNodeControl(model);
@@ -31,6 +77,20 @@ namespace ns.GUI.WPF.Controls {
             ToolGrid.RowDefinitions.Add(rowDefinition);
             Grid.SetRow(nodeControl, childCount);
             ToolGrid.Children.Add(nodeControl);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            if (_isCollapsed) {
+                GuiHelper.DoubleAnimateControl(500d, this, HeightProperty);
+                _isCollapsed = false;
+                ToggleButtonRotation = 0d;
+                ToggleButtonMargin = new Thickness(0);
+            } else {
+                GuiHelper.DoubleAnimateControl(60d, this, HeightProperty);
+                _isCollapsed = true;
+                ToggleButtonRotation = 180d;
+                ToggleButtonMargin = new Thickness(0, 12, 0, 0);
+            }
         }
 
         private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {

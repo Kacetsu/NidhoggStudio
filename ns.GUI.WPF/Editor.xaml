@@ -76,7 +76,12 @@
             </Grid>
         </Grid>
         <Grid Name="ControlGrid" Grid.Column="1" Width="0">
-            <Controls:ProjectExplorer x:Name="ProjectExplorer" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Controls:ProjectExplorer x:Name="ProjectExplorer" Grid.Row="0" />
+            <Controls:AddToolControl x:Name="AddToolControl" Grid.Row="1" />
         </Grid>
     </Grid>
 </UserControl>

@@ -51,7 +51,7 @@ namespace ns.Communication.Services {
             }
 
             Tool copyTool = tool.Clone() as Tool;
-            operation.AddChild(copyTool);
+            _projectManager.Add(copyTool, operation);
 
             // Notify clients.
             foreach (var client in _clients) {
@@ -171,5 +171,12 @@ namespace ns.Communication.Services {
             }
             _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>());
         }
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void UnregisterClient(string uid) => _clients?.Remove(uid);
     }
 }

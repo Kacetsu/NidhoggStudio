@@ -32,5 +32,12 @@ namespace ns.Communication.Services {
         /// </summary>
         [OperationContract(IsOneWay = true)]
         void Stop();
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        [OperationContract]
+        void UnregisterClient(string uid);
     }
 }

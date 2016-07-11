@@ -1,0 +1,15 @@
+﻿<StatusBar x:Class="ns.GUI.WPF.StatusBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ns.GUI.WPF"
+             mc:Ignorable="d"
+             d:DesignHeight="25" d:DesignWidth="300" Background="{DynamicResource StatusBarBackgroundBrush}" Loaded="StatusBar_Loaded" Foreground="{DynamicResource StatusBarForeground}">
+    <StatusBarItem Margin="10,0" FlowDirection="RightToLeft">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Path=ConnectionType,FallbackValue=Unknown}" Margin="5,0" />
+            <Image Source="Images/NetworkConnection.png" Height="15" Width="15" />
+        </StackPanel>
+    </StatusBarItem>
+</StatusBar>

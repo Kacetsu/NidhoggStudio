@@ -85,6 +85,7 @@ namespace ns.Communication {
         private NetTcpBinding CreateNetTcpBinding() {
             NetTcpBinding binding = new NetTcpBinding();
             binding.MaxReceivedMessageSize = Configuration.MaxReceivedMessageSize;
+            binding.ReceiveTimeout = TimeSpan.FromMilliseconds(Configuration.ReceiveTimeout);
             return binding;
         }
 

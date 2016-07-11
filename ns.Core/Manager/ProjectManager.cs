@@ -73,6 +73,11 @@ namespace ns.Core.Manager {
             }
 
             operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
+
+            if (CoreSystem.Processor?.State == Base.ProcessorState.Running) {
+                operation.Initialize();
+            }
+
             Configuration.Operations.Add(operation);
         }
 
@@ -92,6 +97,10 @@ namespace ns.Core.Manager {
             if (!Configuration.Operations.Contains(parent)) throw new OperationNotFoundException(parent.Name);
 
             if (parent.Childs.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
+
+            if (CoreSystem.Processor?.State == Base.ProcessorState.Running) {
+                tool.Initialize();
+            }
 
             parent.AddChild(tool);
         }

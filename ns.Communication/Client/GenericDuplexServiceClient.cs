@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ns.Base.Log;
+using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
@@ -62,7 +63,11 @@ namespace ns.Communication.Client {
 
             if (disposing) {
                 if (Channel != null) {
-                    Close();
+                    try {
+                        Close();
+                    } catch (Exception ex) {
+                        Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
+                    }
                     Channel = null;
                     disposed = true;
                 }

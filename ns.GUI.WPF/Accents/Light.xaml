@@ -9,21 +9,23 @@
     <SolidColorBrush x:Key="ControlHoverBackgroundBrush" Color="#FF383D42" />
     <SolidColorBrush x:Key="ControlPressedBackgroundBrush" Color="#FF303438" />
     <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF50565B" />
-    <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76"/>
-    <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76"/>
+    <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76" />
+    <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76" />
     <SolidColorBrush x:Key="NormalBrush" Color="White" />
     <SolidColorBrush x:Key="StandardBackgroundBrush" Color="White" />
-    <Color x:Key="StandardBackgroundColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <Color x:Key="StandardBackgroundColor" A="#FF" R="#FF" G="#FF" B="#FF" />
     <SolidColorBrush x:Key="StandardBorderBrush" Color="#FFEAEAEA" />
     <SolidColorBrush x:Key="HalfTransparentForegroundBrush" Color="#7F000000" />
     <SolidColorBrush x:Key="QuarterTransparentForegroundBrush" Color="#BF000000" />
+    <SolidColorBrush x:Key="StatusBarForeground" Color="White" />
+    <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#007acc" />
 
     <!-- Secondary -->
     <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#007acc" />
     <SolidColorBrush x:Key="SecondaryReadOnlyBackgroundBrush" Color="#007acc" />
-    <Color x:Key="SecondaryReadOnlyBackgroundColor" A="#FF" R="0" G="122" B="204"/>
+    <Color x:Key="SecondaryReadOnlyBackgroundColor" A="#FF" R="0" G="122" B="204" />
     <SolidColorBrush x:Key="SecondaryDisabledBackgroundBrush" Color="#007acc" />
-    <Color x:Key="SecondaryDisabledBackgroundColor" A="#FF" R="0" G="122" B="204"/>
+    <Color x:Key="SecondaryDisabledBackgroundColor" A="#FF" R="0" G="122" B="204" />
 
     <!-- Critical -->
     <SolidColorBrush x:Key="CriticalBackgroundBrush" Color="#FFB84432" />
@@ -55,11 +57,11 @@
 
     <!-- TextBox -->
     <SolidColorBrush x:Key="TextBoxReadonlyBackgroundBrush" Color="#FFE2E0E0" />
-    <Color x:Key="TextBoxReadonlyBackgroundColor" A="#FF" R="226" G="224" B="224"/>
-    
+    <Color x:Key="TextBoxReadonlyBackgroundColor" A="#FF" R="226" G="224" B="224" />
+
     <!-- Editor -->
     <SolidColorBrush x:Key="HeaderForegroundBrush" Color="#FF858E96" />
-    
+
     <!-- Project Explorer -->
     <SolidColorBrush x:Key="ProjectExplorerBackgroundBrush" Color="#007acc" />
 
@@ -95,17 +97,17 @@
     <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="#252526" />
     <SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="#252526" />
     <SolidColorBrush x:Key="DataGridHoverRowBorderBrush" Color="#007acc" />
-    <SolidColorBrush x:Key="EditAreaBackgroundBrush" Color="#252526"/>
-    <SolidColorBrush x:Key="EditBackgroundBrush" Color="#333337"/>
-    <Color x:Key="EditBoxBackgroundColor" A="#FF" R="#51" G="#51" B="#55"/>
+    <SolidColorBrush x:Key="EditAreaBackgroundBrush" Color="#252526" />
+    <SolidColorBrush x:Key="EditBackgroundBrush" Color="#333337" />
+    <Color x:Key="EditBoxBackgroundColor" A="#FF" R="#51" G="#51" B="#55" />
 
     <!-- Border -->
-    <Color x:Key="StandardBorderColor" A="#FF" R="#62" G="#62" B="#66"/>
+    <Color x:Key="StandardBorderColor" A="#FF" R="#62" G="#62" B="#66" />
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#888" />
     <SolidColorBrush x:Key="HoverBorderBrush" Color="#007acc" />
     <SolidColorBrush x:Key="HorizontalNormalBorderBrush" Color="#888" />
     <SolidColorBrush x:Key="SplashBorderBrush" Color="#1b1b1c" />
-    
+
     <SolidColorBrush x:Key="FlatButtonHoverBackgroundBrush" Color="#3f3f41" />
     <SolidColorBrush x:Key="FlatButtonPressedBackgroundBrush" Color="#007acc" />
     <SolidColorBrush x:Key="FlatButtonBackgroundBrush" Color="#252526" />
@@ -116,10 +118,10 @@
 
     <SolidColorBrush x:Key="BorderBrush" Color="#007acc" />
     <SolidColorBrush x:Key="MouseOverBackgroundBrush" Color="#3f3f41" />
-    
+
     <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#007acc" />
     <SolidColorBrush x:Key="ListViewSelectedBackgroundBrush" Color="#007acc" />
-    
+
     <SolidColorBrush x:Key="MenuForegroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="LightBackground" Color="Transparent" />
     <SolidColorBrush x:Key="MenuSeparatorBorderBrush" Color="#3f3f41" />
@@ -127,26 +129,26 @@
     <SolidColorBrush x:Key="MenuItemHighlightedBackgroundBrush" Color="#3f3f41" />
     <SolidColorBrush x:Key="MenuDisabledForegroundBrush" Color="#656565" />
 
-    <SolidColorBrush x:Key="TabItemDisabledBackground" Color="#252526"/>
-    <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="#252526"/>
+    <SolidColorBrush x:Key="TabItemDisabledBackground" Color="#252526" />
+    <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="#252526" />
 
-    <SolidColorBrush x:Key="LogDebugForegroundBrush" Color="#88d184"/>
-    <SolidColorBrush x:Key="LogInfoForegroundBrush" Color="#007acc"/>
-    <SolidColorBrush x:Key="LogWarningForegroundBrush" Color="#d7ba7d"/>
-    <SolidColorBrush x:Key="LogErrorForegroundBrush" Color="#ff0000"/>
+    <SolidColorBrush x:Key="LogDebugForegroundBrush" Color="#88d184" />
+    <SolidColorBrush x:Key="LogInfoForegroundBrush" Color="#007acc" />
+    <SolidColorBrush x:Key="LogWarningForegroundBrush" Color="#d7ba7d" />
+    <SolidColorBrush x:Key="LogErrorForegroundBrush" Color="#ff0000" />
 
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#252526"/>
-    <Color x:Key="DisabledBackgroundColor" A="#FF" R="#37" G="#37" B="#38"/>
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#252526" />
+    <Color x:Key="DisabledBackgroundColor" A="#FF" R="#37" G="#37" B="#38" />
 
-    <SolidColorBrush x:Key="ReadonlyBackgroundBrush" Color="#252526"/>
-    <Color x:Key="ReadonlyBackgroundColor" A="#FF" R="#37" G="#37" B="#38"/>
+    <SolidColorBrush x:Key="ReadonlyBackgroundBrush" Color="#252526" />
+    <Color x:Key="ReadonlyBackgroundColor" A="#FF" R="#37" G="#37" B="#38" />
 
-    <Color x:Key="GlyphColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
-    <Color x:Key="SelectedBackgroundColor" A="#FF"  R="0" G="122" B="204"  />
+    <Color x:Key="GlyphColor" A="#FF" R="#FF" G="#FF" B="#FF" />
+    <Color x:Key="SelectedBackgroundColor" A="#FF"  R="0" G="122" B="204" />
     <Color x:Key="SelectedUnfocusedColor" A="#FF" R="63" G="63" B="70" />
 
-    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#007acc"/>
-    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#3f3f41"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#007acc" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#3f3f41" />
 
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#888" />
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
@@ -158,15 +160,15 @@
             <GradientStopCollection>
                 <GradientStop Color="White" Offset="0.0" />
                 <GradientStop Color="White" Offset="0.6" />
-                <GradientStop Color="#DDDDDD" Offset="1.2"/>
+                <GradientStop Color="#DDDDDD" Offset="1.2" />
             </GradientStopCollection>
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="StandardBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientBrush.GradientStops>
             <GradientStopCollection>
-                <GradientStop Color="#FFF" Offset="0.0"/>
-                <GradientStop Color="#CCC" Offset="1.0"/>
+                <GradientStop Color="#FFF" Offset="0.0" />
+                <GradientStop Color="#CCC" Offset="1.0" />
             </GradientStopCollection>
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
@@ -175,12 +177,11 @@
         StartPoint="0,0" EndPoint="0,1">
         <GradientBrush.GradientStops>
             <GradientStopCollection>
-                <GradientStop Color="#BBB" Offset="0.0"/>
-                <GradientStop Color="#EEE" Offset="0.1"/>
-                <GradientStop Color="#EEE" Offset="0.9"/>
-                <GradientStop Color="#FFF" Offset="1.0"/>
+                <GradientStop Color="#BBB" Offset="0.0" />
+                <GradientStop Color="#EEE" Offset="0.1" />
+                <GradientStop Color="#EEE" Offset="0.9" />
+                <GradientStop Color="#FFF" Offset="1.0" />
             </GradientStopCollection>
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
-
 </ResourceDictionary>

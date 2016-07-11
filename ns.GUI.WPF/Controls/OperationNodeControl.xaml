@@ -11,7 +11,7 @@
             <RowDefinition Height="44" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Margin="0,1,0,2">
+        <Grid Margin="0,1,0,2" PreviewMouseDown="Grid_PreviewMouseDown" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="40" />

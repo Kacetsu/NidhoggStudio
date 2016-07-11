@@ -21,7 +21,7 @@
     <system:String x:Key="Project_XML">Project XML</system:String>
     <system:String x:Key="ID">ID</system:String>
     <system:String x:Key="Collection">Collection</system:String>
-    
+
     <!--Titlebar-->
     <system:String x:Key="S_T_Close">Close</system:String>
     <system:String x:Key="S_T_Restore">Restore</system:String>
@@ -42,7 +42,7 @@
     <system:String x:Key="S_M_Save_Project">Save Project</system:String>
     <system:String x:Key="S_M_Save_Project_as">Save Project as...</system:String>
     <system:String x:Key="S_M_Exit">Exit</system:String>
-    
+
     <!--EDIT-->
     <system:String x:Key="S_M_Undo">Undo</system:String>
     <system:String x:Key="S_M_Redo">Redo</system:String>
@@ -55,8 +55,8 @@
     <system:String x:Key="S_M_Online_Documentation">Online Documentation</system:String>
 
     <!--Add new Element Dialog-->
-    <system:String x:Key="S_T_Add_new_Element">Add new Element</system:String>
-    
+    <system:String x:Key="S_T_Add_new_Element">New Element</system:String>
+
     <!--Analytics-->
     <system:String x:Key="Output">Output</system:String>
     <system:String x:Key="Results">Results</system:String>
@@ -75,8 +75,7 @@
     <!--Tolerance-->
     <system:String x:Key="Min_Tolerance">Min. Tolerance</system:String>
     <system:String x:Key="Max_Tolerance">Max. Tolerance</system:String>
-    
+
     <!-- Remove Button -->
     <system:String x:Key="RB_ConfirmRemove">Are you sure?</system:String>
-
 </ResourceDictionary>

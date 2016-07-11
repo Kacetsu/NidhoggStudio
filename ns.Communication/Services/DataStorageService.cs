@@ -63,6 +63,13 @@ namespace ns.Communication.Services {
             return true;
         }
 
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void UnregisterClient(string uid) => _clients?.Remove(uid);
+
         private void _dataStorageManager_DataStorageCollectionChanged(object sender, Base.Event.DataStorageCollectionChangedEventArgs e) {
             if (e.NewContainers.Count == 0) return;
 

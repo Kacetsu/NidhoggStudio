@@ -15,7 +15,6 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für Editor.xaml
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged {
-        private Controls.AddToolControl _addToolControl;
         private string _lockedToolName = string.Empty;
         private Controls.ProjectExplorer _projectExplorer;
         private Controls.PropertyEditor _propertyEditor;
@@ -31,7 +30,6 @@ namespace ns.GUI.WPF {
             Loaded += Editor_Loaded;
             _projectExplorer = ProjectExplorer;
             _pluginName.DataContext = this;
-            ProjectExplorer.AddToolButton.Click += ProjectExplorer_AddToolButton_Click;
             FrontendManager.Instance.PropertyChanged += FrontendManager_PropertyChanged;
             FrontendManager.Instance.ConfigNodeHandlerChanged += ProjectExplorer_ConfigNodeHandlerChanged;
         }
@@ -59,10 +57,7 @@ namespace ns.GUI.WPF {
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) {
-            if (_addToolControl != null && sender == _addToolControl.CloseButton) {
-                RemoveControl(_addToolControl);
-                _addToolControl = null;
-            } else if (_propertyEditor != null && sender == _propertyEditor.CloseButton) {
+            if (_propertyEditor != null && sender == _propertyEditor.CloseButton) {
                 RemoveControl(_propertyEditor);
                 _propertyEditor = null;
             }
@@ -89,19 +84,6 @@ namespace ns.GUI.WPF {
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void ProjectExplorer_AddToolButton_Click(object sender, RoutedEventArgs e) {
-            DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
-            animation.Completed += delegate (object s, EventArgs ev) {
-                if (_addToolControl == null) {
-                    _addToolControl = new Controls.AddToolControl();
-                    _addToolControl.CloseButton.Click += CloseButton_Click;
-                }
-                ControlGrid.Children.Add(_addToolControl);
-                GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
-            };
-            ControlGrid.BeginAnimation(WidthProperty, animation);
-        }
-
         private void ProjectExplorer_ConfigNodeHandlerChanged(object sender, NodeSelectionChangedEventArgs<object> e) {
             IPluginModel model = e.SelectedNode as IPluginModel;
             if (model == null) return;
@@ -113,6 +95,7 @@ namespace ns.GUI.WPF {
                     _propertyEditor.CloseButton.Click += CloseButton_Click;
                     _propertyEditor.RemoveToolButton.YesButton.Click += YesButton_Click;
                 }
+                AddToolControl.Visibility = Visibility.Collapsed;
                 if (!ControlGrid.Children.Contains(_propertyEditor))
                     ControlGrid.Children.Add(_propertyEditor);
                 GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
@@ -126,6 +109,8 @@ namespace ns.GUI.WPF {
                 ControlGrid.Children.Remove(control);
                 if (!ControlGrid.Children.Contains(_projectExplorer))
                     ControlGrid.Children.Add(_projectExplorer);
+
+                AddToolControl.Visibility = Visibility.Visible;
                 GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty, TimeSpan.FromSeconds(0.2));
             };
             ControlGrid.BeginAnimation(WidthProperty, animation);

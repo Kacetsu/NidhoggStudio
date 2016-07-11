@@ -28,5 +28,12 @@ namespace ns.Communication.Services {
         /// <returns></returns>
         [OperationContract]
         bool SendHeartbeat();
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        [OperationContract]
+        void UnregisterClient(string uid);
     }
 }

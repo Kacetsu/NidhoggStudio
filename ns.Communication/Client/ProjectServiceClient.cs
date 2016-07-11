@@ -8,6 +8,7 @@ using System.ServiceModel.Channels;
 namespace ns.Communication.Client {
 
     public class ProjectServiceClient : GenericDuplexServiceClient<IProjectService, IProjectServiceCallbacks>, IProjectService {
+        private string _clientUID = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectServiceClient"/> class.
@@ -15,7 +16,7 @@ namespace ns.Communication.Client {
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="binding">The binding.</param>
         public ProjectServiceClient(EndpointAddress endpoint, Binding binding, ProjectServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
-            RegisterClient(Guid.NewGuid().ToString());
+            RegisterClient(_clientUID);
         }
 
         /// <summary>
@@ -50,5 +51,20 @@ namespace ns.Communication.Client {
         /// </summary>
         /// <param name="uid">The uid.</param>
         public void RegisterClient(string uid) => Channel?.RegisterClient(uid);
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        public void UnregisterClient(string uid) => Channel?.UnregisterClient(uid);
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing) {
+            UnregisterClient(_clientUID);
+            base.Dispose(disposing);
+        }
     }
 }

@@ -44,5 +44,12 @@ namespace ns.Communication.Services {
         /// <param name="uid">The uid.</param>
         [OperationContract]
         void RegisterClient(string uid);
+
+        /// <summary>
+        /// Unregisters the client.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        [OperationContract]
+        void UnregisterClient(string uid);
     }
 }

@@ -172,6 +172,8 @@ namespace ns.GUI.WPF {
 
             if (bytesPerPixel == 1)
                 pixelFormat = PixelFormats.Gray8;
+            else if (bytesPerPixel == 4)
+                pixelFormat = PixelFormats.Bgr32;
 
             return BitmapSource.Create(
                 width,

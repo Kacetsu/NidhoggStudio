@@ -55,13 +55,5 @@ namespace ns.Communication.Configuration {
         /// The project service address.
         /// </value>
         public string ProjectServiceAddress { get { return string.Format("{0}Project", Address.Value); } }
-
-        /// <summary>
-        /// Gets the receive timeout.
-        /// </summary>
-        /// <value>
-        /// The receive timeout.
-        /// </value>
-        public int ReceiveTimeout { get; } = 50000;
     }
 }

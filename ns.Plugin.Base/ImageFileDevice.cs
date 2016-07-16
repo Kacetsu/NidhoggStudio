@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace ns.Plugin.Base {
 
@@ -17,9 +18,12 @@ namespace ns.Plugin.Base {
     public class ImageFileDevice : ImageDevice {
         private List<Bitmap> _bitmaps;
         private string _directory = string.Empty;
+        private DoubleProperty _framerate = null;
         private int _imageIndex = 0;
         private ImageProperty _imageProperty;
         private List<string> _openImageFilenames;
+
+        private Stopwatch _stopwatch = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFileDevice"/> class.
@@ -27,6 +31,7 @@ namespace ns.Plugin.Base {
         public ImageFileDevice() {
             DisplayName = "Image File Device";
             AddChild(new StringProperty("Directory", BaseManager.DocumentsPath + "Images"));
+            AddChild(new DoubleProperty("Framerate", 30.0));
             AddChild(new ImageProperty("Image", true));
         }
 
@@ -54,8 +59,10 @@ namespace ns.Plugin.Base {
         public override bool Initialize() {
             _openImageFilenames = new List<string>();
             _bitmaps = new List<Bitmap>();
-            _directory = GetProperty<StringProperty>("Directory")?.Value;
+            _directory = GetProperty<StringProperty>("Directory").Value;
             _imageProperty = GetProperty<ImageProperty>("Image");
+            _framerate = GetProperty<DoubleProperty>("Framerate");
+            _stopwatch = new Stopwatch();
 
             if (!Directory.Exists(_directory)) {
                 ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
@@ -85,6 +92,12 @@ namespace ns.Plugin.Base {
         /// Success of the Operation.
         /// </returns>
         public override bool TryRun() {
+            _stopwatch.Start();
+            while (_stopwatch.ElapsedMilliseconds < ((1.0 / _framerate.Value) * 1000)) {
+                Thread.Sleep(1);
+            }
+
+            _stopwatch.Reset();
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;
             Bitmap bitmap = _bitmaps[_imageIndex];
@@ -138,7 +151,8 @@ namespace ns.Plugin.Base {
             foreach (string filename in filenames) {
                 if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)
                     || filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture)
-                    || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)) {
+                    || filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture)
+                    || filename.EndsWith(".gif", true, System.Globalization.CultureInfo.CurrentCulture)) {
                     if (_openImageFilenames.Contains(filename)) continue;
 
                     Bitmap bitmap = new Bitmap(filename);

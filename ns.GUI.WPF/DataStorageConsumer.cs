@@ -1,15 +1,21 @@
-﻿using ns.Base.Event;
+﻿using ns.Base;
+using ns.Base.Event;
+using ns.Base.Log;
 using ns.Communication.Client;
 using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace ns.GUI.WPF {
 
-    internal sealed class DataStorageConsumer {
+    internal sealed class DataStorageConsumer : ICloseable {
         private BlockingCollection<KeyValuePair<string, string>> _blockingDataStorageModelUIDs = new BlockingCollection<KeyValuePair<string, string>>();
+        private BlockingCollection<string> _blockingLastDataStorageParentUIDs = new BlockingCollection<string>();
+        private bool _isClosing = false;
+        private Task _parentUidTask;
         private Task _uidTask;
 
         /// <summary>
@@ -18,7 +24,9 @@ namespace ns.GUI.WPF {
         public DataStorageConsumer() {
             ClientCommunicationManager.DataStorageService.Callback.DataStorageCollectionChanged += Callback_DataStorageCollectionChanged;
             _uidTask = new Task(UpdateDataStorage);
+            _parentUidTask = new Task(UpdateLastDataStorage);
             _uidTask.Start();
+            _parentUidTask.Start();
         }
 
         public delegate void DataStorageAddedHandler(object sender, DataStorageContainerModelAddedEventArgs e);
@@ -47,6 +55,24 @@ namespace ns.GUI.WPF {
             _blockingDataStorageModelUIDs.Add(container);
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close() {
+            _isClosing = true;
+            _blockingDataStorageModelUIDs?.CompleteAdding();
+            _blockingLastDataStorageParentUIDs?.CompleteAdding();
+        }
+
+        /// <summary>
+        /// Updates the last data storage.
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public void UpdateLastDataStorage(string parentUID) {
+            _blockingLastDataStorageParentUIDs.Add(parentUID);
+        }
+
         private void Callback_DataStorageCollectionChanged(object sender, DataStorageCollectionChangedEventArgs e) {
             foreach (KeyValuePair<string, string> container in e.NewContainers) {
                 Add(container);
@@ -55,13 +81,27 @@ namespace ns.GUI.WPF {
 
         private void UpdateDataStorage() {
             KeyValuePair<string, string> container;
-            while (true) {
+            while (!_isClosing) {
                 container = _blockingDataStorageModelUIDs.Take();
                 string containerUID = container.Key;
                 string pluginUID = container.Value;
                 if (!string.IsNullOrEmpty(SelectedUID) && !string.IsNullOrEmpty(pluginUID) && pluginUID.Equals(SelectedUID) && !string.IsNullOrEmpty(containerUID)) {
                     DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetContainer(containerUID);
                     DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                }
+            }
+        }
+
+        private void UpdateLastDataStorage() {
+            while (!_isClosing) {
+                string parentUID = _blockingLastDataStorageParentUIDs.Take();
+                try {
+                    if (ClientCommunicationManager.DataStorageService.IsContainerAvailable(parentUID)) {
+                        DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetLastContainer(parentUID);
+                        DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                    }
+                } catch (FaultException ex) {
+                    Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
                 }
             }
         }

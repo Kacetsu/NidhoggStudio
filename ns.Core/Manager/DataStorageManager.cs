@@ -60,5 +60,25 @@ namespace ns.Core.Manager {
 
             return null;
         }
+
+        /// <summary>
+        /// Finds the last.
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public DataContainer FindLast(string parentUID) {
+            DataContainer container = null;
+            lock (_toolContainers) {
+                container = _toolContainers.FindLast(c => c.ParentUID == parentUID);
+            }
+
+            if (container == null) {
+                lock (Nodes) {
+                    container = Nodes.FindLast(c => c.ParentUID == parentUID);
+                }
+            }
+
+            return container;
+        }
     }
 }

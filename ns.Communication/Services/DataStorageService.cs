@@ -1,7 +1,9 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Manager.DataStorage;
+using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 
@@ -34,6 +36,30 @@ namespace ns.Communication.Services {
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
         public DataStorageContainerModel GetContainer(string uid) => new DataStorageContainerModel(_dataStorageManager?.Find(uid));
+
+        /// <summary>
+        /// Gets the last container.
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public DataStorageContainerModel GetLastContainer(string parentUID) {
+            DataContainer container = _dataStorageManager?.FindLast(parentUID);
+            if (container == null) {
+                throw new FaultException("No container available!");
+            }
+
+            return new DataStorageContainerModel(container);
+        }
+
+        /// <summary>
+        /// Determines whether [is container available] [the specified parent uid].
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public bool IsContainerAvailable(string parentUID) {
+            DataContainer container = _dataStorageManager?.FindLast(parentUID);
+            return container != null;
+        }
 
         /// <summary>
         /// Registers the client.

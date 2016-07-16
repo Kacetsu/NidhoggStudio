@@ -31,10 +31,9 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Finalizes this instance.
+        /// Closes this instance.
         /// </summary>
-        /// <returns></returns>
-        public override bool Finalize() {
+        public override void Close() {
             if (_bitmaps != null) {
                 foreach (Bitmap bitmap in _bitmaps)
                     bitmap.Dispose();
@@ -43,7 +42,7 @@ namespace ns.Plugin.Base {
             _bitmaps = null;
             _imageIndex = 0;
 
-            return true;
+            base.Close();
         }
 
         /// <summary>

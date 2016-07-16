@@ -67,7 +67,7 @@ namespace ns.Core {
                 StartOperations();
 
             if (!initializeResult) {
-                FinalizeOperations();
+                CloseOperations();
             }
 
             State = initializeResult ? ProcessorState.Running : ProcessorState.StartFailed;
@@ -80,15 +80,14 @@ namespace ns.Core {
         /// </summary>
         /// <returns>Success of the operation.</returns>
         public bool Stop() {
-            bool resultFinalize = false;
             bool resultTerminate = false;
 
             resultTerminate = TerminateOperations();
-            resultFinalize = FinalizeOperations();
+            CloseOperations();
 
             _nexuses.Clear();
 
-            if (resultFinalize && resultTerminate) {
+            if (resultTerminate) {
                 State = ProcessorState.Idle;
                 return true;
             } else {
@@ -97,24 +96,18 @@ namespace ns.Core {
             }
         }
 
-        /// <summary>
-        /// Finalizes the operations.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        private bool FinalizeOperations() {
+        private void CloseOperations() {
             _isFinalize = true;
-            bool result = false;
             foreach (Operation operation in _projectManager.Configuration.Operations) {
                 AsyncNanoProcessor context = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
                 if (context != null) {
                     context.Wait();
-                    result = context.Operation.Finalize();
+                    context.Operation.Close();
                 } else {
-                    result = operation.Finalize();
+                    operation.Close();
                 }
             }
             _nexuses.Clear();
-            return result;
         }
 
         /// <summary>

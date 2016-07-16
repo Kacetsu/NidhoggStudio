@@ -82,6 +82,7 @@
     <Compile Include="Exceptions\PluginNotFoundException.cs" />
     <Compile Include="Exceptions\SaveConfigurationException.cs" />
     <Compile Include="Exceptions\ToolAlreadyExistsException.cs" />
+    <Compile Include="ICloseable.cs" />
     <Compile Include="Plugins\Properties\ImageStream.cs" />
     <Compile Include="Imaging\Histogram.cs" />
     <Compile Include="LibraryInformation.cs" />

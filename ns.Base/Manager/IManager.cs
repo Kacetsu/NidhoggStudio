@@ -1,6 +1,6 @@
 ﻿namespace ns.Base.Manager {
 
-    public interface IManager {
+    public interface IManager : ICloseable {
 
         /// <summary>
         /// Gets the name.
@@ -9,10 +9,5 @@
         /// The name.
         /// </value>
         string Name { get; }
-
-        /// <summary>
-        /// Closes this instance.
-        /// </summary>
-        void Close();
     }
 }

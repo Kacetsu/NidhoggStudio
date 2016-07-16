@@ -90,13 +90,11 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Finalize the Plugin.
+        /// Closes this instance.
         /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            return CaptureDevice?.Finalize() == true && base.Finalize();
+        public override void Close() {
+            CaptureDevice?.Close();
+            base.Close();
         }
 
         /// <summary>
@@ -112,7 +110,7 @@ namespace ns.Base.Plugins {
 
             if (deviceProperty != null) {
                 deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
-                CaptureDevice?.Finalize();
+                CaptureDevice?.Close();
                 CaptureDevice = deviceProperty.SelectedItem;
                 CaptureDevice?.Initialize();
             }

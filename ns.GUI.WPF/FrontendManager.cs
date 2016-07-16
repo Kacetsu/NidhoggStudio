@@ -73,6 +73,7 @@ namespace ns.GUI.WPF {
                     }
 
                     _dataStorageConsumer.SelectedUID = _selectedModel.UID;
+                    _dataStorageConsumer.UpdateLastDataStorage(_selectedModel.UID);
                     Instance.OnPropertyChanged();
                 }
             }

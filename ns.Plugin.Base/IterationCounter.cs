@@ -44,16 +44,11 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
-        /// Finalize the Node.
+        /// Closes this instance.
         /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            base.Finalize();
-
+        public override void Close() {
             _iterations = 0;
-            return true;
+            base.Close();
         }
 
         /// <summary>

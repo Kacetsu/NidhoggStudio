@@ -71,6 +71,17 @@ namespace Nidhogg_Studio {
             Navigation.PageName = "Editor";
         }
 
+        private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+            FrontendManager.Instance.Close();
+            ClientCommunicationManager.Instance.Close();
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e) {
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            Title = Title + " (" + version.ToString() + ")";
+            CreateNavigation();
+        }
+
         private void Navigation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals("PageName")) {
                 ContentGird.Children.Clear();
@@ -96,16 +107,6 @@ namespace Nidhogg_Studio {
                     throw new NotSupportedException(pageName + " is not supported!");
                 }
             }
-        }
-
-        private void HandleLoaded(object sender, RoutedEventArgs e) {
-            Version version = Assembly.GetEntryAssembly().GetName().Version;
-            Title = Title + " (" + version.ToString() + ")";
-            CreateNavigation();
-        }
-
-        private void HandleClosing(object sender, System.ComponentModel.CancelEventArgs e) {
-            ClientCommunicationManager.Instance.Close();
         }
     }
 }

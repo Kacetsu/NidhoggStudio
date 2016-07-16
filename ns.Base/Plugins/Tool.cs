@@ -66,14 +66,9 @@ namespace ns.Base.Plugins {
         public override object Clone() => new Tool(this);
 
         /// <summary>
-        /// Finalize the Node.
+        /// Closes this instance.
         /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            bool result = base.Finalize();
-
+        public override void Close() {
             if (_executionTimeMs != null)
                 _executionTimeMs.Value = 0;
 
@@ -88,7 +83,7 @@ namespace ns.Base.Plugins {
                 }
             }
 
-            return result;
+            base.Close();
         }
 
         /// <summary>

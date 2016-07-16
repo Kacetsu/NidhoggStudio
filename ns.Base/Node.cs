@@ -203,21 +203,15 @@ namespace ns.Base {
         public virtual object Clone() => new Node(this);
 
         /// <summary>
-        /// Finalize the Node.
+        /// Closes this instance.
         /// </summary>
-        /// <returns>Success of the Operation.</returns>
-        public virtual bool Finalize() {
+        public virtual void Close() {
             _isInitialized = false;
-
-            bool result = true;
 
             foreach (Node child in Childs) {
                 if (!child.IsInitialized) continue;
-                if (!child.Finalize())
-                    result = false;
+                child.Close();
             }
-
-            return result;
         }
 
         /// <summary>

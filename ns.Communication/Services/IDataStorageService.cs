@@ -16,6 +16,22 @@ namespace ns.Communication.Services {
         DataStorageContainerModel GetContainer(string uid);
 
         /// <summary>
+        /// Gets the last container.
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        [OperationContract]
+        DataStorageContainerModel GetLastContainer(string parentUID);
+
+        /// <summary>
+        /// Determines whether [is container available] [the specified parent uid].
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        [OperationContract]
+        bool IsContainerAvailable(string parentUID);
+
+        /// <summary>
         /// Registers the client.
         /// </summary>
         /// <param name="uid">The uid.</param>

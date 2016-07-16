@@ -15,12 +15,11 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
-        /// Finalizes this instance.
+        /// Closes this instance.
         /// </summary>
-        /// <returns></returns>
         public override void Close() {
             foreach (Extension extension in Nodes) {
-                extension.Finalize();
+                extension.Close();
             }
         }
 

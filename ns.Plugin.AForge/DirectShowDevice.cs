@@ -69,12 +69,11 @@ namespace ns.Plugin.AForge {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Finalize() {
+        public override void Close() {
             _videoDevice?.SignalToStop();
             _videoDevice?.WaitForStop();
-            base.Finalize();
             _isTerminated = true;
-            return true;
+            base.Close();
         }
 
         /// <summary>

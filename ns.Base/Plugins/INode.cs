@@ -2,7 +2,7 @@
 
 namespace ns.Base.Plugins {
 
-    public interface INode {
+    public interface INode : ICloseable {
 
         /// <summary>
         /// Adds the child.
@@ -15,12 +15,6 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <param name="childs">The childs.</param>
         void AddChilds(List<Node> childs);
-
-        /// <summary>
-        /// Finalizes this instance.
-        /// </summary>
-        /// <returns></returns>
-        bool Finalize();
 
         /// <summary>
         /// Initializes this instance.

@@ -28,6 +28,20 @@ namespace ns.Communication.Client {
         public DataStorageContainerModel GetContainer(string uid) => Channel?.GetContainer(uid);
 
         /// <summary>
+        /// Gets the last container.
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public DataStorageContainerModel GetLastContainer(string parentUID) => Channel?.GetLastContainer(parentUID);
+
+        /// <summary>
+        /// Determines whether [is container available] [the specified parent uid].
+        /// </summary>
+        /// <param name="parentUID">The parent uid.</param>
+        /// <returns></returns>
+        public bool IsContainerAvailable(string parentUID) => Channel?.IsContainerAvailable(parentUID) == true;
+
+        /// <summary>
         /// Registers the client.
         /// </summary>
         /// <param name="uid">The uid.</param>

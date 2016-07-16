@@ -28,14 +28,9 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Finalize the Node.
+        /// Closes this instance.
         /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Finalize() {
-            bool result = base.Finalize();
-
+        public override void Close() {
             foreach (Property childProperty in Childs.Where(c => c is Property)) {
                 IValue<object> valueProperty = childProperty as IValue<object>;
                 if (valueProperty == null) continue;
@@ -46,7 +41,7 @@ namespace ns.Base.Plugins {
                     valueProperty.Value = (childProperty as IConnectable<object>)?.InitialValue;
             }
 
-            return result;
+            base.Close();
         }
     }
 }

@@ -1,13 +1,17 @@
-﻿using ns.Base.Exceptions;
+﻿using ns.Base;
+using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Core.Configuration;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
 
@@ -74,11 +78,18 @@ namespace ns.Core.Manager {
 
             operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
 
-            if (CoreSystem.Processor?.State == Base.ProcessorState.Running) {
+            if (CoreSystem.Processor?.State == ProcessorState.Running) {
                 operation.Initialize();
             }
 
             Configuration.Operations.Add(operation);
+
+            foreach (Property property in operation.Childs.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+                List<Property> connectableProperties = FindConnectableProperties(property);
+                if (connectableProperties.Count > 0) {
+                    property.Connect(connectableProperties[0]);
+                }
+            }
         }
 
         /// <summary>
@@ -98,11 +109,18 @@ namespace ns.Core.Manager {
 
             if (parent.Childs.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
 
-            if (CoreSystem.Processor?.State == Base.ProcessorState.Running) {
+            if (CoreSystem.Processor?.State == ProcessorState.Running) {
                 tool.Initialize();
             }
 
             parent.AddChild(tool);
+
+            foreach (Property property in tool.Childs.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+                List<Property> connectableProperties = FindConnectableProperties(property);
+                if (connectableProperties.Count > 0) {
+                    property.Connect(connectableProperties[0]);
+                }
+            }
         }
 
         /// <summary>
@@ -150,6 +168,64 @@ namespace ns.Core.Manager {
         }
 
         /// <summary>
+        /// Finds the connectable properties.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        public List<Property> FindConnectableProperties(Property property) {
+            List<Property> result = new List<Property>();
+            if (property.IsOutput) return result;
+
+            Operation operation = FindOperation(property);
+            Tool tool = FindTool(property);
+
+            foreach (Node childNode in operation.Childs) {
+                Tool childTool = childNode as Tool;
+                Property childProperty = childNode as Property;
+
+                if (childTool != null) {
+                    if (childTool.Equals(tool)) break;
+
+                    foreach (Property p in childTool.Childs.Where(p => p is Property)) {
+                        if (p.GetType().Equals(property.GetType()) && p.IsOutput) {
+                            result.Add(p);
+                        }
+                    }
+                } else if (childProperty != null && childProperty.GetType().Equals(property.GetType()) && childProperty.IsOutput) {
+                    result.Add(childProperty);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Finds the operation.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        public Operation FindOperation(Property property) {
+            foreach (Operation operation in Configuration.Operations) {
+                foreach (Node node in operation.Childs) {
+                    Tool childTool = node as Tool;
+                    Property childProperty = node as Property;
+
+                    if (childTool != null) {
+                        foreach (Property p in childTool.Childs.Where(p => p is Property)) {
+                            if (p == property) {
+                                return operation;
+                            }
+                        }
+                    } else if (childProperty == property) {
+                        return operation;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Finds the property.
         /// </summary>
         /// <param name="uid">The uid.</param>
@@ -174,6 +250,21 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Finds the tool.
         /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        /// <exception cref="PluginNotFoundException"></exception>
+        public Tool FindTool(Property property) {
+            Operation operation = FindOperation(property);
+            foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
+                if (tool.Childs.Contains(property)) return tool;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the tool.
+        /// </summary>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
         public Tool FindTool(string uid) {
@@ -181,6 +272,7 @@ namespace ns.Core.Manager {
                 Tool tool = operation.Childs.Find(t => t.UID.Equals(uid)) as Tool;
                 return tool;
             }
+
             return null;
         }
 
@@ -213,6 +305,9 @@ namespace ns.Core.Manager {
                 stream.Position = 0;
                 DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
                 Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
+                foreach (Operation operation in Configuration.Operations) {
+                    UpdateParents(operation);
+                }
             } catch (SerializationException ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 throw;
@@ -265,6 +360,16 @@ namespace ns.Core.Manager {
             } catch (SerializationException ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 throw;
+            }
+        }
+
+        private void UpdateParents(Operation operation) {
+            foreach (Property childProperty in operation.Childs.Where(p => p is Property)) {
+                childProperty.Parent = operation;
+            }
+
+            foreach (Tool childTool in operation.Childs.Where(t => t is Tool)) {
+                childTool.Parent = operation;
             }
         }
     }

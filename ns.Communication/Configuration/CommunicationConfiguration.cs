@@ -62,6 +62,6 @@ namespace ns.Communication.Configuration {
         /// <value>
         /// The receive timeout.
         /// </value>
-        public int ReceiveTimeout { get; } = 10000;
+        public int ReceiveTimeout { get; } = 50000;
     }
 }

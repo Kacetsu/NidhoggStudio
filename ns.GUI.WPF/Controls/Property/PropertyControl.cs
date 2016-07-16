@@ -1,7 +1,11 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Log;
+using ns.Base.Plugins;
+using ns.Communication.Client;
+using ns.Communication.Models.Properties;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.ServiceModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,8 +25,8 @@ namespace ns.GUI.WPF.Controls.Property {
         /// Initializes a new instance of the <see cref="PropertyControl"/> class.
         /// </summary>
         public PropertyControl() : base() {
-            this.MouseEnter += Control_MouseEnter;
-            this.MouseLeave += Control_MouseLeave;
+            MouseEnter += Control_MouseEnter;
+            MouseLeave += Control_MouseLeave;
         }
 
         /// <summary>
@@ -32,12 +36,18 @@ namespace ns.GUI.WPF.Controls.Property {
         public PropertyControl(T property)
             : base() {
             _property = property;
-            this.MouseEnter += Control_MouseEnter;
-            this.MouseLeave += Control_MouseLeave;
+            MouseEnter += Control_MouseEnter;
+            MouseLeave += Control_MouseLeave;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Gets or sets the background brush.
+        /// </summary>
+        /// <value>
+        /// The background brush.
+        /// </value>
         public Brush BackgroundBrush {
             get { return _backgroundBrush; }
             set {
@@ -68,13 +78,14 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         /// <summary>
-        /// Gets the property.
+        /// Gets or sets the property.
         /// </summary>
         /// <value>
         /// The property.
         /// </value>
         public T Property {
             get { return _property; }
+            protected set { _property = value; }
         }
 
         /// <summary>
@@ -141,11 +152,6 @@ namespace ns.GUI.WPF.Controls.Property {
             BackgroundBrush = DEFAULT_BACKGROUNDBRUSH;
         }
 
-        /// <summary>
-        /// Creates the selection.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="parentControl">The parent control.</param>
         private void CreateSelection(UIElement control, UIElement parentControl) {
             _selectionComboBox = new ComboBox();
             _selectionComboBox.Name = "SelectionComboBox";
@@ -167,10 +173,6 @@ namespace ns.GUI.WPF.Controls.Property {
             }
         }
 
-        /// <summary>
-        /// Destroys the selection.
-        /// </summary>
-        /// <param name="parentControl">The parent control.</param>
         private void DestroySelection(UIElement parentControl) {
             Property.Unconnect();
             if (parentControl is Grid) {
@@ -183,42 +185,37 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         private void SelectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ComboBox c = sender as ComboBox;
-            Base.Plugins.Properties.Property targetProperty = c.SelectedItem as ns.Base.Plugins.Properties.Property;
-            if (targetProperty != null) {
-                this.Property.Connect(targetProperty);
-            } else if (c.SelectedItem is Operation) {
-                this.Property.Connect(((Operation)c.SelectedItem).UID);
+            try {
+                ComboBox c = sender as ComboBox;
+                PropertyModel sourceProperty = c.SelectedItem as PropertyModel;
+                ClientCommunicationManager.ProjectService.ConnectProperties(Property.UID, sourceProperty.UID);
+                Property.ConnectedUID = sourceProperty.UID;
+            } catch (FaultException ex) {
+                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
             }
         }
 
-        /// <summary>
-        /// Updates the connectable property list.
-        /// </summary>
         private void UpdateConnectablePropertyList() {
-            //if (this.Property is StringProperty) {
-            //    ProjectManager projectManager = CoreSystem.Managers.Find(m => m.Name.Contains("ProjectManager")) as ProjectManager;
-            //    List<Operation> operations = (List<Operation>)projectManager.Configuration.Operations.FindAll(o => o.UID != this.Property.Parent.UID);
-            //    _selectionComboBox.ItemsSource = operations;
-            //    _selectionComboBox.DisplayMemberPath = "Name";
+            try {
+                PropertyModel[] propertyModels = ClientCommunicationManager.ProjectService.GetConnectableProperties(Property.UID);
+                _selectionComboBox.ItemsSource = propertyModels;
+                _selectionComboBox.DisplayMemberPath = nameof(PropertyModel.TreeName);
 
-            //    if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-            //        Operation targetOperation = projectManager.Configuration.Operations.Find(p => p.UID == Property.ConnectedUID);
-            //        if (targetOperation != null)
-            //            _selectionComboBox.SelectedItem = targetOperation;
-            //    }
-            //} else {
-            //    PropertyManager propertyManager = CoreSystem.Managers.Find(m => m.Name.Contains("PropertyManager")) as PropertyManager;
-            //    List<ns.Base.Plugins.Properties.Property> properties = propertyManager.GetConnectableProperties(this.Property);
-            //    _selectionComboBox.ItemsSource = properties;
-            //    _selectionComboBox.DisplayMemberPath = "TreeName";
-
-            //    if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
-            //        ns.Base.Plugins.Properties.Property targetProperty = properties.Find(p => p.UID == Property.ConnectedUID);
-            //        if (targetProperty != null)
-            //            _selectionComboBox.SelectedItem = targetProperty;
-            //    }
-            //}
+                if (string.IsNullOrEmpty(Property.ConnectedUID) && propertyModels.Length > 0) {
+                    ClientCommunicationManager.ProjectService.ConnectProperties(Property.UID, propertyModels[0].UID);
+                    Property.ConnectedUID = propertyModels[0].UID;
+                    _selectionComboBox.SelectedItem = propertyModels[0];
+                } else {
+                    foreach (PropertyModel propertyModel in propertyModels) {
+                        if (propertyModel.Property.UID.Equals(Property.ConnectedUID)) {
+                            _selectionComboBox.SelectedItem = propertyModel;
+                            break;
+                        }
+                    }
+                }
+            } catch (FaultException ex) {
+                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+            }
         }
     }
 }

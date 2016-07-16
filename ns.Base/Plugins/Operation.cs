@@ -57,6 +57,12 @@ namespace ns.Base.Plugins {
             set {
                 if (_captureDevice != value) {
                     _captureDevice = value;
+                    _captureDevice.Parent = this;
+                    DeviceProperty deviceProperty = GetProperty<DeviceProperty>(nameof(CaptureDevice));
+                    if (deviceProperty == null) {
+                        throw new MemberAccessException(nameof(DeviceProperty));
+                    }
+                    deviceProperty.SelectedItem = value;
                     OnPropertyChanged();
                 }
             }

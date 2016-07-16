@@ -17,11 +17,20 @@ namespace ns.Communication.Services {
         private PluginManager _pluginManager;
         private ProjectManager _projectManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectService"/> class.
+        /// </summary>
         public ProjectService() {
             _projectManager = CoreSystem.FindManager<ProjectManager>();
             _pluginManager = CoreSystem.FindManager<PluginManager>();
         }
 
+        /// <summary>
+        /// Gets the proxy.
+        /// </summary>
+        /// <value>
+        /// The proxy.
+        /// </value>
         public IProjectServiceCallbacks Proxy { get { return OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>(); } }
 
         /// <summary>
@@ -126,6 +135,63 @@ namespace ns.Communication.Services {
         }
 
         /// <summary>
+        /// Connects the properties.
+        /// </summary>
+        /// <param name="targetUID">The target uid.</param>
+        /// <param name="sourceUID">The source uid.</param>
+        /// <exception cref="FaultException">
+        /// </exception>
+        public void ConnectProperties(string targetUID, string sourceUID) {
+            if (string.IsNullOrEmpty(targetUID)) {
+                throw new FaultException(string.Format("{0} is null or empty.", nameof(targetUID)));
+            }
+
+            if (string.IsNullOrEmpty(sourceUID)) {
+                throw new FaultException(string.Format("{0} is null or empty.", nameof(sourceUID)));
+            }
+
+            Property targetProperty = _projectManager.FindProperty(targetUID);
+            Property sourceProperty = _projectManager.FindProperty(sourceUID);
+
+            if (targetProperty == null) {
+                throw new FaultException(string.Format("Could not find target property!"));
+            }
+
+            if (sourceProperty == null) {
+                throw new FaultException(string.Format("Could not find source property!"));
+            }
+
+            targetProperty.Connect(sourceProperty);
+        }
+
+        /// <summary>
+        /// Gets the connectable properties.
+        /// </summary>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <returns></returns>
+        /// <exception cref="FaultException">
+        /// </exception>
+        public PropertyModel[] GetConnectableProperties(string propertyUID) {
+            if (string.IsNullOrEmpty(propertyUID)) {
+                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+            }
+
+            Property targetProperty = _projectManager.FindProperty(propertyUID);
+            if (targetProperty == null) {
+                throw new FaultException(string.Format("Could not find property {0}.", propertyUID));
+            }
+
+            List<Property> connectableProperties = _projectManager.FindConnectableProperties(targetProperty);
+            List<PropertyModel> connectableModels = new List<PropertyModel>();
+
+            foreach (var property in connectableProperties) {
+                connectableModels.Add(new PropertyModel(property));
+            }
+
+            return connectableModels.ToArray();
+        }
+
+        /// <summary>
         /// Gets all operations.
         /// </summary>
         /// <returns></returns>
@@ -137,6 +203,26 @@ namespace ns.Communication.Services {
             }
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <returns></returns>
+        /// <exception cref="FaultException">
+        /// </exception>
+        public PropertyModel GetProperty(string propertyUID) {
+            if (string.IsNullOrEmpty(propertyUID)) {
+                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+            }
+
+            Property property = _projectManager.FindProperty(propertyUID);
+            if (property == null) {
+                throw new FaultException(string.Format("Could not find property {0}.", propertyUID));
+            }
+
+            return new PropertyModel(property);
         }
 
         /// <summary>

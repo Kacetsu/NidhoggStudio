@@ -5,18 +5,6 @@ namespace ns.Base.Plugins {
     public interface INode {
 
         /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <returns></returns>
-        bool Initialize();
-
-        /// <summary>
-        /// Finalizes this instance.
-        /// </summary>
-        /// <returns></returns>
-        bool Finalize();
-
-        /// <summary>
         /// Adds the child.
         /// </summary>
         /// <param name="child">The child.</param>
@@ -29,6 +17,18 @@ namespace ns.Base.Plugins {
         void AddChilds(List<Node> childs);
 
         /// <summary>
+        /// Finalizes this instance.
+        /// </summary>
+        /// <returns></returns>
+        bool Finalize();
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        /// <returns></returns>
+        bool Initialize();
+
+        /// <summary>
         /// Removes the child.
         /// </summary>
         /// <param name="child">The child.</param>
@@ -38,11 +38,5 @@ namespace ns.Base.Plugins {
         /// Removes the childs.
         /// </summary>
         void RemoveChilds();
-
-        /// <summary>
-        /// Sets the parent.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
-        void SetParent(Node parent);
     }
 }

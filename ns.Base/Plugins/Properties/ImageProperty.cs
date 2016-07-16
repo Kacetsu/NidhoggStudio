@@ -19,6 +19,22 @@ namespace ns.Base.Plugins.Properties {
             CanAutoConnect = true;
         }
 
+        /// <summary>
+        /// Gets the bytes per pixel.
+        /// </summary>
+        /// <value>
+        /// The bytes per pixel.
+        /// </value>
+        public byte BytesPerPixel => Value.BytesPerPixel;
+
+        /// <summary>
+        /// Gets the height.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
+        public int Height => Value.Height;
+
         public bool IsVisible {
             get { return _isVisible; }
             set {
@@ -36,59 +52,6 @@ namespace ns.Base.Plugins.Properties {
         /// The width.
         /// </value>
         public int Width => Value.Width;
-
-        /// <summary>
-        /// Gets the height.
-        /// </summary>
-        /// <value>
-        /// The height.
-        /// </value>
-        public int Height => Value.Height;
-
-        /// <summary>
-        /// Gets the bytes per pixel.
-        /// </summary>
-        /// <value>
-        /// The bytes per pixel.
-        /// </value>
-        public byte BytesPerPixel => Value.BytesPerPixel;
-
-        /// <summary>
-        /// Gets the parent operation.
-        /// </summary>
-        /// <value>
-        /// The parent operation.
-        /// </value>
-        public Node ParentOperation {
-            get {
-                Node parent = this.Parent;
-                Node lastParent = null;
-                while (parent != null) {
-                    lastParent = parent;
-                    parent = parent.Parent;
-                }
-
-                parent = lastParent;
-                return parent;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parent tool.
-        /// </summary>
-        /// <value>
-        /// The parent tool.
-        /// </value>
-        public Node ParentTool {
-            get {
-                Node parent = this.Parent;
-                while (!(parent is Tool)) {
-                    parent = parent.Parent;
-                }
-
-                return parent;
-            }
-        }
 
         /// <summary>
         /// Sets the value.

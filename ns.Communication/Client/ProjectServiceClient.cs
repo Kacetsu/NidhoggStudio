@@ -1,4 +1,5 @@
 ﻿using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.Communication.Services;
 using ns.Communication.Services.Callbacks;
 using System;
@@ -41,10 +42,31 @@ namespace ns.Communication.Client {
         public void ChangePropertyValue(object newValue, string propertyUID) => Channel?.ChangePropertyValue(newValue, propertyUID);
 
         /// <summary>
+        /// Connects the properties.
+        /// </summary>
+        /// <param name="targetUID">The target uid.</param>
+        /// <param name="sourceUID">The source uid.</param>
+        public void ConnectProperties(string targetUID, string sourceUID) => Channel?.ConnectProperties(targetUID, sourceUID);
+
+        /// <summary>
+        /// Gets the connectable properties.
+        /// </summary>
+        /// <param name="propertyUID"></param>
+        /// <returns></returns>
+        public PropertyModel[] GetConnectableProperties(string propertyUID) => Channel?.GetConnectableProperties(propertyUID);
+
+        /// <summary>
         /// Gets the project operations.
         /// </summary>
         /// <returns></returns>
         public OperationModel[] GetOperations() => Channel?.GetOperations();
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <returns></returns>
+        public PropertyModel GetProperty(string propertyUID) => Channel?.GetProperty(propertyUID);
 
         /// <summary>
         /// Registers the client.

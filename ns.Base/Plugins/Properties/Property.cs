@@ -16,119 +16,25 @@ namespace ns.Base.Plugins.Properties {
         KnownType(typeof(RectangleProperty)),
         KnownType(typeof(StringProperty))]
     public abstract class Property : Node {
-
-        /// <summary>
-        /// Occurs when [property unconnect event].
-        /// </summary>
-        public event NodeChangedEventHandler PropertyUnconnectEvent;
-
-        private object _value = null;
-        private string _uid = string.Empty;
-        private string _toolUid = string.Empty;
-        private bool _isOutput = false;
-        private string _connectedUid = string.Empty;
-        private Property _connectedProperty = null;
-        private string _groupName = string.Empty;
-        private bool _isMonitored = false;
         private bool _canAutoConnect = false;
+
+        private Property _connectedProperty = null;
+
+        private string _connectedUid = string.Empty;
+
+        private string _groupName = string.Empty;
+
+        private bool _isMonitored = false;
+
+        private bool _isOutput = false;
+
         private bool _isToleranceDisabled = true;
 
-        /// <summary>
-        /// Gets or sets the name of the group.
-        /// </summary>
-        /// <value>
-        /// The name of the group.
-        /// </value>
-        public string GroupName {
-            get {
-                string result = _name;
-                if (!string.IsNullOrEmpty(_groupName))
-                    result = _groupName;
-                return result;
-            }
-            set {
-                _groupName = value;
-                OnPropertyChanged();
-            }
-        }
+        private string _toolUid = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the unified identification of the parent tool.
-        /// </summary>
-        [DataMember]
-        public string ToolUID {
-            get { return _toolUid; }
-            set {
-                _toolUid = value;
-                OnPropertyChanged();
-            }
-        }
+        private string _uid = string.Empty;
 
-        /// <summary>
-        /// Gets or sets if the property is used as output.
-        /// </summary>
-        [DataMember]
-        public bool IsOutput {
-            get { return _isOutput; }
-            set {
-                _isOutput = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is monitored.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is monitored; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember]
-        public bool IsMonitored {
-            get { return _isMonitored; }
-            set {
-                _isMonitored = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the UID of the property that is connected to this one.
-        /// </summary>
-        [DataMember]
-        public string ConnectedUID {
-            get { return _connectedUid; }
-            set {
-                _connectedUid = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets the connected property.
-        /// </summary>
-        /// <value>
-        /// The connected property.
-        /// </value>
-        public Property ConnectedProperty => null;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance can automatic connect.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance can automatic connect; otherwise, <c>false</c>.
-        /// </value>
-        public bool CanAutoConnect {
-            get { return _canAutoConnect; }
-            set {
-                _canAutoConnect = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the property.
-        /// </summary>
-        public virtual Type Type => typeof(object);
+        private object _value = null;
 
         /// <summary>
         /// Base Class for all Properties.
@@ -179,6 +85,108 @@ namespace ns.Base.Plugins.Properties {
             GroupName = property.GroupName;
             IsMonitored = property.IsMonitored;
         }
+
+        /// <summary>
+        /// Occurs when [property unconnect event].
+        /// </summary>
+        public event NodeChangedEventHandler PropertyUnconnectEvent;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance can automatic connect.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance can automatic connect; otherwise, <c>false</c>.
+        /// </value>
+        public bool CanAutoConnect {
+            get { return _canAutoConnect; }
+            set {
+                _canAutoConnect = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets the connected property.
+        /// </summary>
+        /// <value>
+        /// The connected property.
+        /// </value>
+        public Property ConnectedProperty => _connectedProperty;
+
+        /// <summary>
+        /// Gets or sets the UID of the property that is connected to this one.
+        /// </summary>
+        [DataMember]
+        public string ConnectedUID {
+            get { return _connectedUid; }
+            set {
+                _connectedUid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the group.
+        /// </summary>
+        /// <value>
+        /// The name of the group.
+        /// </value>
+        public string GroupName {
+            get {
+                string result = _name;
+                if (!string.IsNullOrEmpty(_groupName))
+                    result = _groupName;
+                return result;
+            }
+            set {
+                _groupName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is monitored.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is monitored; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember]
+        public bool IsMonitored {
+            get { return _isMonitored; }
+            set {
+                _isMonitored = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets if the property is used as output.
+        /// </summary>
+        [DataMember]
+        public bool IsOutput {
+            get { return _isOutput; }
+            set {
+                _isOutput = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the unified identification of the parent tool.
+        /// </summary>
+        [DataMember]
+        public string ToolUID {
+            get { return _toolUid; }
+            set {
+                _toolUid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
+        public virtual Type Type => typeof(object);
 
         /// <summary>
         /// Connects the specified property.

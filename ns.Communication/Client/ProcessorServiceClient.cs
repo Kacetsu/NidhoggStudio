@@ -1,4 +1,5 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Log;
+using ns.Communication.Models;
 using ns.Communication.Services;
 using ns.Communication.Services.Callbacks;
 using System;
@@ -40,7 +41,13 @@ namespace ns.Communication.Client {
         /// <summary>
         /// Stops this instance.
         /// </summary>
-        public void Stop() => Channel?.Stop();
+        public void Stop() {
+            try {
+                Channel?.Stop();
+            } catch (Exception ex) {
+                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+            }
+        }
 
         /// <summary>
         /// Unregisters the client.

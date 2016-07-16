@@ -1,11 +1,56 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
     [DataContract]
     public abstract class GenericProperty<T> : Property, IValue<T> {
+        private T _initialValue;
         private T _value;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
+        /// </summary>
+        public GenericProperty() : base() {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        public GenericProperty(string name, T value) : this() {
+            Name = name;
+            Value = value;
+            _initialValue = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
+        /// </summary>
+        /// <param name="name">Name of the property.</param>
+        /// <param name="isOutput">True if the property is a output.</param>
+        public GenericProperty(string name, bool isOutput) : base(name, isOutput) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public GenericProperty(GenericProperty<T> other) : base(other) {
+            Value = other.Value;
+            _initialValue = other._initialValue;
+        }
+
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
+        public override Type Type {
+            get {
+                return Value.GetType();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the value.
@@ -34,44 +79,12 @@ namespace ns.Base.Plugins.Properties {
             set { Value = (T)value; }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
-        /// </summary>
-        public GenericProperty() : base() {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="value">The value.</param>
-        public GenericProperty(string name, T value) : this() {
-            Name = name;
-            Value = value;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
-        /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        public GenericProperty(string name, bool isOutput) : base(name, isOutput) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
-        /// </summary>
-        /// <param name="other">The other.</param>
-        public GenericProperty(GenericProperty<T> other) : base(other) {
-            Value = other.Value;
-        }
-
-        /// <summary>
-        /// Gets the type of the property.
-        /// </summary>
-        public override Type Type {
-            get {
-                return Value.GetType();
+        protected override void ConnectedPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(Value))) {
+                IValue valueProperty = ConnectedProperty as IValue;
+                if (valueProperty != null) {
+                    Value = (T)valueProperty.ValueObj;
+                }
             }
         }
     }

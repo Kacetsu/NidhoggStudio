@@ -20,6 +20,8 @@ namespace ns.Base {
 
         private bool _isSelected = false;
 
+        private Node _parent = null;
+
         /// <summary>
         /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
         /// Creates the base fields: Name, Fullname, Childs, Cache and UID.
@@ -39,6 +41,10 @@ namespace ns.Base {
             Name = node.Name;
             Childs = new ObservableList<Node>(node.Childs);
             Parent = node.Parent;
+
+            foreach (var child in Childs) {
+                child.Parent = this;
+            }
         }
 
         /// <summary>
@@ -111,7 +117,19 @@ namespace ns.Base {
         /// The parent.
         /// </value>
         [XmlIgnore]
-        public Node Parent { get; private set; }
+        public Node Parent {
+            get { return _parent; }
+            set {
+                if (_parent != value) {
+                    if (_parent != null) {
+                        _parent.PropertyChanged -= ParentPropertyChangedEvent;
+                    }
+                    _parent = value;
+                    _parent.PropertyChanged += ParentPropertyChangedEvent;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the name of the tree.
@@ -156,7 +174,7 @@ namespace ns.Base {
         public virtual void AddChild(Node child) {
             lock (Childs) {
                 if (Childs.Contains(child) == false) {
-                    child.SetParent(this);
+                    child.Parent = this;
                     Childs.Add(child);
                 }
             }
@@ -171,7 +189,7 @@ namespace ns.Base {
             List<Node> addedChilds = new List<Node>();
             foreach (Node child in childs) {
                 if (!Childs.Contains(child)) {
-                    child.SetParent(this);
+                    child.Parent = this;
                     Childs.Add(child);
                     addedChilds.Add(child);
                 }
@@ -236,23 +254,12 @@ namespace ns.Base {
         }
 
         /// <summary>
-        /// Sets the parent.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
-        public void SetParent(Node parent) {
-            if (Parent != null)
-                Parent.PropertyChanged -= ParentPropertyChangedEvent;
-            Parent = parent;
-            Parent.PropertyChanged += ParentPropertyChangedEvent;
-        }
-
-        /// <summary>
         /// Parents the property changed event.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="NodeChangedEventArgs"/> instance containing the event data.</param>
         private void ParentPropertyChangedEvent(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName == "Name" || e.PropertyName == "TreeName") {
+            if (e.PropertyName.Equals(nameof(Name)) || e.PropertyName.Equals(nameof(TreeName))) {
                 OnPropertyChanged(e.PropertyName);
             }
         }

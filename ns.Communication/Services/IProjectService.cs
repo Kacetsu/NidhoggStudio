@@ -1,4 +1,6 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Plugins.Properties;
+using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using System.ServiceModel;
 
@@ -32,11 +34,35 @@ namespace ns.Communication.Services {
         void ChangePropertyValue(object newValue, string propertyUID);
 
         /// <summary>
+        /// Connects the properties.
+        /// </summary>
+        /// <param name="targetUID">The target uid.</param>
+        /// <param name="sourceUID">The source uid.</param>
+        [OperationContract]
+        void ConnectProperties(string targetUID, string sourceUID);
+
+        /// <summary>
+        /// Gets the connectable properties.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        [OperationContract]
+        PropertyModel[] GetConnectableProperties(string propertyUID);
+
+        /// <summary>
         /// Gets the operations.
         /// </summary>
         /// <returns></returns>
         [OperationContract]
         OperationModel[] GetOperations();
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <returns></returns>
+        [OperationContract]
+        PropertyModel GetProperty(string propertyUID);
 
         /// <summary>
         /// Registers the client.

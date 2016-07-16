@@ -1,6 +1,8 @@
 ﻿using ns.Base.Manager;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Properties;
 using ns.Core.Configuration;
+using System.Collections.Generic;
 
 namespace ns.Core.Manager {
 
@@ -38,5 +40,19 @@ namespace ns.Core.Manager {
         /// Creates the default project.
         /// </summary>
         void CreateDefaultProject();
+
+        /// <summary>
+        /// Finds the connectable properties.
+        /// </summary>
+        /// <param name="propertyUID">The property uid.</param>
+        /// <returns></returns>
+        List<Property> FindConnectableProperties(Property property);
+
+        /// <summary>
+        /// Finds the operation.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        Operation FindOperation(Property property);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ns.Base.Log;
+using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
@@ -6,14 +7,6 @@ namespace ns.Communication.Client {
 
     public class GenericServiceClient<T> : IDisposable where T : class {
         private bool disposed = false;
-
-        /// <summary>
-        /// Gets or sets the channel.
-        /// </summary>
-        /// <value>
-        /// The channel.
-        /// </value>
-        public T Channel { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericServiceClient{T}"/> class.
@@ -32,6 +25,25 @@ namespace ns.Communication.Client {
         }
 
         /// <summary>
+        /// Gets or sets the channel.
+        /// </summary>
+        /// <value>
+        /// The channel.
+        /// </value>
+        public T Channel { get; protected set; }
+
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close() {
+            try {
+                (Channel as ICommunicationObject)?.Close();
+            } catch (CommunicationException ex) {
+                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
+            }
+        }
+
+        /// <summary>
         /// Führt anwendungsspezifische Aufgaben aus, die mit dem Freigeben, Zurückgeben oder Zurücksetzen von nicht verwalteten Ressourcen zusammenhängen.
         /// </summary>
         public void Dispose() {
@@ -40,10 +52,9 @@ namespace ns.Communication.Client {
         }
 
         /// <summary>
-        /// Closes this instance.
+        /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        public void Close() => (Channel as ICommunicationObject)?.Close();
-
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing) {
             if (disposed) return;
 

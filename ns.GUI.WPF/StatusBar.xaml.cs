@@ -11,6 +11,9 @@ namespace ns.GUI.WPF {
     public partial class StatusBar : System.Windows.Controls.Primitives.StatusBar, INotifyPropertyChanged {
         private string _connectionType = string.Empty;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatusBar"/> class.
+        /// </summary>
         public StatusBar() {
             InitializeComponent();
             DataContext = this;

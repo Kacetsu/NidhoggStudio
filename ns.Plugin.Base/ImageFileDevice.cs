@@ -92,12 +92,13 @@ namespace ns.Plugin.Base {
         /// Success of the Operation.
         /// </returns>
         public override bool TryRun() {
-            _stopwatch.Start();
-            while (_stopwatch.ElapsedMilliseconds < ((1.0 / _framerate.Value) * 1000)) {
+            if (!_stopwatch.IsRunning) _stopwatch.Start();
+            while (_stopwatch.ElapsedMilliseconds < (1000.0 / _framerate.Value)) {
                 Thread.Sleep(1);
             }
 
-            _stopwatch.Reset();
+            _stopwatch.Restart();
+
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;
             Bitmap bitmap = _bitmaps[_imageIndex];

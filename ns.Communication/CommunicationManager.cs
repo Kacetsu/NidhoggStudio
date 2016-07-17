@@ -53,6 +53,7 @@ namespace ns.Communication {
                 Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
                 throw;
             }
+
             base.Close();
         }
 

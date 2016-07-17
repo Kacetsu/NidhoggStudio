@@ -41,22 +41,6 @@ namespace ns.Core {
         public ProcessorState State { get; private set; } = ProcessorState.Idle;
 
         /// <summary>
-        /// Pauses this instance.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        public bool Pause() {
-            return true;
-        }
-
-        /// <summary>
-        /// Restarts this instance.
-        /// </summary>
-        /// <returns>Success of the operation.</returns>
-        public bool Restart() {
-            return true;
-        }
-
-        /// <summary>
         /// Starts this instance.
         /// </summary>
         /// <returns>Success of the operation.</returns>
@@ -133,7 +117,7 @@ namespace ns.Core {
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OperationPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName != "Status") return;
+            if (e.PropertyName != nameof(Operation.Status)) return;
 
             Operation operation = sender as Operation;
             PluginStatus status = operation.Status;

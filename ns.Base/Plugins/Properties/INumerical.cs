@@ -10,4 +10,23 @@
         /// </value>
         bool IsNumeric { get; }
     }
+
+    public interface INumerical<T> : INumerical {
+
+        /// <summary>
+        /// Gets or sets the maximum.
+        /// </summary>
+        /// <value>
+        /// The maximum.
+        /// </value>
+        T Max { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum.
+        /// </summary>
+        /// <value>
+        /// The minimum.
+        /// </value>
+        T Min { get; set; }
+    }
 }

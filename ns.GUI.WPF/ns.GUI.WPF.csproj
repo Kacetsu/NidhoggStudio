@@ -119,6 +119,7 @@
     <Compile Include="Controls\Property\ImagePropertyControl.xaml.cs">
       <DependentUpon>ImagePropertyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Property\NumberPropertyControl.cs" />
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
     </Compile>

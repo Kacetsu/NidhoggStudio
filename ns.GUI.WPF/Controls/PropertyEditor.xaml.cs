@@ -168,8 +168,14 @@ namespace ns.GUI.WPF.Controls {
             IConfigurableModel configModel = Model as IConfigurableModel;
 
             foreach (PropertyModel propertyModel in configModel.Properties) {
-                if (!propertyModel.Property.IsOutput) {
-                    UpdateContenGridByProperty(propertyModel.Property);
+                Base.Plugins.Properties.Property property = propertyModel.Property;
+                if (!property.IsOutput) {
+                    UpdateContenGridByProperty(property);
+                    DeviceProperty deviceProperty = property as DeviceProperty;
+                    if (deviceProperty == null || deviceProperty.SelectedItem == null) continue;
+                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.SelectedItem.Childs.Where(p => p is Base.Plugins.Properties.Property)) {
+                        UpdateContenGridByProperty(dp);
+                    }
                 }
             }
         }

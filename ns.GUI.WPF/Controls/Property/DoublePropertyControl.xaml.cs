@@ -1,40 +1,26 @@
 ﻿using ns.Base.Plugins.Properties;
+using ns.Communication.Client;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.ServiceModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ns.GUI.WPF.Controls.Property {
 
     /// <summary>
     /// Interaction logic for NumberPropertyControl.xaml
     /// </summary>
-    public partial class DoublePropertyControl : PropertyControl<DoubleProperty> {
-        private string _stringValue = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the string value.
-        /// </summary>
-        /// <value>
-        /// The string value.
-        /// </value>
-        public string StringValue {
-            get { return _stringValue; }
-            set {
-                if (!_stringValue.Equals(value)) {
-                    _stringValue = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+    public partial class DoublePropertyControl : NumberPropertyControl<DoubleProperty, double> {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DoublePropertyControl"/> class.
         /// </summary>
-        public DoublePropertyControl() {
+        public DoublePropertyControl() : base() {
             InitializeComponent();
-            DataContext = this;
         }
 
         /// <summary>
@@ -46,14 +32,12 @@ namespace ns.GUI.WPF.Controls.Property {
             : base(property) {
             InitializeComponent();
             IsConnectable = isConnectable;
-            DataContext = property;
-            DataContext = this;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(ContentGrid as Panel, ConnectImage);
             } else {
                 if (property != null) {
-                    StringValue = property.Value.ToString();
+                    Value = property.Value;
                 } else {
                     Base.Log.Trace.WriteLine(string.Format("Wrong property type {0} in {1}!", _property.GetType(), MethodBase.GetCurrentMethod()), TraceEventType.Error);
                 }
@@ -61,34 +45,31 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         /// <summary>
-        /// Changes the value.
-        /// </summary>
-        /// <param name="step">The step.</param>
-        /// <returns>Success of the operation.</returns>
-        private bool ChangeValue(double step) {
-            bool result = false;
-
-            try {
-                double currentValue = Convert.ToDouble(StringValue);
-                double newValue = currentValue + step;
-                if (newValue > _property.Max) newValue = _property.Max;
-                else if (newValue < _property.Min) newValue = _property.Min;
-
-                StringValue = newValue.ToString();
-                _property.Value = newValue;
-                result = true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Handles the Click event of the Button control.
+        /// Handles the PropertyChanged event of the PropertyControl control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="T:System.ComponentModel.PropertyChangedEventArgs" /> instance containing the event data.</param>
+        protected override void PropertyControl_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(Value))) {
+                try {
+                    double newValue = Value;
+                    if (newValue > _property.Max) newValue = _property.Max;
+                    else if (newValue < _property.Min) newValue = _property.Min;
+
+                    ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.UID);
+                    _property.Value = newValue;
+                } catch (FaultException ex) {
+                    Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
+                } finally {
+                    if (_property != null) {
+                        Value = _property.Value;
+                    } else {
+                        Base.Log.Trace.WriteLine(string.Format("Wrong property type {0} in {1}!", _property.GetType(), MethodBase.GetCurrentMethod()), TraceEventType.Error);
+                    }
+                }
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e) {
             if (sender == ConnectButton) {
                 ConnectClicked(ContentGrid as Panel, ConnectImage);
@@ -99,29 +80,25 @@ namespace ns.GUI.WPF.Controls.Property {
             }
         }
 
-        /// <summary>
-        /// Handles the TextChanged event of the NumberBox control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TextChangedEventArgs"/> instance containing the event data.</param>
-        private void NumberBox_TextChanged(object sender, TextChangedEventArgs e) {
-            if (string.IsNullOrEmpty(StringValue)) return;
-            if (StringValue == "-") return;
-            if (StringValue.EndsWith(",")) return;
+        private void ChangeValue(double step) {
             try {
-                double newValue = Convert.ToDouble(StringValue);
+                double currentValue = Value;
+                double newValue = currentValue + step;
                 if (newValue > _property.Max) newValue = _property.Max;
                 else if (newValue < _property.Min) newValue = _property.Min;
 
+                ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.UID);
+
+                Value = newValue;
                 _property.Value = newValue;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
-            } finally {
-                if (_property != null) {
-                    StringValue = _property.Value.ToString();
-                } else {
-                    Base.Log.Trace.WriteLine(string.Format("Wrong property type {0} in {1}!", _property.GetType(), MethodBase.GetCurrentMethod()), TraceEventType.Error);
-                }
+            } catch (FaultException ex) {
+                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+            }
+        }
+
+        private void NumberBox_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key.Equals(Key.Enter)) {
+                NumberBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
             }
         }
     }

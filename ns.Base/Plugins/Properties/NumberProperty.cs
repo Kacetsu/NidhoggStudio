@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace ns.Base.Plugins.Properties {
 
     [Serializable, DataContract, KnownType(typeof(DoubleProperty)), KnownType(typeof(IntegerProperty))]
-    public abstract class NumberProperty<T> : GenericProperty<T>, INumerical, ITolerance<T>, IConnectable<T> {
+    public abstract class NumberProperty<T> : GenericProperty<T>, INumerical<T>, ITolerance<T>, IConnectable<T> {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
@@ -54,9 +54,25 @@ namespace ns.Base.Plugins.Properties {
         public T InitialValue { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether [in tolerance].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [in tolerance]; otherwise, <c>false</c>.
+        /// </value>
+        public bool InTolerance => (System.Collections.Generic.Comparer<T>.Default.Compare(Max, Value) >= 0) && (System.Collections.Generic.Comparer<T>.Default.Compare(Min, Value) <= 0);
+
+        /// <summary>
         /// Gets if the Property has a numeric value.
         /// </summary>
         public bool IsNumeric => true;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is tolerance disabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is tolerance disabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsToleranceEnabled => Tolerance != null;
 
         /// <summary>
         /// Gets the maximum.
@@ -77,14 +93,6 @@ namespace ns.Base.Plugins.Properties {
         public T Min { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is tolerance disabled.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is tolerance disabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsToleranceEnabled => Tolerance != null;
-
-        /// <summary>
         /// Gets or sets the tolerance.
         /// </summary>
         /// <value>
@@ -92,14 +100,6 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         [DataMember]
         public Tolerance<T> Tolerance { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether [in tolerance].
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if [in tolerance]; otherwise, <c>false</c>.
-        /// </value>
-        public bool InTolerance => (System.Collections.Generic.Comparer<T>.Default.Compare(Max, Value) >= 0) && (System.Collections.Generic.Comparer<T>.Default.Compare(Min, Value) <= 0);
 
         /// <summary>
         /// Clones the Node with all its Members.

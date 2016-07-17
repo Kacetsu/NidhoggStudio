@@ -237,6 +237,15 @@ namespace ns.Core.Manager {
                 if (property != null) {
                     break;
                 }
+                DeviceProperty tmpDeviceProperty = operation.Childs.Find(p => p is DeviceProperty) as DeviceProperty;
+                if (tmpDeviceProperty != null) {
+                    Device tmpDevice = tmpDeviceProperty.SelectedItem;
+                    property = tmpDevice.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                    if (property != null) {
+                        break;
+                    }
+                }
+
                 foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
                     property = tool.Childs.Find(p => p.UID.Equals(uid)) as Property;
                     if (property != null) {

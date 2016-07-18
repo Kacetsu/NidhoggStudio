@@ -109,7 +109,7 @@ namespace ns.Core.Manager.ProjectBox {
                 try {
                     projectManager.Load(path);
                 } catch (Exception ex) {
-                    Base.Log.Trace.WriteLine(ex.ToString(), TraceEventType.Warning);
+                    Base.Log.Trace.WriteLine(ex, TraceEventType.Warning);
                     Base.FileInfo.CopyDirectory(DefaultProjectDirectory + "Images", Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + "Images");
                 }
             }
@@ -151,7 +151,7 @@ namespace ns.Core.Manager.ProjectBox {
                     }
                 }
             } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, TraceEventType.Error);
+                Base.Log.Trace.WriteLine(ex, TraceEventType.Error);
                 return false;
             }
             return true;

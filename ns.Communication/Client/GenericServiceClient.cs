@@ -39,7 +39,7 @@ namespace ns.Communication.Client {
             try {
                 (Channel as ICommunicationObject)?.Close();
             } catch (CommunicationException ex) {
-                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
+                Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
             }
         }
 

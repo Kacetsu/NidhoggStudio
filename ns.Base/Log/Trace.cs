@@ -5,17 +5,9 @@ using System.Reflection;
 namespace ns.Base.Log {
 
     public class Trace {
-        private TraceSource _traceSource;
         private static Lazy<Trace> _instance = new Lazy<Trace>(() => new Trace());
         private int _id;
-
-        /// <summary>
-        /// Gets the listeners.
-        /// </summary>
-        /// <value>
-        /// The listeners.
-        /// </value>
-        public static TraceListenerCollection Listeners => _instance.Value._traceSource.Listeners;
+        private TraceSource _traceSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Trace"/> class.
@@ -30,6 +22,14 @@ namespace ns.Base.Log {
             SourceSwitch sourcSwitch = new SourceSwitch("SourceSwitch", "All");
             _traceSource.Switch = sourcSwitch;
         }
+
+        /// <summary>
+        /// Gets the listeners.
+        /// </summary>
+        /// <value>
+        /// The listeners.
+        /// </value>
+        public static TraceListenerCollection Listeners => _instance.Value._traceSource.Listeners;
 
         /// <summary>
         /// Write a trace line with message and category.
@@ -66,6 +66,15 @@ namespace ns.Base.Log {
         /// <param name="category">The category.</param>
         public static void WriteLine(string message, string stackTrace, TraceEventType category) {
             WriteLine(message + Environment.NewLine + "Stack Trace: " + Environment.NewLine + stackTrace, category);
+        }
+
+        /// <summary>
+        /// Writes the line.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="category">The category.</param>
+        public static void WriteLine(Exception exception, TraceEventType category) {
+            WriteLine(exception.ToString(), category);
         }
     }
 }

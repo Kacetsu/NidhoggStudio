@@ -67,7 +67,7 @@ namespace ns.GUI.WPF.Controls.Property {
                     ClientCommunicationManager.ProjectService.ChangeListPropertySelectedIndex(SelectionBox.SelectedIndex, _property.UID);
                     _property.SelectedItem = device;
                 } catch (FaultException ex) {
-                    Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Error);
                 } finally {
                     SelectionBox.SelectedItem = _property.SelectedItem;
                 }

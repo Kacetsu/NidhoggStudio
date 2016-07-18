@@ -45,7 +45,7 @@ namespace ns.Communication.Client {
             try {
                 Channel?.Stop();
             } catch (Exception ex) {
-                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Error);
             }
         }
 

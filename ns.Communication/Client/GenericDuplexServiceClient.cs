@@ -66,7 +66,7 @@ namespace ns.Communication.Client {
                     try {
                         Close();
                     } catch (Exception ex) {
-                        Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
+                        Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
                     }
                     Channel = null;
                     disposed = true;

@@ -1,4 +1,5 @@
-﻿using ns.Base.Manager.DataStorage;
+﻿using ns.Base.Log;
+using ns.Base.Manager.DataStorage;
 using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
@@ -99,8 +100,19 @@ namespace ns.Communication.Services {
         private void _dataStorageManager_DataStorageCollectionChanged(object sender, Base.Event.DataStorageCollectionChangedEventArgs e) {
             if (e.NewContainers.Count == 0) return;
 
+            // Notify clients.
+            List<string> damagedUIDs = new List<string>();
             foreach (var client in _clients) {
-                client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
+                try {
+                    client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
+                } catch (CommunicationException ex) {
+                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                    damagedUIDs.Add(client.Key);
+                }
+            }
+
+            foreach (string damagedUID in damagedUIDs) {
+                _clients.Remove(damagedUID);
             }
         }
     }

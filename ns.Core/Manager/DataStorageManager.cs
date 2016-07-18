@@ -1,13 +1,16 @@
 ﻿using ns.Base.Event;
 using ns.Base.Manager;
 using ns.Base.Manager.DataStorage;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
 
     public class DataStorageManager : NodeManager<DataContainer>, IDataStorageCollectionChangedEventHandler {
-        private List<string> _containerUIDs = new List<string>();
-        private List<ToolDataContainer> _toolContainers = new List<ToolDataContainer>();
+        private ConcurrentBag<DataContainer> _operationContainers = new ConcurrentBag<DataContainer>();
+        private ConcurrentBag<ToolDataContainer> _toolContainers = new ConcurrentBag<ToolDataContainer>();
 
         /// <summary>
         /// Occurs when [data storage collection changed].
@@ -20,17 +23,9 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         public override void Add(DataContainer node) {
             if (node is ToolDataContainer) {
-                lock (_toolContainers) {
-                    _toolContainers.Add(node as ToolDataContainer);
-                }
+                _toolContainers.Add(node as ToolDataContainer);
             } else {
-                lock (Nodes) {
-                    base.Add(node);
-                }
-            }
-
-            lock (_containerUIDs) {
-                _containerUIDs.Add(node.UID);
+                _operationContainers.Add(node);
             }
 
             DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID, node.ParentUID));
@@ -42,23 +37,16 @@ namespace ns.Core.Manager {
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
         public DataContainer Find(string uid) {
-            lock (_toolContainers) {
-                foreach (ToolDataContainer toolContainer in _toolContainers) {
-                    if (toolContainer.UID.Equals(uid)) {
-                        return toolContainer;
-                    }
-                }
-            }
+            DataContainer container = null;
 
-            lock (Nodes) {
-                foreach (OperationDataContainer operationContainer in Nodes) {
-                    if (operationContainer.UID.Equals(uid)) {
-                        return operationContainer;
-                    }
-                }
-            }
+            Task<DataContainer> operationTask = FindOperationContainer(uid);
+            Task<DataContainer> toolTask = FindToolContainer(uid);
 
-            return null;
+            Task.WaitAll(operationTask, toolTask);
+
+            container = operationTask.Result != null ? operationTask.Result : toolTask.Result;
+
+            return container;
         }
 
         /// <summary>
@@ -68,17 +56,40 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public DataContainer FindLast(string parentUID) {
             DataContainer container = null;
-            lock (_toolContainers) {
-                container = _toolContainers.FindLast(c => c.ParentUID == parentUID);
-            }
+            Task<DataContainer> operationTask = Task.Factory.StartNew(() => _operationContainers.LastOrDefault(c => c.ParentUID == parentUID));
+            Task<ToolDataContainer> toolTask = Task.Factory.StartNew(() => _toolContainers.LastOrDefault(c => c.ParentUID == parentUID));
 
-            if (container == null) {
-                lock (Nodes) {
-                    container = Nodes.FindLast(c => c.ParentUID == parentUID);
-                }
-            }
+            Task.WaitAll(operationTask, toolTask);
+
+            container = operationTask.Result != null ? operationTask.Result : toolTask.Result;
 
             return container;
+        }
+
+        private Task<DataContainer> FindOperationContainer(string uid) {
+            return Task.Factory.StartNew(() => {
+                DataContainer container = null;
+                foreach (OperationDataContainer operationContainer in _operationContainers) {
+                    if (operationContainer.UID.Equals(uid)) {
+                        container = operationContainer;
+                        break;
+                    }
+                }
+                return container;
+            });
+        }
+
+        private Task<DataContainer> FindToolContainer(string uid) {
+            return Task.Factory.StartNew(() => {
+                DataContainer container = null;
+                Parallel.ForEach(_toolContainers, (toolContainer, state) => {
+                    if (toolContainer.UID.Equals(uid)) {
+                        container = toolContainer;
+                        state.Break();
+                    }
+                });
+                return container;
+            });
         }
     }
 }

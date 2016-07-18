@@ -50,7 +50,7 @@ namespace ns.Communication {
                     stopSignal.Wait();
                 });
             } catch (Exception ex) when (ex is ObjectDisposedException || ex is SemaphoreFullException) {
-                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Error);
                 throw;
             }
 
@@ -78,7 +78,7 @@ namespace ns.Communication {
 
                 IsConnected = true;
             } catch (Exception ex) when (ex is ArgumentNullException || ex is ObjectDisposedException || ex is InvalidOperationException) {
-                Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
+                Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Error);
                 throw;
             }
         }

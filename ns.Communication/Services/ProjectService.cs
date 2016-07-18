@@ -1,10 +1,12 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Log;
+using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -63,8 +65,18 @@ namespace ns.Communication.Services {
             _projectManager.Add(copyTool, operation);
 
             // Notify clients.
+            List<string> damagedUIDs = new List<string>();
             foreach (var client in _clients) {
-                client.Value?.OnToolAdded(new ToolModel(copyTool));
+                try {
+                    client.Value?.OnToolAdded(new ToolModel(copyTool));
+                } catch (CommunicationException ex) {
+                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                    damagedUIDs.Add(client.Key);
+                }
+            }
+
+            foreach (string damagedUID in damagedUIDs) {
+                _clients.Remove(damagedUID);
             }
         }
 

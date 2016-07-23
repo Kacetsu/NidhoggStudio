@@ -2,6 +2,7 @@
 
 namespace ns.Base.Exceptions {
 
+    [Serializable]
     public class OperationAlreadyExistsException : Exception {
 
         /// <summary>

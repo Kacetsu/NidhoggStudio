@@ -133,7 +133,7 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         public string GroupName {
             get {
-                string result = _name;
+                string result = Name;
                 if (!string.IsNullOrEmpty(_groupName))
                     result = _groupName;
                 return result;

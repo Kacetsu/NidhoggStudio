@@ -10,7 +10,7 @@ using System.Threading;
 namespace ns.Plugin.Base {
 
     [Visible, DataContract]
-    public class Sleep : Tool {
+    public sealed class Sleep : Tool {
         private int _milliseconds;
 
         /// <summary>

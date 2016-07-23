@@ -14,12 +14,10 @@ namespace ns.Base {
     /// </summary>
     [DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
     public class Node : NotifiableObject, ICloneable, INode {
-        protected string _name = string.Empty;
         private string _fullname = string.Empty;
         private bool _isInitialized = false;
-
         private bool _isSelected = false;
-
+        private string _name = string.Empty;
         private Node _parent = null;
 
         /// <summary>

@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class BlurFilter : Tool {
+    public sealed class BlurFilter : Tool {
         private IntegerProperty _divisor;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;

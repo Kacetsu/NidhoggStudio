@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class BrightnessCorrection : Tool {
+    public sealed class BrightnessCorrection : Tool {
         private IntegerProperty _adjustValue;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;

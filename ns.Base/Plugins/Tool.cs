@@ -44,13 +44,13 @@ namespace ns.Base.Plugins {
         [DataMember]
         public override string Name {
             get {
-                if (string.IsNullOrEmpty(_name)) {
+                if (string.IsNullOrEmpty(base.Name)) {
                     if (!string.IsNullOrEmpty(DisplayName))
-                        _name = DisplayName;
+                        base.Name = DisplayName;
                     else
-                        _name = this.GetType().Name;
+                        base.Name = GetType().Name;
                 }
-                return _name;
+                return base.Name;
             }
             set {
                 base.Name = value;

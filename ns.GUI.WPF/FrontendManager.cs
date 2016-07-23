@@ -121,6 +121,14 @@ namespace ns.GUI.WPF {
             Application.Current.Resources.MergedDictionaries.Add(dict);
         }
 
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public override void Close() {
+            _dataStorageConsumer?.Close();
+            base.Close();
+        }
+
         private void _dataStorageConsumer_DataStorageAdded(object sender, DataStorageContainerModelAddedEventArgs e) {
             foreach (PropertyModel propertyModel in e.ContainerModel.Properties.Where(p => p.Property is ImageProperty)) {
                 SelectedPluginImage = propertyModel.Property as ImageProperty;

@@ -5,45 +5,12 @@ using System.Windows.Media;
 namespace ns.GUI.WPF {
 
     public class Histogram : Base.Imaging.Histogram, INotifyPropertyChanged {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private PointCollection _redPoints;
-        private PointCollection _greenPoints;
         private PointCollection _bluePoints;
         private PointCollection _grayPoints;
+        private PointCollection _greenPoints;
+        private PointCollection _redPoints;
 
-        /// <summary>
-        /// Gets the red points.
-        /// </summary>
-        /// <value>
-        /// The red points.
-        /// </value>
-        public PointCollection RedPoints {
-            get { return _redPoints; }
-            private set {
-                _redPoints = value;
-                if (PropertyChanged != null) {
-                    PropertyChanged(this, new PropertyChangedEventArgs("RedPoints"));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the green points.
-        /// </summary>
-        /// <value>
-        /// The green points.
-        /// </value>
-        public PointCollection GreenPoints {
-            get { return _greenPoints; }
-            private set {
-                _greenPoints = value;
-                if (PropertyChanged != null) {
-                    PropertyChanged(this, new PropertyChangedEventArgs("GreenPoints"));
-                }
-            }
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Gets the blue points.
@@ -55,9 +22,7 @@ namespace ns.GUI.WPF {
             get { return _bluePoints; }
             private set {
                 _bluePoints = value;
-                if (PropertyChanged != null) {
-                    PropertyChanged(this, new PropertyChangedEventArgs("BluePoints"));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BluePoints"));
             }
         }
 
@@ -71,21 +36,37 @@ namespace ns.GUI.WPF {
             get { return _grayPoints; }
             private set {
                 _grayPoints = value;
-                if (PropertyChanged != null) {
-                    PropertyChanged(this, new PropertyChangedEventArgs("GrayPoints"));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GrayPoints"));
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Histogram"/> class.
+        /// Gets the green points.
         /// </summary>
-        /// <param name="imageData">The image data.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
-        /// <param name="bytesPerPixel">The bytes per pixel.</param>
-        public Histogram(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) : base(imageData, width, height, stride, bytesPerPixel) { }
+        /// <value>
+        /// The green points.
+        /// </value>
+        public PointCollection GreenPoints {
+            get { return _greenPoints; }
+            private set {
+                _greenPoints = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GreenPoints"));
+            }
+        }
+
+        /// <summary>
+        /// Gets the red points.
+        /// </summary>
+        /// <value>
+        /// The red points.
+        /// </value>
+        public PointCollection RedPoints {
+            get { return _redPoints; }
+            private set {
+                _redPoints = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RedPoints"));
+            }
+        }
 
         /// <summary>
         /// Updates the specified image data.

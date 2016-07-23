@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins {
 
@@ -11,6 +6,17 @@ namespace ns.Base.Plugins {
     /// Derived class to filter for matching devices.
     /// </summary>
     [DataContract]
-    public class ImageDevice : Device {
+    public abstract class ImageDevice : Device {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageDevice"/> class.
+        /// </summary>
+        public ImageDevice() : base() { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageDevice"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public ImageDevice(ImageDevice other) : base(other) { }
     }
 }

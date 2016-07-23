@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class BayerFilter : Tool {
+    public sealed class BayerFilter : Tool {
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
 

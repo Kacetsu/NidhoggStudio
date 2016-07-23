@@ -12,7 +12,7 @@ namespace ns.Plugin.Base {
     /// Calculates the intensity.
     /// </summary>
     [Visible, DataContract]
-    public class CheckIntensity : Tool {
+    public sealed class CheckIntensity : Tool {
         private RectangleProperty _aoiProperty;
         private ImageProperty _inputImage;
         private DoubleProperty _intensityProperty;
@@ -102,8 +102,7 @@ namespace ns.Plugin.Base {
 
                 unsafe
                 {
-                    fixed (byte* ptr = data)
-                    {
+                    fixed (byte* ptr = data) {
                         if (bpp == 1) {
                             for (int y = yOffset; y < (yOffset + aoiHeight) && y < height; y++) {
                                 for (int x = xOffset; x < (xOffset + aoiWidth) && x < width; x++) {

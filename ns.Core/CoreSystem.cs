@@ -35,7 +35,7 @@ namespace ns.Core {
 
                 IsInitialized = true;
             } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                Base.Log.Trace.WriteLine(ex, TraceEventType.Error);
                 throw;
             }
         }

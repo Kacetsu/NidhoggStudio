@@ -4,9 +4,10 @@ using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
-using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace ns.Communication.Services {
 
@@ -36,7 +37,11 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetContainer(string uid) => new DataStorageContainerModel(_dataStorageManager?.Find(uid));
+        public DataStorageContainerModel GetContainer(string uid) {
+            DataContainer container = _dataStorageManager?.Find(uid);
+            if (container == null) throw new FaultException(string.Format("No container with uid {0} found!", uid));
+            return new DataStorageContainerModel(container);
+        }
 
         /// <summary>
         /// Gets the last container.
@@ -46,7 +51,7 @@ namespace ns.Communication.Services {
         public DataStorageContainerModel GetLastContainer(string parentUID) {
             DataContainer container = _dataStorageManager?.FindLast(parentUID);
             if (container == null) {
-                throw new FaultException("No container available!");
+                throw new FaultException(string.Format("No container available! {0}", parentUID));
             }
 
             return new DataStorageContainerModel(container);
@@ -101,19 +106,21 @@ namespace ns.Communication.Services {
             if (e.NewContainers.Count == 0) return;
 
             // Notify clients.
-            List<string> damagedUIDs = new List<string>();
-            foreach (var client in _clients) {
-                try {
-                    client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
-                } catch (CommunicationException ex) {
-                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                    damagedUIDs.Add(client.Key);
-                }
-            }
+            Task sendTask = Task.Factory.StartNew(() => {
+                ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+                Parallel.ForEach(_clients, (client) => {
+                    try {
+                        client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
+                    } catch (CommunicationException ex) {
+                        Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                        damagedUIDs.Add(client.Key);
+                    }
+                });
 
-            foreach (string damagedUID in damagedUIDs) {
-                _clients.Remove(damagedUID);
-            }
+                foreach (string damagedUID in damagedUIDs) {
+                    _clients.Remove(damagedUID);
+                }
+            });
         }
     }
 }

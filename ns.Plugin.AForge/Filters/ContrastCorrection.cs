@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class ContrastCorrection : Tool {
+    public sealed class ContrastCorrection : Tool {
         private IntegerProperty _factor;
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;

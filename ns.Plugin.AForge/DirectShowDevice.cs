@@ -15,7 +15,7 @@ using System.Threading;
 namespace ns.Plugin.AForge {
 
     [Visible, DataContract]
-    public class DirectShowDevice : ImageDevice {
+    public sealed class DirectShowDevice : ImageDevice {
         private Bitmap _bitmap;
         private ListProperty _deviceListProperty;
         private bool _imageAcquired = false;

@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace ns.Plugin.Base {
 
     [Visible, DataContract]
-    public class IterationCounter : Tool {
+    public sealed class IterationCounter : Tool {
         private int _iterations = 0;
         private DateTime _lastTime;
 

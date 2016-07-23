@@ -15,7 +15,7 @@ using System.Threading;
 namespace ns.Plugin.Base {
 
     [Visible, DataContract]
-    public class ImageFileDevice : ImageDevice {
+    public sealed class ImageFileDevice : ImageDevice {
         private List<Bitmap> _bitmaps;
         private string _directory = string.Empty;
         private DoubleProperty _framerate = null;
@@ -34,6 +34,21 @@ namespace ns.Plugin.Base {
             AddChild(new DoubleProperty("Framerate", 30.0));
             AddChild(new ImageProperty("Image", true));
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageFileDevice"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public ImageFileDevice(ImageFileDevice other) : base(other) { }
+
+        /// <summary>
+        /// Clones the Node with all its Members.
+        /// Will set a new UID.
+        /// </summary>
+        /// <returns>
+        /// The cloned Node.
+        /// </returns>
+        public override object Clone() => new ImageFileDevice(this);
 
         /// <summary>
         /// Closes this instance.
@@ -126,12 +141,10 @@ namespace ns.Plugin.Base {
             try {
                 int size = img.Width * img.Height * bpp;
                 byte[] byteArray = new byte[size];
-                lock (img) {
-                    BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
-                    stride = data.Stride;
-                    Marshal.Copy(data.Scan0, byteArray, 0, size);
-                    img.UnlockBits(data);
-                }
+                BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
+                stride = data.Stride;
+                Marshal.Copy(data.Scan0, byteArray, 0, size);
+                img.UnlockBits(data);
                 return byteArray;
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);

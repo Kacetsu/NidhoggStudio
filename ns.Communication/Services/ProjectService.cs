@@ -6,7 +6,6 @@ using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;

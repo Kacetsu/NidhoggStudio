@@ -12,7 +12,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class Add : Tool {
+    public sealed class Add : Tool {
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
         private ImageProperty _imageOverlay;

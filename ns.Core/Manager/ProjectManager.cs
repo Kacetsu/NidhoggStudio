@@ -160,6 +160,8 @@ namespace ns.Core.Manager {
             Operation operation = new Operation("Unknown Operation");
 
             Device device = pluginManager.Nodes.Find(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
+            device = device.Clone() as Device;
+
             if (device != null) {
                 Add(device, operation);
             }

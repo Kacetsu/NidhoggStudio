@@ -2,15 +2,15 @@
 using ns.Base.Manager;
 using ns.Base.Manager.DataStorage;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
 
     public class DataStorageManager : NodeManager<DataContainer>, IDataStorageCollectionChangedEventHandler {
-        private ConcurrentBag<DataContainer> _operationContainers = new ConcurrentBag<DataContainer>();
-        private ConcurrentBag<ToolDataContainer> _toolContainers = new ConcurrentBag<ToolDataContainer>();
+        private const int MaxBagSize = 100;
+        private ConcurrentQueue<DataContainer> _operationContainers = new ConcurrentQueue<DataContainer>();
+        private ConcurrentQueue<ToolDataContainer> _toolContainers = new ConcurrentQueue<ToolDataContainer>();
 
         /// <summary>
         /// Occurs when [data storage collection changed].
@@ -23,9 +23,17 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         public override void Add(DataContainer node) {
             if (node is ToolDataContainer) {
-                _toolContainers.Add(node as ToolDataContainer);
+                while (_toolContainers.Count >= MaxBagSize) {
+                    ToolDataContainer tmpContainer;
+                    _toolContainers.TryDequeue(out tmpContainer);
+                }
+                _toolContainers.Enqueue(node as ToolDataContainer);
             } else {
-                _operationContainers.Add(node);
+                while (_operationContainers.Count >= MaxBagSize) {
+                    DataContainer tmpContainer;
+                    _operationContainers.TryDequeue(out tmpContainer);
+                }
+                _operationContainers.Enqueue(node);
             }
 
             DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID, node.ParentUID));

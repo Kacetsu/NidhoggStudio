@@ -10,7 +10,7 @@ namespace ns.Plugin.Base {
     /// Converts a RGB image into grayscale 8 bit.
     /// </summary>
     [Visible, DataContract]
-    public class Grayscale : Tool {
+    public sealed class Grayscale : Tool {
         private ImageProperty _inputImage;
         private ImageProperty _outputImage;
 
@@ -94,10 +94,8 @@ namespace ns.Plugin.Base {
 
             unsafe
             {
-                fixed (byte* ptr = data)
-                {
-                    fixed (byte* destPtr = destination)
-                    {
+                fixed (byte* ptr = data) {
+                    fixed (byte* destPtr = destination) {
                         for (int y = 0; y < height; y++) {
                             for (int x = 0; x < width; x++) {
                                 byte r = ptr[(y * width + x) * bpp];

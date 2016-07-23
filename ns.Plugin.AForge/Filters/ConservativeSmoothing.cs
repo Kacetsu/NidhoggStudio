@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class ConservativeSmoothing : Tool {
+    public sealed class ConservativeSmoothing : Tool {
         private ImageProperty _imageInput;
         private ImageProperty _imageOutput;
         private IntegerProperty _kernelSize;

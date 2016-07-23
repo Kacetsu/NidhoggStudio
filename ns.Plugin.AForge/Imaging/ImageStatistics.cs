@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 namespace ns.Plugin.AForge.Imaging {
 
     [Visible, DataContract]
-    public class ImageStatistics : Tool {
+    public sealed class ImageStatistics : Tool {
         private ImageProperty _imageInput;
 
         private IntegerProperty _maxBlue;

@@ -1,22 +1,11 @@
-﻿
-namespace ns.Base.Imaging {
+﻿namespace ns.Base.Imaging {
+
     public class Histogram {
 
         /// <summary>
-        /// Gets the red values.
+        /// Initializes a new instance of the <see cref="Histogram"/> class.
         /// </summary>
-        /// <value>
-        /// The red values.
-        /// </value>
-        public int[] RedValues { get; private set; }
-
-        /// <summary>
-        /// Gets the green values.
-        /// </summary>
-        /// <value>
-        /// The green values.
-        /// </value>
-        public int[] GreenValues { get; private set; }
+        public Histogram() { }
 
         /// <summary>
         /// Gets the blue values.
@@ -35,21 +24,20 @@ namespace ns.Base.Imaging {
         public int[] GrayValues { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Histogram"/> class.
+        /// Gets the green values.
         /// </summary>
-        public Histogram() { }
+        /// <value>
+        /// The green values.
+        /// </value>
+        public int[] GreenValues { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Histogram"/> class.
+        /// Gets the red values.
         /// </summary>
-        /// <param name="imageData">The image data.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
-        /// <param name="bytesPerPixel">The bytes per pixel.</param>
-        public Histogram(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
-            GenerateHistogram(imageData, width, height, stride, bytesPerPixel);
-        }
+        /// <value>
+        /// The red values.
+        /// </value>
+        public int[] RedValues { get; private set; }
 
         /// <summary>
         /// Updates the specified image data.
@@ -87,8 +75,8 @@ namespace ns.Base.Imaging {
                 GrayValues = new int[256];
             }
 
-            unsafe {
-
+            unsafe
+            {
                 fixed (byte* ptr = imageData) {
                     if (bpp == 1) {
                         for (int y = 0, c = 0; y < height; y++) {
@@ -110,7 +98,6 @@ namespace ns.Base.Imaging {
                             p += stride - width * bpp;
                         }
                     }
-
                 }
             }
         }

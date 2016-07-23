@@ -49,7 +49,7 @@ namespace ns.Communication.Services {
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        [OperationContract]
+        [OperationContract(IsOneWay = false)]
         void UnregisterClient(string uid);
     }
 }

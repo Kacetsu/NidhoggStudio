@@ -11,7 +11,7 @@ using AFilter = global::AForge.Imaging.Filters;
 namespace ns.Plugin.AForge.Filters {
 
     [Visible, DataContract]
-    public class BilateralSmoothing : Tool {
+    public sealed class BilateralSmoothing : Tool {
         private IntegerProperty _colorFactor;
         private DoubleProperty _colorPower;
         private ImageProperty _imageInput;

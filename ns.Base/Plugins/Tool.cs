@@ -1,5 +1,4 @@
-﻿using ns.Base.Extensions;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -19,6 +18,7 @@ namespace ns.Base.Plugins {
         /// Creates the field: Properties.
         /// </summary>
         public Tool() : base() {
+            Name = string.IsNullOrEmpty(DisplayName) ? GetType().Name : DisplayName;
             DoubleProperty executionTimeMs = new DoubleProperty("ExecutionTimeMs", true);
             executionTimeMs.Tolerance = new Tolerance<double>(0, 1000);
             AddChild(executionTimeMs);
@@ -36,25 +36,6 @@ namespace ns.Base.Plugins {
         /// </value>
         public virtual string Category {
             get { return string.Empty; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Name.
-        /// </summary>
-        [DataMember]
-        public override string Name {
-            get {
-                if (string.IsNullOrEmpty(base.Name)) {
-                    if (!string.IsNullOrEmpty(DisplayName))
-                        base.Name = DisplayName;
-                    else
-                        base.Name = GetType().Name;
-                }
-                return base.Name;
-            }
-            set {
-                base.Name = value;
-            }
         }
 
         /// <summary>

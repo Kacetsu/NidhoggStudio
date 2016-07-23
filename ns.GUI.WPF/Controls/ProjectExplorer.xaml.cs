@@ -1,6 +1,4 @@
-﻿using ns.Base;
-using ns.Base.Event;
-using ns.Communication.Client;
+﻿using ns.Communication.Client;
 using ns.Communication.Models;
 using ns.GUI.WPF.Events;
 using System;
@@ -16,7 +14,7 @@ namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für ProjectExplorer.xaml
     /// </summary>
-    public partial class ProjectExplorer : UserControl {
+    public partial class ProjectExplorer : UserControl, IDisposable {
         //private GuiManager _guiManager;
 
         private IEnumerable<OperationModel> _operationModels;
@@ -30,6 +28,17 @@ namespace ns.GUI.WPF.Controls {
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
 
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing) {
+            if (disposing) {
+                _task?.Dispose();
+            }
+        }
 
         private void GenerateTree() {
             OperationModel[] operationModels = ClientCommunicationManager.ProjectService.GetOperations();

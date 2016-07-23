@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,32 +10,14 @@ namespace ns.GUI.WPF.Controls.Property {
     /// </summary>
     public partial class StringPropertyControl : PropertyControl<StringProperty> {
 
-        public delegate void TextChangedEventHandler(object sender, TextChangedEventArgs e);
-
-        public event TextChangedEventHandler TextChanged = delegate { };
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is connectable.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is connectable; otherwise, <c>false</c>.
-        /// </value>
-        public override bool IsConnectable {
-            get {
-                return base.IsConnectable;
-            }
-            set {
-                base.IsConnectable = value;
-                ConnectButton.Visibility = value ? Visibility.Visible : Visibility.Hidden;
-            }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StringPropertyControl"/> class.
         /// </summary>
         public StringPropertyControl() {
             InitializeComponent();
             DataContext = this;
+            PropertyChanged += StringPropertyControl_PropertyChanged;
+            ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
         }
 
         /// <summary>
@@ -46,6 +29,8 @@ namespace ns.GUI.WPF.Controls.Property {
             : base(property) {
             InitializeComponent();
             DataContext = this;
+            PropertyChanged += StringPropertyControl_PropertyChanged;
+            ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
@@ -65,6 +50,8 @@ namespace ns.GUI.WPF.Controls.Property {
             InitializeComponent();
             IsConnectable = isConnectable;
             DataContext = this;
+            PropertyChanged += StringPropertyControl_PropertyChanged;
+            ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
             _property = property;
 
             if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
@@ -81,8 +68,23 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <param name="content">The content.</param>
         public StringPropertyControl(string name, string content) {
             InitializeComponent();
+            PropertyChanged += StringPropertyControl_PropertyChanged;
             IsConnectable = false;
+            ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
             ContentBox.Text = content;
+        }
+
+        public delegate void TextChangedEventHandler(object sender, TextChangedEventArgs e);
+
+        public event TextChangedEventHandler TextChanged = delegate { };
+
+        /// <summary>
+        /// Handles the Click event of the ConnectButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void ConnectButton_Click(object sender, RoutedEventArgs e) {
+            ConnectClicked(this.ContentBox as Control, this.ConnectImage);
         }
 
         /// <summary>
@@ -100,13 +102,10 @@ namespace ns.GUI.WPF.Controls.Property {
             }
         }
 
-        /// <summary>
-        /// Handles the Click event of the ConnectButton control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ConnectButton_Click(object sender, RoutedEventArgs e) {
-            ConnectClicked(this.ContentBox as Control, this.ConnectImage);
+        private void StringPropertyControl_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(IsConnectable), StringComparison.Ordinal)) {
+                ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
+            }
         }
     }
 }

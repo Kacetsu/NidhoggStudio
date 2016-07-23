@@ -74,7 +74,7 @@ namespace ns.Communication.Services {
         /// <exception cref="FaultException"></exception>
         public void RegisterClient(string uid) {
             if (_clients.ContainsKey(uid)) {
-                throw new FaultException(string.Format("Client [0] already exists!", uid));
+                throw new FaultException(string.Format("Client {0} already exists!", uid));
             }
             _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IDataStorageServiceCallbacks>());
         }

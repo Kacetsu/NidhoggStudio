@@ -71,9 +71,12 @@ namespace ns.GUI.WPF.Controls.Property {
         /// <value>
         /// <c>true</c> if this instance is connectable; otherwise, <c>false</c>.
         /// </value>
-        public virtual bool IsConnectable {
+        public bool IsConnectable {
             get { return _isConnectable; }
-            set { _isConnectable = value; }
+            set {
+                _isConnectable = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>

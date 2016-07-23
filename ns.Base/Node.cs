@@ -96,7 +96,7 @@ namespace ns.Base {
         /// Gets or sets the Name.
         /// </summary>
         [DataMember]
-        public virtual string Name {
+        public string Name {
             get {
                 if (string.IsNullOrEmpty(_name))
                     _name = GetType().ToString();
@@ -169,7 +169,7 @@ namespace ns.Base {
         /// Will trigger internal the OnChildCollectionChanged Method (ChildCollectionChanged).
         /// </summary>
         /// <param name="child">The Node that should be added.</param>
-        public virtual void AddChild(Node child) {
+        public void AddChild(Node child) {
             lock (Childs) {
                 if (Childs.Contains(child) == false) {
                     child.Parent = this;

@@ -3,23 +3,14 @@ using System;
 using System.Threading.Tasks;
 
 namespace ns.Core {
+
     /// <summary>
     /// Runs the Operation on a async way.
     /// </summary>
-    public class AsyncNanoProcessor : NanoProcessor {
+    public class AsyncNanoProcessor : NanoProcessor, IDisposable {
         private const int MAX_TIMEOUT = 10000;
         private Task _task;
         private bool _terminate = false;
-
-        /// <summary>
-        /// Gets the Status of the async execution.
-        /// </summary>
-        public TaskStatus Status {
-            get {
-                if (_task == null) return TaskStatus.Faulted;
-                return _task.Status;
-            }
-        }
 
         /// <summary>
         /// Base Constructor.
@@ -31,6 +22,21 @@ namespace ns.Core {
                     Execute();
                 }
             }));
+        }
+
+        /// <summary>
+        /// Gets the Status of the async execution.
+        /// </summary>
+        public TaskStatus Status {
+            get {
+                if (_task == null) return TaskStatus.Faulted;
+                return _task.Status;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -54,7 +60,7 @@ namespace ns.Core {
             _terminate = true;
             return _task.Wait(MAX_TIMEOUT);
         }
-        
+
         /// <summary>
         /// Waits till the Operation ends.
         /// This will block the Thread till the executions ends.
@@ -65,6 +71,11 @@ namespace ns.Core {
             _task.Wait(MAX_TIMEOUT);
             return true;
         }
-        
+
+        private void Dispose(bool disposing) {
+            if (disposing) {
+                _task?.Dispose();
+            }
+        }
     }
 }

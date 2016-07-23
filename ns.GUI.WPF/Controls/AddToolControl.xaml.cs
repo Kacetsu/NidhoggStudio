@@ -13,7 +13,7 @@ namespace ns.GUI.WPF.Controls {
     /// <summary>
     /// Interaktionslogik für AddToolControl.xaml
     /// </summary>
-    public partial class AddToolControl : UserControl, INotifyPropertyChanged {
+    public partial class AddToolControl : UserControl, INotifyPropertyChanged, IDisposable {
         private bool _isCollapsed = true;
         private Task _task;
         private Thickness _toggleButtonMargin = new Thickness(0, 12, 0, 0);
@@ -63,6 +63,11 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Called when [property changed].
         /// </summary>
@@ -105,6 +110,12 @@ namespace ns.GUI.WPF.Controls {
                 if (!control.Model.Category.Equals(category)) {
                     control.Visibility = Visibility.Collapsed;
                 }
+            }
+        }
+
+        private void Dispose(bool disposing) {
+            if (disposing) {
+                _task?.Dispose();
             }
         }
 

@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ns.Base.Plugins {
 
-namespace ns.Base.Plugins {
     public class UIExtension : Extension {
         private UIExtensionPosition _position = UIExtensionPosition.Bottom;
 
+        /// <summary>
+        /// Gets the control.
+        /// </summary>
+        /// <value>
+        /// The control.
+        /// </value>
+        public virtual object Control { get; }
+
+        /// <summary>
+        /// Gets or sets the position.
+        /// </summary>
+        /// <value>
+        /// The position.
+        /// </value>
         public UIExtensionPosition Position {
             get { return _position; }
             set { _position = value; }
-        }
-
-        public virtual object Control {
-            get { throw new NotImplementedException(); }
         }
     }
 }

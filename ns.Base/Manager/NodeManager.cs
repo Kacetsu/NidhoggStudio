@@ -6,21 +6,21 @@ namespace ns.Base.Manager {
 
     public class NodeManager<T> : BaseManager, INodeManager<T> where T : Node {
 
-        public delegate void NodeCollectionChangedHandler(object sender, NodeCollectionChangedEventArgs e);
+        public NodeManager() {
+            Nodes = new List<T>();
+        }
+
+        protected delegate void EventHandler<NodeCollectionChangedEventArgs>(object sender, NodeCollectionChangedEventArgs e);
 
         /// <summary>
         /// Occurs when [node added event].
         /// </summary>
-        public event NodeCollectionChangedHandler NodeAddedEvent;
+        protected event EventHandler<NodeCollectionChangedEventArgs> NodeAddedEvent;
 
         /// <summary>
         /// Occurs when [node removed event].
         /// </summary>
-        public event NodeCollectionChangedHandler NodeRemovedEvent;
-
-        public NodeManager() {
-            Nodes = new List<T>();
-        }
+        protected event EventHandler<NodeCollectionChangedEventArgs> NodeRemovedEvent;
 
         /// <summary>
         /// Gets the nodes.
@@ -28,7 +28,30 @@ namespace ns.Base.Manager {
         /// <value>
         /// The nodes.
         /// </value>
-        public List<T> Nodes { get; }
+        public ICollection<T> Nodes { get; }
+
+        /// <summary>
+        /// Adds the specified node.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        public virtual void Add(T node) {
+            if (!Nodes.Contains(node)) {
+                Nodes.Add(node);
+                OnNodeAdded(node);
+            }
+        }
+
+        /// <summary>
+        /// Adds the range.
+        /// </summary>
+        /// <param name="nodes">The nodes.</param>
+        public virtual void AddRange(ICollection<T> nodes) {
+            if (nodes == null) throw new ArgumentNullException(nameof(nodes));
+
+            foreach (T node in nodes) {
+                Add(node);
+            }
+        }
 
         /// <summary>
         /// Called when [node added].
@@ -47,24 +70,12 @@ namespace ns.Base.Manager {
         }
 
         /// <summary>
-        /// Adds the specified node.
+        /// Called when [selection changed].
         /// </summary>
-        /// <param name="node">The node.</param>
-        public virtual void Add(T node) {
-            if (!Nodes.Contains(node)) {
-                Nodes.Add(node);
-                OnNodeAdded(node);
-            }
-        }
-
-        /// <summary>
-        /// Adds the range.
-        /// </summary>
-        /// <param name="nodes">The nodes.</param>
-        public virtual void AddRange(List<T> nodes) {
-            foreach (T node in nodes) {
-                Add(node);
-            }
+        /// <param name="selectedObject">The selected object.</param>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual void OnSelectionChanged(T selectedObject) {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -76,15 +87,6 @@ namespace ns.Base.Manager {
                 Nodes.Remove(node);
                 OnNodeRemoved(node);
             }
-        }
-
-        /// <summary>
-        /// Called when [selection changed].
-        /// </summary>
-        /// <param name="selectedObject">The selected object.</param>
-        /// <exception cref="NotImplementedException"></exception>
-        public virtual void OnSelectionChanged(T selectedObject) {
-            throw new NotImplementedException();
         }
     }
 }

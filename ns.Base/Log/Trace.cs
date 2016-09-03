@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 
 namespace ns.Base.Log {
@@ -64,8 +65,9 @@ namespace ns.Base.Log {
         /// <param name="message">The message.</param>
         /// <param name="stackTrace">The stack trace.</param>
         /// <param name="category">The category.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Literale nicht als lokalisierte Parameter übergeben", MessageId = "ns.Base.Log.Trace.WriteLine(System.String,System.Diagnostics.TraceEventType)")]
         public static void WriteLine(string message, string stackTrace, TraceEventType category) {
-            WriteLine(message + Environment.NewLine + "Stack Trace: " + Environment.NewLine + stackTrace, category);
+            WriteLine(string.Format(CultureInfo.CurrentCulture, "{0}{1}Stack Trace:{2}{3}", message, Environment.NewLine, Environment.NewLine, stackTrace), category);
         }
 
         /// <summary>
@@ -74,6 +76,8 @@ namespace ns.Base.Log {
         /// <param name="exception">The exception.</param>
         /// <param name="category">The category.</param>
         public static void WriteLine(Exception exception, TraceEventType category) {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
             WriteLine(exception.ToString(), category);
         }
     }

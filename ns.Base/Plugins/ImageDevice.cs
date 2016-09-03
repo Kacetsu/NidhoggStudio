@@ -11,12 +11,12 @@ namespace ns.Base.Plugins {
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageDevice"/> class.
         /// </summary>
-        public ImageDevice() : base() { }
+        protected ImageDevice() : base() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageDevice"/> class.
         /// </summary>
         /// <param name="other">The other.</param>
-        public ImageDevice(ImageDevice other) : base(other) { }
+        protected ImageDevice(ImageDevice other) : base(other) { }
     }
 }

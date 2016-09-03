@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 
@@ -112,17 +113,18 @@ namespace ns.GUI.WPF {
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns></returns>
-        private PointCollection GeneratePointCollection(int[] values) {
+        private PointCollection GeneratePointCollection(ICollection<int> values) {
+            int[] valueArray = values.ToArray();
             int max = values.Max();
             PointCollection points = new PointCollection();
             // first point (lower-left corner)
             points.Add(new System.Windows.Point(0, max));
             // middle points
-            for (int index = 0; index < values.Length; index++) {
-                points.Add(new System.Windows.Point(index, max - values[index]));
+            for (int index = 0; index < valueArray.Length; index++) {
+                points.Add(new System.Windows.Point(index, max - valueArray[index]));
             }
             // last point (lower-right corner)
-            points.Add(new System.Windows.Point(values.Length - 1, max));
+            points.Add(new System.Windows.Point(valueArray.Length - 1, max));
             return points;
         }
     }

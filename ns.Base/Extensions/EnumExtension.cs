@@ -9,6 +9,8 @@ namespace ns.Base.Extensions {
     public static class EnumExtension {
 
         public static string GetDescription(this Enum value) {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
             DescriptionAttribute attribute = System.Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(DescriptionAttribute)) as DescriptionAttribute;
             return attribute != null ? attribute.Description : value.ToString();
         }

@@ -6,7 +6,7 @@ using System.Threading;
 namespace ns.Base {
 
     public class BlockingStream : Stream {
-        private readonly BlockingCollection<byte[]> _blocks;
+        private readonly System.Collections.Concurrent.BlockingCollection<byte[]> _blocks;
         private byte[] _currentBlock;
         private int _currentBlockIndex;
 
@@ -15,7 +15,7 @@ namespace ns.Base {
         /// </summary>
         /// <param name="streamWriteCountCache">The stream write count cache.</param>
         public BlockingStream(int streamWriteCountCache) {
-            _blocks = new BlockingCollection<byte[]>(streamWriteCountCache);
+            _blocks = new System.Collections.Concurrent.BlockingCollection<byte[]>(streamWriteCountCache);
         }
 
         /// <summary>

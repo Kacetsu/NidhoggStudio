@@ -10,18 +10,20 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Gets the container.
         /// </summary>
+        /// <param name="clientUid">The client uid.</param>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
         [OperationContract]
-        DataStorageContainerModel GetContainer(string uid);
+        DataStorageContainerModel GetContainer(string clientUid, string uid);
 
         /// <summary>
         /// Gets the last container.
         /// </summary>
+        /// /// <param name="clientUid">The client uid.</param>
         /// <param name="parentUID">The parent uid.</param>
         /// <returns></returns>
         [OperationContract]
-        DataStorageContainerModel GetLastContainer(string parentUID);
+        DataStorageContainerModel GetLastContainer(string clientUid, string parentUID);
 
         /// <summary>
         /// Determines whether [is container available] [the specified parent uid].
@@ -49,7 +51,7 @@ namespace ns.Communication.Services {
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        [OperationContract(IsOneWay = false)]
+        [OperationContract(IsOneWay = true)]
         void UnregisterClient(string uid);
     }
 }

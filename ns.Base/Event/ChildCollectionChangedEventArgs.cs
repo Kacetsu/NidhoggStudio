@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Base.Event {
-    public class ChildCollectionChangedEventArgs : EventArgs {
 
-        private List<Node> _changedChilds = null;
+    public class ChildCollectionChangedEventArgs : EventArgs {
+        private IReadOnlyCollection<Node> _changedChilds = null;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChildCollectionChangedEventArgs"/> class.
+        /// </summary>
+        /// <param name="changedChilds">The changed childs.</param>
+        public ChildCollectionChangedEventArgs(IReadOnlyCollection<Node> changedChilds) {
+            _changedChilds = changedChilds;
+        }
 
         /// <summary>
         /// Gets the changed childs.
@@ -15,16 +20,8 @@ namespace ns.Base.Event {
         /// <value>
         /// The changed childs.
         /// </value>
-        public List<Node> ChangedChilds {
+        public IReadOnlyCollection<Node> ChangedChilds {
             get { return _changedChilds; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChildCollectionChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="changedChilds">The changed childs.</param>
-        public ChildCollectionChangedEventArgs(List<Node> changedChilds) {
-            _changedChilds = changedChilds;
         }
     }
 }

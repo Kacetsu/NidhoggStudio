@@ -45,6 +45,8 @@ namespace ns.Base.Manager {
         /// <param name="stream">The FileStream.</param>
         /// <returns>The manager object. NULL if any error happend.</returns>
         public virtual T Load(Stream stream) {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
             try {
                 T obj;
                 stream.Position = 0;
@@ -87,6 +89,8 @@ namespace ns.Base.Manager {
         /// <param name="stream">Reference to the MemoryStream.</param>
         /// <returns>Success of the operation.</returns>
         public virtual void Save(Stream stream) {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
             try {
                 DataContractSerializer serializer = new DataContractSerializer(typeof(T));
                 serializer.WriteObject(stream, Configuration);

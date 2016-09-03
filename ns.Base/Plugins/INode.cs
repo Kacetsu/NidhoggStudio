@@ -14,7 +14,7 @@ namespace ns.Base.Plugins {
         /// Adds the childs.
         /// </summary>
         /// <param name="childs">The childs.</param>
-        void AddChilds(List<Node> childs);
+        void AddChilds(ICollection<Node> childs);
 
         /// <summary>
         /// Initializes this instance.

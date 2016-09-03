@@ -3,17 +3,14 @@
 namespace ns.Base.Manager {
 
     public interface INodeManager<T> : IManager where T : Node {
-        List<T> Nodes { get; }
 
         /// <summary>
-        /// Occurs when [node added event].
+        /// Gets the nodes.
         /// </summary>
-        event NodeManager<T>.NodeCollectionChangedHandler NodeAddedEvent;
-
-        /// <summary>
-        /// Occurs when [node removed event].
-        /// </summary>
-        event NodeManager<T>.NodeCollectionChangedHandler NodeRemovedEvent;
+        /// <value>
+        /// The nodes.
+        /// </value>
+        ICollection<T> Nodes { get; }
 
         /// <summary>
         /// Adds the specified node.
@@ -25,7 +22,7 @@ namespace ns.Base.Manager {
         /// Adds the range.
         /// </summary>
         /// <param name="nodes">The nodes.</param>
-        void AddRange(List<T> nodes);
+        void AddRange(ICollection<T> nodes);
 
         /// <summary>
         /// Called when [node added].

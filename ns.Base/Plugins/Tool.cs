@@ -53,7 +53,7 @@ namespace ns.Base.Plugins {
             if (_executionTimeMs != null)
                 _executionTimeMs.Value = 0;
 
-            foreach (Property childProperty in this.Childs.Where(c => c is Property)) {
+            foreach (Property childProperty in this.Items.Where(c => c is Property)) {
                 IValue<object> valueProperty = childProperty as IValue<object>;
                 if (valueProperty == null) continue;
 

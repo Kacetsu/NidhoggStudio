@@ -31,7 +31,7 @@ namespace ns.Base.Plugins {
         /// Closes this instance.
         /// </summary>
         public override void Close() {
-            foreach (Property childProperty in Childs.Where(c => c is Property)) {
+            foreach (Property childProperty in Items.Where(c => c is Property)) {
                 IValue<object> valueProperty = childProperty as IValue<object>;
                 if (valueProperty == null) continue;
 

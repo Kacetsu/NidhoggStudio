@@ -22,7 +22,7 @@ namespace ns.Communication.Models {
             Version = tool.Version;
             ParentUID = tool.Parent?.UID;
 
-            foreach (Property property in tool.Childs.Where(p => p is Property)) {
+            foreach (Property property in tool.Items.Where(p => p is Property)) {
                 Properties.Add(new PropertyModel(property));
             }
         }

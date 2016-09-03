@@ -1,4 +1,4 @@
-﻿using ns.Base.Attribute;
+﻿using ns.Base;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;

@@ -1,6 +1,7 @@
 ﻿using ns.Base.Event;
 using ns.Base.Manager;
 using ns.Base.Manager.DataStorage;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Occurs when [data storage collection changed].
         /// </summary>
-        public event DataStorageCollectionChangedEventHandler DataStorageCollectionChanged;
+        public event Base.Event.EventHandler<DataStorageCollectionChangedEventArgs> DataStorageCollectionChanged;
 
         /// <summary>
         /// Adds the specified node.

@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\NidhoggRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -177,7 +177,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attribute\Visible.cs" />
+    <Compile Include="VisibleAttribute.cs" />
     <Compile Include="BlockingStream.cs" />
     <Compile Include="Configuration\BaseConfiguration.cs" />
     <Compile Include="Configuration\IBaseConfiguration.cs" />
@@ -219,7 +219,6 @@
     <Compile Include="Log\Trace.cs" />
     <Compile Include="Log\TraceListener.cs" />
     <Compile Include="Manager\BaseManager.cs" />
-    <Compile Include="Cache.cs" />
     <Compile Include="NotifiableObject.cs" />
     <Compile Include="ObservableList.cs" />
     <Compile Include="Plugins\ImageDevice.cs" />

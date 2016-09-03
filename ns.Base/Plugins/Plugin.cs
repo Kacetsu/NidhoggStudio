@@ -1,7 +1,7 @@
 ﻿using ns.Base.Plugins.Properties;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -125,7 +125,7 @@ namespace ns.Base.Plugins {
         public IEnumerable<T> GetProperties<T>() where T : Property {
             List<T> result = new List<T>();
 
-            foreach (T property in Childs.Where(p => p is T)) {
+            foreach (T property in Items.Where(p => p is T)) {
                 result.Add(property);
             }
 
@@ -141,7 +141,7 @@ namespace ns.Base.Plugins {
         public IEnumerable<T> GetProperties<T>(bool isOutput) where T : Property {
             List<T> result = new List<T>();
 
-            foreach (T property in Childs.Where(p => p is T && (p as T).IsOutput == isOutput)) {
+            foreach (T property in Items.Where(p => (p as T)?.IsOutput == isOutput)) {
                 result.Add(property);
             }
 
@@ -157,7 +157,7 @@ namespace ns.Base.Plugins {
         public T GetProperty<T>(string name) where T : Property {
             T result = null;
 
-            foreach (T property in Childs.Where(p => p is T)) {
+            foreach (T property in Items.Where(p => p is T)) {
                 if (property.Name == name) {
                     result = property;
                     break;
@@ -172,7 +172,7 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetProperty<T>() where T : Property => (T)Childs.First(p => p is T);
+        public T GetProperty<T>() where T : Property => (T)Items.First(p => p is T);
 
         /// <summary>
         /// Called when [finished].
@@ -228,20 +228,20 @@ namespace ns.Base.Plugins {
         /// <returns></returns>
         public virtual bool TryRunChilds() {
             bool result = true;
-            lock (Childs) {
-                foreach (Tool child in Childs.Where(p => p is Tool)) {
+            lock (Items) {
+                foreach (Tool child in Items.Where(p => p is Tool)) {
                     if (child.TryPreRun() == false) {
-                        Log.Trace.WriteLine(string.Format("Tool {0} pre run failed!", child.Name), TraceEventType.Error);
+                        Log.Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Tool {0} pre run failed!", child.Name), TraceEventType.Error);
                         result = false;
                     } else if (child.TryRun() == false) {
-                        Log.Trace.WriteLine(string.Format("Tool {0} run failed!", child.Name), TraceEventType.Error);
+                        Log.Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Tool {0} run failed!", child.Name), TraceEventType.Error);
                         result = false;
                     } else if (child.TryPostRun() == false) {
-                        Log.Trace.WriteLine(string.Format("Tool {0} post run failed!", child.Name), TraceEventType.Error);
+                        Log.Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Tool {0} post run failed!", child.Name), TraceEventType.Error);
                         result = false;
                     }
 
-                    foreach (Property property in child.Childs) {
+                    foreach (Property property in child.Items) {
                         ITolerance tolerancProperty = property as ITolerance;
                         if (tolerancProperty == null || tolerancProperty.IsToleranceEnabled == false) continue;
 

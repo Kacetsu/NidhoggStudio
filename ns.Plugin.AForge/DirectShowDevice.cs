@@ -1,5 +1,5 @@
 ﻿using AForge.Video.DirectShow;
-using ns.Base.Attribute;
+using ns.Base;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
@@ -157,7 +157,7 @@ namespace ns.Plugin.AForge {
 
             int size = img.Width * img.Height * bpp;
             byte[] byteArray = new byte[size];
-            BitmapData data = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, img.PixelFormat);
+            BitmapData data = img.LockBits(new System.Drawing.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
             stride = data.Stride;
             Marshal.Copy(data.Scan0, byteArray, 0, size);
             img.UnlockBits(data);

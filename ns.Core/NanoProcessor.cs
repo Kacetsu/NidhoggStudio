@@ -71,7 +71,7 @@ namespace ns.Core {
                 }
 
                 _dataStorageManager.Add(new OperationDataContainer(_operation));
-                foreach (Tool tool in _operation.Childs.Where(t => t is Tool)) {
+                foreach (Tool tool in _operation.Items.Where(t => t is Tool)) {
                     _dataStorageManager.Add(new ToolDataContainer(tool));
                 }
             } catch (Exception ex) {

@@ -5,6 +5,6 @@
         /// <summary>
         /// Occurs when [data storage collection changed].
         /// </summary>
-        event DataStorageCollectionChangedEventHandler DataStorageCollectionChanged;
+        event EventHandler<DataStorageCollectionChangedEventArgs> DataStorageCollectionChanged;
     }
 }

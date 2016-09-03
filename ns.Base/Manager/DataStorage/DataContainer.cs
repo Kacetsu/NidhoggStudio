@@ -1,5 +1,6 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using System;
 using System.Collections.Generic;
 
 namespace ns.Base.Manager.DataStorage {
@@ -9,13 +10,15 @@ namespace ns.Base.Manager.DataStorage {
         /// <summary>
         /// Initializes a new instance of the <see cref="DataContainer"/> class.
         /// </summary>
-        public DataContainer() { }
+        protected DataContainer() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataContainer"/> class.
         /// </summary>
         /// <param name="plugin">The plugin.</param>
-        public DataContainer(Plugin plugin) : this() {
+        protected DataContainer(Plugin plugin) : this() {
+            if (plugin == null) throw new ArgumentNullException(nameof(plugin));
+
             ParentUID = plugin.UID;
             Properties = new List<Property>(plugin.GetProperties<Property>(true));
         }
@@ -26,7 +29,7 @@ namespace ns.Base.Manager.DataStorage {
         /// <value>
         /// The parent uid.
         /// </value>
-        public string ParentUID { get; private set; }
+        public string ParentUID { get; }
 
         /// <summary>
         /// Gets the properties.
@@ -34,6 +37,6 @@ namespace ns.Base.Manager.DataStorage {
         /// <value>
         /// The properties.
         /// </value>
-        public IEnumerable<Property> Properties { get; private set; }
+        public IEnumerable<Property> Properties { get; }
     }
 }

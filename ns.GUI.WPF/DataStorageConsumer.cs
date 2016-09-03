@@ -59,7 +59,10 @@ namespace ns.GUI.WPF {
             while (_blockingDataStorageModelUIDs.Count > 10) {
                 _blockingDataStorageModelUIDs.Take();
             }
-            _blockingDataStorageModelUIDs.Add(container);
+
+            if (!_blockingDataStorageModelUIDs.IsAddingCompleted) {
+                _blockingDataStorageModelUIDs.Add(container);
+            }
         }
 
         /// <summary>
@@ -67,8 +70,8 @@ namespace ns.GUI.WPF {
         /// </summary>
         public void Close() {
             _blockingDataStorageModelUIDs?.CompleteAdding();
-            _cancellationTokenSourceModelUIDs?.CancelAfter(TimeoutMs + 100);
             _blockingLastDataStorageParentUIDs?.CompleteAdding();
+            _cancellationTokenSourceModelUIDs?.CancelAfter(TimeoutMs + 100);
             _cancellationTokenSourceParentUIDs?.CancelAfter(TimeoutMs + 100);
 
             Task.WaitAll(_tasks.ToArray(), TimeoutMs + 200);
@@ -98,25 +101,26 @@ namespace ns.GUI.WPF {
         }
 
         private void Dispose(bool disposing) {
-            if (disposing) {
-                Close();
-                _blockingDataStorageModelUIDs?.Dispose();
-                _blockingLastDataStorageParentUIDs?.Dispose();
-                _cancellationTokenSourceModelUIDs?.Dispose();
-                _cancellationTokenSourceParentUIDs?.Dispose();
-            }
+            if (!disposing) return;
+
+            Close();
+            _blockingDataStorageModelUIDs?.Dispose();
+            _blockingLastDataStorageParentUIDs?.Dispose();
+            _cancellationTokenSourceModelUIDs?.Dispose();
+            _cancellationTokenSourceParentUIDs?.Dispose();
         }
 
         private void UpdateDataStorage() {
             KeyValuePair<string, string> container;
             while (!_blockingDataStorageModelUIDs.IsCompleted && !_cancellationTokenSourceModelUIDs.IsCancellationRequested) {
-                _blockingDataStorageModelUIDs.TryTake(out container, TimeoutMs, _cancellationTokenModelUIDs);
-                if (string.IsNullOrEmpty(container.Value)) continue;
-                string containerUID = container.Key;
-                string pluginUID = container.Value;
-                if (!string.IsNullOrEmpty(SelectedUID) && !string.IsNullOrEmpty(pluginUID) && pluginUID.Equals(SelectedUID) && !string.IsNullOrEmpty(containerUID)) {
-                    DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetContainer(containerUID);
-                    DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                if (_blockingDataStorageModelUIDs.TryTake(out container, TimeoutMs)) {
+                    if (string.IsNullOrEmpty(container.Value)) continue;
+                    string containerUID = container.Key;
+                    string pluginUID = container.Value;
+                    if (!string.IsNullOrEmpty(SelectedUID) && !string.IsNullOrEmpty(pluginUID) && pluginUID.Equals(SelectedUID) && !string.IsNullOrEmpty(containerUID)) {
+                        DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetContainer(DataStorageServiceClient.ClientUid, containerUID);
+                        DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                    }
                 }
             }
         }
@@ -124,15 +128,16 @@ namespace ns.GUI.WPF {
         private void UpdateLastDataStorage() {
             while (!_blockingLastDataStorageParentUIDs.IsCompleted && !_cancellationTokenSourceParentUIDs.IsCancellationRequested) {
                 string parentUID;
-                _blockingLastDataStorageParentUIDs.TryTake(out parentUID, TimeoutMs, _cancellationTokenParentUIDs);
-                if (string.IsNullOrEmpty(parentUID)) continue;
-                try {
-                    if (ClientCommunicationManager.DataStorageService.IsContainerAvailable(parentUID)) {
-                        DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetLastContainer(parentUID);
-                        DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                if (_blockingLastDataStorageParentUIDs.TryTake(out parentUID, TimeoutMs)) {
+                    if (string.IsNullOrEmpty(parentUID)) continue;
+                    try {
+                        if (ClientCommunicationManager.DataStorageService.IsContainerAvailable(parentUID)) {
+                            DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetLastContainer(DataStorageServiceClient.ClientUid, parentUID);
+                            DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
+                        }
+                    } catch (FaultException ex) {
+                        Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
                     }
-                } catch (FaultException ex) {
-                    Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Warning);
                 }
             }
         }

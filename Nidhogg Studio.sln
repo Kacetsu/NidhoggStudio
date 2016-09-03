@@ -33,6 +33,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{42BD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ns.Communication.Test", "ns.Communication.Test\ns.Communication.Test.csproj", "{9ACEC372-6FB1-492D-BFD0-F02A8AB4366A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!SolutionItems", "!SolutionItems", "{1E099EC0-3E2F-41E4-97A9-543836B99D9A}"
+	ProjectSection(SolutionItems) = preProject
+		NidhoggRules.ruleset = NidhoggRules.ruleset
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

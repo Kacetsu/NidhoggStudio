@@ -8,6 +8,13 @@ namespace ns.Base.Extensions {
 
     public static class Marshal {
 
+        /// <summary>
+        /// Deeps the clone.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">The type must be serializable.;source</exception>
         public static T DeepClone<T>(this T source) {
             try {
                 if (!typeof(T).IsSerializable) {
@@ -32,8 +39,8 @@ namespace ns.Base.Extensions {
                 return (T)obj;
             } catch (Exception ex) {
                 Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
+                throw;
             }
-            return default(T);
         }
     }
 }

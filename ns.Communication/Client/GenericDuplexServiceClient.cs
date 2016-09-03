@@ -6,7 +6,11 @@ using System.ServiceModel.Channels;
 namespace ns.Communication.Client {
 
     public class GenericDuplexServiceClient<T, U> : IDisposable where T : class where U : class {
-        private bool disposed = false;
+
+        /// <summary>
+        /// The client uid
+        /// </summary>
+        public static string ClientUid = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericDuplexServiceClient{T}" /> class.
@@ -42,6 +46,14 @@ namespace ns.Communication.Client {
         protected T Channel { get; private set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="GenericDuplexServiceClient{T, U}"/> is disposed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if disposed; otherwise, <c>false</c>.
+        /// </value>
+        protected bool Disposed { get; set; } = false;
+
+        /// <summary>
         /// Closes this instance.
         /// </summary>
         public void Close() => (Channel as ICommunicationObject)?.Close();
@@ -59,7 +71,7 @@ namespace ns.Communication.Client {
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing) {
-            if (disposed) return;
+            if (Disposed) return;
 
             if (disposing) {
                 if (Channel != null) {
@@ -69,7 +81,7 @@ namespace ns.Communication.Client {
                         Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
                     }
                     Channel = null;
-                    disposed = true;
+                    Disposed = true;
                 }
             }
         }

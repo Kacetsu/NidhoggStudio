@@ -54,7 +54,7 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find operation with UID {0}.", parentUID));
             }
 
-            Tool tool = _pluginManager.Nodes.Find(t => t.Fullname.Equals(model.Fullname)) as Tool;
+            Tool tool = _pluginManager.Nodes.First(t => t.Fullname.Equals(model.Fullname)) as Tool;
 
             if (tool == null) {
                 throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
@@ -250,7 +250,7 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find tool {0}.", toolUID));
             }
 
-            foreach (Property property in tool.Childs.Where(p => p is Property)) {
+            foreach (Property property in tool.Items.Where(p => p is Property)) {
                 properties.Add(new PropertyModel(property));
             }
 

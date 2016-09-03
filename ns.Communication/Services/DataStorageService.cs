@@ -5,15 +5,14 @@ using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace ns.Communication.Services {
 
-    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class DataStorageService : IDataStorageService {
-        private Dictionary<string, IDataStorageServiceCallbacks> _clients = new Dictionary<string, IDataStorageServiceCallbacks>();
+        private ConcurrentDictionary<string, IDataStorageServiceCallbacks> _clients = new ConcurrentDictionary<string, IDataStorageServiceCallbacks>();
         private DataStorageManager _dataStorageManager = null;
 
         /// <summary>
@@ -35,9 +34,11 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Gets the container.
         /// </summary>
+        /// <param name="clientUid">The client uid.</param>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetContainer(string uid) {
+        public DataStorageContainerModel GetContainer(string clientUid, string uid) {
+            CheckClientAvailable(clientUid);
             DataContainer container = _dataStorageManager?.Find(uid);
             if (container == null) throw new FaultException(string.Format("No container with uid {0} found!", uid));
             return new DataStorageContainerModel(container);
@@ -46,9 +47,11 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Gets the last container.
         /// </summary>
+        /// <param name="clientUid">The client uid.</param>
         /// <param name="parentUID">The parent uid.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetLastContainer(string parentUID) {
+        public DataStorageContainerModel GetLastContainer(string clientUid, string parentUID) {
+            CheckClientAvailable(clientUid);
             DataContainer container = _dataStorageManager?.FindLast(parentUID);
             if (container == null) {
                 throw new FaultException(string.Format("No container available! {0}", parentUID));
@@ -76,7 +79,7 @@ namespace ns.Communication.Services {
             if (_clients.ContainsKey(uid)) {
                 throw new FaultException(string.Format("Client {0} already exists!", uid));
             }
-            _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IDataStorageServiceCallbacks>());
+            _clients.TryAdd(uid, OperationContext.Current.GetCallbackChannel<IDataStorageServiceCallbacks>());
         }
 
         /// <summary>
@@ -100,7 +103,10 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public void UnregisterClient(string uid) => _clients?.Remove(uid);
+        public void UnregisterClient(string uid) {
+            IDataStorageServiceCallbacks callback;
+            _clients?.TryRemove(uid, out callback);
+        }
 
         private void _dataStorageManager_DataStorageCollectionChanged(object sender, Base.Event.DataStorageCollectionChangedEventArgs e) {
             if (e.NewContainers.Count == 0) return;
@@ -118,9 +124,17 @@ namespace ns.Communication.Services {
                 });
 
                 foreach (string damagedUID in damagedUIDs) {
-                    _clients.Remove(damagedUID);
+                    IDataStorageServiceCallbacks callback;
+                    _clients.TryRemove(damagedUID, out callback);
                 }
             });
+        }
+
+        private void CheckClientAvailable(string uid) {
+            if (_clients?.ContainsKey(uid) == true) {
+            } else {
+                throw new FaultException(string.Format("Client is not registered {0}!", uid));
+            }
         }
     }
 }

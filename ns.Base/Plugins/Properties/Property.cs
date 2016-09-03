@@ -89,7 +89,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Occurs when [property unconnect event].
         /// </summary>
-        public event NodeChangedEventHandler PropertyUnconnectEvent;
+        protected event EventHandler<NodeChangedEventArgs> PropertyUnconnectEvent;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance can automatic connect.

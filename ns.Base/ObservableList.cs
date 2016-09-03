@@ -11,11 +11,15 @@ namespace ns.Base {
         }
 
         public ObservableList(IEnumerable<T> collection) : base(collection) {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
             Items.Clear();
             foreach (T obj in collection) Items.Add(obj);
         }
 
         public ObservableList(ObservableList<T> collection) : base(collection) {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
             Items.Clear();
             foreach (T obj in collection.Items) Items.Add(obj);
         }
@@ -32,7 +36,7 @@ namespace ns.Base {
             return default(T);
         }
 
-        public List<T> FindAll(Predicate<T> match) {
+        public ICollection<T> FindAll(Predicate<T> match) {
             if (match == null) {
                 throw new ArgumentNullException(nameof(match));
             }

@@ -101,7 +101,7 @@ namespace ns.Core {
         private bool InitializeOperations() {
             _isFinalize = false;
             foreach (Operation operation in _projectManager.Configuration.Operations) {
-                if (operation.Childs.Count < 1 || operation.Initialize() == false) {
+                if (operation.Items.Count < 1 || operation.Initialize() == false) {
                     Base.Log.Trace.WriteLine("Cannot start operation [" + operation.Name + "]!"
                         + Environment.NewLine + "May the operation is empty or something happend while initializing it.", TraceEventType.Warning);
                     return false;

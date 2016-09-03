@@ -47,11 +47,11 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public void ConnectPropertiesByNode(Node node) {
-            foreach (Node c in node.Childs) {
+            foreach (Node c in node.Items) {
                 if (c is Property) {
                     Property child = c as Property;
                     if (!string.IsNullOrEmpty(child.ConnectedUID)) {
-                        Property parent = this.Nodes.Find(p => p.UID == child.ConnectedUID) as Property;
+                        Property parent = Nodes.First(p => p.UID == child.ConnectedUID) as Property;
                         if (parent != null)
                             child.Connect(parent);
                     }
@@ -106,7 +106,7 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public override void Remove(Property node) {
-            foreach (Property child in node.Childs.Where(p => p is Property)) {
+            foreach (Property child in node.Items.Where(p => p is Property)) {
                 Remove(child);
             }
 
@@ -123,7 +123,7 @@ namespace ns.Core.Manager {
         private List<Property> GetTargetProperties(Property property, Tool targetTool, Node parent) {
             List<Property> properties = new List<Property>();
 
-            foreach (Node node in parent.Childs) {
+            foreach (Node node in parent.Items) {
                 if (node == targetTool) break;
 
                 if (node is Property) {

@@ -1,5 +1,4 @@
 ﻿using ns.Base;
-using ns.Base.Attribute;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using System;
@@ -85,7 +84,7 @@ namespace ns.Core.Manager {
 
                         // Searching for all [Visible] types as they may inherit [Plugin].
                         foreach (Type type in assembly.GetExportedTypes()) {
-                            Visible visible = type.GetCustomAttribute(typeof(Visible)) as Visible;
+                            VisibleAttribute visible = type.GetCustomAttribute(typeof(VisibleAttribute)) as VisibleAttribute;
                             DataContractAttribute dataContract = type.GetCustomAttribute(typeof(DataContractAttribute)) as DataContractAttribute;
                             if (visible == null || visible.IsVisible == false) continue;
 

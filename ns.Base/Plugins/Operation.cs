@@ -14,7 +14,6 @@ namespace ns.Base.Plugins {
     [DataContract(IsReference = true), KnownType(typeof(OperationTrigger))]
     public class Operation : Plugin {
         private Device _captureDevice;
-        private string _linkedOperation = string.Empty;
         private ImageProperty _outImageProperty;
 
         /// <summary>
@@ -43,6 +42,8 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <param name="other">The other.</param>
         public Operation(Operation other) : base(other) {
+            if (other == null) throw new ArgumentNullException(nameof(other));
+
             CaptureDevice = other.CaptureDevice;
         }
 
@@ -55,6 +56,8 @@ namespace ns.Base.Plugins {
         public Device CaptureDevice {
             get { return _captureDevice; }
             set {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+
                 if (_captureDevice != value) {
                     _captureDevice = value;
                     _captureDevice.Parent = this;
@@ -72,8 +75,8 @@ namespace ns.Base.Plugins {
         /// Adds the device list.
         /// </summary>
         /// <param name="devices">The devices.</param>
-        public void AddDeviceList(List<Device> devices) {
-            GetProperty<DeviceProperty>(nameof(CaptureDevice)).Value = devices;
+        public void AddDeviceList(ICollection<Device> devices) {
+            GetProperty<DeviceProperty>(nameof(CaptureDevice)).Value = devices.ToList();
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace ns.Base.Plugins {
 
             _outImageProperty = GetProperty<ImageProperty>("OutImage");
 
-            foreach (Tool tool in Childs.Where(t => t is Tool)) {
+            foreach (Tool tool in Items.Where(t => t is Tool)) {
                 if (!(result = tool.Initialize())) {
                     break;
                 }

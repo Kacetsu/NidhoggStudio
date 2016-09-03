@@ -1,5 +1,4 @@
-﻿using ns.Base.Event;
-using ns.Base.Plugins;
+﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace ns.Base {
         /// Creates the base fields: Name, Fullname, Childs, Cache and UID.
         /// </summary>
         public Node() {
-            Childs = new ObservableList<Node>();
+            Items = new ObservableList<Node>();
             UID = GenerateUID();
         }
 
@@ -34,13 +33,16 @@ namespace ns.Base {
         /// </summary>
         /// <param name="node">The node.</param>
         public Node(Node node) {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+
             UID = node.UID;
             Fullname = node.Fullname;
             Name = node.Name;
-            Childs = new ObservableList<Node>(node.Childs);
+            Items = new ObservableList<Node>(node.Items);
+
             Parent = node.Parent;
 
-            foreach (var child in Childs) {
+            foreach (var child in Items) {
                 child.Parent = this;
             }
         }
@@ -50,13 +52,7 @@ namespace ns.Base {
         /// </summary>
         /// <param name="sender">The object that this changed.</param>
         /// <param name="e">The Informations about the changed Property.</param>
-        public delegate void NodeChangedEventHandler(object sender, NodeChangedEventArgs e);
-
-        /// <summary>
-        /// Gets or sets the list with all Childs.
-        /// </summary>
-        [DataMember]
-        public ObservableList<Node> Childs { get; set; } = new ObservableList<Node>();
+        protected delegate void EventHandler<NodeChangedEventArgs>(object sender, NodeChangedEventArgs e);
 
         /// <summary>
         /// Gets or sets the Fullname.
@@ -93,6 +89,13 @@ namespace ns.Base {
         }
 
         /// <summary>
+        /// Gets or sets the list with all Childs.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [DataMember]
+        public ObservableList<Node> Items { get; set; } = new ObservableList<Node>();
+
+        /// <summary>
         /// Gets or sets the Name.
         /// </summary>
         [DataMember]
@@ -123,7 +126,9 @@ namespace ns.Base {
                         _parent.PropertyChanged -= ParentPropertyChangedEvent;
                     }
                     _parent = value;
-                    _parent.PropertyChanged += ParentPropertyChangedEvent;
+                    if (_parent != null) {
+                        _parent.PropertyChanged += ParentPropertyChangedEvent;
+                    }
                     OnPropertyChanged();
                 }
             }
@@ -170,11 +175,11 @@ namespace ns.Base {
         /// </summary>
         /// <param name="child">The Node that should be added.</param>
         public void AddChild(Node child) {
-            lock (Childs) {
-                if (Childs.Contains(child) == false) {
-                    child.Parent = this;
-                    Childs.Add(child);
-                }
+            if (child == null) throw new ArgumentNullException(nameof(child));
+
+            if (Items.Contains(child) == false) {
+                child.Parent = this;
+                Items.Add(child);
             }
         }
 
@@ -183,12 +188,14 @@ namespace ns.Base {
         /// Will trigger internal the OnChildCollectionChanged Method (ChildCollectionChanged).
         /// </summary>
         /// <param name="childs">The list of Childs that should be added.</param>
-        public virtual void AddChilds(List<Node> childs) {
+        public virtual void AddChilds(ICollection<Node> childs) {
+            if (childs == null) throw new ArgumentNullException(nameof(childs));
+
             List<Node> addedChilds = new List<Node>();
             foreach (Node child in childs) {
-                if (!Childs.Contains(child)) {
+                if (!Items.Contains(child)) {
                     child.Parent = this;
-                    Childs.Add(child);
+                    Items.Add(child);
                     addedChilds.Add(child);
                 }
             }
@@ -206,7 +213,7 @@ namespace ns.Base {
         public virtual void Close() {
             _isInitialized = false;
 
-            foreach (Node child in Childs) {
+            foreach (Node child in Items) {
                 if (!child.IsInitialized) continue;
                 child.Close();
             }
@@ -226,11 +233,12 @@ namespace ns.Base {
         /// </summary>
         /// <param name="child">The child.</param>
         public virtual void RemoveChild(Node child) {
-            lock (Childs) {
-                if (Childs.Contains(child)) {
-                    child.RemoveChilds();
-                    Childs.Remove(child);
-                }
+            if (child == null) throw new ArgumentNullException(nameof(child));
+
+            if (Items.Contains(child)) {
+                child.RemoveChilds();
+
+                Items.Remove(child);
             }
         }
 
@@ -238,11 +246,11 @@ namespace ns.Base {
         /// Removes the childs.
         /// </summary>
         public virtual void RemoveChilds() {
-            foreach (Property child in Childs.Where(c => c is Property)) {
+            foreach (Property child in Items.Where(c => c is Property)) {
                 child.Unconnect();
                 child.RemoveChilds();
             }
-            Childs.Clear();
+            Items.Clear();
         }
 
         /// <summary>

@@ -1,6 +1,13 @@
-﻿namespace ns.Base.Imaging {
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace ns.Base.Imaging {
 
     public class Histogram {
+        private int[] _blueValues = null;
+        private int[] _grayValues = null;
+        private int[] _greenValues = null;
+        private int[] _redValues = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Histogram"/> class.
@@ -13,7 +20,7 @@
         /// <value>
         /// The blue values.
         /// </value>
-        public int[] BlueValues { get; private set; }
+        public ICollection<int> BlueValues => _blueValues?.ToList();
 
         /// <summary>
         /// Gets the gray values.
@@ -21,7 +28,7 @@
         /// <value>
         /// The gray values.
         /// </value>
-        public int[] GrayValues { get; private set; }
+        public ICollection<int> GrayValues => _grayValues?.ToList();
 
         /// <summary>
         /// Gets the green values.
@@ -29,7 +36,7 @@
         /// <value>
         /// The green values.
         /// </value>
-        public int[] GreenValues { get; private set; }
+        public ICollection<int> GreenValues => _greenValues?.ToList();
 
         /// <summary>
         /// Gets the red values.
@@ -37,7 +44,7 @@
         /// <value>
         /// The red values.
         /// </value>
-        public int[] RedValues { get; private set; }
+        public ICollection<int> RedValues => _redValues?.ToList();
 
         /// <summary>
         /// Updates the specified image data.
@@ -52,6 +59,28 @@
         }
 
         /// <summary>
+        /// Smoothes the histogram.
+        /// </summary>
+        /// <param name="originalValues">The original values.</param>
+        /// <returns></returns>
+        protected static ICollection<int> SmoothHistogram(ICollection<int> originalValues) {
+            int[] sourceValues = originalValues.ToArray();
+            int[] smoothedValues = new int[sourceValues.Length];
+
+            double[] mask = new double[] { 0.25, 0.5, 0.25 };
+
+            for (int bin = 1; bin < sourceValues.Length - 1; bin++) {
+                double smoothedValue = 0;
+                for (int i = 0; i < mask.Length; i++) {
+                    smoothedValue += sourceValues[bin - 1 + i] * mask[i];
+                }
+                smoothedValues[bin] = (int)smoothedValue;
+            }
+
+            return smoothedValues.ToList();
+        }
+
+        /// <summary>
         /// Generates the histogram.
         /// </summary>
         /// <param name="imageData">The image data.</param>
@@ -60,19 +89,19 @@
         /// <param name="stride">The stride.</param>
         /// <param name="bytesPerPixel">The bytes per pixel.</param>
         protected virtual void GenerateHistogram(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
-            RedValues = null;
-            GreenValues = null;
-            BlueValues = null;
-            GrayValues = null;
+            _redValues = null;
+            _greenValues = null;
+            _blueValues = null;
+            _grayValues = null;
 
             byte bpp = bytesPerPixel;
 
             if (bytesPerPixel >= 3) {
-                RedValues = new int[256];
-                GreenValues = new int[256];
-                BlueValues = new int[256];
+                _redValues = new int[256];
+                _greenValues = new int[256];
+                _blueValues = new int[256];
             } else if (bytesPerPixel == 1) {
-                GrayValues = new int[256];
+                _grayValues = new int[256];
             }
 
             unsafe
@@ -81,7 +110,7 @@
                     if (bpp == 1) {
                         for (int y = 0, c = 0; y < height; y++) {
                             for (int x = 0; x < width; x++, c++) {
-                                GrayValues[ptr[c]]++;
+                                _grayValues[ptr[c]]++;
                             }
                             c += stride - width;
                         }
@@ -91,36 +120,15 @@
                                 byte r = ptr[p + 2];
                                 byte g = ptr[p + 1];
                                 byte b = ptr[p];
-                                RedValues[r]++;
-                                GreenValues[g]++;
-                                BlueValues[b]++;
+                                _redValues[r]++;
+                                _greenValues[g]++;
+                                _blueValues[b]++;
                             }
                             p += stride - width * bpp;
                         }
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Smoothes the histogram.
-        /// </summary>
-        /// <param name="originalValues">The original values.</param>
-        /// <returns></returns>
-        protected int[] SmoothHistogram(int[] originalValues) {
-            int[] smoothedValues = new int[originalValues.Length];
-
-            double[] mask = new double[] { 0.25, 0.5, 0.25 };
-
-            for (int bin = 1; bin < originalValues.Length - 1; bin++) {
-                double smoothedValue = 0;
-                for (int i = 0; i < mask.Length; i++) {
-                    smoothedValue += originalValues[bin - 1 + i] * mask[i];
-                }
-                smoothedValues[bin] = (int)smoothedValue;
-            }
-
-            return smoothedValues;
         }
     }
 }

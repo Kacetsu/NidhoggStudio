@@ -1,22 +1,9 @@
 ﻿using ns.Base;
-using ns.Base.Attribute;
 
 namespace ns.Plugin.AForge {
 
     [Visible]
     public class AForgeLibraryInformation : LibraryInformation {
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        public override string Name {
-            get {
-                return "AForge.NET Framework";
-            }
-        }
 
         /// <summary>
         /// Gets the documentation link.
@@ -27,6 +14,18 @@ namespace ns.Plugin.AForge {
         public override string DocumentationLink {
             get {
                 return "http://www.aforgenet.com/";
+            }
+        }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public override string Name {
+            get {
+                return "AForge.NET Framework";
             }
         }
     }

@@ -106,7 +106,7 @@ namespace ns.GUI.WPF {
             if (parent == null) return;
             if (_rectangles == null) _rectangles = new List<OverlayRectangle>();
 
-            foreach (Property child in parent.Childs.Where(c => c is Property)) {
+            foreach (Property child in parent.Items.Where(c => c is Property)) {
                 if (!child.IsOutput && child is RectangleProperty) {
                     OverlayRectangle overlay = new OverlayRectangle(child as RectangleProperty, ImageCanvas);
                     _rectangles.Add(overlay);

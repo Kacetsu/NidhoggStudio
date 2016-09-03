@@ -5,13 +5,23 @@ using System.Collections.Generic;
 namespace ns.Base.Event {
 
     public class OperationToolCollectionChangedEventArgs : EventArgs {
-        private List<Tool> _addedTools = null;
+        private IReadOnlyCollection<Tool> _addedTools = null;
 
-        public OperationToolCollectionChangedEventArgs(List<Tool> addedTools) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationToolCollectionChangedEventArgs"/> class.
+        /// </summary>
+        /// <param name="addedTools">The added tools.</param>
+        public OperationToolCollectionChangedEventArgs(IReadOnlyCollection<Tool> addedTools) {
             _addedTools = addedTools;
         }
 
-        public List<Tool> AddedTools {
+        /// <summary>
+        /// Gets the added tools.
+        /// </summary>
+        /// <value>
+        /// The added tools.
+        /// </value>
+        public IReadOnlyCollection<Tool> AddedTools {
             get { return _addedTools; }
         }
     }

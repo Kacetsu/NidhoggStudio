@@ -4,11 +4,12 @@ using System.Collections.Generic;
 namespace ns.Communication.Services.Callbacks {
 
     public class DataStorageServiceCallbacks : IDataStorageServiceCallbacks {
-
         /// <summary>
         /// Occurs when [data storage collection changed].
         /// </summary>
-        public event DataStorageCollectionChangedEventHandler DataStorageCollectionChanged;
+        //public event DataStorageCollectionChangedEventHandler DataStorageCollectionChanged;
+
+        public event EventHandler<DataStorageCollectionChangedEventArgs> DataStorageCollectionChanged;
 
         /// <summary>
         /// Called when [data storage collection changed].

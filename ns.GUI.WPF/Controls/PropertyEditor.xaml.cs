@@ -147,14 +147,14 @@ namespace ns.GUI.WPF.Controls {
                 AddListProperty(ContentGrid, property, true);
             }
 
-            foreach (Node childNode in property.Childs) {
+            foreach (Node childNode in property.Items) {
                 if (childNode is Base.Plugins.Properties.Property) {
                     Base.Plugins.Properties.Property childProperty = childNode as Base.Plugins.Properties.Property;
                     if (!childProperty.IsOutput) {
                         UpdateContenGridByProperty(childProperty);
                     }
                 } else if (childNode is Device) {
-                    foreach (Base.Plugins.Properties.Property child in childNode.Childs.Where(c => c is Base.Plugins.Properties.Property && !(c as Base.Plugins.Properties.Property).IsOutput)) {
+                    foreach (Base.Plugins.Properties.Property child in childNode.Items.Where(c => c is Base.Plugins.Properties.Property && !(c as Base.Plugins.Properties.Property).IsOutput)) {
                         UpdateContenGridByProperty(child);
                     }
                 }
@@ -173,7 +173,7 @@ namespace ns.GUI.WPF.Controls {
                     UpdateContenGridByProperty(property);
                     DeviceProperty deviceProperty = property as DeviceProperty;
                     if (deviceProperty == null || deviceProperty.SelectedItem == null) continue;
-                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.SelectedItem.Childs.Where(p => p is Base.Plugins.Properties.Property)) {
+                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.SelectedItem.Items.Where(p => p is Base.Plugins.Properties.Property)) {
                         UpdateContenGridByProperty(dp);
                     }
                 }

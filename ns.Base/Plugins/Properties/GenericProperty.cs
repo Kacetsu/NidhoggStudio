@@ -12,15 +12,14 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
-        public GenericProperty() : base() {
-        }
+        protected GenericProperty() : base() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public GenericProperty(string name, T value) : this() {
+        protected GenericProperty(string name, T value) : this() {
             Name = name;
             Value = value;
             _initialValue = value;
@@ -31,14 +30,15 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="isOutput">True if the property is a output.</param>
-        public GenericProperty(string name, bool isOutput) : base(name, isOutput) {
-        }
+        protected GenericProperty(string name, bool isOutput) : base(name, isOutput) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
         /// <param name="other">The other.</param>
-        public GenericProperty(GenericProperty<T> other) : base(other) {
+        protected GenericProperty(GenericProperty<T> other) : base(other) {
+            if (other == null) throw new ArgumentException(nameof(other));
+
             Value = other.Value;
             _initialValue = other._initialValue;
         }
@@ -46,11 +46,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        public override Type Type {
-            get {
-                return Value.GetType();
-            }
-        }
+        public override Type Type => Value.GetType();
 
         /// <summary>
         /// Gets or sets the value.
@@ -79,7 +75,14 @@ namespace ns.Base.Plugins.Properties {
             set { Value = (T)value; }
         }
 
+        /// <summary>
+        /// Parents the property changed handle.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="NodeChangedEventArgs" /> instance containing the event data.</param>
         protected override void ConnectedPropertyChangedHandle(object sender, PropertyChangedEventArgs e) {
+            if (e == null) throw new ArgumentException(nameof(e));
+
             if (e.PropertyName.Equals(nameof(Value))) {
                 IValue valueProperty = ConnectedProperty as IValue;
                 if (valueProperty != null) {

@@ -8,7 +8,6 @@ using System.ServiceModel.Channels;
 namespace ns.Communication.Client {
 
     public class DataStorageServiceClient : GenericDuplexServiceClient<IDataStorageService, IDataStorageServiceCallbacks>, IDataStorageService {
-        private string _clientUID = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessorServiceClient"/> class.
@@ -17,22 +16,24 @@ namespace ns.Communication.Client {
         /// <param name="binding">The binding.</param>
         /// <param name="callbacks">The callbacks.</param>
         public DataStorageServiceClient(EndpointAddress endpoint, Binding binding, DataStorageServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
-            RegisterClient(_clientUID);
+            RegisterClient(ClientUid);
         }
 
         /// <summary>
         /// Gets the container.
         /// </summary>
+        /// <param name="clientUid">The client uid.</param>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetContainer(string uid) => Channel?.GetContainer(uid);
+        public DataStorageContainerModel GetContainer(string clientUid, string uid) => Channel?.GetContainer(clientUid, uid);
 
         /// <summary>
         /// Gets the last container.
         /// </summary>
+        /// <param name="clientUid">The client uid.</param>
         /// <param name="parentUID">The parent uid.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetLastContainer(string parentUID) => Channel?.GetLastContainer(parentUID);
+        public DataStorageContainerModel GetLastContainer(string clientUid, string parentUID) => Channel?.GetLastContainer(clientUid, parentUID);
 
         /// <summary>
         /// Determines whether [is container available] [the specified parent uid].
@@ -64,7 +65,7 @@ namespace ns.Communication.Client {
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing) {
-            UnregisterClient(_clientUID);
+            UnregisterClient(ClientUid);
             base.Dispose(disposing);
         }
     }

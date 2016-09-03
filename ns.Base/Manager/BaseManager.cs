@@ -22,7 +22,7 @@ namespace ns.Base.Manager {
         /// <summary>
         /// Gets the days the log files will be stored.
         /// </summary>
-        public static uint DaysToKeepLogFiles => 30;
+        public static int DaysToKeepLogFiles => 30;
 
         /// <summary>
         /// Gets the default documents path.

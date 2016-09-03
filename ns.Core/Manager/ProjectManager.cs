@@ -82,7 +82,7 @@ namespace ns.Core.Manager {
 
             Configuration.Operations.Add(operation);
 
-            foreach (Property property in operation.Childs.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+            foreach (Property property in operation.Items.Where(p => p is Property && (p as Property).CanAutoConnect)) {
                 List<Property> connectableProperties = FindConnectableProperties(property);
                 if (connectableProperties.Count > 0) {
                     property.Connect(connectableProperties[0]);
@@ -105,7 +105,7 @@ namespace ns.Core.Manager {
 
             if (!Configuration.Operations.Contains(parent)) throw new OperationNotFoundException(parent.Name);
 
-            if (parent.Childs.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
+            if (parent.Items.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
 
             if (CoreSystem.Processor?.State == ProcessorState.Running) {
                 tool.Initialize();
@@ -113,7 +113,7 @@ namespace ns.Core.Manager {
 
             parent.AddChild(tool);
 
-            foreach (Property property in tool.Childs.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+            foreach (Property property in tool.Items.Where(p => p is Property && (p as Property).CanAutoConnect)) {
                 List<Property> connectableProperties = FindConnectableProperties(property);
                 if (connectableProperties.Count > 0) {
                     property.Connect(connectableProperties[0]);
@@ -157,7 +157,7 @@ namespace ns.Core.Manager {
 
             Operation operation = new Operation("Unknown Operation");
 
-            Device device = pluginManager.Nodes.Find(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
+            Device device = pluginManager.Nodes.First(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
             device = device.Clone() as Device;
 
             if (device != null) {
@@ -179,14 +179,14 @@ namespace ns.Core.Manager {
             Operation operation = FindOperation(property);
             Tool tool = FindTool(property);
 
-            foreach (Node childNode in operation.Childs) {
+            foreach (Node childNode in operation.Items) {
                 Tool childTool = childNode as Tool;
                 Property childProperty = childNode as Property;
 
                 if (childTool != null) {
                     if (childTool.Equals(tool)) break;
 
-                    foreach (Property p in childTool.Childs.Where(p => p is Property)) {
+                    foreach (Property p in childTool.Items.Where(p => p is Property)) {
                         if (p.GetType().Equals(property.GetType()) && p.IsOutput) {
                             result.Add(p);
                         }
@@ -206,12 +206,12 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public Operation FindOperation(Property property) {
             foreach (Operation operation in Configuration.Operations) {
-                foreach (Node node in operation.Childs) {
+                foreach (Node node in operation.Items) {
                     Tool childTool = node as Tool;
                     Property childProperty = node as Property;
 
                     if (childTool != null) {
-                        foreach (Property p in childTool.Childs.Where(p => p is Property)) {
+                        foreach (Property p in childTool.Items.Where(p => p is Property)) {
                             if (p == property) {
                                 return operation;
                             }
@@ -233,21 +233,21 @@ namespace ns.Core.Manager {
         public Property FindProperty(string uid) {
             Property property = null;
             foreach (Operation operation in Configuration.Operations) {
-                property = operation.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                property = operation.Items.Find(p => p.UID.Equals(uid)) as Property;
                 if (property != null) {
                     break;
                 }
-                DeviceProperty tmpDeviceProperty = operation.Childs.Find(p => p is DeviceProperty) as DeviceProperty;
+                DeviceProperty tmpDeviceProperty = operation.Items.Find(p => p is DeviceProperty) as DeviceProperty;
                 if (tmpDeviceProperty != null) {
                     Device tmpDevice = tmpDeviceProperty.SelectedItem;
-                    property = tmpDevice.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                    property = tmpDevice.Items.Find(p => p.UID.Equals(uid)) as Property;
                     if (property != null) {
                         break;
                     }
                 }
 
-                foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
-                    property = tool.Childs.Find(p => p.UID.Equals(uid)) as Property;
+                foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
+                    property = tool.Items.Find(p => p.UID.Equals(uid)) as Property;
                     if (property != null) {
                         break;
                     }
@@ -264,8 +264,8 @@ namespace ns.Core.Manager {
         /// <exception cref="PluginNotFoundException"></exception>
         public Tool FindTool(Property property) {
             Operation operation = FindOperation(property);
-            foreach (Tool tool in operation.Childs.Where(t => t is Tool)) {
-                if (tool.Childs.Contains(property)) return tool;
+            foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
+                if (tool.Items.Contains(property)) return tool;
             }
 
             return null;
@@ -278,7 +278,7 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public Tool FindTool(string uid) {
             foreach (Operation operation in Configuration.Operations) {
-                Tool tool = operation.Childs.Find(t => t.UID.Equals(uid)) as Tool;
+                Tool tool = operation.Items.Find(t => t.UID.Equals(uid)) as Tool;
                 return tool;
             }
 
@@ -339,7 +339,7 @@ namespace ns.Core.Manager {
 
             Operation operation = tool.Parent as Operation;
             if (operation != null) {
-                operation.Childs.Remove(tool);
+                operation.Items.Remove(tool);
             }
         }
 
@@ -373,11 +373,11 @@ namespace ns.Core.Manager {
         }
 
         private void UpdateParents(Operation operation) {
-            foreach (Property childProperty in operation.Childs.Where(p => p is Property)) {
+            foreach (Property childProperty in operation.Items.Where(p => p is Property)) {
                 childProperty.Parent = operation;
             }
 
-            foreach (Tool childTool in operation.Childs.Where(t => t is Tool)) {
+            foreach (Tool childTool in operation.Items.Where(t => t is Tool)) {
                 childTool.Parent = operation;
             }
         }

@@ -1,5 +1,4 @@
-﻿using ns.Base.Plugins.Properties;
-using ns.Communication.Models;
+﻿using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using System.ServiceModel;
@@ -70,6 +69,13 @@ namespace ns.Communication.Services {
         /// <param name="uid">The uid.</param>
         [OperationContract]
         void RegisterClient(string uid);
+
+        /// <summary>
+        /// Removes the tool from project.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        [OperationContract(IsOneWay = true)]
+        void RemoveToolFromProject(ToolModel model);
 
         /// <summary>
         /// Unregisters the client.

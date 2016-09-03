@@ -4,7 +4,7 @@ using System.ServiceModel;
 
 namespace ns.Communication.Services.Callbacks {
 
-    public interface IProjectServiceCallbacks : IToolAddedEventHandler {
+    public interface IProjectServiceCallbacks : IToolEventHandlers {
 
         /// <summary>
         /// Called when [operation added].
@@ -19,5 +19,12 @@ namespace ns.Communication.Services.Callbacks {
         /// <param name="model">The model.</param>
         [OperationContract(IsOneWay = true)]
         void OnToolAdded(ToolModel model);
+
+        /// <summary>
+        /// Called when [tool removed].
+        /// </summary>
+        /// <param name="model">The model.</param>
+        [OperationContract(IsOneWay = true)]
+        void OnToolRemoved(ToolModel model);
     }
 }

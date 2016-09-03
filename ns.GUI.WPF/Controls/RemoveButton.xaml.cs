@@ -1,35 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
+
     /// <summary>
     /// Interaktionslogik für RemoveButton.xaml
     /// </summary>
     public partial class RemoveButton : UserControl {
+
+        /// <summary>
+        /// Occurs when [remove confirmed].
+        /// </summary>
+        public event EventHandler<EventArgs> RemoveConfirmed = delegate { };
+
         public RemoveButton() {
             InitializeComponent();
             ConfirmGrid.Height = 0;
         }
 
+        public delegate void EventHandler<EventArgs>(object sender, EventArgs e);
+
         private void Button_Click(object sender, RoutedEventArgs e) {
-            if(sender == RmButton) {
-                GuiHelper.DoubleAnimateControl(0, RmButton, Rectangle.HeightProperty);
-                GuiHelper.DoubleAnimateControl(68, ConfirmGrid, Rectangle.HeightProperty);
-            }else if(sender == NoButton) {
-                GuiHelper.DoubleAnimateControl(34, RmButton, Rectangle.HeightProperty);
-                GuiHelper.DoubleAnimateControl(0, ConfirmGrid, Rectangle.HeightProperty);
+            if (sender == RmButton) {
+                GuiHelper.DoubleAnimateControl(0, RmButton, HeightProperty);
+                GuiHelper.DoubleAnimateControl(68, ConfirmGrid, HeightProperty);
+            } else if (sender == NoButton) {
+                GuiHelper.DoubleAnimateControl(34, RmButton, HeightProperty);
+                GuiHelper.DoubleAnimateControl(0, ConfirmGrid, HeightProperty);
+            } else if (sender == YesButton) {
+                RemoveConfirmed?.Invoke(this, new EventArgs());
             }
         }
     }

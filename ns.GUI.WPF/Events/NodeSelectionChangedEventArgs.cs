@@ -1,5 +1,4 @@
-﻿using ns.Communication.Models;
-using System;
+﻿using System;
 
 namespace ns.GUI.WPF.Events {
 

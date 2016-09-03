@@ -75,6 +75,12 @@ namespace ns.Communication.Client {
         public void RegisterClient(string uid) => Channel?.RegisterClient(uid);
 
         /// <summary>
+        /// Removes the tool from project.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public void RemoveToolFromProject(ToolModel model) => Channel?.RemoveToolFromProject(model);
+
+        /// <summary>
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>

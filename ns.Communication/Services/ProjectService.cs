@@ -270,6 +270,49 @@ namespace ns.Communication.Services {
         }
 
         /// <summary>
+        /// Removes the tool from project.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <exception cref="FaultException">
+        /// Model is empty!
+        /// or
+        /// or
+        /// </exception>
+        public void RemoveToolFromProject(ToolModel model) {
+            if (model == null) {
+                throw new FaultException("Model is empty!");
+            }
+
+            Operation operation = _projectManager.Configuration.Operations.Find(o => o.UID.Equals(model.ParentUID));
+            if (operation == null) {
+                throw new FaultException(string.Format("Could not find operation with UID {0}.", model.ParentUID));
+            }
+
+            Tool tool = operation.Items.Find(t => t.UID.Equals(model.UID)) as Tool;
+
+            if (tool == null) {
+                throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
+            }
+
+            _projectManager.Remove(tool);
+
+            // Notify clients.
+            List<string> damagedUIDs = new List<string>();
+            foreach (var client in _clients) {
+                try {
+                    client.Value?.OnToolRemoved(model);
+                } catch (CommunicationException ex) {
+                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                    damagedUIDs.Add(client.Key);
+                }
+            }
+
+            foreach (string damagedUID in damagedUIDs) {
+                _clients.Remove(damagedUID);
+            }
+        }
+
+        /// <summary>
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>

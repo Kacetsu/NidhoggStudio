@@ -1,11 +1,14 @@
 ﻿using ns.Base;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using ns.Communication.Client;
 using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.GUI.WPF.Controls.Property;
 using System.Linq;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
 namespace ns.GUI.WPF.Controls {
@@ -125,6 +128,13 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private bool IsNumberProperty(Base.Plugins.Properties.Property property) => property is INumerical;
+
+        private void RemoveToolButton_RemoveConfirmed(object sender, System.EventArgs e) {
+            ClientCommunicationManager.ProjectService.RemoveToolFromProject(Model as ToolModel);
+            ButtonAutomationPeer peer = new ButtonAutomationPeer(CloseButton);
+            IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+            invokeProv.Invoke();
+        }
 
         private void SelectionBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
             UpdateContentGrid();

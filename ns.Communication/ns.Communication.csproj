@@ -188,9 +188,9 @@
     <Compile Include="Configuration\CommunicationConfiguration.cs" />
     <Compile Include="Events\CollectionChangedEventArgs.cs" />
     <Compile Include="Events\CollectionChangedEventHandler.cs" />
-    <Compile Include="Events\IToolAddedEventHandler.cs" />
+    <Compile Include="Events\IToolEventHandlers.cs" />
     <Compile Include="Events\ICollectionChangedEventHandler.cs" />
-    <Compile Include="Events\ToolAddedEventHandler.cs" />
+    <Compile Include="Events\ToolEventHandlers.cs" />
     <Compile Include="KnownTypesProvider.cs" />
     <Compile Include="Services\Callbacks\DataStorageServiceCallbacks.cs" />
     <Compile Include="Services\Callbacks\IDataStorageServiceCallbacks.cs" />

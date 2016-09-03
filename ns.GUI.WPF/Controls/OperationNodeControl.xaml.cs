@@ -9,12 +9,19 @@ using System.Windows.Media.Animation;
 namespace ns.GUI.WPF.Controls {
 
     /// <summary>
-    /// Interaktionslogik für OperationNodeControl.xaml
+    /// Logic for <see cref="OperationNodeControl"/> frontend.
     /// </summary>
+    /// <seealso cref="UserControl" />
+    /// <seealso cref="INodeControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class OperationNodeControl : UserControl, INodeControl {
         private IOperationModel _operationModel;
         private LockedObservableCollection<ToolNodeControl> _toolControls;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationNodeControl"/> class.
+        /// </summary>
+        /// <param name="operationModel">The operation model.</param>
         public OperationNodeControl(OperationModel operationModel) {
             InitializeComponent();
             DataContext = operationModel;
@@ -27,10 +34,33 @@ namespace ns.GUI.WPF.Controls {
             Loaded += OperationNodeControl_Loaded;
         }
 
+        /// <summary>
+        /// Gets the model.
+        /// </summary>
+        /// <value>
+        /// The model.
+        /// </value>
         public IPluginModel Model { get { return _operationModel; } }
 
-        public void UpdateChildControls(IEnumerable<ToolModel> toolModels) {
+        /// <summary>
+        /// Adds the child controls.
+        /// </summary>
+        /// <param name="toolModels">The tool models.</param>
+        public void AddChildControls(IEnumerable<ToolModel> toolModels) {
             (Model as IOperationModel).ChildTools.AddRange(toolModels);
+            UpdateChildControls();
+        }
+
+        /// <summary>
+        /// Removes the child controls.
+        /// </summary>
+        /// <param name="toolModels">The tool models.</param>
+        public void RemoveChildControls(IEnumerable<ToolModel> toolModels) {
+            foreach (ToolModel toolModel in toolModels) {
+                IOperationModel operationModel = Model as IOperationModel;
+                ToolModel toolToRemove = operationModel.ChildTools.Find(t => t.UID.Equals(toolModel.UID));
+                (Model as IOperationModel).ChildTools.Remove(toolToRemove);
+            }
             UpdateChildControls();
         }
 

@@ -12,14 +12,18 @@ using System.Windows.Controls;
 namespace ns.GUI.WPF.Controls {
 
     /// <summary>
-    /// Interaktionslogik für ProjectExplorer.xaml
+    /// Logic for <see cref="ProjectExplorer"/> frontend.
     /// </summary>
+    /// <seealso cref="UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
+    /// <seealso cref="IDisposable" />
     public partial class ProjectExplorer : UserControl, IDisposable {
-        //private GuiManager _guiManager;
-
         private IEnumerable<OperationModel> _operationModels;
         private Task _task;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectExplorer"/> class.
+        /// </summary>
         public ProjectExplorer() {
             InitializeComponent();
             Loaded += HandleLoaded;
@@ -27,8 +31,14 @@ namespace ns.GUI.WPF.Controls {
 
         public delegate void ConfigNodeHandler(object sender, NodeSelectionChangedEventArgs<object> e);
 
+        /// <summary>
+        /// Occurs when [configuration node handler changed].
+        /// </summary>
         public event ConfigNodeHandler ConfigNodeHandlerChanged;
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -65,17 +75,13 @@ namespace ns.GUI.WPF.Controls {
 
             ClientCommunicationManager.ProjectService.Callback.ToolAdded -= ProjectServiceCallback_ToolAdded;
             ClientCommunicationManager.ProjectService.Callback.ToolAdded += ProjectServiceCallback_ToolAdded;
+            ClientCommunicationManager.ProjectService.Callback.ToolRemoved -= ProjectServiceCallback_ToolRemoved;
+            ClientCommunicationManager.ProjectService.Callback.ToolRemoved += ProjectServiceCallback_ToolRemoved;
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e) {
             if (DesignerProperties.GetIsInDesignMode(this)) return;
 
-            //_projectManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(ProjectManager))) as ProjectManager;
-            //_guiManager = CoreSystem.Managers.Find(m => m.Name.Contains(nameof(GuiManager))) as GuiManager;
-
-            //if (_projectManager == null)
-            //    throw new Exception("ProjectManager is NULL!");
-            //_projectManager.Loaded += HandleProjectLoaded;
             _task = new Task(GenerateTree);
             _task.Start();
         }
@@ -88,21 +94,23 @@ namespace ns.GUI.WPF.Controls {
             ConfigNodeHandlerChanged?.Invoke(this, new NodeSelectionChangedEventArgs<object>(node));
         }
 
-        private void ProjectManagerLoading() {
-            //foreach (NodeTreeItem item in this.ProjectTree.Items) {
-            //    if (item is OperationTreeItem) {
-            //        ((OperationTreeItem)item).Close();
-            //    }
-            //}
-            //this.ProjectTree.Items.Clear();
-        }
-
         private void ProjectServiceCallback_ToolAdded(object sender, Communication.Events.CollectionChangedEventArgs e) {
             string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
             foreach (UIElement element in ContentGrid.Children) {
                 OperationNodeControl operationControl = element as OperationNodeControl;
                 if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
-                operationControl.UpdateChildControls(e.NewObjects as IEnumerable<ToolModel>);
+                operationControl.AddChildControls(e.NewObjects as IEnumerable<ToolModel>);
+                break;
+            }
+        }
+
+        private void ProjectServiceCallback_ToolRemoved(object sender, Communication.Events.CollectionChangedEventArgs e) {
+            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
+            foreach (UIElement element in ContentGrid.Children) {
+                OperationNodeControl operationControl = element as OperationNodeControl;
+                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
+                operationControl.RemoveChildControls(e.NewObjects as IEnumerable<ToolModel>);
+                FrontendManager.SelectedModel = operationControl.Model;
                 break;
             }
         }

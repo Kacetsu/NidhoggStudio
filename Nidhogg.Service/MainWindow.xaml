@@ -5,17 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nidhogg.Service"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Nidhogg Server" Height="350" Width="525" Closing="Window_Closing" Loaded="Window_Loaded" Icon="Images/NidhoggStudioDesktopIcon.ico" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Name="_configGrid">
-            <StackPanel Orientation="Horizontal" Height="30" Margin="10,0">
-                <TextBlock Text="Address:" MinWidth="100" Margin="0,5" />
-                <TextBox Text="{Binding Path=Configuration.Address.Value,FallbackValue=Empty,Mode=OneWay}" IsReadOnly="True" Margin="0,5" />
-            </StackPanel>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="#FF96AA39">
+                <TextBlock Text="Server Status" Foreground="#7F000000" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Name="NameGrrd">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="TCP Address:" MinWidth="150" Margin="4,4" FontWeight="Bold" Foreground="#BF000000" />
+                    <TextBlock Text="HTTP Address:" MinWidth="150" Margin="4,4" FontWeight="Bold" Foreground="#BF000000" Grid.Row="1" />
+                    <TextBlock Text="Available Services:" MinWidth="150" Margin="4,4" FontWeight="Bold" Foreground="#BF000000" Grid.Row="2" />
+                </Grid>
+                <Border  Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="#3F000000">
+                    <Grid Name="ValueGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBox Text="{Binding Path=Configuration.TcpAddress.Value,FallbackValue=Disabled,Mode=OneWay}" IsReadOnly="True" Margin="4,4" />
+                        <TextBox Text="{Binding Path=Configuration.HttpAddress.Value,FallbackValue=Disabled,Mode=OneWay}" IsReadOnly="True" Margin="4,4" Grid.Row="1" />
+                        <ListBox ItemsSource="{Binding Path=AvailableServiceTypes}" DisplayMemberPath="Name" BorderThickness="0" Margin="4" Grid.Row="2" />
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
+        <StatusBar Grid.Row="1" Background="#FF007ACC">
+            <StatusBarItem Margin="10,0" FlowDirection="RightToLeft">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Host" Margin="5,0" Foreground="White" />
+                    <Image Source="Images/NetworkConnection.png" Height="15" Width="15" />
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

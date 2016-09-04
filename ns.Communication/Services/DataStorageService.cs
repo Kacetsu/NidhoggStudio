@@ -4,7 +4,9 @@ using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
@@ -112,8 +114,8 @@ namespace ns.Communication.Services {
             if (e.NewContainers.Count == 0) return;
 
             // Notify clients.
-            Task sendTask = Task.Factory.StartNew(() => {
-                ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+            ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+            Task.Factory.StartNew(() => {
                 Parallel.ForEach(_clients, (client) => {
                     try {
                         client.Value?.OnDataStorageCollectionChanged(e.NewContainers);

@@ -1,15 +1,16 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Log;
+using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace ns.Communication.Services {
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class ProcessorService : IProcessorService {
-        private Dictionary<string, IProcessorServiceCallbacks> _clients = new Dictionary<string, IProcessorServiceCallbacks>();
+        private ConcurrentDictionary<string, IProcessorServiceCallbacks> _clients = new ConcurrentDictionary<string, IProcessorServiceCallbacks>();
 
         /// <summary>
         /// Gets the proxy.
@@ -34,7 +35,7 @@ namespace ns.Communication.Services {
             if (_clients.ContainsKey(uid)) {
                 throw new FaultException(string.Format("Client {0} already exists!", uid));
             }
-            _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IProcessorServiceCallbacks>());
+            _clients.TryAdd(uid, OperationContext.Current.GetCallbackChannel<IProcessorServiceCallbacks>());
         }
 
         /// <summary>
@@ -45,8 +46,19 @@ namespace ns.Communication.Services {
             if (!CoreSystem.Processor.Start()) {
                 throw new FaultException(string.Format("Could not start processor!"));
             } else {
-                foreach (var client in _clients) {
-                    client.Value?.OnProcessorStarted(new ProcessorInfoModel(CoreSystem.Processor));
+                ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+                Parallel.ForEach(_clients, (client) => {
+                    try {
+                        client.Value?.OnProcessorStarted(new ProcessorInfoModel(CoreSystem.Processor));
+                    } catch (CommunicationException ex) {
+                        Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                        damagedUIDs.Add(client.Key);
+                    }
+                });
+
+                foreach (string damagedUID in damagedUIDs) {
+                    IProcessorServiceCallbacks callback;
+                    _clients.TryRemove(damagedUID, out callback);
                 }
             }
         }
@@ -70,6 +82,9 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public void UnregisterClient(string uid) => _clients?.Remove(uid);
+        public void UnregisterClient(string uid) {
+            IProcessorServiceCallbacks callback;
+            _clients?.TryRemove(uid, out callback);
+        }
     }
 }

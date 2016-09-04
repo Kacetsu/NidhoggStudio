@@ -8,21 +8,12 @@ namespace ns.Communication.Configuration {
     public class CommunicationConfiguration : BaseConfiguration, IBaseConfiguration {
 
         /// <summary>
-        /// Gets or sets the address.
-        /// </summary>
-        /// <value>
-        /// The address.
-        /// </value>
-        [DataMember]
-        public StringProperty Address { get; set; } = new StringProperty(nameof(Address), "net.tcp://localhost:8080/");
-
-        /// <summary>
         /// Gets the data storage service address.
         /// </summary>
         /// <value>
         /// The data storage service address.
         /// </value>
-        public string DataStorageServiceAddress { get { return string.Format("{0}DataStorage", Address.Value); } }
+        public string DataStorageServiceAddress { get { return string.Format("{0}DataStorage", TcpAddress.Value); } }
 
         /// <summary>
         /// Gets the maximum size of the received message.
@@ -38,7 +29,7 @@ namespace ns.Communication.Configuration {
         /// <value>
         /// The plugin service address.
         /// </value>
-        public string PluginServiceAddress { get { return string.Format("{0}Plugin", Address.Value); } }
+        public string PluginServiceAddress { get { return string.Format("{0}Plugin", TcpAddress.Value); } }
 
         /// <summary>
         /// Gets the processor service address.
@@ -46,7 +37,7 @@ namespace ns.Communication.Configuration {
         /// <value>
         /// The processor service address.
         /// </value>
-        public string ProcessorServiceAddress { get { return string.Format("{0}Processor", Address.Value); } }
+        public string ProcessorServiceAddress { get { return string.Format("{0}Processor", TcpAddress.Value); } }
 
         /// <summary>
         /// Gets the project service address.
@@ -54,6 +45,15 @@ namespace ns.Communication.Configuration {
         /// <value>
         /// The project service address.
         /// </value>
-        public string ProjectServiceAddress { get { return string.Format("{0}Project", Address.Value); } }
+        public string ProjectServiceAddress { get { return string.Format("{0}Project", TcpAddress.Value); } }
+
+        /// <summary>
+        /// Gets or sets the address.
+        /// </summary>
+        /// <value>
+        /// The address.
+        /// </value>
+        [DataMember]
+        public StringProperty TcpAddress { get; set; } = new StringProperty(nameof(TcpAddress), "net.tcp://localhost:8080/");
     }
 }

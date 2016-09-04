@@ -2,6 +2,7 @@
 using ns.Core;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 
 namespace Nidhogg.Service {
@@ -23,12 +24,17 @@ namespace Nidhogg.Service {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            if (!CoreSystem.Instance.IsInitialized) {
-                throw new TypeInitializationException(nameof(CoreSystem), null);
-            }
-            CommunicationManager.Instance.Connect();
-            ns.Base.Log.Trace.WriteLine(string.Format("Connected establised [{0}]!", CommunicationManager.Instance.IsConnected), CommunicationManager.Instance.IsConnected ? TraceEventType.Information : TraceEventType.Warning);
-            DataContext = CommunicationManager.Instance;
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            Title = Title + " (" + version.ToString() + ")";
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                if (!CoreSystem.Instance.IsInitialized) {
+                    throw new TypeInitializationException(nameof(CoreSystem), null);
+                }
+
+                CommunicationManager.Instance.Connect();
+                ns.Base.Log.Trace.WriteLine(string.Format("Connected establised [{0}]!", CommunicationManager.Instance.IsConnected), CommunicationManager.Instance.IsConnected ? TraceEventType.Information : TraceEventType.Warning);
+                DataContext = CommunicationManager.Instance;
+            }));
         }
     }
 }

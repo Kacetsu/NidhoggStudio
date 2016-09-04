@@ -100,7 +100,7 @@ namespace ns.Plugin.AForge.Filters {
                 Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
 
                 AFilter.ConservativeSmoothing filter = new AFilter.ConservativeSmoothing();
-                filter.KernelSize = (int)_kernelSize.Value;
+                filter.KernelSize = _kernelSize.Value;
                 Bitmap destination = filter.Apply(source);
 
                 _imageOutput.Value = Converter.ToImageContainer(destination as Bitmap);

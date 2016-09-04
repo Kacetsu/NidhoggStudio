@@ -1,11 +1,9 @@
-﻿using ns.Communication;
-using ns.Communication.Client;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 
-namespace Nidhogg_Studio {
+namespace Nidhogg.Service {
 
     /// <summary>
     /// Interaction logic for SplashWindow.xaml
@@ -26,18 +24,7 @@ namespace Nidhogg_Studio {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             CopyrightTextBox.Text = string.Format("{0} {1} {2}", CopyrightTextBox.Text, DateTime.Now.Year, "Levent Tasdemir");
             Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                try {
-                    ClientCommunicationManager.Instance.Connect();
-                } catch (Exception ex) {
-                    ns.Base.Log.Trace.WriteLine(string.Format("Connected establised [{0}]!{1}{2}", ClientCommunicationManager.Instance.IsConnected, Environment.NewLine, ex.ToString()), TraceEventType.Warning);
-                }
-
-                if (!ClientCommunicationManager.Instance.IsConnected) {
-                    CoreComHelper.InitializeCoreSystemAndCommunicationManager();
-                    ClientCommunicationManager.Instance.Connect();
-                }
-
-                ns.Base.Log.Trace.WriteLine(string.Format("Connected establised [{0}]!", ClientCommunicationManager.Instance.IsConnected), ClientCommunicationManager.Instance.IsConnected ? TraceEventType.Information : TraceEventType.Warning);
+                MainWindow mainWindow = new MainWindow();
                 _stopwatch.Stop();
                 long elapsedMilliseconds = _stopwatch.ElapsedMilliseconds;
 
@@ -45,9 +32,8 @@ namespace Nidhogg_Studio {
                     Thread.Sleep((int)(MIN_STARTUP_TIME - elapsedMilliseconds));
                 }
 
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
                 Close();
+                mainWindow.Show();
             }));
         }
     }

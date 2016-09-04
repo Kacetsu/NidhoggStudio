@@ -18,7 +18,7 @@ namespace ns.Plugin.AForge {
         /// <returns></returns>
         public static Bitmap ToBitmap(byte[] bytes, int width, int height, int stride, PixelFormat pixelFormat) {
             Bitmap bitmap = new Bitmap(width, height, pixelFormat);
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, pixelFormat);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, pixelFormat);
             Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
             bitmap.UnlockBits(data);
             return bitmap;

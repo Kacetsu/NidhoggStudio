@@ -32,6 +32,14 @@ namespace ns.Communication {
         public static CommunicationManager Instance { get; } = _lazyInstance.Value;
 
         /// <summary>
+        /// Gets the avaialble service types.
+        /// </summary>
+        /// <value>
+        /// The avaialble service types.
+        /// </value>
+        public ICollection<Type> AvailableServiceTypes { get; } = new List<Type>();
+
+        /// <summary>
         /// Gets a value indicating whether this instance is connected.
         /// </summary>
         /// <value>
@@ -63,10 +71,10 @@ namespace ns.Communication {
         public void Connect() {
             if (IsConnected) return;
             Configuration = new CommunicationConfiguration();
-            _uri = new Uri(Configuration.Address.Value);
+            _uri = new Uri(Configuration.TcpAddress.Value);
 
             try {
-                _uri = new Uri(Configuration.Address.Value);
+                _uri = new Uri(Configuration.TcpAddress.Value);
                 _serviceTasks.Add(new Task(StartPluginService));
                 _serviceTasks.Add(new Task(StartProjectService));
                 _serviceTasks.Add(new Task(StartProcessorService));
@@ -121,6 +129,10 @@ namespace ns.Communication {
 
         private void StartService<T, U>(string address, SemaphoreSlim semaphore) where T : class {
             Uri baseAddress = new Uri(address);
+
+            if (!AvailableServiceTypes.Contains(typeof(T))) {
+                AvailableServiceTypes.Add(typeof(T));
+            }
 
             // Create the ServiceHost.
             using (ServiceHost host = new ServiceHost(typeof(T), baseAddress)) {

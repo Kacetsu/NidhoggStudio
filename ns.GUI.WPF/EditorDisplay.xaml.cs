@@ -1,6 +1,7 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.GUI.WPF.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -122,50 +123,13 @@ namespace ns.GUI.WPF {
         private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(FrontendManager.SelectedPluginImage))) {
                 ImageContainer imageContainer = FrontendManager.SelectedPluginImage.Value;
-                Image = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
-                Image.Freeze();
+                BitmapSource bitmapSource = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
+                bitmapSource.Freeze();
+                Image = bitmapSource;
                 ImageHeight = Image.Height;
                 ImageWidth = Image.Width;
             }
         }
-
-        //private void _guiManager_SelectedItemChanged(object sender, Base.Event.NodeSelectionChangedEventArgs e) {
-        //    if (e.SelectedNode == null) return;
-
-        //    if (_rectangles != null) _rectangles.Clear();
-        //    Image oldImageDisplay = ImageDisplay;
-        //    ImageCanvas.Children.Clear();
-        //    ImageCanvas.Children.Add(oldImageDisplay);
-
-        //    if (_lastImageProperty != null) {
-        //        _lastImageProperty.PropertyChanged -= _lastImageProperty_PropertyChanged;
-        //    }
-
-        //    if (e.SelectedNode is Plugin) {
-        //        bool containsNewImage = false;
-        //        Plugin plugin = e.SelectedNode as Plugin;
-        //        foreach (Node child in plugin.Childs) {
-        //            if (child is ImageProperty) {
-        //                ImageProperty imageProperty = child as ImageProperty;
-        //                if (imageProperty.IsOutput || imageProperty.IsVisible) {
-        //                    if (!imageProperty.IsOutput && imageProperty.ConnectedProperty != null) {
-        //                        _lastImageProperty = imageProperty.ConnectedProperty as ImageProperty;
-        //                    } else {
-        //                        _lastImageProperty = imageProperty;
-        //                    }
-        //                    containsNewImage = true;
-        //                    break;
-        //                }
-        //            }
-        //        }
-
-        //        if (!containsNewImage) {
-        //            _lastImageProperty = null;
-        //            ImageDisplay.Visibility = Visibility.Hidden;
-        //        } else {
-        //            ImageDisplay.Visibility = Visibility.Visible;
-        //        }
-        //    }
 
         private BitmapSource ImageContainerToBitmapSource(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
             PixelFormat pixelFormat = PixelFormats.Bgr24;

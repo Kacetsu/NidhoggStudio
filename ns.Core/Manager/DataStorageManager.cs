@@ -1,4 +1,5 @@
 ﻿using ns.Base.Event;
+using ns.Base.Log;
 using ns.Base.Manager;
 using ns.Base.Manager.DataStorage;
 using System;

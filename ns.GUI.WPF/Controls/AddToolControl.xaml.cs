@@ -17,7 +17,6 @@ namespace ns.GUI.WPF.Controls {
         private bool _isCollapsed = true;
         private Task _task;
         private Thickness _toggleButtonMargin = new Thickness(0, 12, 0, 0);
-        private double _toggleButtonRotation = 180d;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddToolControl"/> class.
@@ -49,20 +48,6 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        /// <summary>
-        /// Gets or sets the toggle button rotation.
-        /// </summary>
-        /// <value>
-        /// The toggle button rotation.
-        /// </value>
-        public double ToggleButtonRotation {
-            get { return _toggleButtonRotation; }
-            set {
-                _toggleButtonRotation = value;
-                OnPropertyChanged();
-            }
-        }
-
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -88,12 +73,14 @@ namespace ns.GUI.WPF.Controls {
             if (_isCollapsed) {
                 GuiHelper.DoubleAnimateControl(500d, this, HeightProperty);
                 _isCollapsed = false;
-                ToggleButtonRotation = 0d;
+                ToggleButtonDown.Visibility = Visibility.Visible;
+                ToggleButtonUp.Visibility = Visibility.Hidden;
                 ToggleButtonMargin = new Thickness(0);
             } else {
                 GuiHelper.DoubleAnimateControl(60d, this, HeightProperty);
                 _isCollapsed = true;
-                ToggleButtonRotation = 180d;
+                ToggleButtonDown.Visibility = Visibility.Hidden;
+                ToggleButtonUp.Visibility = Visibility.Visible;
                 ToggleButtonMargin = new Thickness(0, 12, 0, 0);
             }
         }

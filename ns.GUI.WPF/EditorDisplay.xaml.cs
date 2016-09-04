@@ -1,7 +1,6 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.GUI.WPF.Controls;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;

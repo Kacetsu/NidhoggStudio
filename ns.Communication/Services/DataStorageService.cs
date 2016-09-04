@@ -4,9 +4,7 @@ using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
@@ -104,7 +102,7 @@ namespace ns.Communication.Services {
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <exception cref="NotImplementedException"></exception>
         public void UnregisterClient(string uid) {
             IDataStorageServiceCallbacks callback;
             _clients?.TryRemove(uid, out callback);

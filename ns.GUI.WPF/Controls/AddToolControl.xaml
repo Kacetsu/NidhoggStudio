@@ -19,11 +19,10 @@
             </Grid.ColumnDefinitions>
             <Button Name="ToggleButton" Click="Button_Click">
                 <Button.Content>
-                    <TextBlock Text="v" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="36" Margin="{Binding Path=ToggleButtonMargin, FallbackValue=0}">
-                        <TextBlock.LayoutTransform>
-                            <RotateTransform Angle="{Binding Path=ToggleButtonRotation,FallbackValue=180}" />
-                        </TextBlock.LayoutTransform>
-                    </TextBlock>
+                    <Grid>
+                        <Path Data="M0,0L16,16 32,0z" Fill="{DynamicResource HalfTransparentForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Name="ToggleButtonDown" Visibility="Hidden" Opacity="0.5" />
+                        <Path Data="M0,16L16,0 32,16z" Fill="{DynamicResource HalfTransparentForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Name="ToggleButtonUp" Visibility="Visible" Opacity="0.5" />
+                    </Grid>
                 </Button.Content>
             </Button>
             <TextBlock Text="{DynamicResource S_T_Add_new_Element}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />

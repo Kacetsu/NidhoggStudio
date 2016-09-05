@@ -4,7 +4,7 @@ using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.GUI.WPF.Events;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 
@@ -17,6 +17,8 @@ namespace ns.GUI.WPF {
         private static IPluginModel _selectedModel;
 
         private static ImageProperty _selectedPluginImage;
+
+        private static ICollection<Property> _selectedPluginProperties;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FrontendManager"/> class.
@@ -96,6 +98,22 @@ namespace ns.GUI.WPF {
         }
 
         /// <summary>
+        /// Gets the selected plugin properties.
+        /// </summary>
+        /// <value>
+        /// The selected plugin properties.
+        /// </value>
+        public static ICollection<Property> SelectedPluginProperties {
+            get { return _selectedPluginProperties; }
+            private set {
+                if (_selectedPluginProperties != value) {
+                    _selectedPluginProperties = value;
+                    Instance.OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
         /// Called when [node configuration clicked].
         /// </summary>
         /// <param name="control">The control.</param>
@@ -130,17 +148,17 @@ namespace ns.GUI.WPF {
         }
 
         private void _dataStorageConsumer_DataStorageAdded(object sender, DataStorageContainerModelAddedEventArgs e) {
-            foreach (PropertyModel propertyModel in e.ContainerModel.Properties.Where(p => p.Property is ImageProperty)) {
-                SelectedPluginImage = propertyModel.Property as ImageProperty;
+            List<Property> properties = new List<Property>();
+            foreach (PropertyModel propertyModel in e.ContainerModel.Properties) {
+                ImageProperty imageProperty = propertyModel.Property as ImageProperty;
+                if (imageProperty != null) {
+                    SelectedPluginImage = imageProperty;
+                }
+
+                properties.Add(propertyModel.Property);
             }
-        }
 
-        private void ProcessorStarted() {
-            IsRunning = true;
-        }
-
-        private void ProcessorStopped() {
-            IsRunning = false;
+            SelectedPluginProperties = properties;
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Windows.Controls;
 namespace ns.GUI.WPF.Controls {
 
     /// <summary>
-    /// Interaktionslogik für AddToolControl.xaml
+    /// Logic for <see cref="AddToolControl"/>
     /// </summary>
     public partial class AddToolControl : UserControl, INotifyPropertyChanged, IDisposable {
         private bool _isCollapsed = true;
@@ -48,6 +48,9 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);

@@ -2,6 +2,7 @@
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -14,6 +15,8 @@ namespace ns.Base.Plugins {
     [DataContract(IsReference = true), KnownType(typeof(OperationTrigger))]
     public class Operation : Plugin {
         private Device _captureDevice;
+        private IntegerProperty _elapsedMsProperty;
+        private IntegerProperty _iterationProperty;
         private ImageProperty _outImageProperty;
 
         /// <summary>
@@ -25,6 +28,12 @@ namespace ns.Base.Plugins {
             AddChild(new DeviceProperty(nameof(CaptureDevice)));
             AddChild(new StringProperty("LinkedOperation", false));
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
+            IntegerProperty elapsedMsProperty = new IntegerProperty("ElapsedMs", true);
+            elapsedMsProperty.Tolerance = new Tolerance<int>(0, 10000);
+            AddChild(elapsedMsProperty);
+            IntegerProperty iterationProperty = new IntegerProperty("Iterations", true);
+            iterationProperty.Tolerance = new Tolerance<int>(0, int.MaxValue);
+            AddChild(iterationProperty);
             AddChild(new ImageProperty("OutImage", true));
         }
 
@@ -119,6 +128,8 @@ namespace ns.Base.Plugins {
             }
 
             _outImageProperty = GetProperty<ImageProperty>("OutImage");
+            _elapsedMsProperty = GetProperty<IntegerProperty>("ElapsedMs");
+            _iterationProperty = GetProperty<IntegerProperty>("Iterations");
 
             foreach (Tool tool in Items.Where(t => t is Tool)) {
                 if (!(result = tool.Initialize())) {
@@ -136,6 +147,7 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool TryRun() {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             bool result = CaptureDevice?.TryPreRun() == true;
 
             if (result) {
@@ -146,6 +158,12 @@ namespace ns.Base.Plugins {
             }
 
             result = CaptureDevice?.TryPostRun() == true;
+            _elapsedMsProperty.Value = (int)stopwatch.ElapsedMilliseconds;
+            if (_iterationProperty.Value < int.MaxValue) {
+                _iterationProperty.Value++;
+            } else {
+                _iterationProperty.Value = 0;
+            }
             return result;
         }
 

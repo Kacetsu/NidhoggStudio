@@ -1,5 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
-using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -10,8 +10,8 @@ namespace ns.Base.Plugins {
     /// </summary>
     [DataContract]
     public class Tool : Plugin {
-        private DoubleProperty _executionTimeMs;
-        private DateTime _timeMeasureStart;
+        private IntegerProperty _executionTimeMs;
+        private Stopwatch _stopwatch;
 
         /// <summary>
         /// Base Class for all Tools.
@@ -19,8 +19,8 @@ namespace ns.Base.Plugins {
         /// </summary>
         public Tool() : base() {
             Name = string.IsNullOrEmpty(DisplayName) ? GetType().Name : DisplayName;
-            DoubleProperty executionTimeMs = new DoubleProperty("ExecutionTimeMs", true);
-            executionTimeMs.Tolerance = new Tolerance<double>(0, 1000);
+            IntegerProperty executionTimeMs = new IntegerProperty("ExecutionTimeMs", true);
+            executionTimeMs.Tolerance = new Tolerance<int>(0, 1000);
             AddChild(executionTimeMs);
         }
 
@@ -74,7 +74,7 @@ namespace ns.Base.Plugins {
         /// Success of the Operation.
         /// </returns>
         public override bool Initialize() {
-            _executionTimeMs = GetProperty<DoubleProperty>("ExecutionTimeMs");
+            _executionTimeMs = GetProperty<IntegerProperty>("ExecutionTimeMs");
             return base.Initialize();
         }
 
@@ -83,8 +83,8 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <returns></returns>
         public override bool TryPostRun() {
-            if (_timeMeasureStart != null)
-                _executionTimeMs.Value = DateTime.Now.Subtract(_timeMeasureStart).TotalMilliseconds;
+            _stopwatch?.Stop();
+            _executionTimeMs.Value = _stopwatch != null ? (int)_stopwatch.ElapsedMilliseconds : -1;
 
             return base.TryPostRun();
         }
@@ -94,7 +94,7 @@ namespace ns.Base.Plugins {
         /// </summary>
         /// <returns></returns>
         public override bool TryPreRun() {
-            _timeMeasureStart = DateTime.Now;
+            _stopwatch = Stopwatch.StartNew();
 
             return base.TryPreRun();
         }

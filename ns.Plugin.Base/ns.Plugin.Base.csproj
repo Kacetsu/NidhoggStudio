@@ -177,7 +177,6 @@
     <Compile Include="CheckIntensity.cs" />
     <Compile Include="Grayscale.cs" />
     <Compile Include="ImageFileDevice.cs" />
-    <Compile Include="IterationCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sleep.cs" />
   </ItemGroup>

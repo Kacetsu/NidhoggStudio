@@ -4,7 +4,6 @@ using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.Serialization;
 using AFilter = global::AForge.Imaging.Filters;
 

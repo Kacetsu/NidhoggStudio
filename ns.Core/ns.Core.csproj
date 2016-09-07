@@ -196,6 +196,7 @@
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">
       <Project>{00dcaa11-d1c1-4b68-a20d-94866d2d858c}</Project>
       <Name>ns.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

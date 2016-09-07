@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 namespace ns.GUI.WPF {
 
     /// <summary>
-    /// Interaktionslogik für EditorDisplay.xaml
+    /// Logic for <see cref="EditorDisplay"/>.
     /// </summary>
     public partial class EditorDisplay : UserControl, INotifyPropertyChanged {
         private BitmapSource _image = null;

@@ -5,7 +5,6 @@ using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.Serialization;
 using AFilter = global::AForge.Imaging.Filters;
 
@@ -89,13 +88,8 @@ namespace ns.Plugin.AForge.Filters {
                 ImageContainer inputContainer = _imageInput.Value.DeepClone();
                 ImageContainer overlayContainer = _imageMask.Value.DeepClone();
 
-                PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
-
-                if (inputContainer.BytesPerPixel == 1)
-                    pixelFormat = PixelFormat.Format8bppIndexed;
-
-                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
-                Bitmap mask = Converter.ToBitmap(overlayContainer.Data, overlayContainer.Width, overlayContainer.Height, overlayContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, inputContainer.BytesPerPixel);
+                Bitmap mask = Converter.ToBitmap(overlayContainer.Data, overlayContainer.Width, overlayContainer.Height, overlayContainer.Stride, inputContainer.BytesPerPixel);
 
                 global::AForge.Imaging.UnmanagedImage uSource = global::AForge.Imaging.UnmanagedImage.FromManagedImage(source);
                 global::AForge.Imaging.UnmanagedImage uMask = global::AForge.Imaging.UnmanagedImage.FromManagedImage(mask);

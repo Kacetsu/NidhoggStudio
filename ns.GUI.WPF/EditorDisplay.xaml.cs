@@ -122,7 +122,12 @@ namespace ns.GUI.WPF {
         private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(FrontendManager.SelectedPluginImage))) {
                 ImageContainer imageContainer = FrontendManager.SelectedPluginImage.Value;
-                BitmapSource bitmapSource = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
+                BitmapSource bitmapSource = null;
+                if (imageContainer.Data?.Length > 0) {
+                    bitmapSource = ImageContainerToBitmapSource(imageContainer.Data, imageContainer.Width, imageContainer.Height, imageContainer.Stride, imageContainer.BytesPerPixel);
+                } else {
+                    bitmapSource = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Gray8, null, new byte[1], 1);
+                }
                 bitmapSource.Freeze();
                 Image = bitmapSource;
                 ImageHeight = Image.Height;
@@ -133,10 +138,19 @@ namespace ns.GUI.WPF {
         private BitmapSource ImageContainerToBitmapSource(byte[] imageData, int width, int height, int stride, byte bytesPerPixel) {
             PixelFormat pixelFormat = PixelFormats.Bgr24;
 
-            if (bytesPerPixel == 1)
+            switch (bytesPerPixel) {
+                case 1:
                 pixelFormat = PixelFormats.Gray8;
-            else if (bytesPerPixel == 4)
+                break;
+
+                case 3:
+                pixelFormat = PixelFormats.Bgr24;
+                break;
+
+                case 4:
                 pixelFormat = PixelFormats.Bgr32;
+                break;
+            }
 
             return BitmapSource.Create(
                 width,

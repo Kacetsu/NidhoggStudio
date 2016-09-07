@@ -4,7 +4,6 @@ using ns.Base.Plugins.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.Serialization;
 using AFilter = global::AForge.Imaging.Filters;
 
@@ -90,12 +89,7 @@ namespace ns.Plugin.AForge.Filters {
             try {
                 ImageContainer inputContainer = _imageInput.Value;
 
-                PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
-
-                if (inputContainer.BytesPerPixel == 1)
-                    pixelFormat = PixelFormat.Format8bppIndexed;
-
-                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, pixelFormat);
+                Bitmap source = Converter.ToBitmap(inputContainer.Data, inputContainer.Width, inputContainer.Height, inputContainer.Stride, inputContainer.BytesPerPixel);
 
                 AFilter.Blur filter = new AFilter.Blur();
                 filter.Divisor = _divisor.Value;

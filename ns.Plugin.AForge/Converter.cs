@@ -18,10 +18,38 @@ namespace ns.Plugin.AForge {
         /// <returns></returns>
         public static Bitmap ToBitmap(byte[] bytes, int width, int height, int stride, PixelFormat pixelFormat) {
             Bitmap bitmap = new Bitmap(width, height, pixelFormat);
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, pixelFormat);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, pixelFormat);
             Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
             bitmap.UnlockBits(data);
             return bitmap;
+        }
+
+        /// <summary>
+        /// To the bitmap.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="stride">The stride.</param>
+        /// <param name="bytesPerPixel">The bytes per pixel.</param>
+        /// <returns></returns>
+        public static Bitmap ToBitmap(byte[] bytes, int width, int height, int stride, byte bytesPerPixel) {
+            PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
+            switch (bytesPerPixel) {
+                case 4:
+                pixelFormat = PixelFormat.Format32bppArgb;
+                break;
+
+                case 3:
+                pixelFormat = PixelFormat.Format24bppRgb;
+                break;
+
+                case 1:
+                pixelFormat = PixelFormat.Format8bppIndexed;
+                break;
+            }
+
+            return ToBitmap(bytes, width, height, stride, pixelFormat);
         }
 
         /// <summary>
@@ -37,12 +65,16 @@ namespace ns.Plugin.AForge {
                 bpp = 4;
                 break;
 
-                case PixelFormat.Format8bppIndexed:
-                bpp = 1;
+                case PixelFormat.Format32bppArgb:
+                bpp = 4;
                 break;
 
-                default:
+                case PixelFormat.Format24bppRgb:
                 bpp = 3;
+                break;
+
+                case PixelFormat.Format8bppIndexed:
+                bpp = 1;
                 break;
             }
 

@@ -1,5 +1,6 @@
-﻿using ns.Base.Plugins;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
+using ns.Communication.Models;
+using ns.Communication.Models.Properties;
 using ns.GUI.WPF.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -102,13 +103,13 @@ namespace ns.GUI.WPF {
             }
         }
 
-        private void AddOverlayProperties(Tool parent) {
+        private void AddOverlayProperties(ToolModel parent) {
             if (parent == null) return;
             if (_rectangles == null) _rectangles = new List<OverlayRectangle>();
 
-            foreach (Property child in parent.Items.Where(c => c is Property)) {
-                if (!child.IsOutput && child is RectangleProperty) {
-                    OverlayRectangle overlay = new OverlayRectangle(child as RectangleProperty, ImageCanvas);
+            foreach (PropertyModel child in parent.Properties.Where(c => c.Property is Property)) {
+                if (!child.Property.IsOutput && child.Property is RectangleProperty) {
+                    OverlayRectangle overlay = new OverlayRectangle(child.Property as RectangleProperty, ImageCanvas);
                     _rectangles.Add(overlay);
                     ImageCanvas.Children.Add(overlay.Rectangle);
                 }
@@ -132,6 +133,10 @@ namespace ns.GUI.WPF {
                 Image = bitmapSource;
                 ImageHeight = Image.Height;
                 ImageWidth = Image.Width;
+            } else if (e.PropertyName.Equals(nameof(FrontendManager.SelectedModel))) {
+                ImageCanvas.Children.Clear();
+                ImageCanvas.Children.Add(ImageDisplay);
+                AddOverlayProperties(FrontendManager.SelectedModel as ToolModel);
             }
         }
 

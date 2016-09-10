@@ -30,7 +30,11 @@
                     <ColumnDefinition Width="44" />
                 </Grid.ColumnDefinitions>
                 <RepeatButton Name="XNegButton" Delay="500" Interval="100" Grid.Column="0" Content="-" Style="{StaticResource NumberDownButton}" Click="Button_Click" />
-                <TextBox Name="XNumberBox" Grid.Column="1" HorizontalContentAlignment="Center"  TextChanged="NumberBox_TextChanged" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20" />
+                <TextBox Name="XNumberBox" Grid.Column="1" HorizontalContentAlignment="Center"  KeyUp="NumberBox_KeyUp" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20">
+                    <TextBox.Text>
+                        <Binding Path="Property.Value.X" FallbackValue="0" Mode="TwoWay" UpdateSourceTrigger="Explicit" StringFormat="{}{0:0}" ValidatesOnDataErrors="True" />
+                    </TextBox.Text>
+                </TextBox>
                 <RepeatButton Name="XPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpButton}" Click="Button_Click" />
             </Grid>
             <Grid Grid.Row="1" Name="YGrid" Margin="0,1">
@@ -40,7 +44,11 @@
                     <ColumnDefinition Width="44" />
                 </Grid.ColumnDefinitions>
                 <RepeatButton Name="YNegButton" Delay="500" Interval="100" Grid.Column="0" Content="-" Style="{StaticResource NumberDownButton}" Click="Button_Click" />
-                <TextBox Name="YNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20" />
+                <TextBox Name="YNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" KeyUp="NumberBox_KeyUp" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20">
+                    <TextBox.Text>
+                        <Binding Path="Property.Value.Y" FallbackValue="0" Mode="TwoWay" UpdateSourceTrigger="Explicit" StringFormat="{}{0:0}" ValidatesOnDataErrors="True" />
+                    </TextBox.Text>
+                </TextBox>
                 <RepeatButton Name="YPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpButton}" Click="Button_Click" />
             </Grid>
             <Grid Grid.Row="2" Name="WidthGrid" Margin="0,1">
@@ -50,7 +58,11 @@
                     <ColumnDefinition Width="44" />
                 </Grid.ColumnDefinitions>
                 <RepeatButton Name="WidthNegButton" Delay="500" Interval="100" Grid.Column="0" Content="-" Style="{StaticResource NumberDownButton}" Click="Button_Click" />
-                <TextBox Name="WidthNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20" />
+                <TextBox Name="WidthNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" KeyUp="NumberBox_KeyUp" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20">
+                    <TextBox.Text>
+                        <Binding Path="Property.Value.Width" FallbackValue="0" Mode="TwoWay" UpdateSourceTrigger="Explicit" StringFormat="{}{0:0}" ValidatesOnDataErrors="True" />
+                    </TextBox.Text>
+                </TextBox>
                 <RepeatButton Name="WidthPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpButton}" Click="Button_Click" />
             </Grid>
             <Grid Grid.Row="3" Name="HeightGrid" Margin="0,1">
@@ -60,7 +72,11 @@
                     <ColumnDefinition Width="44" />
                 </Grid.ColumnDefinitions>
                 <RepeatButton Name="HeightNegButton" Delay="500" Interval="100" Grid.Column="0" Content="-" Style="{StaticResource NumberDownButton}" Click="Button_Click" />
-                <TextBox Name="HeightNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" TextChanged="NumberBox_TextChanged" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20" />
+                <TextBox Name="HeightNumberBox" Grid.Column="1" HorizontalContentAlignment="Center" KeyUp="NumberBox_KeyUp" Style="{DynamicResource NumberTextBox}" VerticalContentAlignment="Center" FontSize="20">
+                    <TextBox.Text>
+                        <Binding Path="Property.Value.Height" FallbackValue="0" Mode="TwoWay" UpdateSourceTrigger="Explicit" StringFormat="{}{0:0}" ValidatesOnDataErrors="True" />
+                    </TextBox.Text>
+                </TextBox>
                 <RepeatButton Name="HeightPosButton" Delay="500" Interval="100" Grid.Column="2" Content="+" Style="{StaticResource NumberUpButton}" Click="Button_Click" />
             </Grid>
         </Grid>

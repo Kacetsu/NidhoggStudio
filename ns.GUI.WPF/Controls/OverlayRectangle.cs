@@ -1,10 +1,6 @@
-﻿using ns.Base.Log;
-using ns.Base.Plugins.Properties;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ns.Base.Plugins.Properties;
+using ns.Communication.Client;
+using ns.Communication.Models.Properties;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,26 +8,26 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace ns.GUI.WPF.Controls {
-    public class OverlayRectangle {
-        private Rectangle _rectangle;
-        private RectangleProperty _property;
-        private Brush _borderBrush = Brushes.LightBlue;
 
-        private Rectangle _topLeftSizeChanger;
-        private Rectangle _topRightSizeChanger;
+    public class OverlayRectangle {
+        private const double MINRECTANGLESIZE = 20;
+        private const double SIZECHANGER_OFFSET = 6;
+        private Brush _borderBrush = Brushes.LightBlue;
         private Rectangle _bottomLeftSizeChanger;
         private Rectangle _bottomRightSizeChanger;
-        private const double SIZECHANGER_OFFSET = 6;
-        private const double MINRECTANGLESIZE = 20;
-
-        private bool _isDrag = false;
-        private Point _startPosition;
         private Point _endPosition;
+        private bool _isDrag = false;
+        private RectangleProperty _property;
+        private Rectangle _rectangle;
+        private Point _startPosition;
+        private Rectangle _topLeftSizeChanger;
+        private Rectangle _topRightSizeChanger;
 
-        public Rectangle Rectangle {
-            get { return _rectangle; }
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OverlayRectangle"/> class.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <param name="parent">The parent.</param>
         public OverlayRectangle(RectangleProperty property, Canvas parent) {
             _rectangle = new Rectangle();
             _rectangle.Stroke = _borderBrush;
@@ -49,8 +45,8 @@ namespace ns.GUI.WPF.Controls {
             _rectangle.MouseMove += Rectangle_MouseMove;
             _rectangle.MouseEnter += Rectangle_MouseEnter;
             _rectangle.MouseLeave += Rectangle_MouseLeave;
-            
-            if(!property.IsOutput) {
+
+            if (!property.IsOutput) {
                 _topLeftSizeChanger = CreateSizeChanger(_property.X, _property.Y);
                 _topRightSizeChanger = CreateSizeChanger(_property.X + _rectangle.Width, _property.Y);
                 _topRightSizeChanger.Visibility = Visibility.Collapsed;
@@ -64,6 +60,55 @@ namespace ns.GUI.WPF.Controls {
                 parent.Children.Add(_bottomRightSizeChanger);
                 UpdateSizeChanger();
             }
+
+            ClientCommunicationManager.ProjectService.Callback.PropertyChanged += Callback_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Gets the rectangle.
+        /// </summary>
+        /// <value>
+        /// The rectangle.
+        /// </value>
+        public Rectangle Rectangle {
+            get { return _rectangle; }
+        }
+
+        private void Callback_PropertyChanged(object sender, Communication.Events.PropertyChangedEventArgs e) {
+            if (!e.Uid.Equals(_property?.UID)) {
+                return;
+            }
+
+            PropertyModel model = ClientCommunicationManager.ProjectService.GetProperty(_property.UID);
+            RectangleProperty rectangleProperty = model?.Property as RectangleProperty;
+
+            if (rectangleProperty == null) {
+                return;
+            }
+
+            Canvas.SetTop(_rectangle, rectangleProperty.Y);
+            Canvas.SetLeft(_rectangle, rectangleProperty.X);
+            _rectangle.Width = rectangleProperty.Width;
+            _rectangle.Height = rectangleProperty.Height;
+            UpdateSizeChanger();
+
+            // Update property because it could be a other client.
+            // Only update value if they don't are equal.
+            if (_property.X != rectangleProperty.X) {
+                _property.X = (double)_rectangle.GetValue(Canvas.LeftProperty);
+            }
+
+            if (_property.Y != rectangleProperty.Y) {
+                _property.Y = (double)_rectangle.GetValue(Canvas.TopProperty);
+            }
+
+            if (_property.Width != rectangleProperty.Width) {
+                _property.Width = _rectangle.Width;
+            }
+
+            if (_property.Height != rectangleProperty.Height) {
+                _property.Height = _rectangle.Height;
+            }
         }
 
         private Rectangle CreateSizeChanger(double x, double y) {
@@ -71,8 +116,8 @@ namespace ns.GUI.WPF.Controls {
             rectangle.Stroke = _borderBrush;
             rectangle.Fill = _borderBrush;
             rectangle.StrokeThickness = 0;
-            Canvas.SetTop(rectangle, y- SIZECHANGER_OFFSET);
-            Canvas.SetLeft(rectangle, x- SIZECHANGER_OFFSET);
+            Canvas.SetTop(rectangle, y - SIZECHANGER_OFFSET);
+            Canvas.SetLeft(rectangle, x - SIZECHANGER_OFFSET);
             rectangle.Width = 12.0;
             rectangle.Height = 12.0;
             rectangle.MouseLeftButtonDown += Rectangle_MouseLeftButtonDown;
@@ -83,26 +128,26 @@ namespace ns.GUI.WPF.Controls {
             return rectangle;
         }
 
-        private void UpdateSizeChanger() {
-            _topLeftSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty)) - SIZECHANGER_OFFSET+1);
-            _topLeftSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty)) - SIZECHANGER_OFFSET+1);
-
-            _topRightSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty)) - SIZECHANGER_OFFSET+1);
-            _topRightSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty) + _rectangle.Width) - SIZECHANGER_OFFSET-1);
-
-            _bottomLeftSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty) + _rectangle.Height) - SIZECHANGER_OFFSET-1);
-            _bottomLeftSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty)) - SIZECHANGER_OFFSET+1);
-
-            _bottomRightSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty) + _rectangle.Height) - SIZECHANGER_OFFSET-1);
-            _bottomRightSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty) + _rectangle.Width) - SIZECHANGER_OFFSET-1);
-        }
-
-        private void Rectangle_MouseLeave(object sender, MouseEventArgs e) {
-            Mouse.OverrideCursor = null;
+        private void Property_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            RectangleProperty property = sender as RectangleProperty;
+            if (e.PropertyName == "X") {
+                Canvas.SetLeft(_rectangle, property.X);
+            } else if (e.PropertyName == "Y") {
+                Canvas.SetTop(_rectangle, property.Y);
+            } else if (e.PropertyName == "Width") {
+                _rectangle.Width = property.Width;
+            } else if (e.PropertyName == "Height") {
+                _rectangle.Height = property.Height;
+            }
+            UpdateSizeChanger();
         }
 
         private void Rectangle_MouseEnter(object sender, MouseEventArgs e) {
             Mouse.OverrideCursor = Cursors.Hand;
+        }
+
+        private void Rectangle_MouseLeave(object sender, MouseEventArgs e) {
+            Mouse.OverrideCursor = null;
         }
 
         private void Rectangle_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
@@ -124,7 +169,7 @@ namespace ns.GUI.WPF.Controls {
                 rect = _bottomRightSizeChanger;
             }
 
-            if(rect != null)
+            if (rect != null)
                 _endPosition = new Point(Canvas.GetLeft(rect), Canvas.GetTop(rect));
 
             Mouse.Capture((IInputElement)sender);
@@ -134,6 +179,7 @@ namespace ns.GUI.WPF.Controls {
             _isDrag = false;
             Mouse.OverrideCursor = null;
             Mouse.Capture(null);
+            ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.UID);
         }
 
         private void Rectangle_MouseMove(object sender, MouseEventArgs e) {
@@ -184,21 +230,18 @@ namespace ns.GUI.WPF.Controls {
             }
         }
 
-        private void Property_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            RectangleProperty property = sender as RectangleProperty;
-            if (e.PropertyName == "X") {
-                Canvas.SetLeft(_rectangle, property.X);
-                UpdateSizeChanger();
-            } else if (e.PropertyName == "Y") {
-                Canvas.SetTop(_rectangle, property.Y);
-                UpdateSizeChanger();
-            } else if (e.PropertyName == "Width") {
-                _rectangle.Width = property.Width;
-                UpdateSizeChanger();
-            } else if (e.PropertyName == "Height") {
-                _rectangle.Height = property.Height;
-                UpdateSizeChanger();
-            }
+        private void UpdateSizeChanger() {
+            _topLeftSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty)) - SIZECHANGER_OFFSET + 1);
+            _topLeftSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty)) - SIZECHANGER_OFFSET + 1);
+
+            _topRightSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty)) - SIZECHANGER_OFFSET + 1);
+            _topRightSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty) + _rectangle.Width) - SIZECHANGER_OFFSET - 1);
+
+            _bottomLeftSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty) + _rectangle.Height) - SIZECHANGER_OFFSET - 1);
+            _bottomLeftSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty)) - SIZECHANGER_OFFSET + 1);
+
+            _bottomRightSizeChanger.SetValue(Canvas.TopProperty, ((double)_rectangle.GetValue(Canvas.TopProperty) + _rectangle.Height) - SIZECHANGER_OFFSET - 1);
+            _bottomRightSizeChanger.SetValue(Canvas.LeftProperty, ((double)_rectangle.GetValue(Canvas.LeftProperty) + _rectangle.Width) - SIZECHANGER_OFFSET - 1);
         }
     }
 }

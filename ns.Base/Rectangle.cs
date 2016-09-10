@@ -7,30 +7,6 @@ namespace ns.Base {
     public class Rectangle {
 
         /// <summary>
-        /// The x
-        /// </summary>
-        [DataMember]
-        public double X;
-
-        /// <summary>
-        /// The y
-        /// </summary>
-        [DataMember]
-        public double Y;
-
-        /// <summary>
-        /// The width
-        /// </summary>
-        [DataMember]
-        public double Width;
-
-        /// <summary>
-        /// The height
-        /// </summary>
-        [DataMember]
-        public double Height;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> class.
         /// </summary>
         public Rectangle() {
@@ -49,5 +25,40 @@ namespace ns.Base {
             Width = width;
             Height = height;
         }
+
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
+        [DataMember]
+        public double Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
+        [DataMember]
+        public double Width { get; set; }
+
+        /// <summary>
+        /// </summary>
+        /// <value>
+        /// The x.
+        /// </value>
+        [DataMember]
+        public double X { get; set; }
+
+        /// <summary>
+        /// Gets or sets the y.
+        /// </summary>
+        /// <value>
+        /// The y.
+        /// </value>
+        [DataMember]
+        public double Y { get; set; }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using ns.Communication.Events;
 using ns.Communication.Models;
-using System;
 using System.Collections.Generic;
+using System.ServiceModel;
 
 namespace ns.Communication.Services.Callbacks {
 
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class ProjectServiceCallbacks : IProjectServiceCallbacks {
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Occurs when [tool added].
@@ -23,6 +26,8 @@ namespace ns.Communication.Services.Callbacks {
         /// <param name="model">The model.</param>
         public void OnOperationAdded(OperationModel model) {
         }
+
+        public void OnPropertyChanged(string uid) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(uid));
 
         /// <summary>
         /// Called when [tool added].

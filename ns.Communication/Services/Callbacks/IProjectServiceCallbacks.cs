@@ -14,6 +14,13 @@ namespace ns.Communication.Services.Callbacks {
         void OnOperationAdded(OperationModel model);
 
         /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        [OperationContract(IsOneWay = true)]
+        void OnPropertyChanged(string uid);
+
+        /// <summary>
         /// Called when [tool added].
         /// </summary>
         /// <param name="model">The model.</param>

@@ -2,6 +2,7 @@
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ns.Base.Manager.DataStorage {
 
@@ -21,6 +22,14 @@ namespace ns.Base.Manager.DataStorage {
 
             ParentUID = plugin.UID;
             Properties = new List<Property>(plugin.GetProperties<Property>(true));
+
+            ImageProperty outImageProperty = Properties.FirstOrDefault(p => p is ImageProperty) as ImageProperty;
+            if (outImageProperty == null) {
+                ImageProperty inImageProperty = null;
+                if (plugin.TryGetProperty(out inImageProperty)) {
+                    Properties.Add(inImageProperty);
+                }
+            }
         }
 
         /// <summary>
@@ -37,6 +46,6 @@ namespace ns.Base.Manager.DataStorage {
         /// <value>
         /// The properties.
         /// </value>
-        public IEnumerable<Property> Properties { get; }
+        public ICollection<Property> Properties { get; }
     }
 }

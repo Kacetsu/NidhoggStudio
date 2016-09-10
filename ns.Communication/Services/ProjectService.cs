@@ -143,6 +143,21 @@ namespace ns.Communication.Services {
             }
 
             valueProperty.ValueObj = newValue;
+
+            // Notify clients.
+            List<string> damagedUIDs = new List<string>();
+            foreach (var client in _clients) {
+                try {
+                    client.Value?.OnPropertyChanged(propertyUID);
+                } catch (CommunicationException ex) {
+                    Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
+                    damagedUIDs.Add(client.Key);
+                }
+            }
+
+            foreach (string damagedUID in damagedUIDs) {
+                _clients.Remove(damagedUID);
+            }
         }
 
         /// <summary>

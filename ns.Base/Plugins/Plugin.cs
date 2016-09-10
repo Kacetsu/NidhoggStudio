@@ -197,6 +197,17 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
+        /// Tries the get property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        public bool TryGetProperty<T>(out T property) where T : Property {
+            property = (T)Items.FirstOrDefault(p => p is T);
+            return property != null;
+        }
+
+        /// <summary>
         /// Posts the run.
         /// </summary>
         /// <returns></returns>

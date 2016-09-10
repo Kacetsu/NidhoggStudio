@@ -167,6 +167,8 @@
     <Compile Include="Events\IProcessorStateChangedEventHandler.cs" />
     <Compile Include="Events\ProcessorStateChangedEventHandler.cs" />
     <Compile Include="Events\ProcessorStateEventArgs.cs" />
+    <Compile Include="Events\PropertyChangedEventArgs.cs" />
+    <Compile Include="Events\PropertyEventHandlers.cs" />
     <Compile Include="ICommunicationManager.cs" />
     <Compile Include="Models\DataStorageContainerModel.cs" />
     <Compile Include="Models\DeviceModel.cs" />

@@ -26,11 +26,11 @@ namespace ns.GUI.WPF.Controls {
                     Base.Plugins.Properties.Property property = FrontendManager.SelectedPluginProperties.First();
                     if (_collection.Count == 0 || _collection.FirstOrDefault(r => r.Property?.UID.Equals(property.UID) == true) == null) {
                         _collection.Clear();
-                        foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties) {
+                        foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties.Where(p => p.IsOutput)) {
                             _collection.Add(new ResultViewContainer(prop));
                         }
                     } else {
-                        foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties) {
+                        foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties.Where(p => p.IsOutput)) {
                             ResultViewContainer container = _collection.FirstOrDefault(r => r.Property?.UID.Equals(prop.UID) == true);
                             if (container == null) continue;
                             container.UpdateProperty(prop);

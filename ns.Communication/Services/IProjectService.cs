@@ -21,7 +21,7 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="propertyUID">The property uid.</param>
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ChangeListPropertySelectedIndex(int index, string propertyUID);
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="newValue">The new value.</param>
         /// <param name="propertyUID">The property uid.</param>
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ChangePropertyValue(object newValue, string propertyUID);
 
         /// <summary>

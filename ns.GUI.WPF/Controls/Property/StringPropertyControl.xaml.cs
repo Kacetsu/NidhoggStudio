@@ -32,7 +32,7 @@ namespace ns.GUI.WPF.Controls.Property {
             PropertyChanged += StringPropertyControl_PropertyChanged;
             ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
                 ContentBox.Text = property.Value as string;
@@ -54,7 +54,7 @@ namespace ns.GUI.WPF.Controls.Property {
             ConnectButton.Visibility = IsConnectable ? Visibility.Visible : Visibility.Hidden;
             _property = property;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
                 ContentBox.Text = property.Value as string;

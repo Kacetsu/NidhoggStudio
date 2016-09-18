@@ -95,20 +95,20 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void ProjectServiceCallback_ToolAdded(object sender, Communication.Events.CollectionChangedEventArgs e) {
-            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
+            Guid parentId = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentId : Guid.Empty;
             foreach (UIElement element in ContentGrid.Children) {
                 OperationNodeControl operationControl = element as OperationNodeControl;
-                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
+                if (operationControl == null || !(operationControl.Model as IPluginModel).Id.Equals(parentId)) continue;
                 operationControl.AddChildControls(e.NewObjects as IEnumerable<ToolModel>);
                 break;
             }
         }
 
         private void ProjectServiceCallback_ToolRemoved(object sender, Communication.Events.CollectionChangedEventArgs e) {
-            string parentUID = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentUID : string.Empty;
+            Guid parentId = e.NewObjects.Count() > 0 ? (e.NewObjects.ElementAt(0) as ToolModel).ParentId : Guid.Empty;
             foreach (UIElement element in ContentGrid.Children) {
                 OperationNodeControl operationControl = element as OperationNodeControl;
-                if (operationControl == null || !(operationControl.Model as IPluginModel).UID.Equals(parentUID)) continue;
+                if (operationControl == null || !(operationControl.Model as IPluginModel).Id.Equals(parentId)) continue;
                 operationControl.RemoveChildControls(e.NewObjects as IEnumerable<ToolModel>);
                 FrontendManager.SelectedModel = operationControl.Model;
                 break;

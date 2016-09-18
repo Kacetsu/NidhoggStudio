@@ -8,15 +8,15 @@ namespace ns.Communication.Events {
         /// Initializes a new instance of the <see cref="PropertyChangedEventArgs"/> class.
         /// </summary>
         public PropertyChangedEventArgs() : base() {
-            Uid = string.Empty;
+            Id = Guid.Empty;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyChangedEventArgs"/> class.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public PropertyChangedEventArgs(string uid) : this() {
-            Uid = uid;
+        /// <param name="id">The id.</param>
+        public PropertyChangedEventArgs(Guid id) : this() {
+            Id = id;
         }
 
         /// <summary>
@@ -25,6 +25,6 @@ namespace ns.Communication.Events {
         /// <value>
         /// The uid.
         /// </value>
-        public string Uid { get; }
+        public Guid Id { get; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
+using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -39,7 +40,7 @@ namespace ns.Base.Plugins {
 
                 if (childProperty.IsOutput)
                     valueProperty.Value = null;
-                else if (!string.IsNullOrEmpty(childProperty.ConnectedUID))
+                else if (!Guid.Empty.Equals((childProperty.ConnectedId)))
                     valueProperty.Value = (childProperty as IConnectable<object>)?.InitialValue;
             }
 

@@ -43,7 +43,7 @@ namespace ns.GUI.WPF.Controls {
 
             OperationModel operationModel = FrontendManager.SelectedModel as OperationModel;
             if (operationModel != null) {
-                ClientCommunicationManager.ProjectService.AddToolToProject(Model, operationModel.UID);
+                ClientCommunicationManager.ProjectService.AddToolToProject(Model, operationModel.Id);
             }
         }
 

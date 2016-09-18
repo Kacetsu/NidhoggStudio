@@ -10,7 +10,7 @@ namespace ns.Communication.Client {
         /// <summary>
         /// The client uid
         /// </summary>
-        public static string ClientUid = Guid.NewGuid().ToString();
+        public static Guid ClientId = Guid.NewGuid();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericDuplexServiceClient{T}" /> class.

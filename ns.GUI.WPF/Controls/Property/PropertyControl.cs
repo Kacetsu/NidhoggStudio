@@ -190,8 +190,8 @@ namespace ns.GUI.WPF.Controls.Property {
             try {
                 ComboBox c = sender as ComboBox;
                 PropertyModel sourceProperty = c.SelectedItem as PropertyModel;
-                ClientCommunicationManager.ProjectService.ConnectProperties(Property.UID, sourceProperty.UID);
-                Property.ConnectedUID = sourceProperty.UID;
+                ClientCommunicationManager.ProjectService.ConnectProperties(Property.Id, sourceProperty.Id);
+                Property.ConnectedId = sourceProperty.Id;
             } catch (FaultException ex) {
                 Trace.WriteLine(ex.Message, System.Diagnostics.TraceEventType.Error);
             }
@@ -199,17 +199,17 @@ namespace ns.GUI.WPF.Controls.Property {
 
         private void UpdateConnectablePropertyList() {
             try {
-                PropertyModel[] propertyModels = ClientCommunicationManager.ProjectService.GetConnectableProperties(Property.UID);
+                PropertyModel[] propertyModels = ClientCommunicationManager.ProjectService.GetConnectableProperties(Property.Id);
                 _selectionComboBox.ItemsSource = propertyModels;
                 _selectionComboBox.DisplayMemberPath = nameof(PropertyModel.TreeName);
 
-                if (string.IsNullOrEmpty(Property.ConnectedUID) && propertyModels.Length > 0) {
-                    ClientCommunicationManager.ProjectService.ConnectProperties(Property.UID, propertyModels[0].UID);
-                    Property.ConnectedUID = propertyModels[0].UID;
+                if (Guid.Empty.Equals(Property.ConnectedId) && propertyModels.Length > 0) {
+                    ClientCommunicationManager.ProjectService.ConnectProperties(Property.Id, propertyModels[0].Id);
+                    Property.ConnectedId = propertyModels[0].Id;
                     _selectionComboBox.SelectedItem = propertyModels[0];
                 } else {
                     foreach (PropertyModel propertyModel in propertyModels) {
-                        if (propertyModel.Property.UID.Equals(Property.ConnectedUID)) {
+                        if (propertyModel.Property.Id.Equals(Property.ConnectedId)) {
                             _selectionComboBox.SelectedItem = propertyModel;
                             break;
                         }

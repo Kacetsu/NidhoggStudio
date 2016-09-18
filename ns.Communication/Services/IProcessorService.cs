@@ -1,5 +1,6 @@
 ﻿using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
+using System;
 using System.ServiceModel;
 
 namespace ns.Communication.Services {
@@ -17,9 +18,9 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         [OperationContract]
-        void RegisterClient(string uid);
+        void RegisterClient(Guid id);
 
         /// <summary>
         /// Starts this instance.
@@ -36,8 +37,8 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         [OperationContract]
-        void UnregisterClient(string uid);
+        void UnregisterClient(Guid id);
     }
 }

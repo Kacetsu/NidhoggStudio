@@ -129,7 +129,7 @@ namespace ns.Core {
 
             foreach (Operation o in _projectManager.Configuration.Operations) {
                 Property linkedProperty = o.GetProperty<Property>("LinkedOperation");
-                if (linkedProperty.ConnectedUID == operation.UID)
+                if (linkedProperty.ConnectedId.Equals(operation.Id))
                     connectedOperations.Add(o);
             }
 

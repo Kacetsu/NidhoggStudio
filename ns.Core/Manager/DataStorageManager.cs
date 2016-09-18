@@ -1,6 +1,7 @@
 ﻿using ns.Base.Event;
 using ns.Base.Manager;
 using ns.Base.Manager.DataStorage;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,19 +37,19 @@ namespace ns.Core.Manager {
                 _operationContainers.Enqueue(node);
             }
 
-            DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.UID, node.ParentUID));
+            DataStorageCollectionChanged?.Invoke(this, new DataStorageCollectionChangedEventArgs(node.Id, node.ParentId));
         }
 
         /// <summary>
-        /// Finds the specified uid.
+        /// Finds the specified id.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public DataContainer Find(string uid) {
+        public DataContainer Find(Guid id) {
             DataContainer container = null;
 
-            Task<DataContainer> operationTask = FindOperationContainer(uid);
-            Task<DataContainer> toolTask = FindToolContainer(uid);
+            Task<DataContainer> operationTask = FindOperationContainer(id);
+            Task<DataContainer> toolTask = FindToolContainer(id);
 
             Task.WaitAll(operationTask, toolTask);
 
@@ -60,12 +61,12 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Finds the last.
         /// </summary>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public DataContainer FindLast(string parentUID) {
+        public DataContainer FindLast(Guid parentId) {
             DataContainer container = null;
-            Task<DataContainer> operationTask = Task.Factory.StartNew(() => _operationContainers.LastOrDefault(c => c.ParentUID == parentUID));
-            Task<ToolDataContainer> toolTask = Task.Factory.StartNew(() => _toolContainers.LastOrDefault(c => c.ParentUID == parentUID));
+            Task<DataContainer> operationTask = Task.Factory.StartNew(() => _operationContainers.LastOrDefault(c => c.ParentId == parentId));
+            Task<ToolDataContainer> toolTask = Task.Factory.StartNew(() => _toolContainers.LastOrDefault(c => c.ParentId == parentId));
 
             Task.WaitAll(operationTask, toolTask);
 
@@ -74,11 +75,11 @@ namespace ns.Core.Manager {
             return container;
         }
 
-        private Task<DataContainer> FindOperationContainer(string uid) {
+        private Task<DataContainer> FindOperationContainer(Guid id) {
             return Task.Factory.StartNew(() => {
                 DataContainer container = null;
                 foreach (OperationDataContainer operationContainer in _operationContainers) {
-                    if (operationContainer.UID.Equals(uid)) {
+                    if (operationContainer.Id.Equals(id)) {
                         container = operationContainer;
                         break;
                     }
@@ -87,11 +88,11 @@ namespace ns.Core.Manager {
             });
         }
 
-        private Task<DataContainer> FindToolContainer(string uid) {
+        private Task<DataContainer> FindToolContainer(Guid id) {
             return Task.Factory.StartNew(() => {
                 DataContainer container = null;
                 Parallel.ForEach(_toolContainers, (toolContainer, state) => {
-                    if (toolContainer.UID.Equals(uid)) {
+                    if (toolContainer.Id.Equals(id)) {
                         container = toolContainer;
                         state.Break();
                     }

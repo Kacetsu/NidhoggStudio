@@ -1,13 +1,15 @@
-﻿namespace ns.Communication.Models {
+﻿using System;
+
+namespace ns.Communication.Models {
 
     public interface IUidModel {
 
         /// <summary>
-        /// Gets the uid.
+        /// Gets or sets the identifier.
         /// </summary>
         /// <value>
-        /// The uid.
+        /// The identifier.
         /// </value>
-        string UID { get; }
+        Guid Id { get; }
     }
 }

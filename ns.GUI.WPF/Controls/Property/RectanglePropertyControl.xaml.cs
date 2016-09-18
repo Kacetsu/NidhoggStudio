@@ -30,7 +30,7 @@ namespace ns.GUI.WPF.Controls.Property {
             DataContext = this;
             property.PropertyChanged += Property_PropertyChanged;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(ContentGrid as Panel, ConnectImage);
             }
         }
@@ -78,7 +78,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 else if (box == HeightNumberBox)
                     _property.Height = value;
 
-                ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.UID);
+                ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.Id);
             }
 
             if (box == XNumberBox)
@@ -104,7 +104,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 double newValue = currentValue + step;
                 box.Text = newValue.ToString();
                 box.GetBindingExpression(TextBox.TextProperty).UpdateSource();
-                ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.UID);
+                ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.Id);
                 result = true;
             } catch (Exception ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);

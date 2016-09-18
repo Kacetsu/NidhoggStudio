@@ -6,6 +6,7 @@ using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -14,7 +15,7 @@ namespace ns.Communication.Services {
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class ProjectService : IProjectService {
-        private Dictionary<string, IProjectServiceCallbacks> _clients = new Dictionary<string, IProjectServiceCallbacks>();
+        private Dictionary<Guid, IProjectServiceCallbacks> _clients = new Dictionary<Guid, IProjectServiceCallbacks>();
         private PluginManager _pluginManager;
         private ProjectManager _projectManager;
 
@@ -44,12 +45,12 @@ namespace ns.Communication.Services {
         /// or
         /// or
         /// </exception>
-        public void AddToolToProject(ToolModel model, string parentUID) {
+        public void AddToolToProject(ToolModel model, Guid parentUID) {
             if (model == null) {
                 throw new FaultException("Model is empty!");
             }
 
-            Operation operation = _projectManager.Configuration.Operations.Find(o => o.UID.Equals(parentUID));
+            Operation operation = _projectManager.Configuration.Operations.Find(o => o.Id.Equals(parentUID));
             if (operation == null) {
                 throw new FaultException(string.Format("Could not find operation with UID {0}.", parentUID));
             }
@@ -64,18 +65,18 @@ namespace ns.Communication.Services {
             _projectManager.Add(copyTool, operation);
 
             // Notify clients.
-            List<string> damagedUIDs = new List<string>();
+            List<Guid> damagedIds = new List<Guid>();
             foreach (var client in _clients) {
                 try {
                     client.Value?.OnToolAdded(new ToolModel(copyTool));
                 } catch (CommunicationException ex) {
                     Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                    damagedUIDs.Add(client.Key);
+                    damagedIds.Add(client.Key);
                 }
             }
 
-            foreach (string damagedUID in damagedUIDs) {
-                _clients.Remove(damagedUID);
+            foreach (Guid damagedId in damagedIds) {
+                _clients.Remove(damagedId);
             }
         }
 
@@ -86,9 +87,9 @@ namespace ns.Communication.Services {
         /// <param name="propertyUID">The property uid.</param>
         /// <exception cref="FaultException">
         /// </exception>
-        public void ChangeListPropertySelectedIndex(int index, string propertyUID) {
-            if (string.IsNullOrEmpty(propertyUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+        public void ChangeListPropertySelectedIndex(int index, Guid propertyUID) {
+            if (Guid.Empty.Equals((propertyUID))) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(propertyUID)));
             }
 
             Property property = _projectManager.FindProperty(propertyUID);
@@ -118,24 +119,24 @@ namespace ns.Communication.Services {
         /// Changes the property value.
         /// </summary>
         /// <param name="newValue">The new value.</param>
-        /// <param name="propertyUID">The property uid.</param>
+        /// <param name="propertyId">The property uid.</param>
         /// <exception cref="FaultException">
         /// </exception>
-        public void ChangePropertyValue(object newValue, string propertyUID) {
+        public void ChangePropertyValue(object newValue, Guid propertyId) {
             if (newValue == null) {
                 throw new FaultException(string.Format("{0} is null.", nameof(newValue)));
             }
 
-            if (string.IsNullOrEmpty(propertyUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+            if (Guid.Empty.Equals(propertyId)) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(propertyId)));
             }
 
-            Property property = _projectManager.FindProperty(propertyUID);
+            Property property = _projectManager.FindProperty(propertyId);
 
             IValue valueProperty = property as IValue;
 
             if (property == null || valueProperty == null) {
-                throw new FaultException(string.Format("Could not find property {0}.", propertyUID));
+                throw new FaultException(string.Format("Could not find property {0}.", propertyId));
             }
 
             try {
@@ -145,18 +146,18 @@ namespace ns.Communication.Services {
             }
 
             // Notify clients.
-            List<string> damagedUIDs = new List<string>();
+            List<Guid> damagedIds = new List<Guid>();
             foreach (var client in _clients) {
                 try {
-                    client.Value?.OnPropertyChanged(propertyUID);
+                    client.Value?.OnPropertyChanged(propertyId);
                 } catch (CommunicationException ex) {
                     Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                    damagedUIDs.Add(client.Key);
+                    damagedIds.Add(client.Key);
                 }
             }
 
-            foreach (string damagedUID in damagedUIDs) {
-                _clients.Remove(damagedUID);
+            foreach (Guid damagedId in damagedIds) {
+                _clients.Remove(damagedId);
             }
         }
 
@@ -167,13 +168,13 @@ namespace ns.Communication.Services {
         /// <param name="sourceUID">The source uid.</param>
         /// <exception cref="FaultException">
         /// </exception>
-        public void ConnectProperties(string targetUID, string sourceUID) {
-            if (string.IsNullOrEmpty(targetUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(targetUID)));
+        public void ConnectProperties(Guid targetUID, Guid sourceUID) {
+            if (Guid.Empty.Equals(targetUID)) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(targetUID)));
             }
 
-            if (string.IsNullOrEmpty(sourceUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(sourceUID)));
+            if (Guid.Empty.Equals(sourceUID)) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(sourceUID)));
             }
 
             Property targetProperty = _projectManager.FindProperty(targetUID);
@@ -197,9 +198,9 @@ namespace ns.Communication.Services {
         /// <returns></returns>
         /// <exception cref="FaultException">
         /// </exception>
-        public PropertyModel[] GetConnectableProperties(string propertyUID) {
-            if (string.IsNullOrEmpty(propertyUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+        public PropertyModel[] GetConnectableProperties(Guid propertyUID) {
+            if (Guid.Empty.Equals(propertyUID)) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(propertyUID)));
             }
 
             Property targetProperty = _projectManager.FindProperty(propertyUID);
@@ -222,8 +223,8 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <returns></returns>
-        public OperationModel GetOperation(string uid) {
-            OperationModel model = new OperationModel(_projectManager.Configuration.Operations.FirstOrDefault(o => o.UID.Equals(uid)));
+        public OperationModel GetOperation(Guid uid) {
+            OperationModel model = new OperationModel(_projectManager.Configuration.Operations.FirstOrDefault(o => o.Id.Equals(uid)));
             return model;
         }
 
@@ -248,9 +249,9 @@ namespace ns.Communication.Services {
         /// <returns></returns>
         /// <exception cref="FaultException">
         /// </exception>
-        public PropertyModel GetProperty(string propertyUID) {
-            if (string.IsNullOrEmpty(propertyUID)) {
-                throw new FaultException(string.Format("{0} is null or empty.", nameof(propertyUID)));
+        public PropertyModel GetProperty(Guid propertyUID) {
+            if (Guid.Empty.Equals(propertyUID)) {
+                throw new FaultException(string.Format("{0} is empty.", nameof(propertyUID)));
             }
 
             Property property = _projectManager.FindProperty(propertyUID);
@@ -267,7 +268,7 @@ namespace ns.Communication.Services {
         /// <param name="toolUID">The tool uid.</param>
         /// <returns></returns>
         /// <exception cref="FaultException"></exception>
-        public PropertyModel[] GetToolProperties(string toolUID) {
+        public PropertyModel[] GetToolProperties(Guid toolUID) {
             List<PropertyModel> properties = new List<PropertyModel>();
 
             Tool tool = _projectManager.FindTool(toolUID);
@@ -287,7 +288,7 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <exception cref="FaultException"></exception>
-        public void RegisterClient(string uid) {
+        public void RegisterClient(Guid uid) {
             if (_clients.ContainsKey(uid)) {
                 throw new FaultException(string.Format("Client {0} already exists!", uid));
             }
@@ -309,12 +310,12 @@ namespace ns.Communication.Services {
                 throw new FaultException("Model is empty!");
             }
 
-            Operation operation = _projectManager.Configuration.Operations.Find(o => o.UID.Equals(model.ParentUID));
+            Operation operation = _projectManager.Configuration.Operations.Find(o => o.Id.Equals(model.ParentId));
             if (operation == null) {
-                throw new FaultException(string.Format("Could not find operation with UID {0}.", model.ParentUID));
+                throw new FaultException(string.Format("Could not find operation with UID {0}.", model.ParentId));
             }
 
-            Tool tool = operation.Items.Find(t => t.UID.Equals(model.UID)) as Tool;
+            Tool tool = operation.Items.Find(t => t.Id.Equals(model.Id)) as Tool;
 
             if (tool == null) {
                 throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
@@ -323,26 +324,26 @@ namespace ns.Communication.Services {
             _projectManager.Remove(tool);
 
             // Notify clients.
-            List<string> damagedUIDs = new List<string>();
+            List<Guid> damagedIds = new List<Guid>();
             foreach (var client in _clients) {
                 try {
                     client.Value?.OnToolRemoved(model);
                 } catch (CommunicationException ex) {
                     Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                    damagedUIDs.Add(client.Key);
+                    damagedIds.Add(client.Key);
                 }
             }
 
-            foreach (string damagedUID in damagedUIDs) {
-                _clients.Remove(damagedUID);
+            foreach (Guid damagedId in damagedIds) {
+                _clients.Remove(damagedId);
             }
         }
 
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public void UnregisterClient(string uid) => _clients?.Remove(uid);
+        public void UnregisterClient(Guid id) => _clients?.Remove(id);
     }
 }

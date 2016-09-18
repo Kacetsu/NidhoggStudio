@@ -2,6 +2,7 @@
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -47,8 +48,8 @@ namespace ns.Core.Manager {
             foreach (Node c in node.Items) {
                 if (c is Property) {
                     Property child = c as Property;
-                    if (!string.IsNullOrEmpty(child.ConnectedUID)) {
-                        Property parent = Nodes.First(p => p.UID == child.ConnectedUID) as Property;
+                    if (!Guid.Empty.Equals(child.ConnectedId)) {
+                        Property parent = Nodes.First(p => p.Id == child.ConnectedId) as Property;
                         if (parent != null)
                             child.Connect(parent);
                     }

@@ -9,7 +9,7 @@ using System.ServiceModel.Channels;
 namespace ns.Communication.Client {
 
     public class ProjectServiceClient : GenericDuplexServiceClient<IProjectService, IProjectServiceCallbacks>, IProjectService {
-        private string _clientUID = Guid.NewGuid().ToString();
+        private Guid _clientId = Guid.NewGuid();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectServiceClient"/> class.
@@ -17,50 +17,50 @@ namespace ns.Communication.Client {
         /// <param name="endpoint">The endpoint.</param>
         /// <param name="binding">The binding.</param>
         public ProjectServiceClient(EndpointAddress endpoint, Binding binding, ProjectServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
-            RegisterClient(_clientUID);
+            RegisterClient(_clientId);
         }
 
         /// <summary>
         /// Adds the tool to project.
         /// </summary>
         /// <param name="model">The model.</param>
-        /// <param name="parentUID">The parent uid.</param>
-        public void AddToolToProject(ToolModel model, string parentUID) => Channel?.AddToolToProject(model, parentUID);
+        /// <param name="parentId">The parent id.</param>
+        public void AddToolToProject(ToolModel model, Guid parentId) => Channel?.AddToolToProject(model, parentId);
 
         /// <summary>
         /// Changes the index of the list property selected.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="propertyUID">The property uid.</param>
-        public void ChangeListPropertySelectedIndex(int index, string propertyUID) => Channel?.ChangeListPropertySelectedIndex(index, propertyUID);
+        /// <param name="propertyId">The property id.</param>
+        public void ChangeListPropertySelectedIndex(int index, Guid propertyId) => Channel?.ChangeListPropertySelectedIndex(index, propertyId);
 
         /// <summary>
         /// Changes the property value.
         /// </summary>
         /// <param name="newValue">The new value.</param>
-        /// <param name="propertyUID">The property uid.</param>
-        public void ChangePropertyValue(object newValue, string propertyUID) => Channel?.ChangePropertyValue(newValue, propertyUID);
+        /// <param name="propertyId">The property id.</param>
+        public void ChangePropertyValue(object newValue, Guid propertyId) => Channel?.ChangePropertyValue(newValue, propertyId);
 
         /// <summary>
         /// Connects the properties.
         /// </summary>
-        /// <param name="targetUID">The target uid.</param>
-        /// <param name="sourceUID">The source uid.</param>
-        public void ConnectProperties(string targetUID, string sourceUID) => Channel?.ConnectProperties(targetUID, sourceUID);
+        /// <param name="targetId">The target id.</param>
+        /// <param name="sourceId">The source id.</param>
+        public void ConnectProperties(Guid targetId, Guid sourceId) => Channel?.ConnectProperties(targetId, sourceId);
 
         /// <summary>
         /// Gets the connectable properties.
         /// </summary>
-        /// <param name="propertyUID"></param>
+        /// <param name="propertyId"></param>
         /// <returns></returns>
-        public PropertyModel[] GetConnectableProperties(string propertyUID) => Channel?.GetConnectableProperties(propertyUID);
+        public PropertyModel[] GetConnectableProperties(Guid propertyId) => Channel?.GetConnectableProperties(propertyId);
 
         /// <summary>
         /// Gets the operation.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public OperationModel GetOperation(string uid) => Channel?.GetOperation(uid);
+        public OperationModel GetOperation(Guid id) => Channel?.GetOperation(id);
 
         /// <summary>
         /// Gets the project operations.
@@ -71,15 +71,15 @@ namespace ns.Communication.Client {
         /// <summary>
         /// Gets the property.
         /// </summary>
-        /// <param name="propertyUID">The property uid.</param>
+        /// <param name="propertyId">The property id.</param>
         /// <returns></returns>
-        public PropertyModel GetProperty(string propertyUID) => Channel?.GetProperty(propertyUID);
+        public PropertyModel GetProperty(Guid propertyId) => Channel?.GetProperty(propertyId);
 
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void RegisterClient(string uid) => Channel?.RegisterClient(uid);
+        /// <param name="id">The id.</param>
+        public void RegisterClient(Guid id) => Channel?.RegisterClient(id);
 
         /// <summary>
         /// Removes the tool from project.
@@ -90,15 +90,15 @@ namespace ns.Communication.Client {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void UnregisterClient(string uid) => Channel?.UnregisterClient(uid);
+        /// <param name="id">The id.</param>
+        public void UnregisterClient(Guid id) => Channel?.UnregisterClient(id);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing) {
-            UnregisterClient(_clientUID);
+            UnregisterClient(_clientId);
             base.Dispose(disposing);
         }
     }

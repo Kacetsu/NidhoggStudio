@@ -34,7 +34,7 @@ namespace ns.Base {
         public Node(Node node) {
             if (node == null) throw new ArgumentNullException(nameof(node));
 
-            UID = GenerateUID();
+            Id = GenerateId();
             Fullname = node.Fullname;
             Name = node.Name;
 
@@ -69,6 +69,9 @@ namespace ns.Base {
                 OnPropertyChanged();
             }
         }
+
+        [DataMember]
+        public Guid Id { get; set; } = GenerateId();
 
         /// <summary>
         /// Gets if the Plugin is inizialized.
@@ -156,20 +159,6 @@ namespace ns.Base {
         }
 
         /// <summary>
-        /// Gets or sets the unified identification.
-        /// </summary>
-        [DataMember]
-        public string UID { get; set; } = GenerateUID();
-
-        /// <summary>
-        /// Generates a new UID.
-        /// </summary>
-        /// <returns>The new UID.</returns>
-        public static string GenerateUID() {
-            return Guid.NewGuid().ToString();
-        }
-
-        /// <summary>
         /// Adds a new Node to the Parent.
         /// Will trigger internal the OnChildCollectionChanged Method (ChildCollectionChanged).
         /// </summary>
@@ -252,6 +241,12 @@ namespace ns.Base {
             }
             Items.Clear();
         }
+
+        /// <summary>
+        /// Generates a new UID.
+        /// </summary>
+        /// <returns>The new UID.</returns>
+        private static Guid GenerateId() => Guid.NewGuid();
 
         /// <summary>
         /// Parents the property changed event.

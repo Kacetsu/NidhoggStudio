@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins;
+using System;
 
 namespace ns.Communication.Models {
 
@@ -13,12 +14,12 @@ namespace ns.Communication.Models {
         string Category { get; }
 
         /// <summary>
-        /// Gets the parent uid.
+        /// Gets the parent id.
         /// </summary>
         /// <value>
-        /// The parent uid.
+        /// The parent id.
         /// </value>
-        string ParentUID { get; }
+        Guid ParentId { get; }
 
         /// <summary>
         /// Gets the status.

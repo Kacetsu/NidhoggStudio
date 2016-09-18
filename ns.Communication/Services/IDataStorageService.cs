@@ -1,5 +1,6 @@
 ﻿using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
+using System;
 using System.ServiceModel;
 
 namespace ns.Communication.Services {
@@ -10,35 +11,35 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Gets the container.
         /// </summary>
-        /// <param name="clientUid">The client uid.</param>
-        /// <param name="uid">The uid.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
         [OperationContract]
-        DataStorageContainerModel GetContainer(string clientUid, string uid);
+        DataStorageContainerModel GetContainer(Guid clientId, Guid id);
 
         /// <summary>
         /// Gets the last container.
         /// </summary>
-        /// /// <param name="clientUid">The client uid.</param>
-        /// <param name="parentUID">The parent uid.</param>
+        /// /// <param name="clientId">The client id.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
         [OperationContract]
-        DataStorageContainerModel GetLastContainer(string clientUid, string parentUID);
+        DataStorageContainerModel GetLastContainer(Guid clientId, Guid parentId);
 
         /// <summary>
         /// Determines whether [is container available] [the specified parent uid].
         /// </summary>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
         [OperationContract]
-        bool IsContainerAvailable(string parentUID);
+        bool IsContainerAvailable(Guid parentId);
 
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         [OperationContract]
-        void RegisterClient(string uid);
+        void RegisterClient(Guid id);
 
         /// <summary>
         /// Sends the heartbeat.
@@ -50,8 +51,8 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         [OperationContract(IsOneWay = true)]
-        void UnregisterClient(string uid);
+        void UnregisterClient(Guid id);
     }
 }

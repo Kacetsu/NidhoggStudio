@@ -1,6 +1,7 @@
 ﻿using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Models.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -20,7 +21,7 @@ namespace ns.Communication.Models {
             DisplayName = tool.DisplayName;
             Description = tool.Description;
             Version = tool.Version;
-            ParentUID = tool.Parent?.UID;
+            ParentId = tool.Parent == null ? Guid.Empty : tool.Parent.Id;
 
             foreach (Property property in tool.Items.Where(p => p is Property)) {
                 Properties.Add(new PropertyModel(property));
@@ -55,13 +56,13 @@ namespace ns.Communication.Models {
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets the parent uid.
+        /// Gets the parent id.
         /// </summary>
         /// <value>
-        /// The parent uid.
+        /// The parent id.
         /// </value>
         [DataMember]
-        public string ParentUID { get; private set; }
+        public Guid ParentId { get; private set; }
 
         /// <summary>
         /// Gets the properties.

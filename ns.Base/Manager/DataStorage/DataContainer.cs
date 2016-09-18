@@ -20,7 +20,7 @@ namespace ns.Base.Manager.DataStorage {
         protected DataContainer(Plugin plugin) : this() {
             if (plugin == null) throw new ArgumentNullException(nameof(plugin));
 
-            ParentUID = plugin.UID;
+            ParentId = plugin.Id;
             Properties = new List<Property>(plugin.GetProperties<Property>(true));
 
             ImageProperty outImageProperty = Properties.FirstOrDefault(p => p is ImageProperty) as ImageProperty;
@@ -38,7 +38,7 @@ namespace ns.Base.Manager.DataStorage {
         /// <value>
         /// The parent uid.
         /// </value>
-        public string ParentUID { get; }
+        public Guid ParentId { get; }
 
         /// <summary>
         /// Gets the properties.

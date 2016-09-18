@@ -15,7 +15,7 @@ namespace ns.Communication.Models {
         /// </summary>
         /// <param name="container">The container.</param>
         public DataStorageContainerModel(DataContainer container) : base(container) {
-            UID = container.ParentUID;
+            Id = container.ParentId;
             foreach (Property property in container.Properties) {
                 Properties.Add(new PropertyModel(property));
             }

@@ -24,14 +24,14 @@ namespace ns.GUI.WPF.Controls {
             if (e.PropertyName.Equals(nameof(FrontendManager.SelectedPluginProperties))) {
                 Dispatcher.Invoke(new System.Action(() => {
                     Base.Plugins.Properties.Property property = FrontendManager.SelectedPluginProperties.First();
-                    if (_collection.Count == 0 || _collection.FirstOrDefault(r => r.Property?.UID.Equals(property.UID) == true) == null) {
+                    if (_collection.Count == 0 || _collection.FirstOrDefault(r => r.Property?.Id.Equals(property.Id) == true) == null) {
                         _collection.Clear();
                         foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties.Where(p => p.IsOutput)) {
                             _collection.Add(new ResultViewContainer(prop));
                         }
                     } else {
                         foreach (Base.Plugins.Properties.Property prop in FrontendManager.SelectedPluginProperties.Where(p => p.IsOutput)) {
-                            ResultViewContainer container = _collection.FirstOrDefault(r => r.Property?.UID.Equals(prop.UID) == true);
+                            ResultViewContainer container = _collection.FirstOrDefault(r => r.Property?.Id.Equals(prop.Id) == true);
                             if (container == null) continue;
                             container.UpdateProperty(prop);
                         }

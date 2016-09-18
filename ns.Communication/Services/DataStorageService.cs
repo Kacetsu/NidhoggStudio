@@ -4,6 +4,7 @@ using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
 using ns.Core.Manager;
+using System;
 using System.Collections.Concurrent;
 using System.ServiceModel;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace ns.Communication.Services {
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class DataStorageService : IDataStorageService {
-        private ConcurrentDictionary<string, IDataStorageServiceCallbacks> _clients = new ConcurrentDictionary<string, IDataStorageServiceCallbacks>();
+        private ConcurrentDictionary<Guid, IDataStorageServiceCallbacks> _clients = new ConcurrentDictionary<Guid, IDataStorageServiceCallbacks>();
         private DataStorageManager _dataStorageManager = null;
 
         /// <summary>
@@ -34,27 +35,27 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Gets the container.
         /// </summary>
-        /// <param name="clientUid">The client uid.</param>
-        /// <param name="uid">The uid.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetContainer(string clientUid, string uid) {
-            CheckClientAvailable(clientUid);
-            DataContainer container = _dataStorageManager?.Find(uid);
-            if (container == null) throw new FaultException(string.Format("No container with uid {0} found!", uid));
+        public DataStorageContainerModel GetContainer(Guid clientId, Guid id) {
+            CheckClientAvailable(clientId);
+            DataContainer container = _dataStorageManager?.Find(id);
+            if (container == null) throw new FaultException(string.Format("No container with uid {0} found!", id));
             return new DataStorageContainerModel(container);
         }
 
         /// <summary>
         /// Gets the last container.
         /// </summary>
-        /// <param name="clientUid">The client uid.</param>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetLastContainer(string clientUid, string parentUID) {
-            CheckClientAvailable(clientUid);
-            DataContainer container = _dataStorageManager?.FindLast(parentUID);
+        public DataStorageContainerModel GetLastContainer(Guid clientId, Guid parentId) {
+            CheckClientAvailable(clientId);
+            DataContainer container = _dataStorageManager?.FindLast(parentId);
             if (container == null) {
-                throw new FaultException(string.Format("No container available! {0}", parentUID));
+                throw new FaultException(string.Format("No container available! {0}", parentId));
             }
 
             return new DataStorageContainerModel(container);
@@ -63,23 +64,23 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Determines whether [is container available] [the specified parent uid].
         /// </summary>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public bool IsContainerAvailable(string parentUID) {
-            DataContainer container = _dataStorageManager?.FindLast(parentUID);
+        public bool IsContainerAvailable(Guid parentId) {
+            DataContainer container = _dataStorageManager?.FindLast(parentId);
             return container != null;
         }
 
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <exception cref="FaultException"></exception>
-        public void RegisterClient(string uid) {
-            if (_clients.ContainsKey(uid)) {
-                throw new FaultException(string.Format("Client {0} already exists!", uid));
+        public void RegisterClient(Guid id) {
+            if (_clients.ContainsKey(id)) {
+                throw new FaultException(string.Format("Client {0} already exists!", id));
             }
-            _clients.TryAdd(uid, OperationContext.Current.GetCallbackChannel<IDataStorageServiceCallbacks>());
+            _clients.TryAdd(id, OperationContext.Current.GetCallbackChannel<IDataStorageServiceCallbacks>());
         }
 
         /// <summary>
@@ -101,39 +102,39 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <exception cref="NotImplementedException"></exception>
-        public void UnregisterClient(string uid) {
+        public void UnregisterClient(Guid id) {
             IDataStorageServiceCallbacks callback;
-            _clients?.TryRemove(uid, out callback);
+            _clients?.TryRemove(id, out callback);
         }
 
         private void _dataStorageManager_DataStorageCollectionChanged(object sender, Base.Event.DataStorageCollectionChangedEventArgs e) {
             if (e.NewContainers.Count == 0) return;
 
             // Notify clients.
-            ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+            ConcurrentBag<Guid> damagedIds = new ConcurrentBag<Guid>();
             Task.Factory.StartNew(() => {
                 Parallel.ForEach(_clients, (client) => {
                     try {
                         client.Value?.OnDataStorageCollectionChanged(e.NewContainers);
                     } catch (CommunicationException ex) {
                         Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                        damagedUIDs.Add(client.Key);
+                        damagedIds.Add(client.Key);
                     }
                 });
 
-                foreach (string damagedUID in damagedUIDs) {
+                foreach (Guid damagedId in damagedIds) {
                     IDataStorageServiceCallbacks callback;
-                    _clients.TryRemove(damagedUID, out callback);
+                    _clients.TryRemove(damagedId, out callback);
                 }
             });
         }
 
-        private void CheckClientAvailable(string uid) {
-            if (_clients?.ContainsKey(uid) == true) {
+        private void CheckClientAvailable(Guid id) {
+            if (_clients?.ContainsKey(id) == true) {
             } else {
-                throw new FaultException(string.Format("Client is not registered {0}!", uid));
+                throw new FaultException(string.Format("Client is not registered {0}!", id));
             }
         }
     }

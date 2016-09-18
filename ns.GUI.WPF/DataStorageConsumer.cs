@@ -15,12 +15,12 @@ namespace ns.GUI.WPF {
 
     internal sealed class DataStorageConsumer : ICloseable, IDisposable {
         private const int TimeoutMs = 500;
-        private BlockingCollection<KeyValuePair<string, string>> _blockingDataStorageModelUIDs = new BlockingCollection<KeyValuePair<string, string>>();
-        private BlockingCollection<string> _blockingLastDataStorageParentUIDs = new BlockingCollection<string>();
+        private BlockingCollection<KeyValuePair<Guid, Guid>> _blockingDataStorageModelUIDs = new BlockingCollection<KeyValuePair<Guid, Guid>>();
+        private BlockingCollection<Guid> _blockingLastDataStorageParentUIDs = new BlockingCollection<Guid>();
         private CancellationToken _cancellationTokenModelUIDs;
         private CancellationToken _cancellationTokenParentUIDs;
         private CancellationTokenSource _cancellationTokenSourceModelUIDs = new CancellationTokenSource();
-        private CancellationTokenSource _cancellationTokenSourceParentUIDs = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSourceParentIds = new CancellationTokenSource();
         private List<Task> _tasks = new List<Task>();
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ns.GUI.WPF {
         /// </summary>
         public DataStorageConsumer() {
             ClientCommunicationManager.DataStorageService.Callback.DataStorageCollectionChanged += Callback_DataStorageCollectionChanged;
-            _cancellationTokenParentUIDs = _cancellationTokenSourceParentUIDs.Token;
+            _cancellationTokenParentUIDs = _cancellationTokenSourceParentIds.Token;
             _cancellationTokenModelUIDs = _cancellationTokenSourceModelUIDs.Token;
             TaskFactory factoryParentUIDs = new TaskFactory(_cancellationTokenParentUIDs);
             TaskFactory factoryModelUIDs = new TaskFactory(_cancellationTokenModelUIDs);
@@ -49,13 +49,13 @@ namespace ns.GUI.WPF {
         /// <value>
         /// The selected uid.
         /// </value>
-        public string SelectedUID { get; set; }
+        public Guid SelectedId { get; set; }
 
         /// <summary>
         /// Adds the specified uid.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        public void Add(KeyValuePair<string, string> container) {
+        public void Add(KeyValuePair<Guid, Guid> container) {
             while (_blockingDataStorageModelUIDs.Count > 10) {
                 _blockingDataStorageModelUIDs.Take();
             }
@@ -72,7 +72,7 @@ namespace ns.GUI.WPF {
             _blockingDataStorageModelUIDs?.CompleteAdding();
             _blockingLastDataStorageParentUIDs?.CompleteAdding();
             _cancellationTokenSourceModelUIDs?.CancelAfter(TimeoutMs + 100);
-            _cancellationTokenSourceParentUIDs?.CancelAfter(TimeoutMs + 100);
+            _cancellationTokenSourceParentIds?.CancelAfter(TimeoutMs + 100);
 
             Task.WaitAll(_tasks.ToArray(), TimeoutMs + 200);
         }
@@ -88,14 +88,14 @@ namespace ns.GUI.WPF {
         /// <summary>
         /// Updates the last data storage.
         /// </summary>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public void UpdateLastDataStorage(string parentUID) {
-            _blockingLastDataStorageParentUIDs.Add(parentUID);
+        public void UpdateLastDataStorage(Guid parentId) {
+            _blockingLastDataStorageParentUIDs.Add(parentId);
         }
 
         private void Callback_DataStorageCollectionChanged(object sender, DataStorageCollectionChangedEventArgs e) {
-            foreach (KeyValuePair<string, string> container in e.NewContainers) {
+            foreach (KeyValuePair<Guid, Guid> container in e.NewContainers) {
                 Add(container);
             }
         }
@@ -107,18 +107,18 @@ namespace ns.GUI.WPF {
             _blockingDataStorageModelUIDs?.Dispose();
             _blockingLastDataStorageParentUIDs?.Dispose();
             _cancellationTokenSourceModelUIDs?.Dispose();
-            _cancellationTokenSourceParentUIDs?.Dispose();
+            _cancellationTokenSourceParentIds?.Dispose();
         }
 
         private void UpdateDataStorage() {
-            KeyValuePair<string, string> container;
+            KeyValuePair<Guid, Guid> container;
             while (!_blockingDataStorageModelUIDs.IsCompleted && !_cancellationTokenSourceModelUIDs.IsCancellationRequested) {
                 if (_blockingDataStorageModelUIDs.TryTake(out container, TimeoutMs)) {
-                    if (string.IsNullOrEmpty(container.Value)) continue;
-                    string containerUID = container.Key;
-                    string pluginUID = container.Value;
-                    if (!string.IsNullOrEmpty(SelectedUID) && !string.IsNullOrEmpty(pluginUID) && pluginUID.Equals(SelectedUID) && !string.IsNullOrEmpty(containerUID)) {
-                        DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetContainer(DataStorageServiceClient.ClientUid, containerUID);
+                    if (Guid.Empty.Equals(container.Value)) continue;
+                    Guid containerId = container.Key;
+                    Guid pluginId = container.Value;
+                    if (!Guid.Empty.Equals(SelectedId) && !Guid.Empty.Equals(pluginId) && pluginId.Equals(SelectedId) && !Guid.Empty.Equals(containerId)) {
+                        DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetContainer(DataStorageServiceClient.ClientId, containerId);
                         DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
                     }
                 }
@@ -126,13 +126,13 @@ namespace ns.GUI.WPF {
         }
 
         private void UpdateLastDataStorage() {
-            while (!_blockingLastDataStorageParentUIDs.IsCompleted && !_cancellationTokenSourceParentUIDs.IsCancellationRequested) {
-                string parentUID;
-                if (_blockingLastDataStorageParentUIDs.TryTake(out parentUID, TimeoutMs)) {
-                    if (string.IsNullOrEmpty(parentUID)) continue;
+            while (!_blockingLastDataStorageParentUIDs.IsCompleted && !_cancellationTokenSourceParentIds.IsCancellationRequested) {
+                Guid parentId;
+                if (_blockingLastDataStorageParentUIDs.TryTake(out parentId, TimeoutMs)) {
+                    if (Guid.Empty.Equals(parentId)) continue;
                     try {
-                        if (ClientCommunicationManager.DataStorageService.IsContainerAvailable(parentUID)) {
-                            DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetLastContainer(DataStorageServiceClient.ClientUid, parentUID);
+                        if (ClientCommunicationManager.DataStorageService.IsContainerAvailable(parentId)) {
+                            DataStorageContainerModel dataModel = ClientCommunicationManager.DataStorageService.GetLastContainer(DataStorageServiceClient.ClientId, parentId);
                             DataStorageAdded?.Invoke(this, new DataStorageContainerModelAddedEventArgs(dataModel));
                         }
                     } catch (FaultException ex) {

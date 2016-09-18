@@ -1,4 +1,5 @@
 ﻿using ns.Base;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -22,7 +23,7 @@ namespace ns.Communication.Models {
             Name = node.Name;
             Fullname = node.Fullname;
             IsSelected = node.IsSelected;
-            UID = node.UID;
+            Id = node.Id;
         }
 
         /// <summary>
@@ -38,6 +39,15 @@ namespace ns.Communication.Models {
         /// </value>
         [DataMember]
         public string Fullname { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        [DataMember]
+        public Guid Id { get; protected set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is selected.
@@ -56,15 +66,6 @@ namespace ns.Communication.Models {
         /// </value>
         [DataMember]
         public string Name { get; private set; }
-
-        /// <summary>
-        /// Gets the uid.
-        /// </summary>
-        /// <value>
-        /// The uid.
-        /// </value>
-        [DataMember]
-        public string UID { get; protected set; }
 
         /// <summary>
         /// Called when [property changed].

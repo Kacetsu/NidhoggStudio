@@ -58,7 +58,7 @@ namespace ns.GUI.WPF.Controls {
         public void RemoveChildControls(IEnumerable<ToolModel> toolModels) {
             foreach (ToolModel toolModel in toolModels) {
                 IOperationModel operationModel = Model as IOperationModel;
-                ToolModel toolToRemove = operationModel.ChildTools.Find(t => t.UID.Equals(toolModel.UID));
+                ToolModel toolToRemove = operationModel.ChildTools.Find(t => t.Id.Equals(toolModel.Id));
                 (Model as IOperationModel).ChildTools.Remove(toolToRemove);
             }
             UpdateChildControls();

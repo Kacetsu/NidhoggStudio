@@ -74,8 +74,8 @@ namespace ns.GUI.WPF {
                         selectable.IsSelected = true;
                     }
 
-                    _dataStorageConsumer.SelectedUID = _selectedModel.UID;
-                    _dataStorageConsumer.UpdateLastDataStorage(_selectedModel.UID);
+                    _dataStorageConsumer.SelectedId = _selectedModel.Id;
+                    _dataStorageConsumer.UpdateLastDataStorage(_selectedModel.Id);
                     Instance.OnPropertyChanged();
                 }
             }

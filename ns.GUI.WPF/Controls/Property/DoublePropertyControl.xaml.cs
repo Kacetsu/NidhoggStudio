@@ -33,7 +33,7 @@ namespace ns.GUI.WPF.Controls.Property {
             InitializeComponent();
             IsConnectable = isConnectable;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(ContentGrid as Panel, ConnectImage);
             } else {
                 if (property != null) {
@@ -56,7 +56,7 @@ namespace ns.GUI.WPF.Controls.Property {
                     if (newValue > _property.Max) newValue = _property.Max;
                     else if (newValue < _property.Min) newValue = _property.Min;
 
-                    ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.UID);
+                    ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.Id);
                     _property.Value = newValue;
                 } catch (FaultException ex) {
                     Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Warning);
@@ -87,7 +87,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 if (newValue > _property.Max) newValue = _property.Max;
                 else if (newValue < _property.Min) newValue = _property.Min;
 
-                ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.UID);
+                ClientCommunicationManager.ProjectService.ChangePropertyValue(newValue, _property.Id);
 
                 Value = newValue;
                 _property.Value = newValue;

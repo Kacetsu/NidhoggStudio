@@ -18,10 +18,8 @@ namespace ns.Base.Plugins.Properties {
     public abstract class Property : Node {
         private bool _canAutoConnect = false;
 
+        private Guid _connectedId;
         private Property _connectedProperty = null;
-
-        private string _connectedUid = string.Empty;
-
         private string _groupName = string.Empty;
 
         private bool _isMonitored = false;
@@ -106,24 +104,24 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
+        /// Gets or sets the UID of the property that is connected to this one.
+        /// </summary>
+        [DataMember]
+        public Guid ConnectedId {
+            get { return _connectedId; }
+            set {
+                _connectedId = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Gets the connected property.
         /// </summary>
         /// <value>
         /// The connected property.
         /// </value>
         public Property ConnectedProperty => _connectedProperty;
-
-        /// <summary>
-        /// Gets or sets the UID of the property that is connected to this one.
-        /// </summary>
-        [DataMember]
-        public string ConnectedUID {
-            get { return _connectedUid; }
-            set {
-                _connectedUid = value;
-                OnPropertyChanged();
-            }
-        }
 
         /// <summary>
         /// Gets or sets the name of the group.
@@ -200,7 +198,7 @@ namespace ns.Base.Plugins.Properties {
                 _connectedProperty.PropertyUnconnectEvent -= ConnectedPropertyUnconnectEvent;
             }
             _connectedProperty = property;
-            ConnectedUID = _connectedProperty.UID;
+            ConnectedId = _connectedProperty.Id;
             _connectedProperty.PropertyChanged += ConnectedPropertyChangedHandle;
             _connectedProperty.PropertyUnconnectEvent += ConnectedPropertyUnconnectEvent;
         }
@@ -208,14 +206,14 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Connects the specified uid.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void Connect(string uid) => ConnectedUID = uid;
+        /// <param name="uid">The id.</param>
+        public void Connect(Guid id) => ConnectedId = id;
 
         /// <summary>
         /// Unconnects this instance.
         /// </summary>
         public virtual void Unconnect() {
-            ConnectedUID = string.Empty;
+            ConnectedId = Guid.Empty;
 
             PropertyUnconnectEvent?.Invoke(this, new NodeChangedEventArgs(this));
 

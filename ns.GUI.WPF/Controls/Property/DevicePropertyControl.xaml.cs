@@ -2,7 +2,7 @@
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Client;
-using ns.Communication.Models.Properties;
+using System;
 using System.Linq;
 using System.ServiceModel;
 using System.Windows;
@@ -53,7 +53,7 @@ namespace ns.GUI.WPF.Controls.Property {
                 SelectDevice(_property?.Value);
             }
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(SelectionBox as Control, ConnectImage);
             }
 
@@ -67,7 +67,7 @@ namespace ns.GUI.WPF.Controls.Property {
         }
 
         private void Callback_PropertyChanged(object sender, Communication.Events.PropertyChangedEventArgs e) {
-            if (e.Uid.Equals(_property.UID)) {
+            if (e.Id.Equals(_property.Id)) {
                 SelectionBox.SelectedItem = null;
             }
         }
@@ -75,7 +75,7 @@ namespace ns.GUI.WPF.Controls.Property {
         private void SelectDevice(Device device) {
             Device deviceSelected = null;
             foreach (Device dev in SelectionBox.Items) {
-                if (dev.UID.Equals(device.UID)) {
+                if (dev.Id.Equals(device.Id)) {
                     deviceSelected = dev;
                 }
             }
@@ -93,7 +93,7 @@ namespace ns.GUI.WPF.Controls.Property {
 
             if (_property.Value != device) {
                 try {
-                    ClientCommunicationManager.ProjectService.ChangePropertyValue(SelectionBox.SelectedItem, _property.UID);
+                    ClientCommunicationManager.ProjectService.ChangePropertyValue(SelectionBox.SelectedItem, _property.Id);
                     _property.Value = device;
                 } catch (FaultException ex) {
                     Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Error);

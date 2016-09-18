@@ -75,11 +75,11 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void Callback_PropertyChanged(object sender, Communication.Events.PropertyChangedEventArgs e) {
-            if (!e.Uid.Equals(_property?.UID)) {
+            if (!e.Id.Equals(_property?.Id)) {
                 return;
             }
 
-            PropertyModel model = ClientCommunicationManager.ProjectService.GetProperty(_property.UID);
+            PropertyModel model = ClientCommunicationManager.ProjectService.GetProperty(_property.Id);
             RectangleProperty rectangleProperty = model?.Property as RectangleProperty;
 
             if (rectangleProperty == null) {
@@ -179,7 +179,7 @@ namespace ns.GUI.WPF.Controls {
             _isDrag = false;
             Mouse.OverrideCursor = null;
             Mouse.Capture(null);
-            ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.UID);
+            ClientCommunicationManager.ProjectService.ChangePropertyValue(_property.Value, _property.Id);
         }
 
         private void Rectangle_MouseMove(object sender, MouseEventArgs e) {

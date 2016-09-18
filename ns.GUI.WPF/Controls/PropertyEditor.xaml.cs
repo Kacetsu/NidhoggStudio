@@ -138,7 +138,7 @@ namespace ns.GUI.WPF.Controls {
 
         private void SelectionBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (Model is OperationModel) {
-                Model = ClientCommunicationManager.ProjectService.GetOperation(Model.UID);
+                Model = ClientCommunicationManager.ProjectService.GetOperation(Model.Id);
             }
             UpdateContentGrid();
         }

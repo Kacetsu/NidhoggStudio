@@ -225,26 +225,26 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Finds the property.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public Property FindProperty(string uid) {
+        public Property FindProperty(Guid id) {
             Property property = null;
             foreach (Operation operation in Configuration.Operations) {
-                property = operation.Items.Find(p => p.UID.Equals(uid)) as Property;
+                property = operation.Items.Find(p => p.Id.Equals(id)) as Property;
                 if (property != null) {
                     break;
                 }
                 DeviceContainerProperty tmpDeviceProperty = operation.Items.Find(p => p is DeviceContainerProperty) as DeviceContainerProperty;
                 if (tmpDeviceProperty != null) {
                     Device tmpDevice = tmpDeviceProperty.Value;
-                    property = tmpDevice.Items.Find(p => p.UID.Equals(uid)) as Property;
+                    property = tmpDevice.Items.Find(p => p.Id.Equals(id)) as Property;
                     if (property != null) {
                         break;
                     }
                 }
 
                 foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
-                    property = tool.Items.Find(p => p.UID.Equals(uid)) as Property;
+                    property = tool.Items.Find(p => p.Id.Equals(id)) as Property;
                     if (property != null) {
                         break;
                     }
@@ -271,11 +271,11 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Finds the tool.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public Tool FindTool(string uid) {
+        public Tool FindTool(Guid id) {
             foreach (Operation operation in Configuration.Operations) {
-                Tool tool = operation.Items.Find(t => t.UID.Equals(uid)) as Tool;
+                Tool tool = operation.Items.Find(t => t.Id.Equals(id)) as Tool;
                 return tool;
             }
 

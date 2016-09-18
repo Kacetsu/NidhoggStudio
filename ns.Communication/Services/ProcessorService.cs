@@ -2,6 +2,7 @@
 using ns.Communication.Models;
 using ns.Communication.Services.Callbacks;
 using ns.Core;
+using System;
 using System.Collections.Concurrent;
 using System.ServiceModel;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace ns.Communication.Services {
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class ProcessorService : IProcessorService {
-        private ConcurrentDictionary<string, IProcessorServiceCallbacks> _clients = new ConcurrentDictionary<string, IProcessorServiceCallbacks>();
+        private ConcurrentDictionary<Guid, IProcessorServiceCallbacks> _clients = new ConcurrentDictionary<Guid, IProcessorServiceCallbacks>();
 
         /// <summary>
         /// Gets the proxy.
@@ -29,13 +30,13 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <exception cref="FaultException"></exception>
-        public void RegisterClient(string uid) {
-            if (_clients.ContainsKey(uid)) {
-                throw new FaultException(string.Format("Client {0} already exists!", uid));
+        public void RegisterClient(Guid id) {
+            if (_clients.ContainsKey(id)) {
+                throw new FaultException(string.Format("Client {0} already exists!", id));
             }
-            _clients.TryAdd(uid, OperationContext.Current.GetCallbackChannel<IProcessorServiceCallbacks>());
+            _clients.TryAdd(id, OperationContext.Current.GetCallbackChannel<IProcessorServiceCallbacks>());
         }
 
         /// <summary>
@@ -46,19 +47,19 @@ namespace ns.Communication.Services {
             if (!CoreSystem.Processor.Start()) {
                 throw new FaultException(string.Format("Could not start processor!"));
             } else {
-                ConcurrentBag<string> damagedUIDs = new ConcurrentBag<string>();
+                ConcurrentBag<Guid> damagedIds = new ConcurrentBag<Guid>();
                 Parallel.ForEach(_clients, (client) => {
                     try {
                         client.Value?.OnProcessorStarted(new ProcessorInfoModel(CoreSystem.Processor));
                     } catch (CommunicationException ex) {
                         Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
-                        damagedUIDs.Add(client.Key);
+                        damagedIds.Add(client.Key);
                     }
                 });
 
-                foreach (string damagedUID in damagedUIDs) {
+                foreach (Guid damagedId in damagedIds) {
                     IProcessorServiceCallbacks callback;
-                    _clients.TryRemove(damagedUID, out callback);
+                    _clients.TryRemove(damagedId, out callback);
                 }
             }
         }
@@ -80,11 +81,11 @@ namespace ns.Communication.Services {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public void UnregisterClient(string uid) {
+        public void UnregisterClient(Guid id) {
             IProcessorServiceCallbacks callback;
-            _clients?.TryRemove(uid, out callback);
+            _clients?.TryRemove(id, out callback);
         }
     }
 }

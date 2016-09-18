@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins.Properties;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,7 +20,7 @@ namespace ns.GUI.WPF.Controls.Property {
             InitializeComponent();
             DataContext = this;
 
-            if (!string.IsNullOrEmpty(Property.ConnectedUID)) {
+            if (!Guid.Empty.Equals(Property.ConnectedId)) {
                 ConnectClicked(ContentBox as Control, ConnectImage);
             } else {
                 ContentBox.ItemsSource = property.Value;

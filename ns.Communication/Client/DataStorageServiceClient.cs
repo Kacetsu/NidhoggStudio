@@ -16,37 +16,37 @@ namespace ns.Communication.Client {
         /// <param name="binding">The binding.</param>
         /// <param name="callbacks">The callbacks.</param>
         public DataStorageServiceClient(EndpointAddress endpoint, Binding binding, DataStorageServiceCallbacks callbacks) : base(endpoint, binding, callbacks) {
-            RegisterClient(ClientUid);
+            RegisterClient(ClientId);
         }
 
         /// <summary>
         /// Gets the container.
         /// </summary>
-        /// <param name="clientUid">The client uid.</param>
-        /// <param name="uid">The uid.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="id">The id.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetContainer(string clientUid, string uid) => Channel?.GetContainer(clientUid, uid);
+        public DataStorageContainerModel GetContainer(Guid clientId, Guid id) => Channel?.GetContainer(clientId, id);
 
         /// <summary>
         /// Gets the last container.
         /// </summary>
-        /// <param name="clientUid">The client uid.</param>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public DataStorageContainerModel GetLastContainer(string clientUid, string parentUID) => Channel?.GetLastContainer(clientUid, parentUID);
+        public DataStorageContainerModel GetLastContainer(Guid clientId, Guid parentId) => Channel?.GetLastContainer(clientId, parentId);
 
         /// <summary>
-        /// Determines whether [is container available] [the specified parent uid].
+        /// Determines whether [is container available] [the specified parent id].
         /// </summary>
-        /// <param name="parentUID">The parent uid.</param>
+        /// <param name="parentId">The parent id.</param>
         /// <returns></returns>
-        public bool IsContainerAvailable(string parentUID) => Channel?.IsContainerAvailable(parentUID) == true;
+        public bool IsContainerAvailable(Guid parentId) => Channel?.IsContainerAvailable(parentId) == true;
 
         /// <summary>
         /// Registers the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void RegisterClient(string uid) => Channel?.RegisterClient(uid);
+        /// <param name="id">The id.</param>
+        public void RegisterClient(Guid id) => Channel?.RegisterClient(id);
 
         /// <summary>
         /// Sends the heartbeat.
@@ -57,15 +57,15 @@ namespace ns.Communication.Client {
         /// <summary>
         /// Unregisters the client.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        public void UnregisterClient(string uid) => Channel?.UnregisterClient(uid);
+        /// <param name="id">The id.</param>
+        public void UnregisterClient(Guid id) => Channel?.UnregisterClient(id);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing) {
-            UnregisterClient(ClientUid);
+            UnregisterClient(ClientId);
             base.Dispose(disposing);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using ns.Communication.Events;
 using ns.Communication.Models;
+using System;
 using System.ServiceModel;
 
 namespace ns.Communication.Services.Callbacks {
@@ -16,9 +17,9 @@ namespace ns.Communication.Services.Callbacks {
         /// <summary>
         /// Called when [property changed].
         /// </summary>
-        /// <param name="uid">The uid.</param>
+        /// <param name="id">The id.</param>
         [OperationContract(IsOneWay = true)]
-        void OnPropertyChanged(string uid);
+        void OnPropertyChanged(Guid id);
 
         /// <summary>
         /// Called when [tool added].

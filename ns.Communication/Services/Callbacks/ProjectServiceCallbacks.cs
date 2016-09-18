@@ -1,5 +1,6 @@
 ﻿using ns.Communication.Events;
 using ns.Communication.Models;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 
@@ -27,7 +28,11 @@ namespace ns.Communication.Services.Callbacks {
         public void OnOperationAdded(OperationModel model) {
         }
 
-        public void OnPropertyChanged(string uid) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(uid));
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="id">The id.</param>
+        public void OnPropertyChanged(Guid id) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(id));
 
         /// <summary>
         /// Called when [tool added].

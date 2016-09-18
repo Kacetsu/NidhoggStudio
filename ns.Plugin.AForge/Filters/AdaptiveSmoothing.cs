@@ -55,7 +55,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new AdaptiveSmoothing(this);
+        public override Node Clone() => new AdaptiveSmoothing(this);
 
         /// <summary>
         /// Initialze the Plugin.

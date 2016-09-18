@@ -9,7 +9,7 @@ namespace ns.Base.Plugins.Properties {
     /// @warning Should not be used directly.
     /// </summary>
     [DataContract
-        KnownType(typeof(DeviceProperty)),
+        KnownType(typeof(DeviceContainerProperty)),
         KnownType(typeof(ImageProperty)),
         KnownType(typeof(ListProperty)),
         KnownType(typeof(NumberProperty<object>)),
@@ -42,7 +42,6 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         public Property() {
             Name = "UNKNOWN";
-            UID = GenerateUID();
         }
 
         /// <summary>
@@ -84,6 +83,7 @@ namespace ns.Base.Plugins.Properties {
             IsOutput = property.IsOutput;
             GroupName = property.GroupName;
             IsMonitored = property.IsMonitored;
+            CanAutoConnect = property.CanAutoConnect;
         }
 
         /// <summary>

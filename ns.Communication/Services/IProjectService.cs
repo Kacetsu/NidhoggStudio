@@ -37,7 +37,7 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="targetUID">The target uid.</param>
         /// <param name="sourceUID">The source uid.</param>
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ConnectProperties(string targetUID, string sourceUID);
 
         /// <summary>
@@ -47,6 +47,14 @@ namespace ns.Communication.Services {
         /// <returns></returns>
         [OperationContract]
         PropertyModel[] GetConnectableProperties(string propertyUID);
+
+        /// <summary>
+        /// Gets the operation.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        [OperationContract]
+        OperationModel GetOperation(string uid);
 
         /// <summary>
         /// Gets the operations.
@@ -60,14 +68,14 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <param name="propertyUID">The property uid.</param>
         /// <returns></returns>
-        [OperationContract]
+        [OperationContract(IsOneWay = false)]
         PropertyModel GetProperty(string propertyUID);
 
         /// <summary>
         /// Registers the client.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        [OperationContract]
+        [OperationContract(IsInitiating = true, IsOneWay = true)]
         void RegisterClient(string uid);
 
         /// <summary>
@@ -81,7 +89,7 @@ namespace ns.Communication.Services {
         /// Unregisters the client.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        [OperationContract]
+        [OperationContract(IsTerminating = true, IsOneWay = true)]
         void UnregisterClient(string uid);
     }
 }

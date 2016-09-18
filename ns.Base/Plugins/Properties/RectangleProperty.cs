@@ -16,6 +16,13 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
         /// </summary>
+        /// <param name="other">The other.</param>
+        public RectangleProperty(RectangleProperty other) : base(other) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
+        /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="isOutput">True if the property is a output.</param>
         public RectangleProperty(string name, bool isOutput) : base(name, isOutput) {
@@ -32,6 +39,43 @@ namespace ns.Base.Plugins.Properties {
         public RectangleProperty(string name, double x, double y, double width, double height) : base() {
             Name = name;
             Value = new Rectangle(x, y, width, height);
+        }
+
+        /// <summary>
+        /// Gets or sets height.
+        /// </summary>
+        [XmlIgnore]
+        public double Height {
+            get {
+                return Value.Height;
+            }
+            set {
+                Value.Height = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
+        public override Type Type {
+            get {
+                return typeof(Rectangle);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets width.
+        /// </summary>
+        [XmlIgnore]
+        public double Width {
+            get {
+                return Value.Width;
+            }
+            set {
+                Value.Width = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -63,40 +107,9 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
-        /// Gets or sets width.
+        /// Clones this instance.
         /// </summary>
-        [XmlIgnore]
-        public double Width {
-            get {
-                return Value.Width;
-            }
-            set {
-                Value.Width = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets height.
-        /// </summary>
-        [XmlIgnore]
-        public double Height {
-            get {
-                return Value.Height;
-            }
-            set {
-                Value.Height = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the property.
-        /// </summary>
-        public override Type Type {
-            get {
-                return typeof(Rectangle);
-            }
-        }
+        /// <returns></returns>
+        public override Node Clone() => new RectangleProperty(this);
     }
 }

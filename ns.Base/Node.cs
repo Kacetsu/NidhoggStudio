@@ -11,8 +11,8 @@ namespace ns.Base {
     /// <summary>
     /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
     /// </summary>
-    [DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
-    public class Node : NotifiableObject, ICloneable, INode {
+    [Serializable, DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
+    public class Node : NotifiableObject, ICloneable<Node>, INode {
         private string _fullname = string.Empty;
         private bool _isInitialized = false;
         private bool _isSelected = false;
@@ -25,7 +25,6 @@ namespace ns.Base {
         /// </summary>
         public Node() {
             Items = new ObservableList<Node>();
-            UID = GenerateUID();
         }
 
         /// <summary>
@@ -35,10 +34,11 @@ namespace ns.Base {
         public Node(Node node) {
             if (node == null) throw new ArgumentNullException(nameof(node));
 
-            UID = node.UID;
+            UID = GenerateUID();
             Fullname = node.Fullname;
             Name = node.Name;
-            Items = new ObservableList<Node>(node.Items);
+
+            Items = new ObservableList<Node>(node.Items.Select(item => item.Clone()).ToList());
 
             Parent = node.Parent;
 
@@ -89,7 +89,7 @@ namespace ns.Base {
         }
 
         /// <summary>
-        /// Gets or sets the list with all Childs.
+        /// Gets or sets the list with all items.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         [DataMember]
@@ -205,7 +205,7 @@ namespace ns.Base {
         /// Clones the Node with all its Members.
         /// </summary>
         /// <returns>The cloned Node.</returns>
-        public virtual object Clone() => new Node(this);
+        public virtual Node Clone() => new Node(this);
 
         /// <summary>
         /// Closes this instance.

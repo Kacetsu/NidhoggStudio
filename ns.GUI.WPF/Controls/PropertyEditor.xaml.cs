@@ -55,13 +55,13 @@ namespace ns.GUI.WPF.Controls {
         public IPluginModel Model { get; private set; }
 
         private DevicePropertyControl AddDeviceProperty(Grid grid, Node property, bool isConnectable) {
-            DevicePropertyControl control = new DevicePropertyControl(property as DeviceProperty, isConnectable);
+            DevicePropertyControl control = new DevicePropertyControl(property as DeviceContainerProperty, isConnectable);
             RowDefinition rowDefinition = new RowDefinition();
             rowDefinition.Height = new GridLength(0, GridUnitType.Auto);
             grid.RowDefinitions.Add(rowDefinition);
             Grid.SetRow(control, grid.Children.Count);
             grid.Children.Add(control);
-            DeviceProperty deviceProperty = property as DeviceProperty;
+            DeviceContainerProperty deviceProperty = property as DeviceContainerProperty;
 
             control.SelectionBox.SelectionChanged += SelectionBoxSelectionChanged;
             return control;
@@ -137,6 +137,9 @@ namespace ns.GUI.WPF.Controls {
         }
 
         private void SelectionBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (Model is OperationModel) {
+                Model = ClientCommunicationManager.ProjectService.GetOperation(Model.UID);
+            }
             UpdateContentGrid();
         }
 
@@ -151,8 +154,9 @@ namespace ns.GUI.WPF.Controls {
                 AddImageProperty(ContentGrid, property, true);
             } else if (property is RectangleProperty) {
                 AddRectangleProperty(ContentGrid, property, true);
-            } else if (property is DeviceProperty) {
+            } else if (property is DeviceContainerProperty) {
                 AddDeviceProperty(ContentGrid, property, false);
+                return;
             } else if (property is ListProperty) {
                 AddListProperty(ContentGrid, property, true);
             }
@@ -181,9 +185,9 @@ namespace ns.GUI.WPF.Controls {
                 Base.Plugins.Properties.Property property = propertyModel.Property;
                 if (!property.IsOutput) {
                     UpdateContenGridByProperty(property);
-                    DeviceProperty deviceProperty = property as DeviceProperty;
-                    if (deviceProperty == null || deviceProperty.SelectedItem == null) continue;
-                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.SelectedItem.Items.Where(p => p is Base.Plugins.Properties.Property)) {
+                    DeviceContainerProperty deviceProperty = property as DeviceContainerProperty;
+                    if (deviceProperty?.Value == null) continue;
+                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.Value.Items.Where(p => !(p as Base.Plugins.Properties.Property).IsOutput)) {
                         UpdateContenGridByProperty(dp);
                     }
                 }

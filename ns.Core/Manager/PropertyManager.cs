@@ -1,5 +1,4 @@
 ﻿using ns.Base;
-using ns.Base.Extensions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
@@ -26,14 +25,12 @@ namespace ns.Core.Manager {
         /// <param name="node">The node.</param>
         public override void Add(Property node) {
             if (!Nodes.Contains(node)) {
-                if (node is DeviceProperty) {
+                if (node is DeviceContainerProperty) {
                     List<Device> devices = new List<Device>();
+                    DeviceContainerProperty deviceProperty = node as DeviceContainerProperty;
                     foreach (Device device in _pluginManager.Nodes.Where(n => n is Device)) {
-                        devices.Add(device);
+                        deviceProperty.Items.Add(device.Clone());
                     }
-
-                    DeviceProperty deviceProperty = node as DeviceProperty;
-                    deviceProperty.Value = devices.DeepClone();
                 }
 
                 Nodes.Add(node);

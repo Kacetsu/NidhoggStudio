@@ -138,11 +138,11 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find property {0}.", propertyUID));
             }
 
-            if (valueProperty.ValueObj.GetType() != newValue.GetType()) {
+            try {
+                valueProperty.ValueObj = newValue;
+            } catch {
                 throw new FaultException(string.Format("Property type mismatch. Property value type is [{0}] but new value is of type [{1}].", valueProperty.ValueObj.GetType(), newValue.GetType()));
             }
-
-            valueProperty.ValueObj = newValue;
 
             // Notify clients.
             List<string> damagedUIDs = new List<string>();
@@ -218,6 +218,16 @@ namespace ns.Communication.Services {
         }
 
         /// <summary>
+        /// Gets the operation.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public OperationModel GetOperation(string uid) {
+            OperationModel model = new OperationModel(_projectManager.Configuration.Operations.FirstOrDefault(o => o.UID.Equals(uid)));
+            return model;
+        }
+
+        /// <summary>
         /// Gets all operations.
         /// </summary>
         /// <returns></returns>
@@ -281,6 +291,7 @@ namespace ns.Communication.Services {
             if (_clients.ContainsKey(uid)) {
                 throw new FaultException(string.Format("Client {0} already exists!", uid));
             }
+
             _clients.Add(uid, OperationContext.Current.GetCallbackChannel<IProjectServiceCallbacks>());
         }
 

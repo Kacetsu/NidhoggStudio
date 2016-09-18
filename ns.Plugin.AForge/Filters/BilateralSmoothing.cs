@@ -67,7 +67,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new BilateralSmoothing(this);
+        public override Node Clone() => new BilateralSmoothing(this);
 
         /// <summary>
         /// Initialze the Plugin.

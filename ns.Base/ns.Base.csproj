@@ -177,6 +177,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICloneable.cs" />
     <Compile Include="VisibleAttribute.cs" />
     <Compile Include="BlockingStream.cs" />
     <Compile Include="Configuration\BaseConfiguration.cs" />
@@ -250,7 +251,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Plugins\Properties\ListProperty.cs" />
     <Compile Include="Plugins\Properties\Property.cs" />
-    <Compile Include="Plugins\Properties\DeviceProperty.cs" />
+    <Compile Include="Plugins\Properties\DeviceContainerProperty.cs" />
     <Compile Include="Plugins\Properties\DoubleProperty.cs" />
     <Compile Include="Plugins\Properties\ImageProperty.cs" />
     <Compile Include="Plugins\Properties\IntegerProperty.cs" />

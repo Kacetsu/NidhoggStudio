@@ -23,8 +23,6 @@ namespace ns.Plugin.Base {
         private ImageProperty _imageProperty;
         private List<string> _openImageFilenames;
 
-        private Stopwatch _stopwatch = null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFileDevice"/> class.
         /// </summary>
@@ -48,7 +46,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new ImageFileDevice(this);
+        public override Node Clone() => new ImageFileDevice(this);
 
         /// <summary>
         /// Closes this instance.
@@ -77,7 +75,6 @@ namespace ns.Plugin.Base {
             _directory = GetProperty<StringProperty>("Directory").Value;
             _imageProperty = GetProperty<ImageProperty>("Image");
             _framerate = GetProperty<DoubleProperty>("Framerate");
-            _stopwatch = new Stopwatch();
 
             if (!Directory.Exists(_directory)) {
                 ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
@@ -107,12 +104,10 @@ namespace ns.Plugin.Base {
         /// Success of the Operation.
         /// </returns>
         public override bool TryRun() {
-            if (!_stopwatch.IsRunning) _stopwatch.Start();
-            while (_stopwatch.ElapsedMilliseconds < (1000.0 / _framerate.Value)) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            while (stopwatch.ElapsedMilliseconds < (1000.0 / _framerate.Value)) {
                 Thread.Sleep(1);
             }
-
-            _stopwatch.Restart();
 
             if (_imageIndex >= _bitmaps.Count)
                 _imageIndex = 0;

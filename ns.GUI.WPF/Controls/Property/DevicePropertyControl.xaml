@@ -1,5 +1,5 @@
 ﻿<control:PropertyControl x:Class="ns.GUI.WPF.Controls.Property.DevicePropertyControl"
-             x:TypeArguments="application:DeviceProperty"
+             x:TypeArguments="application:DeviceContainerProperty"
              xmlns:application="clr-namespace:ns.Base.Plugins.Properties;assembly=ns.Base"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

@@ -56,6 +56,13 @@ namespace ns.Communication.Client {
         public PropertyModel[] GetConnectableProperties(string propertyUID) => Channel?.GetConnectableProperties(propertyUID);
 
         /// <summary>
+        /// Gets the operation.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <returns></returns>
+        public OperationModel GetOperation(string uid) => Channel?.GetOperation(uid);
+
+        /// <summary>
         /// Gets the project operations.
         /// </summary>
         /// <returns></returns>

@@ -1,5 +1,4 @@
-﻿using ns.Base.Extensions;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,7 +24,7 @@ namespace ns.Base.Plugins {
         /// </summary>
         public Operation() : base() {
             DisplayName = "Operation";
-            AddChild(new DeviceProperty(nameof(CaptureDevice)));
+            AddChild(new DeviceContainerProperty(nameof(CaptureDevice)));
             AddChild(new StringProperty("LinkedOperation", false));
             AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
             IntegerProperty elapsedMsProperty = new IntegerProperty("ElapsedMs", true);
@@ -70,11 +69,11 @@ namespace ns.Base.Plugins {
                 if (_captureDevice != value) {
                     _captureDevice = value;
                     _captureDevice.Parent = this;
-                    DeviceProperty deviceProperty = GetProperty<DeviceProperty>(nameof(CaptureDevice));
+                    DeviceContainerProperty deviceProperty = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice));
                     if (deviceProperty == null) {
-                        throw new MemberAccessException(nameof(DeviceProperty));
+                        throw new MemberAccessException(nameof(DeviceContainerProperty));
                     }
-                    deviceProperty.SelectedItem = value;
+                    deviceProperty.Value = value;
                     OnPropertyChanged();
                 }
             }
@@ -84,8 +83,8 @@ namespace ns.Base.Plugins {
         /// Adds the device list.
         /// </summary>
         /// <param name="devices">The devices.</param>
-        public void AddDeviceList(ICollection<Device> devices) {
-            GetProperty<DeviceProperty>(nameof(CaptureDevice)).Value = devices.ToList();
+        public void AddDeviceList(IEnumerable<Device> devices) {
+            GetProperty<DeviceContainerProperty>(nameof(CaptureDevice)).Items = new ObservableList<Node>(devices.Cast<Node>());
         }
 
         /// <summary>
@@ -95,11 +94,7 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() {
-            Operation clone = this.DeepClone();
-            clone.UID = GenerateUID();
-            return clone;
-        }
+        public new Operation Clone() => new Operation(this);
 
         /// <summary>
         /// Closes this instance.
@@ -118,12 +113,12 @@ namespace ns.Base.Plugins {
         public override bool Initialize() {
             bool result = base.Initialize();
 
-            DeviceProperty deviceProperty = GetProperty<DeviceProperty>(nameof(CaptureDevice));
+            DeviceContainerProperty deviceProperty = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice));
 
             if (deviceProperty != null) {
                 deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
                 CaptureDevice?.Close();
-                CaptureDevice = deviceProperty.SelectedItem;
+                CaptureDevice = deviceProperty.Value;
                 CaptureDevice?.Initialize();
             }
 
@@ -168,8 +163,8 @@ namespace ns.Base.Plugins {
         }
 
         private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName.Equals(nameof(DeviceProperty.SelectedItem))) {
-                CaptureDevice = GetProperty<DeviceProperty>(nameof(CaptureDevice))?.SelectedItem;
+            if (e.PropertyName.Equals(nameof(DeviceContainerProperty.Value))) {
+                CaptureDevice = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice))?.Value;
             }
         }
     }

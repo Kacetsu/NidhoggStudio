@@ -91,7 +91,7 @@ namespace ns.Plugin.AForge.Imaging {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new ImageStatistics(this);
+        public override Node Clone() => new ImageStatistics(this);
 
         /// <summary>
         /// Initialze the Plugin.

@@ -1,5 +1,4 @@
-﻿using ns.Base.Extensions;
-using ns.Base.Plugins.Properties;
+﻿using ns.Base.Plugins.Properties;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -8,9 +7,16 @@ namespace ns.Base.Plugins {
     [DataContract]
     public class Device : Plugin {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Device"/> class.
+        /// </summary>
         public Device() : base() {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Device"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
         public Device(Device other) : base(other) {
         }
 
@@ -21,11 +27,7 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() {
-            Device clone = this.DeepClone();
-            clone.UID = GenerateUID();
-            return clone;
-        }
+        public override Node Clone() => new Device(this);
 
         /// <summary>
         /// Closes this instance.

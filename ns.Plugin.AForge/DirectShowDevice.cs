@@ -64,6 +64,15 @@ namespace ns.Plugin.AForge {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DirectShowDevice"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public DirectShowDevice(DirectShowDevice other) : base(other) {
+        }
+
+        public override Node Clone() => new DirectShowDevice(this);
+
+        /// <summary>
         /// Finalize the Plugin.
         /// </summary>
         /// <returns>

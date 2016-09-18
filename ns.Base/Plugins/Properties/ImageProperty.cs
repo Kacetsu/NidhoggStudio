@@ -7,14 +7,34 @@ namespace ns.Base.Plugins.Properties {
     public class ImageProperty : GenericProperty<ImageContainer> {
         private bool _isVisible = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageProperty"/> class.
+        /// </summary>
         public ImageProperty() : base() {
             CanAutoConnect = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageProperty"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public ImageProperty(ImageProperty other) : base(other) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageProperty"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
         public ImageProperty(string name, ImageContainer value) : base(name, value) {
             CanAutoConnect = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageProperty"/> class.
+        /// </summary>
+        /// <param name="name">Name of the property.</param>
+        /// <param name="isOutput">True if the property is a output.</param>
         public ImageProperty(string name, bool isOutput) : base(name, isOutput) {
             CanAutoConnect = true;
         }
@@ -35,6 +55,12 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         public int Height => Value.Height;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is visible.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is visible; otherwise, <c>false</c>.
+        /// </value>
         public bool IsVisible {
             get { return _isVisible; }
             set {
@@ -52,6 +78,12 @@ namespace ns.Base.Plugins.Properties {
         /// The width.
         /// </value>
         public int Width => Value.Width;
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns></returns>
+        public override Node Clone() => new ImageProperty(this);
 
         /// <summary>
         /// Sets the value.

@@ -61,7 +61,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new CheckIntensity(this);
+        public override Node Clone() => new CheckIntensity(this);
 
         /// <summary>
         /// Initialze the Plugin.

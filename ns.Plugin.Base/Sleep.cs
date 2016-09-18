@@ -42,7 +42,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new Sleep(this);
+        public override Node Clone() => new Sleep(this);
 
         /// <summary>
         /// Initializes this instance.

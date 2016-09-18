@@ -40,7 +40,6 @@ namespace ns.Core.Manager {
         /// </summary>
         public ProjectManager() : base() {
             Configuration = new ProjectConfiguration();
-            CreateDefaultProject();
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace ns.Core.Manager {
                 throw new ManagerInitializeException(nameof(pluginManager));
             }
 
-            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
+            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>());
 
             if (CoreSystem.Processor?.State == ProcessorState.Running) {
                 operation.Initialize();
@@ -156,9 +155,7 @@ namespace ns.Core.Manager {
             }
 
             Operation operation = new Operation("Unknown Operation");
-
             Device device = pluginManager.Nodes.First(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
-            device = device.Clone() as Device;
 
             if (device != null) {
                 Add(device, operation);
@@ -237,9 +234,9 @@ namespace ns.Core.Manager {
                 if (property != null) {
                     break;
                 }
-                DeviceProperty tmpDeviceProperty = operation.Items.Find(p => p is DeviceProperty) as DeviceProperty;
+                DeviceContainerProperty tmpDeviceProperty = operation.Items.Find(p => p is DeviceContainerProperty) as DeviceContainerProperty;
                 if (tmpDeviceProperty != null) {
-                    Device tmpDevice = tmpDeviceProperty.SelectedItem;
+                    Device tmpDevice = tmpDeviceProperty.Value;
                     property = tmpDevice.Items.Find(p => p.UID.Equals(uid)) as Property;
                     if (property != null) {
                         break;

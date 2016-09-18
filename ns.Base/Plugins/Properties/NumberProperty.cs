@@ -1,5 +1,4 @@
-﻿using ns.Base.Extensions;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -13,6 +12,16 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         public NumberProperty() : base() {
             Tolerance = new Tolerance<T>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        public NumberProperty(NumberProperty<T> other) : base(other) {
+            Tolerance = other.Tolerance;
+            Min = other.Min;
+            Max = other.Max;
         }
 
         /// <summary>
@@ -100,14 +109,5 @@ namespace ns.Base.Plugins.Properties {
         /// </value>
         [DataMember]
         public Tolerance<T> Tolerance { get; set; }
-
-        /// <summary>
-        /// Clones the Node with all its Members.
-        /// Will set a new UID.
-        /// </summary>
-        /// <returns>
-        /// The cloned Node.
-        /// </returns>
-        public override object Clone() => this.DeepClone();
     }
 }

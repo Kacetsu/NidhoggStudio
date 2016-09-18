@@ -67,7 +67,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new ContrastCorrection(this);
+        public override Node Clone() => new ContrastCorrection(this);
 
         /// <summary>
         /// Initializes this instance.

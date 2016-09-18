@@ -184,7 +184,6 @@
     <Compile Include="Models\OperationModel.cs" />
     <Compile Include="Models\PluginModel.cs" />
     <Compile Include="Models\ProcessorInfoModel.cs" />
-    <Compile Include="Models\Properties\DevicePropertyModel.cs" />
     <Compile Include="Models\Properties\PropertyModel.cs" />
     <Compile Include="Models\ToolModel.cs" />
     <Compile Include="Configuration\CommunicationConfiguration.cs" />

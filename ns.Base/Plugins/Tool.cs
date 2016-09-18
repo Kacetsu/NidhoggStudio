@@ -44,7 +44,7 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new Tool(this);
+        public override Node Clone() => new Tool(this);
 
         /// <summary>
         /// Closes this instance.

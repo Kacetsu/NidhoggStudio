@@ -115,7 +115,7 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new Plugin(this);
+        public override Node Clone() => new Plugin(this);
 
         /// <summary>
         /// Gets the properties.

@@ -60,7 +60,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new ApplyMask(this);
+        public override Node Clone() => new ApplyMask(this);
 
         /// <summary>
         /// Initialze the Plugin.

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace ns.Communication.Models {
 
-    [DataContract, KnownType(typeof(ToolModel)), KnownType(typeof(DevicePropertyModel))]
+    [DataContract, KnownType(typeof(ToolModel))]
     public class OperationModel : GenericModel<Operation>, IGenericModel<Operation>, IOperationModel, IConfigurableModel {
 
         /// <summary>
@@ -24,11 +24,7 @@ namespace ns.Communication.Models {
             }
 
             foreach (Property property in operation.Items.Where(p => p is Property)) {
-                if (property is DeviceProperty) {
-                    Properties.Add(new DevicePropertyModel(property as DeviceProperty));
-                } else {
-                    Properties.Add(new PropertyModel(property));
-                }
+                Properties.Add(new PropertyModel(property));
             }
         }
 

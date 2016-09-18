@@ -105,5 +105,11 @@ namespace ns.Base.Plugins.Properties {
                 return typeof(List<object>);
             }
         }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns></returns>
+        public override Node Clone() => new ListProperty(this);
     }
 }

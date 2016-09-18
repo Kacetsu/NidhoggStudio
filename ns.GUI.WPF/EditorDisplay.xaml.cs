@@ -35,7 +35,7 @@ namespace ns.GUI.WPF {
         }
 
         /// <summary>
-        /// Tritt ein, wenn sich ein Eigenschaftswert ändert.
+        /// Occurs when a property value changes.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 

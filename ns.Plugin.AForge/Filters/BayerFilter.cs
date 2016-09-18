@@ -59,7 +59,7 @@ namespace ns.Plugin.AForge.Filters {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new BayerFilter(this);
+        public override Node Clone() => new BayerFilter(this);
 
         /// <summary>
         /// Initialze the Plugin.

@@ -57,7 +57,7 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// The cloned Node.
         /// </returns>
-        public override object Clone() => new Grayscale(this);
+        public override Node Clone() => new Grayscale(this);
 
         /// <summary>
         /// Initialze the Plugin.

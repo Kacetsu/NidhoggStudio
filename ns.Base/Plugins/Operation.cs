@@ -66,14 +66,22 @@ namespace ns.Base.Plugins {
             set {
                 if (value == null) throw new ArgumentNullException(nameof(value));
 
-                if (_captureDevice != value) {
+                if (_captureDevice?.Id.Equals(value.Id) != true) {
+                    Device tmpDevice = new Device(value);
+                    tmpDevice.Id = value.Id;
+                    tmpDevice.Items.Clear();
+
+                    foreach (Node node in value.Items) {
+                        tmpDevice.Items.Add(node);
+                    }
+
                     _captureDevice = value;
                     _captureDevice.Parent = this;
                     DeviceContainerProperty deviceProperty = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice));
                     if (deviceProperty == null) {
                         throw new MemberAccessException(nameof(DeviceContainerProperty));
                     }
-                    deviceProperty.Value = value;
+                    deviceProperty.Value = tmpDevice;
                     OnPropertyChanged();
                 }
             }
@@ -83,8 +91,9 @@ namespace ns.Base.Plugins {
         /// Adds the device list.
         /// </summary>
         /// <param name="devices">The devices.</param>
-        public void AddDeviceList(IEnumerable<Device> devices) {
-            GetProperty<DeviceContainerProperty>(nameof(CaptureDevice)).Items = new ObservableList<Node>(devices.Cast<Node>());
+        public void AddDeviceList(ICollection<Device> devices) {
+            DeviceContainerProperty container = GetProperty<DeviceContainerProperty>();
+            container.AddDevices(devices);
         }
 
         /// <summary>
@@ -118,7 +127,7 @@ namespace ns.Base.Plugins {
             if (deviceProperty != null) {
                 deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
                 CaptureDevice?.Close();
-                CaptureDevice = deviceProperty.Value;
+                CaptureDevice = deviceProperty.SelectedDevice;
                 CaptureDevice?.Initialize();
             }
 

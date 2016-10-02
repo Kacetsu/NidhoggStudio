@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Xml;
 
 namespace ns.Base.Manager {
 
@@ -75,10 +76,11 @@ namespace ns.Base.Manager {
             using (MemoryStream memoryStream = new MemoryStream()) {
                 Configuration.FileName.Value = path;
                 Save(memoryStream);
-                using (FileStream stream = new FileStream(path, FileMode.Create)) {
-                    memoryStream.Position = 0;
-                    memoryStream.CopyTo(stream);
-                    stream.Flush();
+                memoryStream.Position = 0;
+                using (XmlReader xmlReader = XmlReader.Create(memoryStream)) {
+                    using (XmlWriter xmlWriter = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true })) {
+                        xmlWriter.WriteNode(xmlReader, false);
+                    }
                 }
             }
         }

@@ -73,7 +73,7 @@ namespace ns.Core.Manager {
                 throw new ManagerInitializeException(nameof(pluginManager));
             }
 
-            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>());
+            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
 
             if (CoreSystem.Processor?.State == ProcessorState.Running) {
                 operation.Initialize();
@@ -287,7 +287,9 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <exception cref="OperationInitializeException"></exception>
         public void InitializeOperations() {
+            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
             foreach (Operation operation in Configuration.Operations) {
+                operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
                 if (!operation.Initialize()) {
                     throw new OperationInitializeException(operation.Name);
                 }

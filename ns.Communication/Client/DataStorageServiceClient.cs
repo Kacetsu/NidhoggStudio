@@ -49,12 +49,6 @@ namespace ns.Communication.Client {
         public void RegisterClient(Guid id) => Channel?.RegisterClient(id);
 
         /// <summary>
-        /// Sends the heartbeat.
-        /// </summary>
-        /// <returns></returns>
-        public bool SendHeartbeat() => Channel?.SendHeartbeat() == true;
-
-        /// <summary>
         /// Unregisters the client.
         /// </summary>
         /// <param name="id">The id.</param>

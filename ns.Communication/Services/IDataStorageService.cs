@@ -42,13 +42,6 @@ namespace ns.Communication.Services {
         void RegisterClient(Guid id);
 
         /// <summary>
-        /// Sends the heartbeat.
-        /// </summary>
-        /// <returns></returns>
-        [OperationContract]
-        bool SendHeartbeat();
-
-        /// <summary>
         /// Unregisters the client.
         /// </summary>
         /// <param name="id">The id.</param>

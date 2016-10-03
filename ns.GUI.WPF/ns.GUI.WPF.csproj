@@ -285,8 +285,8 @@
     </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="NavigationTarget.cs" />
-    <Compile Include="ProjectView.xaml.cs">
-      <DependentUpon>ProjectView.xaml</DependentUpon>
+    <Compile Include="ProjectBoxView.xaml.cs">
+      <DependentUpon>ProjectBoxView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusBar.xaml.cs">
@@ -414,7 +414,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ProjectView.xaml">
+    <Page Include="ProjectBoxView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

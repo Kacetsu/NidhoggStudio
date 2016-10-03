@@ -1,4 +1,5 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Manager.ProjectBox;
+using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
 using System;
@@ -65,12 +66,25 @@ namespace ns.Communication.Services {
         OperationModel[] GetOperations();
 
         /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <returns></returns>
+        [OperationContract]
+        ProjectInfoContainer[] GetProjects();
+
+        /// <summary>
         /// Gets the property.
         /// </summary>
         /// <param name="propertyId">The property id.</param>
         /// <returns></returns>
         [OperationContract(IsOneWay = false)]
         PropertyModel GetProperty(Guid propertyId);
+
+        /// <summary>
+        /// News the project.
+        /// </summary>
+        [OperationContract(IsOneWay = true)]
+        void NewProject();
 
         /// <summary>
         /// Registers the client.
@@ -85,6 +99,12 @@ namespace ns.Communication.Services {
         /// <param name="model">The model.</param>
         [OperationContract(IsOneWay = true)]
         void RemoveToolFromProject(ToolModel model);
+
+        /// <summary>
+        /// Saves the project.
+        /// </summary>
+        [OperationContract(IsOneWay = true)]
+        void SaveProject();
 
         /// <summary>
         /// Unregisters the client.

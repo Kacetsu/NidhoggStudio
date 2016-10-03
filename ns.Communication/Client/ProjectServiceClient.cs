@@ -1,4 +1,5 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Manager.ProjectBox;
+using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.Communication.Services;
 using ns.Communication.Services.Callbacks;
@@ -69,6 +70,12 @@ namespace ns.Communication.Client {
         public OperationModel[] GetOperations() => Channel?.GetOperations();
 
         /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <returns></returns>
+        public ProjectInfoContainer[] GetProjects() => Channel?.GetProjects();
+
+        /// <summary>
         /// Gets the property.
         /// </summary>
         /// <param name="propertyId">The property id.</param>
@@ -86,6 +93,11 @@ namespace ns.Communication.Client {
         /// </summary>
         /// <param name="model">The model.</param>
         public void RemoveToolFromProject(ToolModel model) => Channel?.RemoveToolFromProject(model);
+
+        /// <summary>
+        /// Saves the project.
+        /// </summary>
+        public void SaveProject() => Channel?.SaveProject();
 
         /// <summary>
         /// Unregisters the client.

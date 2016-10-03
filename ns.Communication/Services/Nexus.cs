@@ -11,6 +11,7 @@ namespace ns.Communication.Services {
         protected static ConcurrentDictionary<Guid, T> _clients = new ConcurrentDictionary<Guid, T>();
         protected DataStorageManager _dataStorageManager;
         protected PluginManager _pluginManager;
+        protected ProjectBoxManager _projectBoxManager;
         protected ProjectManager _projectManager;
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace ns.Communication.Services {
         /// </summary>
         protected Nexus() {
             _projectManager = CoreSystem.FindManager<ProjectManager>();
+            _projectBoxManager = CoreSystem.FindManager<ProjectBoxManager>();
             _pluginManager = CoreSystem.FindManager<PluginManager>();
             _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
         }

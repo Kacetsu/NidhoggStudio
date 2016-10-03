@@ -100,7 +100,7 @@ namespace Nidhogg_Studio {
                     break;
 
                     case "Project":
-                    ContentGird.Children.Add(new ProjectView());
+                    ContentGird.Children.Add(new ProjectBoxView());
                     break;
 
                     default:

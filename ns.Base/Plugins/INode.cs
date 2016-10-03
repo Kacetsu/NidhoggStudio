@@ -2,7 +2,7 @@
 
 namespace ns.Base.Plugins {
 
-    public interface INode : ICloseable {
+    public interface INode : ICloseable, IIdentifiable {
 
         /// <summary>
         /// Adds the child.

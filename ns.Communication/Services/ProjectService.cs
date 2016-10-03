@@ -1,4 +1,5 @@
-﻿using ns.Communication.Models;
+﻿using ns.Base.Manager.ProjectBox;
+using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using System;
 using System.ServiceModel;
@@ -70,6 +71,12 @@ namespace ns.Communication.Services {
         public OperationModel[] GetOperations() => ProjectServiceNexus.GetOperations();
 
         /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <returns></returns>
+        public ProjectInfoContainer[] GetProjects() => ProjectServiceNexus.GetProjects();
+
+        /// <summary>
         /// Gets the property.
         /// </summary>
         /// <param name="propertyId">The property uid.</param>
@@ -103,6 +110,11 @@ namespace ns.Communication.Services {
         /// or
         /// </exception>
         public void RemoveToolFromProject(ToolModel model) => ProjectServiceNexus.RemoveToolFromProject(model);
+
+        /// <summary>
+        /// Saves the project.
+        /// </summary>
+        public void SaveProject() => ProjectServiceNexus.SaveProject();
 
         /// <summary>
         /// Unregisters the client.

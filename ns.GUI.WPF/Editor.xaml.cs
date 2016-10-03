@@ -26,7 +26,6 @@ namespace ns.GUI.WPF {
         public Editor() {
             InitializeComponent();
             DataContext = this;
-            HeaderGrid.Height = 0;
             Loaded += Editor_Loaded;
             _projectExplorer = ProjectExplorer;
             _pluginName.DataContext = this;
@@ -65,7 +64,6 @@ namespace ns.GUI.WPF {
 
         private void Editor_Loaded(object sender, RoutedEventArgs e) {
             GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
-            GuiHelper.DoubleAnimateControl(60, HeaderGrid, HeightProperty, TimeSpan.FromSeconds(0.3));
 
             try {
                 ClientCommunicationManager.ProcessorService.Callback.ProcessorStateChanged += Callback_ProcessorStateChanged;

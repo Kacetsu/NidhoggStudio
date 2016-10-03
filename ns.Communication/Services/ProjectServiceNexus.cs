@@ -1,9 +1,12 @@
-﻿using ns.Base.Log;
+﻿using ns.Base;
+using ns.Base.Log;
+using ns.Base.Manager.ProjectBox;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Models;
 using ns.Communication.Models.Properties;
 using ns.Communication.Services.Callbacks;
+using ns.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -219,6 +222,12 @@ namespace ns.Communication.Services {
         }
 
         /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <returns></returns>
+        public static ProjectInfoContainer[] GetProjects() => _instance.Value._projectBoxManager.ProjectInfos.ToArray();
+
+        /// <summary>
         /// Gets the property.
         /// </summary>
         /// <param name="propertyId">The property uid.</param>
@@ -257,6 +266,9 @@ namespace ns.Communication.Services {
             }
 
             return properties.ToArray();
+        }
+
+        public static void NewProject() {
         }
 
         /// <summary>
@@ -298,6 +310,21 @@ namespace ns.Communication.Services {
             }
 
             RemoveDisconnectedClients(damagedIds);
+        }
+
+        /// <summary>
+        /// Saves the project.
+        /// </summary>
+        public static void SaveProject() {
+            ProcessorState lastState = CoreSystem.Processor.State;
+            if (lastState == ProcessorState.Running) {
+                CoreSystem.Processor.Stop();
+            }
+
+            _instance.Value._projectBoxManager.SaveProject();
+            if (lastState == ProcessorState.Running) {
+                CoreSystem.Processor.Start();
+            }
         }
     }
 }

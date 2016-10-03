@@ -1,11 +1,13 @@
 ﻿using ns.Base.Manager;
+using ns.Base.Manager.ProjectBox;
+using ns.Base.Plugins;
 using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace ns.Core.Manager.ProjectBox {
+namespace ns.Core.Manager {
 
     public class ProjectBoxManager : GenericConfigurationManager<ProjectBoxConfiguration> {
         public const string EXTENSION_XML = ".xml";
@@ -104,6 +106,7 @@ namespace ns.Core.Manager.ProjectBox {
                 wasDefault = true;
             }
 
+            projectManager.ClearImages();
             projectManager.Save(path);
             if (wasDefault) {
                 try {

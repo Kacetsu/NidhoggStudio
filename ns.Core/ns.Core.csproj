@@ -180,8 +180,7 @@
     <Compile Include="Manager\DataStorageManager.cs" />
     <Compile Include="Manager\DeviceManager.cs" />
     <Compile Include="Manager\IProjectManager.cs" />
-    <Compile Include="Manager\ProjectBox\ProjectBoxManager.cs" />
-    <Compile Include="Manager\ProjectBox\ProjectInfoContainer.cs" />
+    <Compile Include="Manager\ProjectBoxManager.cs" />
     <Compile Include="Manager\ProjectManager.cs" />
     <Compile Include="CoreSystem.cs" />
     <Compile Include="Manager\ExtensionManager.cs" />
@@ -206,6 +205,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Manager\ProjectBox\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

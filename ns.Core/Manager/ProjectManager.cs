@@ -35,6 +35,8 @@ namespace ns.Core.Manager {
 
         private static string _fileName = string.Empty;
 
+        private PluginManager _pluginManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectManager"/> class.
         /// </summary>
@@ -139,6 +141,30 @@ namespace ns.Core.Manager {
             deviceManager.Add(device);
 
             parent.CaptureDevice = device;
+        }
+
+        /// <summary>
+        /// Clears the images.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        public void ClearImages(Node node) {
+            foreach (Node item in node.Items) {
+                ImageProperty imageProperty = item as ImageProperty;
+                if (imageProperty != null && imageProperty.IsOutput) {
+                    imageProperty.Value = new ImageContainer();
+                }
+
+                ClearImages(item);
+            }
+        }
+
+        /// <summary>
+        /// Clears the images.
+        /// </summary>
+        public void ClearImages() {
+            foreach (Operation operation in Configuration.Operations) {
+                ClearImages(operation);
+            }
         }
 
         /// <summary>
@@ -307,22 +333,26 @@ namespace ns.Core.Manager {
         /// <exception cref="PluginNotFoundException"></exception>
         /// <exception cref="DeviceInitializeException"></exception>
         public override ProjectConfiguration Load(Stream stream) {
-            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+            if (_pluginManager == null) {
+                _pluginManager = CoreSystem.FindManager<PluginManager>();
+            }
 
             try {
                 stream.Position = 0;
-                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
+                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), _pluginManager?.KnownTypes);
                 Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
                 foreach (Operation operation in Configuration.Operations) {
+                    ReplaceDummyDevices(operation);
                     UpdateParents(operation);
+                    ConnectProperties(operation);
                 }
             } catch (SerializationException ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 throw;
             }
 
-            if (pluginManager == null) {
-                throw new ManagerInitializeException(nameof(pluginManager));
+            if (_pluginManager == null) {
+                throw new ManagerInitializeException(nameof(_pluginManager));
             }
 
             return Configuration;
@@ -361,13 +391,72 @@ namespace ns.Core.Manager {
         /// </returns>
         public override void Save(Stream stream) {
             try {
-                PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
-                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), pluginManager?.KnownTypes);
+                if (_pluginManager == null) {
+                    _pluginManager = CoreSystem.FindManager<PluginManager>();
+                }
+
+                DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), _pluginManager?.KnownTypes);
                 serializer.WriteObject(stream, Configuration);
                 stream.Flush();
             } catch (SerializationException ex) {
                 Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 throw;
+            }
+        }
+
+        private void ConnectProperties(Node node) {
+            foreach (Node item in node.Items) {
+                Property property = item as Property;
+                if (property != null && !property.ConnectedId.Equals(Guid.Empty)) {
+                    Property targetProperty = FindProperty(property.ConnectedId);
+                    if (targetProperty == null) {
+                        throw new NullReferenceException(nameof(targetProperty));
+                    }
+
+                    property.Connect(targetProperty);
+                }
+
+                ConnectProperties(item);
+            }
+        }
+
+        private Device CreateDevice(Device dummyDevice) {
+            Device device = _pluginManager.Nodes.First(d => d.Fullname.Equals(dummyDevice.Fullname)) as Device;
+            Device copyDevice = device.Clone() as Device;
+            copyDevice.Id = dummyDevice.Id;
+            copyDevice.Items.Clear();
+
+            foreach (Property property in dummyDevice.Items.Where(p => p is Property)) {
+                copyDevice.Items.Add(property);
+            }
+
+            return copyDevice;
+        }
+
+        private void ReplaceDummyDevices(Operation operation) {
+            List<Device> removeDevices = new List<Device>();
+            List<Device> addDevices = new List<Device>();
+            foreach (DeviceContainerProperty container in operation.Items.Where(c => c is DeviceContainerProperty)) {
+                foreach (Device dummyDevice in container.Items.Where(d => d is Device)) {
+                    removeDevices.Add(dummyDevice);
+                    Device device = CreateDevice(dummyDevice);
+
+                    addDevices.Add(device);
+                }
+
+                Device dummyValueDevice = container.Value;
+                Device valueDevice = CreateDevice(dummyValueDevice);
+                container.Value = valueDevice;
+
+                foreach (Device device in removeDevices) {
+                    container.Items.Remove(device);
+                }
+
+                foreach (Device device in addDevices) {
+                    container.Items.Add(device);
+                }
+
+                operation.CaptureDevice = container.Value;
             }
         }
 

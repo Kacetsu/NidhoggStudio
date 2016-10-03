@@ -178,6 +178,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ICloneable.cs" />
+    <Compile Include="IIdentifiable.cs" />
+    <Compile Include="Manager\ProjectBox\ProjectInfoContainer.cs" />
     <Compile Include="VisibleAttribute.cs" />
     <Compile Include="BlockingStream.cs" />
     <Compile Include="Configuration\BaseConfiguration.cs" />

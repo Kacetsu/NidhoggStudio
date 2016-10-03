@@ -83,6 +83,11 @@ namespace ns.Communication.Client {
         public PropertyModel GetProperty(Guid propertyId) => Channel?.GetProperty(propertyId);
 
         /// <summary>
+        /// News the project.
+        /// </summary>
+        public void NewProject() => Channel?.NewProject();
+
+        /// <summary>
         /// Registers the client.
         /// </summary>
         /// <param name="id">The id.</param>

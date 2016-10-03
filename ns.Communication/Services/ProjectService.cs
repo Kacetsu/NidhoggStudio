@@ -94,6 +94,11 @@ namespace ns.Communication.Services {
         public PropertyModel[] GetToolProperties(Guid toolId) => ProjectServiceNexus.GetToolProperties(toolId);
 
         /// <summary>
+        /// News the project.
+        /// </summary>
+        public void NewProject() => ProjectServiceNexus.NewProject();
+
+        /// <summary>
         /// Registers the client.
         /// </summary>
         /// <param name="id">The uid.</param>

@@ -2,6 +2,7 @@
 using ns.Base.Exceptions;
 using ns.Base.Manager;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using ns.Core.Configuration;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
@@ -40,7 +42,8 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectManager"/> class.
         /// </summary>
-        public ProjectManager() : base() {
+        /// <param name="name"></param>
+        public ProjectManager([CallerMemberName] string name = null) : base(name) {
             Configuration = new ProjectConfiguration();
         }
 
@@ -69,21 +72,32 @@ namespace ns.Core.Manager {
 
             if (Configuration.Operations.Contains(operation)) throw new OperationAlreadyExistsException(operation.Name);
 
-            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+            PluginManager pluginManager = CoreSystem.Instance.Plugins;
 
             if (pluginManager == null) {
                 throw new ManagerInitializeException(nameof(pluginManager));
             }
 
-            operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
+            operation.KnownDevices = new Base.Collections.ObservableConcurrentDictionary<Guid, string>();
 
-            if (CoreSystem.Processor?.State == ProcessorState.Running) {
+            foreach (Device device in CoreSystem.Instance.Devices.Items.Values.OfType<Device>()) {
+                operation.KnownDevices.TryAdd(device.Id, device.Name);
+            }
+
+            if (operation.SelectedDevice != Guid.Empty) {
+                ImageDevice device = Configuration.Devices.OfType<ImageDevice>().FirstOrDefault(d => d.Id.Equals(operation.SelectedDevice));
+                if (device != null) {
+                    operation.CaptureDevice = device;
+                }
+            }
+
+            if (CoreSystem.Instance.Processor?.State == ProcessorState.Running) {
                 operation.Initialize();
             }
 
             Configuration.Operations.Add(operation);
 
-            foreach (Property property in operation.Items.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+            foreach (Property property in operation.Items.Values.OfType<Property>().Where(p => p.CanAutoConnect)) {
                 List<Property> connectableProperties = FindConnectableProperties(property);
                 if (connectableProperties.Count > 0) {
                     property.Connect(connectableProperties[0]);
@@ -106,15 +120,15 @@ namespace ns.Core.Manager {
 
             if (!Configuration.Operations.Contains(parent)) throw new OperationNotFoundException(parent.Name);
 
-            if (parent.Items.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
+            if (parent.Items.Values.Contains(tool)) throw new ToolAlreadyExistsException(tool.Name);
 
-            if (CoreSystem.Processor?.State == ProcessorState.Running) {
+            if (CoreSystem.Instance.Processor?.State == ProcessorState.Running) {
                 tool.Initialize();
             }
 
             parent.AddChild(tool);
 
-            foreach (Property property in tool.Items.Where(p => p is Property && (p as Property).CanAutoConnect)) {
+            foreach (Property property in tool.Items.Values.OfType<Property>().Where(p => p.CanAutoConnect)) {
                 List<Property> connectableProperties = FindConnectableProperties(property);
                 if (connectableProperties.Count > 0) {
                     property.Connect(connectableProperties[0]);
@@ -134,13 +148,13 @@ namespace ns.Core.Manager {
 
             if (parent == null) throw new ArgumentNullException(nameof(parent));
 
-            DeviceManager deviceManager = CoreSystem.FindManager<DeviceManager>();
+            DeviceManager deviceManager = CoreSystem.Instance.Devices;
 
             if (deviceManager == null) throw new ManagerInitializeException(nameof(deviceManager));
 
             deviceManager.Add(device);
 
-            parent.CaptureDevice = device;
+            parent.CaptureDevice = device as ImageDevice;
         }
 
         /// <summary>
@@ -148,9 +162,9 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public void ClearImages(Node node) {
-            foreach (Node item in node.Items) {
+            foreach (Node item in node.Items.Values) {
                 ImageProperty imageProperty = item as ImageProperty;
-                if (imageProperty != null && imageProperty.IsOutput) {
+                if (imageProperty != null && imageProperty.Direction == PropertyDirection.Out) {
                     imageProperty.Value = new ImageContainer();
                 }
 
@@ -174,14 +188,14 @@ namespace ns.Core.Manager {
             Configuration.Operations.Clear();
             Configuration.Name.Value = "Default";
 
-            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+            PluginManager pluginManager = CoreSystem.Instance.Plugins;
 
             if (pluginManager == null) {
                 throw new ManagerInitializeException(nameof(pluginManager));
             }
 
             Operation operation = new Operation("Unknown Operation");
-            Device device = pluginManager.Nodes.First(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
+            Device device = pluginManager.Items.Values.First(n => n.Name.Equals("ns.Plugin.Base.ImageFileDevice")) as Device;
 
             if (device != null) {
                 Add(device, operation);
@@ -197,24 +211,24 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public List<Property> FindConnectableProperties(Property property) {
             List<Property> result = new List<Property>();
-            if (property.IsOutput) return result;
+            if (property.Direction == PropertyDirection.Out) return result;
 
             Operation operation = FindOperation(property);
             Tool tool = FindTool(property);
 
-            foreach (Node childNode in operation.Items) {
+            foreach (Node childNode in operation.Items.Values) {
                 Tool childTool = childNode as Tool;
                 Property childProperty = childNode as Property;
 
                 if (childTool != null) {
                     if (childTool.Equals(tool)) break;
 
-                    foreach (Property p in childTool.Items.Where(p => p is Property)) {
-                        if (p.GetType().Equals(property.GetType()) && p.IsOutput) {
+                    foreach (Property p in childTool.Items.Values.OfType<Property>()) {
+                        if (p.GetType().Equals(property.GetType()) && p.Direction == PropertyDirection.Out) {
                             result.Add(p);
                         }
                     }
-                } else if (childProperty != null && childProperty.GetType().Equals(property.GetType()) && childProperty.IsOutput) {
+                } else if (childProperty != null && childProperty.GetType().Equals(property.GetType()) && childProperty.Direction == PropertyDirection.Out) {
                     result.Add(childProperty);
                 }
             }
@@ -229,12 +243,12 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public Operation FindOperation(Property property) {
             foreach (Operation operation in Configuration.Operations) {
-                foreach (Node node in operation.Items) {
+                foreach (Node node in operation.Items.Values) {
                     Tool childTool = node as Tool;
                     Property childProperty = node as Property;
 
                     if (childTool != null) {
-                        foreach (Property p in childTool.Items.Where(p => p is Property)) {
+                        foreach (Property p in childTool.Items.Values.OfType<Property>()) {
                             if (p == property) {
                                 return operation;
                             }
@@ -256,26 +270,25 @@ namespace ns.Core.Manager {
         public Property FindProperty(Guid id) {
             Property property = null;
             foreach (Operation operation in Configuration.Operations) {
-                property = operation.Items.Find(p => p.Id.Equals(id)) as Property;
-                if (property != null) {
+                if (operation.Items.ContainsKey(id)) {
+                    property = operation.Items[id] as Property;
                     break;
                 }
-                DeviceContainerProperty tmpDeviceProperty = operation.Items.Find(p => p is DeviceContainerProperty) as DeviceContainerProperty;
-                if (tmpDeviceProperty != null) {
-                    Device tmpDevice = tmpDeviceProperty.Value;
-                    property = tmpDevice.Items.Find(p => p.Id.Equals(id)) as Property;
-                    if (property != null) {
-                        break;
-                    }
+
+                ImageDevice tmpDevice = operation.CaptureDevice;
+                if (tmpDevice?.Items.ContainsKey(id) == true) {
+                    property = tmpDevice.Items[id] as Property;
+                    break;
                 }
 
-                foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
-                    property = tool.Items.Find(p => p.Id.Equals(id)) as Property;
-                    if (property != null) {
+                foreach (Tool tool in operation.Items.Values.OfType<Tool>()) {
+                    if (tool.Items.ContainsKey(id)) {
+                        property = tool.Items[id] as Property;
                         break;
                     }
                 }
             }
+
             return property;
         }
 
@@ -287,8 +300,8 @@ namespace ns.Core.Manager {
         /// <exception cref="PluginNotFoundException"></exception>
         public Tool FindTool(Property property) {
             Operation operation = FindOperation(property);
-            foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
-                if (tool.Items.Contains(property)) return tool;
+            foreach (Tool tool in operation.Items.Values.OfType<Tool>()) {
+                if (tool.Items.Values.Contains(property)) return tool;
             }
 
             return null;
@@ -301,7 +314,7 @@ namespace ns.Core.Manager {
         /// <returns></returns>
         public Tool FindTool(Guid id) {
             foreach (Operation operation in Configuration.Operations) {
-                Tool tool = operation.Items.Find(t => t.Id.Equals(id)) as Tool;
+                Tool tool = operation.Items[id] as Tool;
                 return tool;
             }
 
@@ -313,12 +326,15 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <exception cref="OperationInitializeException"></exception>
         public void InitializeOperations() {
-            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+            PluginManager pluginManager = CoreSystem.Instance.Plugins;
             foreach (Operation operation in Configuration.Operations) {
-                operation.AddDeviceList(pluginManager.Nodes.Where(d => d is Device).Cast<Device>().ToList());
-                if (!operation.Initialize()) {
-                    throw new OperationInitializeException(operation.Name);
+                operation.KnownDevices = new Base.Collections.ObservableConcurrentDictionary<Guid, string>();
+
+                foreach (Device device in CoreSystem.Instance.Devices.Items.Values.OfType<Device>()) {
+                    operation.KnownDevices.TryAdd(device.Id, device.Name);
                 }
+
+                operation.Initialize();
             }
         }
 
@@ -334,7 +350,7 @@ namespace ns.Core.Manager {
         /// <exception cref="DeviceInitializeException"></exception>
         public override ProjectConfiguration Load(Stream stream) {
             if (_pluginManager == null) {
-                _pluginManager = CoreSystem.FindManager<PluginManager>();
+                _pluginManager = CoreSystem.Instance.Plugins;
             }
 
             try {
@@ -342,7 +358,6 @@ namespace ns.Core.Manager {
                 DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), _pluginManager?.KnownTypes);
                 Configuration = serializer.ReadObject(stream) as ProjectConfiguration;
                 foreach (Operation operation in Configuration.Operations) {
-                    ReplaceDummyDevices(operation);
                     UpdateParents(operation);
                     ConnectProperties(operation);
                 }
@@ -368,7 +383,8 @@ namespace ns.Core.Manager {
 
             Operation operation = tool.Parent as Operation;
             if (operation != null) {
-                operation.Items.Remove(tool);
+                Node outNode;
+                operation.Items.TryRemove(tool.Id, out outNode);
             }
         }
 
@@ -392,7 +408,7 @@ namespace ns.Core.Manager {
         public override void Save(Stream stream) {
             try {
                 if (_pluginManager == null) {
-                    _pluginManager = CoreSystem.FindManager<PluginManager>();
+                    _pluginManager = CoreSystem.Instance.Plugins;
                 }
 
                 DataContractSerializer serializer = new DataContractSerializer(typeof(ProjectConfiguration), _pluginManager?.KnownTypes);
@@ -405,15 +421,14 @@ namespace ns.Core.Manager {
         }
 
         private void ConnectProperties(Node node) {
-            foreach (Node item in node.Items) {
-                Property property = item as Property;
-                if (property != null && !property.ConnectedId.Equals(Guid.Empty)) {
-                    Property targetProperty = FindProperty(property.ConnectedId);
+            foreach (Property item in node.Items.Values.OfType<Property>()) {
+                if (!item.ConnectedId.Equals(Guid.Empty)) {
+                    Property targetProperty = FindProperty(item.ConnectedId);
                     if (targetProperty == null) {
                         throw new NullReferenceException(nameof(targetProperty));
                     }
 
-                    property.Connect(targetProperty);
+                    item.Connect(targetProperty);
                 }
 
                 ConnectProperties(item);
@@ -421,51 +436,24 @@ namespace ns.Core.Manager {
         }
 
         private Device CreateDevice(Device dummyDevice) {
-            Device device = _pluginManager.Nodes.First(d => d.Fullname.Equals(dummyDevice.Fullname)) as Device;
+            Device device = _pluginManager.Items.Values.OfType<Device>().First(d => d.Fullname.Equals(dummyDevice.Fullname));
             Device copyDevice = device.Clone() as Device;
             copyDevice.Id = dummyDevice.Id;
             copyDevice.Items.Clear();
 
-            foreach (Property property in dummyDevice.Items.Where(p => p is Property)) {
-                copyDevice.Items.Add(property);
+            foreach (Property property in dummyDevice.Items.Values.OfType<Property>()) {
+                copyDevice.Items.TryAdd(property.Id, property);
             }
 
             return copyDevice;
         }
 
-        private void ReplaceDummyDevices(Operation operation) {
-            List<Device> removeDevices = new List<Device>();
-            List<Device> addDevices = new List<Device>();
-            foreach (DeviceContainerProperty container in operation.Items.Where(c => c is DeviceContainerProperty)) {
-                foreach (Device dummyDevice in container.Items.Where(d => d is Device)) {
-                    removeDevices.Add(dummyDevice);
-                    Device device = CreateDevice(dummyDevice);
-
-                    addDevices.Add(device);
-                }
-
-                Device dummyValueDevice = container.Value;
-                Device valueDevice = CreateDevice(dummyValueDevice);
-                container.Value = valueDevice;
-
-                foreach (Device device in removeDevices) {
-                    container.Items.Remove(device);
-                }
-
-                foreach (Device device in addDevices) {
-                    container.Items.Add(device);
-                }
-
-                operation.CaptureDevice = container.Value;
-            }
-        }
-
         private void UpdateParents(Operation operation) {
-            foreach (Property childProperty in operation.Items.Where(p => p is Property)) {
+            foreach (Property childProperty in operation.Items.Values.OfType<Property>()) {
                 childProperty.Parent = operation;
             }
 
-            foreach (Tool childTool in operation.Items.Where(t => t is Tool)) {
+            foreach (Tool childTool in operation.Items.Values.OfType<Tool>()) {
                 childTool.Parent = operation;
             }
         }

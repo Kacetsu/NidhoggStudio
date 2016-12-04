@@ -167,8 +167,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="PropertyTest.cs" />
+    <Compile Include="DoublePropertyTest.cs" />
+    <Compile Include="Dummies\DummyTool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IntegerPropertyTest.cs" />
+    <Compile Include="RectanglePropertyTest.cs" />
+    <Compile Include="ImagePropertyTest.cs" />
+    <Compile Include="StringPropertyTest.cs" />
+    <Compile Include="ToolTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ns.Base\ns.Base.csproj">

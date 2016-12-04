@@ -16,10 +16,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid Height="60">
+            <Grid Height="45" Background="{DynamicResource StandardBackgroundBrush}">
                 <TextBlock Text="{DynamicResource Collection}" Foreground="{DynamicResource ControlForeground}" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="20,0,20,0" />
             </Grid>
-            <Grid Grid.Row="1" Background="{DynamicResource StandardBackgroundBrush}">
+            <Grid Grid.Row="1" Background="{DynamicResource SecondaryBackgroundBrush}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20" />
                     <RowDefinition Height="*" />
@@ -30,14 +30,14 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
-                        <TextBlock Text="{DynamicResource ID}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                        <TextBlock Text="{DynamicResource ID}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" />
                     </Border>
-                    <Border Grid.Column="1" BorderThickness="0,0,1,1" BorderBrush="{DynamicResource StandardBorderBrush}">
-                        <TextBlock Text="{DynamicResource Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" />
+                    <Border Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource StandardBorderBrush}">
+                        <TextBlock Text="{DynamicResource Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" />
                     </Border>
                 </Grid>
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <ListBox Name="ProjectsListBox" />
+                    <ListBox Name="ProjectsListBox" Background="{DynamicResource SecondaryBackgroundBrush}" />
                 </ScrollViewer>
             </Grid>
         </Grid>
@@ -46,11 +46,11 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid Name="ProjectHeaderGrid" Height="60" Background="{DynamicResource ProjectHeaderBackgroundBrush}">
+            <Grid Name="ProjectHeaderGrid" Height="45" Background="{DynamicResource ProjectHeaderBackgroundBrush}">
                 <TextBlock Text="{DynamicResource Project}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />
             </Grid>
             <Grid Grid.Row="1" Width="300">
-                <Border BorderThickness="1,0,0,0" BorderBrush="{DynamicResource StandardBorderBrush}">
+                <Border BorderThickness="0" BorderBrush="Transparent">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource StandardBackgroundBrush}">
                         <Grid>
                             <Grid.RowDefinitions>

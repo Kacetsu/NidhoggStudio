@@ -1,9 +1,6 @@
 ﻿using ns.Base;
-using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
-using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -11,14 +8,12 @@ namespace ns.Plugin.Base {
 
     [Visible, DataContract]
     public sealed class Sleep : Tool {
-        private int _milliseconds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sleep"/> class.
         /// </summary>
-        public Sleep() {
+        public Sleep() : base() {
             DisplayName = "Sleep";
-            AddChild(new IntegerProperty("Milliseconds", 1000));
         }
 
         /// <summary>
@@ -34,7 +29,15 @@ namespace ns.Plugin.Base {
         /// <value>
         /// The category.
         /// </value>
-        public override string Category => ToolCategory.Common.GetDescription();
+        public override string Category => "Common";
+
+        /// <summary>
+        /// Gets the milliseconds.
+        /// </summary>
+        /// <value>
+        /// The milliseconds.
+        /// </value>
+        public IntegerProperty Milliseconds => FindOrAdd<IntegerProperty, int>(1000, 1, int.MaxValue);
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -45,45 +48,13 @@ namespace ns.Plugin.Base {
         public override Node Clone() => new Sleep(this);
 
         /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <returns></returns>
-        public override bool Initialize() {
-            base.Initialize();
-
-            try {
-                _milliseconds = GetProperty<IntegerProperty>("Milliseconds").Value;
-                return true;
-            } catch (Exception ex) {
-                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Pres the run.
-        /// </summary>
-        /// <returns></returns>
-        public override bool TryPreRun() {
-            base.TryPreRun();
-
-            try {
-                _milliseconds = GetProperty<IntegerProperty>("Milliseconds").Value;
-            } catch (Exception ex) {
-                ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
         /// Run the Plugin.
         /// </summary>
         /// <returns>
         /// Success of the Operation.
         /// </returns>
         public override bool TryRun() {
-            Thread.Sleep(_milliseconds);
+            Thread.Sleep(Milliseconds.Value);
             return true;
         }
     }

@@ -1,8 +1,11 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Collections;
+using ns.Base.Communication;
+using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -11,8 +14,10 @@ namespace ns.Base {
     /// <summary>
     /// Base Class for all used Operations, Tools, Devices, Extensions and Properties.
     /// </summary>
-    [Serializable, DataContract(IsReference = true), KnownType(typeof(Plugin)), KnownType(typeof(Tool)), KnownType(typeof(Property))]
-    public class Node : NotifiableObject, ICloneable<Node>, INode {
+    [DataContract(IsReference = true)]
+    [KnownType(typeof(Plugin))]
+    [KnownType(typeof(Property))]
+    public abstract class Node : NotifiableObject, ICloneable<Node>, INode {
         private string _fullname = string.Empty;
         private bool _isInitialized = false;
         private bool _isSelected = false;
@@ -24,7 +29,6 @@ namespace ns.Base {
         /// Creates the base fields: Name, Fullname, Childs, Cache and UID.
         /// </summary>
         public Node() {
-            Items = new ObservableList<Node>();
         }
 
         /// <summary>
@@ -38,12 +42,16 @@ namespace ns.Base {
             Fullname = node.Fullname;
             Name = node.Name;
 
-            Items = new ObservableList<Node>(node.Items.Select(item => item.Clone()).ToList());
+            Items = new ObservableConcurrentDictionary<Guid, Node>();
+            foreach (KeyValuePair<Guid, Node> pair in node.Items) {
+                Node nodeCopy = pair.Value.Clone();
+                Items.TryAdd(nodeCopy.Id, nodeCopy);
+            }
 
             Parent = node.Parent;
 
             foreach (var child in Items) {
-                child.Parent = this;
+                child.Value.Parent = this;
             }
         }
 
@@ -53,6 +61,14 @@ namespace ns.Base {
         /// <param name="sender">The object that this changed.</param>
         /// <param name="e">The Informations about the changed Property.</param>
         protected delegate void EventHandler<NodeChangedEventArgs>(object sender, NodeChangedEventArgs e);
+
+        /// <summary>
+        /// Gets the communication model.
+        /// </summary>
+        /// <value>
+        /// The communication model.
+        /// </value>
+        public virtual CommunicationModel CommunicationModel => new NodeCommunicationModel(this);
 
         /// <summary>
         /// Gets or sets the Fullname.
@@ -70,6 +86,12 @@ namespace ns.Base {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         [DataMember]
         public Guid Id { get; set; } = GenerateId();
 
@@ -92,11 +114,10 @@ namespace ns.Base {
         }
 
         /// <summary>
-        /// Gets or sets the list with all items.
+        /// Gets or sets the dictionary with all items.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         [DataMember]
-        public ObservableList<Node> Items { get; set; } = new ObservableList<Node>();
+        public ObservableConcurrentDictionary<Guid, Node> Items { get; set; } = new ObservableConcurrentDictionary<Guid, Node>();
 
         /// <summary>
         /// Gets or sets the Name.
@@ -149,7 +170,7 @@ namespace ns.Base {
                 string name = string.Empty;
 
                 if (parent != null) {
-                    name = parent.TreeName + "/" + Name;
+                    name = string.Concat(parent.TreeName, "/", Name);
                 } else {
                     name = Name;
                 }
@@ -166,9 +187,9 @@ namespace ns.Base {
         public void AddChild(Node child) {
             if (child == null) throw new ArgumentNullException(nameof(child));
 
-            if (Items.Contains(child) == false) {
+            if (!Items.ContainsKey(child.Id)) {
                 child.Parent = this;
-                Items.Add(child);
+                Items.TryAdd(child.Id, child);
             }
         }
 
@@ -182,9 +203,9 @@ namespace ns.Base {
 
             List<Node> addedChilds = new List<Node>();
             foreach (Node child in childs) {
-                if (!Items.Contains(child)) {
+                if (!Items.ContainsKey(child.Id)) {
                     child.Parent = this;
-                    Items.Add(child);
+                    Items.TryAdd(child.Id, child);
                     addedChilds.Add(child);
                 }
             }
@@ -194,7 +215,7 @@ namespace ns.Base {
         /// Clones the Node with all its Members.
         /// </summary>
         /// <returns>The cloned Node.</returns>
-        public virtual Node Clone() => new Node(this);
+        public virtual Node Clone() { throw new NotImplementedException(); }
 
         /// <summary>
         /// Closes this instance.
@@ -202,19 +223,40 @@ namespace ns.Base {
         public virtual void Close() {
             _isInitialized = false;
 
-            foreach (Node child in Items) {
-                if (!child.IsInitialized) continue;
+            foreach (Node child in Items.Values.Where(c => c.IsInitialized)) {
                 child.Close();
             }
         }
 
         /// <summary>
-        /// Initialze the Plugin.
+        /// Finds the or add.
         /// </summary>
-        /// <returns>Success of the Operation.</returns>
-        public virtual bool Initialize() {
+        /// <typeparam name="TType">The type of the type.</typeparam>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        public TType FindOrAdd<TType>([CallerMemberName] string name = null) where TType : Node {
+            TType node = Items.FirstOrDefault(i => string.Equals(i.Value.Name, name, StringComparison.Ordinal)).Value as TType;
+            if (node == null) {
+                node = Activator.CreateInstance(typeof(TType), name) as TType;
+                Items.TryAdd(node.Id, node);
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        public virtual void Initialize() {
+            foreach (var property in GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.GetProperty)) {
+                var value = property.GetValue(this);
+                Node node = value as Node;
+                if (node != null) {
+                    node.Initialize();
+                }
+            }
+
             _isInitialized = true;
-            return true;
         }
 
         /// <summary>
@@ -224,10 +266,10 @@ namespace ns.Base {
         public virtual void RemoveChild(Node child) {
             if (child == null) throw new ArgumentNullException(nameof(child));
 
-            if (Items.Contains(child)) {
+            if (Items.ContainsKey(child.Id)) {
                 child.RemoveChilds();
-
-                Items.Remove(child);
+                Node outNode;
+                Items.TryRemove(child.Id, out outNode);
             }
         }
 
@@ -235,11 +277,24 @@ namespace ns.Base {
         /// Removes the childs.
         /// </summary>
         public virtual void RemoveChilds() {
-            foreach (Property child in Items.Where(c => c is Property)) {
+            foreach (Property child in Items.Values.OfType<Property>()) {
                 child.Unconnect();
                 child.RemoveChilds();
             }
             Items.Clear();
+        }
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        /// <returns></returns>
+        public bool TryInitialize() {
+            try {
+                Initialize();
+                return true;
+            } catch {
+                return false;
+            }
         }
 
         /// <summary>

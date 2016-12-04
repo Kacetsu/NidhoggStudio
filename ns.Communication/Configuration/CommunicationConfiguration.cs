@@ -54,6 +54,6 @@ namespace ns.Communication.Configuration {
         /// The address.
         /// </value>
         [DataMember]
-        public StringProperty TcpAddress { get; set; } = new StringProperty(nameof(TcpAddress), "net.tcp://localhost:8080/");
+        public StringProperty TcpAddress { get; set; } = new StringProperty("net.tcp://localhost:8080/");
     }
 }

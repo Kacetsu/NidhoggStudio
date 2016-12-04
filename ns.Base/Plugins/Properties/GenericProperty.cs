@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
     [DataContract]
+    [KnownType(typeof(NumberProperty<object>))]
     public abstract class GenericProperty<T> : Property, IValue<T> {
         private T _initialValue;
         private T _value;
@@ -12,25 +14,20 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
-        protected GenericProperty() : base() { }
+        protected GenericProperty()
+            : base() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        protected GenericProperty(string name, T value) : this() {
-            Name = name;
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        protected GenericProperty(T value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(direction, name) {
             Value = value;
             _initialValue = value;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.
-        /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        protected GenericProperty(string name, bool isOutput) : base(name, isOutput) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericProperty{T}"/> class.

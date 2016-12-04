@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -16,10 +17,13 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListProperty"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="values">The values.</param>
-        public ListProperty(string name, List<object> values) : base(name, values) {
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        public ListProperty(List<object> values, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(values, direction, name) {
             Value = values;
+
             if (Value.Count == 0)
                 SelectedItem = "INVALID";
             else
@@ -29,17 +33,9 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListProperty"/> class.
         /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        public ListProperty(string name, bool isOutput)
-            : base(name, isOutput) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ListProperty"/> class.
-        /// </summary>
         /// <param name="other">The other.</param>
-        public ListProperty(ListProperty other) : base(other) {
+        public ListProperty(ListProperty other)
+            : base(other) {
             SelectedItem = other.SelectedItem;
         }
 
@@ -100,11 +96,7 @@ namespace ns.Base.Plugins.Properties {
         /// The name of the selected type.
         /// </value>
         [DataMember]
-        public override Type Type {
-            get {
-                return typeof(List<object>);
-            }
-        }
+        public override Type Type => typeof(List<object>);
 
         /// <summary>
         /// Clones this instance.

@@ -1,16 +1,18 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable, DataContract, KnownType(typeof(DoubleProperty)), KnownType(typeof(IntegerProperty))]
+    [DataContract]
+    [KnownType(typeof(DoubleProperty))]
+    [KnownType(typeof(IntegerProperty))]
     public abstract class NumberProperty<T> : GenericProperty<T>, INumerical<T>, ITolerance<T>, IConnectable<T> {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
         /// </summary>
-        public NumberProperty() : base() {
+        public NumberProperty()
+            : base() {
             Tolerance = new Tolerance<T>();
         }
 
@@ -27,27 +29,13 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="value">The value.</param>
-        public NumberProperty(string name, T value) : base(name, value) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
-        public NumberProperty(string name, bool isOutput) : base(name, isOutput) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberProperty{T}"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
-        public NumberProperty(string name, T value, T min, T max) : base(name, value) {
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        public NumberProperty(T value, T min, T max, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, direction, name) {
             Max = max;
             Min = min;
             Tolerance = new Tolerance<T>(min, max);
@@ -59,7 +47,6 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// The initial value.
         /// </value>
-        [XmlIgnore]
         public T InitialValue { get; set; }
 
         /// <summary>
@@ -68,7 +55,7 @@ namespace ns.Base.Plugins.Properties {
         /// <value>
         /// <c>true</c> if [in tolerance]; otherwise, <c>false</c>.
         /// </value>
-        public bool InTolerance => (System.Collections.Generic.Comparer<T>.Default.Compare(Max, Value) >= 0) && (System.Collections.Generic.Comparer<T>.Default.Compare(Min, Value) <= 0);
+        public bool InTolerance => (System.Collections.Generic.Comparer<T>.Default.Compare(Tolerance.Max, Value) >= 0) && (System.Collections.Generic.Comparer<T>.Default.Compare(Tolerance.Min, Value) <= 0);
 
         /// <summary>
         /// Gets if the Property has a numeric value.

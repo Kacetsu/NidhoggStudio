@@ -10,23 +10,20 @@ namespace ns.Base.Plugins {
     /// Base Class for all Tools.
     /// </summary>
     [DataContract]
-    public class Tool : Plugin {
-        private IntegerProperty _executionTimeMs;
+    public abstract class Tool : Plugin {
         private Stopwatch _stopwatch;
 
         /// <summary>
         /// Base Class for all Tools.
         /// Creates the field: Properties.
         /// </summary>
-        public Tool() : base() {
+        public Tool()
+            : base() {
             Name = string.IsNullOrEmpty(DisplayName) ? GetType().Name : DisplayName;
-            IntegerProperty executionTimeMs = new IntegerProperty("ExecutionTimeMs", true);
-            executionTimeMs.Tolerance = new Tolerance<int>(0, 1000);
-            AddChild(executionTimeMs);
         }
 
-        public Tool(Tool other) : base(other) {
-            Name = other.Name;
+        public Tool(Tool other)
+            : base(other) {
         }
 
         /// <summary>
@@ -35,30 +32,33 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The category.
         /// </value>
-        public virtual string Category {
-            get { return string.Empty; }
-        }
+        public virtual string Category { get; } = string.Empty;
 
         /// <summary>
-        /// Clones the Node with all its Members.
+        /// Gets the execution time ms.
         /// </summary>
-        /// <returns>
-        /// The cloned Node.
-        /// </returns>
-        public override Node Clone() => new Tool(this);
+        /// <value>
+        /// The execution time ms.
+        /// </value>
+        public IntegerProperty ExecutionTimeMs {
+            get {
+                IntegerProperty property = FindOrAdd<IntegerProperty, int>(0, PropertyDirection.Out);
+                property.Tolerance = new Tolerance<int>(0, 1000);
+                return property;
+            }
+        }
 
         /// <summary>
         /// Closes this instance.
         /// </summary>
         public override void Close() {
-            if (_executionTimeMs != null)
-                _executionTimeMs.Value = 0;
+            ExecutionTimeMs.Value = 0;
 
-            foreach (Property childProperty in this.Items.Where(c => c is Property)) {
+            foreach (Property childProperty in Items.Values.OfType<Property>()) {
                 IValue<object> valueProperty = childProperty as IValue<object>;
                 if (valueProperty == null) continue;
 
-                if (childProperty.IsOutput) {
+                if (childProperty.Direction != PropertyDirection.In) {
                     valueProperty.Value = null;
                 } else if (!Guid.Empty.Equals(childProperty.ConnectedId)) {
                     valueProperty.Value = (childProperty as IConnectable<object>)?.InitialValue;
@@ -69,23 +69,12 @@ namespace ns.Base.Plugins {
         }
 
         /// <summary>
-        /// Initialze the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Initialize() {
-            _executionTimeMs = GetProperty<IntegerProperty>("ExecutionTimeMs");
-            return base.Initialize();
-        }
-
-        /// <summary>
         /// Posts the run.
         /// </summary>
         /// <returns></returns>
         public override bool TryPostRun() {
             _stopwatch?.Stop();
-            _executionTimeMs.Value = _stopwatch != null ? (int)_stopwatch.ElapsedMilliseconds : -1;
+            ExecutionTimeMs.Value = _stopwatch != null ? (int)_stopwatch.ElapsedMilliseconds : -1;
 
             return base.TryPostRun();
         }

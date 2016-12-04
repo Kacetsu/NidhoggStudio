@@ -9,25 +9,25 @@ namespace ns.GUI.WPF.Controls {
     /// </summary>
     public partial class RemoveButton : UserControl {
 
+        public RemoveButton() {
+            InitializeComponent();
+            ConfirmGrid.Height = 0d;
+        }
+
+        public delegate void EventHandler<EventArgs>(object sender, EventArgs e);
+
         /// <summary>
         /// Occurs when [remove confirmed].
         /// </summary>
         public event EventHandler<EventArgs> RemoveConfirmed = delegate { };
 
-        public RemoveButton() {
-            InitializeComponent();
-            ConfirmGrid.Height = 0;
-        }
-
-        public delegate void EventHandler<EventArgs>(object sender, EventArgs e);
-
         private void Button_Click(object sender, RoutedEventArgs e) {
             if (sender == RmButton) {
-                GuiHelper.DoubleAnimateControl(0, RmButton, HeightProperty);
-                GuiHelper.DoubleAnimateControl(68, ConfirmGrid, HeightProperty);
+                GuiHelper.DoubleAnimateControl(0d, RmButton, HeightProperty);
+                GuiHelper.DoubleAnimateControl(40d, ConfirmGrid, HeightProperty);
             } else if (sender == NoButton) {
-                GuiHelper.DoubleAnimateControl(34, RmButton, HeightProperty);
-                GuiHelper.DoubleAnimateControl(0, ConfirmGrid, HeightProperty);
+                GuiHelper.DoubleAnimateControl(40d, RmButton, HeightProperty);
+                GuiHelper.DoubleAnimateControl(0d, ConfirmGrid, HeightProperty);
             } else if (sender == YesButton) {
                 RemoveConfirmed?.Invoke(this, new EventArgs());
             }

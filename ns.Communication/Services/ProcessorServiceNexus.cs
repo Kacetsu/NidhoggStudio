@@ -15,20 +15,20 @@ namespace ns.Communication.Services {
         /// Gets the state.
         /// </summary>
         /// <returns></returns>
-        public static ProcessorInfoModel GetState() => new ProcessorInfoModel(CoreSystem.Processor);
+        public static ProcessorInfoModel GetState() => new ProcessorInfoModel(CoreSystem.Instance.Processor);
 
         /// <summary>
         /// Starts this instance.
         /// </summary>
         /// <exception cref="FaultException"></exception>
         public static void Start() {
-            if (!CoreSystem.Processor.Start()) {
+            if (!CoreSystem.Instance.Processor.Start()) {
                 throw new FaultException(string.Format("Could not start processor!"));
             } else {
                 List<Guid> damagedIds = new List<Guid>();
                 Parallel.ForEach(_clients, (client) => {
                     try {
-                        client.Value?.OnProcessorStarted(new ProcessorInfoModel(CoreSystem.Processor));
+                        client.Value?.OnProcessorStarted(new ProcessorInfoModel(CoreSystem.Instance.Processor));
                     } catch (CommunicationException ex) {
                         Trace.WriteLine(ex, System.Diagnostics.TraceEventType.Warning);
                         damagedIds.Add(client.Key);
@@ -44,11 +44,11 @@ namespace ns.Communication.Services {
         /// </summary>
         /// <exception cref="FaultException"></exception>
         public static void Stop() {
-            if (!CoreSystem.Processor.Stop()) {
+            if (!CoreSystem.Instance.Processor.Stop()) {
                 throw new FaultException(string.Format("Could not stop processor!"));
             } else {
                 foreach (var client in _clients) {
-                    client.Value?.OnProcessorStopped(new ProcessorInfoModel(CoreSystem.Processor));
+                    client.Value?.OnProcessorStopped(new ProcessorInfoModel(CoreSystem.Instance.Processor));
                 }
             }
         }

@@ -20,7 +20,7 @@ namespace ns.Base.Plugins {
         /// Initializes this instance.
         /// </summary>
         /// <returns></returns>
-        bool Initialize();
+        bool TryInitialize();
 
         /// <summary>
         /// Removes the child.

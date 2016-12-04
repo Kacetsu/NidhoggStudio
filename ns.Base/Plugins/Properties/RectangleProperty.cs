@@ -1,44 +1,37 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable, DataContract]
+    [DataContract]
     public class RectangleProperty : GenericProperty<Rectangle> {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
         /// </summary>
-        public RectangleProperty() : base() {
+        public RectangleProperty()
+            : base() {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
         /// </summary>
         /// <param name="other">The other.</param>
-        public RectangleProperty(RectangleProperty other) : base(other) {
+        public RectangleProperty(RectangleProperty other)
+            : base(other) {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
+        /// Initializes a new instance of the <see cref="RectangleProperty" /> class.
         /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        public RectangleProperty(string name, bool isOutput) : base(name, isOutput) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RectangleProperty"/> class.
-        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="">The .</param>
+        /// <param name="direction">The direction.</param>
         /// <param name="name">The name.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public RectangleProperty(string name, double x, double y, double width, double height) : base() {
-            Name = name;
-            Value = new Rectangle(x, y, width, height);
+        public RectangleProperty(Rectangle value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+                    : base(value, direction, name) {
         }
 
         /// <summary>
@@ -58,11 +51,7 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        public override Type Type {
-            get {
-                return typeof(Rectangle);
-            }
-        }
+        public override Type Type => typeof(Rectangle);
 
         /// <summary>
         /// Gets or sets width.

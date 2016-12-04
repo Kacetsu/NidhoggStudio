@@ -14,6 +14,7 @@ namespace ns.Communication {
         /// null
         /// </exception>
         public static void InitializeCoreSystemAndCommunicationManager() {
+            CoreSystem.Instance.TryInitialize();
             if (!CoreSystem.Instance.IsInitialized) {
                 throw new TypeInitializationException(nameof(CoreSystem), null);
             }

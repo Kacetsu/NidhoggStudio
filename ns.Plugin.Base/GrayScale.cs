@@ -1,5 +1,4 @@
 ﻿using ns.Base;
-using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System.Runtime.Serialization;
@@ -11,15 +10,11 @@ namespace ns.Plugin.Base {
     /// </summary>
     [Visible, DataContract]
     public sealed class Grayscale : Tool {
-        private ImageProperty _inputImage;
-        private ImageProperty _outputImage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Grayscale"/> class.
         /// </summary>
-        public Grayscale() {
-            AddChild(new ImageProperty("InputImage", false));
-            AddChild(new ImageProperty("OuputImage", true));
+        public Grayscale() : base() {
         }
 
         /// <summary>
@@ -35,21 +30,29 @@ namespace ns.Plugin.Base {
         /// <value>
         /// The category.
         /// </value>
-        public override string Category {
-            get {
-                return ToolCategory.Common.GetDescription();
-            }
-        }
+        public override string Category => "Common";
 
         /// <summary>
         /// Gets or sets the Description.
         /// The Description is used for the Application User to visualize a human readable Name.
         /// </summary>
-        public override string Description {
-            get {
-                return "Converts a RGB image into grayscale 8 bit.";
-            }
-        }
+        public override string Description => "Converts a RGB image into grayscale 8 bit.";
+
+        /// <summary>
+        /// Gets the input image.
+        /// </summary>
+        /// <value>
+        /// The input image.
+        /// </value>
+        public ImageProperty InputImage => FindOrAdd<ImageProperty, ImageContainer>(new ImageContainer());
+
+        /// <summary>
+        /// Gets the output image.
+        /// </summary>
+        /// <value>
+        /// The output image.
+        /// </value>
+        public ImageProperty OutputImage => FindOrAdd<ImageProperty, ImageContainer>(new ImageContainer(), PropertyDirection.Out);
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -60,25 +63,11 @@ namespace ns.Plugin.Base {
         public override Node Clone() => new Grayscale(this);
 
         /// <summary>
-        /// Initialze the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Initialize() {
-            base.Initialize();
-
-            _inputImage = GetProperty<ImageProperty>("InputImage");
-            _outputImage = GetProperty<ImageProperty>("OuputImage");
-            return true;
-        }
-
-        /// <summary>
         /// Converts a RGB image into grayscale 8 bit.
         /// </summary>
         /// <returns></returns>
         public override bool TryRun() {
-            ImageContainer inputContainer = _inputImage.Value;
+            ImageContainer inputContainer = InputImage.Value;
             byte[] data = inputContainer.Data;
             byte bpp = inputContainer.BytesPerPixel;
 
@@ -88,7 +77,7 @@ namespace ns.Plugin.Base {
             byte[] destination = new byte[width * height];
 
             if (bpp == 1) {
-                _outputImage.Value = _inputImage.Value;
+                OutputImage.Value = InputImage.Value;
                 return true;
             }
 
@@ -115,7 +104,7 @@ namespace ns.Plugin.Base {
             outContainer.Width = width;
             outContainer.Stride = width;
 
-            _outputImage.Value = outContainer;
+            OutputImage.Value = outContainer;
             return true;
         }
     }

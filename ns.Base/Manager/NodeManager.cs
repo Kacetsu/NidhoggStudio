@@ -1,16 +1,21 @@
 ﻿using ns.Base.Event;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace ns.Base.Manager {
 
-    public class NodeManager<T> : BaseManager, INodeManager<T> where T : Node {
+    public abstract class NodeManager<T> : BaseManager, INodeManager<T> where T : Node {
 
-        public NodeManager() {
-            Nodes = new List<T>();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NodeManager{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public NodeManager([CallerMemberName] string name = null)
+            : base(name) {
         }
 
-        protected delegate void EventHandler<NodeCollectionChangedEventArgs>(object sender, NodeCollectionChangedEventArgs e);
+        protected new delegate void EventHandler<NodeCollectionChangedEventArgs>(object sender, NodeCollectionChangedEventArgs e);
 
         /// <summary>
         /// Occurs when [node added event].
@@ -23,20 +28,12 @@ namespace ns.Base.Manager {
         protected event EventHandler<NodeCollectionChangedEventArgs> NodeRemovedEvent;
 
         /// <summary>
-        /// Gets the nodes.
-        /// </summary>
-        /// <value>
-        /// The nodes.
-        /// </value>
-        public ICollection<T> Nodes { get; }
-
-        /// <summary>
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>
         public virtual void Add(T node) {
-            if (!Nodes.Contains(node)) {
-                Nodes.Add(node);
+            if (!Items.Values.Contains(node)) {
+                Items.TryAdd(node.Id, node);
                 OnNodeAdded(node);
             }
         }
@@ -83,8 +80,9 @@ namespace ns.Base.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public virtual void Remove(T node) {
-            if (Nodes.Contains(node)) {
-                Nodes.Remove(node);
+            if (Items.ContainsKey(node.Id)) {
+                Node outNode;
+                Items.TryRemove(node.Id, out outNode);
                 OnNodeRemoved(node);
             }
         }

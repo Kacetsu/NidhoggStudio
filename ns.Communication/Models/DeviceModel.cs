@@ -1,4 +1,5 @@
 ﻿using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using System.Runtime.Serialization;
 
 namespace ns.Communication.Models {

@@ -1,5 +1,6 @@
 ﻿using ns.Base.Event;
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -8,37 +9,30 @@ namespace ns.Base.Plugins.Properties {
     /// Base Class for all Properties.
     /// @warning Should not be used directly.
     /// </summary>
-    [DataContract
-        KnownType(typeof(DeviceContainerProperty)),
-        KnownType(typeof(ImageProperty)),
-        KnownType(typeof(ListProperty)),
-        KnownType(typeof(NumberProperty<object>)),
-        KnownType(typeof(RectangleProperty)),
-        KnownType(typeof(StringProperty))]
+    [DataContract]
+    [KnownType(typeof(ImageProperty))]
+    [KnownType(typeof(ListProperty))]
+    [KnownType(typeof(GenericProperty<object>))]
+    [KnownType(typeof(RectangleProperty))]
+    [KnownType(typeof(StringProperty))]
     public abstract class Property : Node {
         private bool _canAutoConnect = false;
-
         private Guid _connectedId;
         private Property _connectedProperty = null;
+        private PropertyDirection _direction = PropertyDirection.In;
         private string _groupName = string.Empty;
-
         private bool _isMonitored = false;
-
-        private bool _isOutput = false;
-
         private bool _isToleranceDisabled = true;
-
-        private string _toolUid = string.Empty;
-
+        private string _toolId = string.Empty;
         private string _uid = string.Empty;
-
         private object _value = null;
 
         /// <summary>
         /// Base Class for all Properties.
         /// @warning Should not be used directly.
         /// </summary>
-        public Property() {
+        public Property()
+            : base() {
             Name = "UNKNOWN";
         }
 
@@ -46,42 +40,24 @@ namespace ns.Base.Plugins.Properties {
         /// Base Class for all Properties.
         /// @warning Should not be used directly.
         /// </summary>
+        /// <param name="direction">The direction of the property</param>
         /// <param name="name">Name of the property.</param>
-        /// <param name="value">Value of the property.</param>
-        public Property(string name) : this() {
+        public Property(PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : this() {
             Name = name;
+            Direction = direction;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Property"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="groupName">Name of the group.</param>
-        /// <param name="value">The value.</param>
-        public Property(string name, string groupName) : this(name) {
-            GroupName = groupName;
-        }
-
-        /// <summary>
-        /// Base Class for all Properties.
-        /// @warning Should not be used directly.
-        /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        public Property(string name, bool isOutput) : this() {
-            Name = name;
-            IsOutput = isOutput;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Property"/> class.
-        /// </summary>
-        /// <param name="property">The property.</param>
-        public Property(Property property) : base(property) {
-            IsOutput = property.IsOutput;
-            GroupName = property.GroupName;
-            IsMonitored = property.IsMonitored;
-            CanAutoConnect = property.CanAutoConnect;
+        /// <param name="other">The property.</param>
+        public Property(Property other)
+            : base(other) {
+            Direction = other.Direction;
+            GroupName = other.GroupName;
+            IsMonitored = other.IsMonitored;
+            CanAutoConnect = other.CanAutoConnect;
         }
 
         /// <summary>
@@ -124,6 +100,18 @@ namespace ns.Base.Plugins.Properties {
         public Property ConnectedProperty => _connectedProperty;
 
         /// <summary>
+        /// Gets or sets if the property is used as output.
+        /// </summary>
+        [DataMember]
+        public PropertyDirection Direction {
+            get { return _direction; }
+            set {
+                _direction = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the name of the group.
         /// </summary>
         /// <value>
@@ -158,25 +146,13 @@ namespace ns.Base.Plugins.Properties {
         }
 
         /// <summary>
-        /// Gets or sets if the property is used as output.
-        /// </summary>
-        [DataMember]
-        public bool IsOutput {
-            get { return _isOutput; }
-            set {
-                _isOutput = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the unified identification of the parent tool.
         /// </summary>
         [DataMember]
-        public string ToolUID {
-            get { return _toolUid; }
+        public string ToolId {
+            get { return _toolId; }
             set {
-                _toolUid = value;
+                _toolId = value;
                 OnPropertyChanged();
             }
         }

@@ -6,23 +6,28 @@
              xmlns:local="clr-namespace:ns.GUI.WPF.Controls"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="300" MinHeight="44" MinWidth="280">
-    <Grid Background="LightGray">
+    <Grid Background="{DynamicResource SecondaryBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="44" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Margin="0,1,0,2" PreviewMouseDown="Grid_PreviewMouseDown" Background="Transparent">
+        <Grid Margin="0,1,0,2" PreviewMouseDown="Grid_PreviewMouseDown" Background="{DynamicResource ControlBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="40" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="2" />
+            </Grid.RowDefinitions>
             <Button  Name="ConfigButton" Grid.Column="1" Click="ConfigButton_Click" Visibility="Visible">
                 <Image Source="/ns.GUI.WPF;component/Images/Wrench.png" />
             </Button>
-            <TextBlock Grid.Column="2" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Foreground="{DynamicResource QuarterTransparentForegroundBrush}" Margin="10,2" />
+            <TextBlock Grid.Column="2" Text="{Binding Path=DisplayName,FallbackValue=UNKNOWN}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Foreground="{DynamicResource ControlForeground}" Margin="10,2" />
             <ToggleButton Name="ContentToggleButton" Grid.Column="3" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Style="{DynamicResource ContentToggleButton}" />
+            <Grid Grid.Row="1" Grid.ColumnSpan="4" Background="{DynamicResource AccentBackgroundBrush2}" />
         </Grid>
         <ListBox Grid.Row="1" Name="ContentList" />
     </Grid>

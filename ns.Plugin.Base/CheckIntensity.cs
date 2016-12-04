@@ -1,5 +1,4 @@
 ﻿using ns.Base;
-using ns.Base.Extensions;
 using ns.Base.Plugins;
 using ns.Base.Plugins.Properties;
 using System;
@@ -13,17 +12,9 @@ namespace ns.Plugin.Base {
     /// </summary>
     [Visible, DataContract]
     public sealed class CheckIntensity : Tool {
-        private RectangleProperty _aoiProperty;
-        private ImageProperty _inputImage;
-        private DoubleProperty _intensityProperty;
 
-        public CheckIntensity() {
+        public CheckIntensity() : base() {
             DisplayName = "Check Intensity";
-            AddChild(new ImageProperty("InputImage", false));
-            AddChild(new RectangleProperty("AOI", 0.0, 0.0, 100.0, 100.0));
-            DoubleProperty intensityProperty = new DoubleProperty("Intensity", true);
-            intensityProperty.Tolerance = new Tolerance<double>(0, 100);
-            AddChild(intensityProperty);
         }
 
         /// <summary>
@@ -34,26 +25,42 @@ namespace ns.Plugin.Base {
         }
 
         /// <summary>
+        /// Gets the aoi.
+        /// </summary>
+        /// <value>
+        /// The aoi.
+        /// </value>
+        public RectangleProperty Aoi => FindOrAdd<RectangleProperty, Rectangle>(new Rectangle(0d, 0d, 100d, 100d));
+
+        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>
         /// The category.
         /// </value>
-        public override string Category {
-            get {
-                return ToolCategory.Common.GetDescription();
-            }
-        }
+        public override string Category => "Common";
 
         /// <summary>
         /// Gets or sets the Description.
         /// The Description is used for the Application User to visualize a human readable Name.
         /// </summary>
-        public override string Description {
-            get {
-                return "Calculates the intensity. Return value (Intensity) will be in percent.";
-            }
-        }
+        public override string Description => "Calculates the intensity. Return value (Intensity) will be in percent.";
+
+        /// <summary>
+        /// Gets the input image.
+        /// </summary>
+        /// <value>
+        /// The input image.
+        /// </value>
+        public ImageProperty InputImage => FindOrAdd<ImageProperty, ImageContainer>(new ImageContainer());
+
+        /// <summary>
+        /// Gets the intensity.
+        /// </summary>
+        /// <value>
+        /// The intensity.
+        /// </value>
+        public DoubleProperty Intensity => FindOrAdd<DoubleProperty, double>(0d, 0d, 100d, PropertyDirection.Out);
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -64,38 +71,22 @@ namespace ns.Plugin.Base {
         public override Node Clone() => new CheckIntensity(this);
 
         /// <summary>
-        /// Initialze the Plugin.
-        /// </summary>
-        /// <returns>
-        /// Success of the Operation.
-        /// </returns>
-        public override bool Initialize() {
-            base.Initialize();
-
-            _aoiProperty = GetProperty<RectangleProperty>("AOI");
-            _inputImage = GetProperty<ImageProperty>("InputImage");
-            _inputImage.IsVisible = true;
-            _intensityProperty = GetProperty<DoubleProperty>("Intensity");
-            return true;
-        }
-
-        /// <summary>
         /// Calculates the intensity from the given aoi.
         /// </summary>
         /// <returns></returns>
         public override bool TryRun() {
             try {
-                ImageContainer inputContainer = _inputImage.Value;
+                ImageContainer inputContainer = InputImage.Value;
                 byte[] data = inputContainer.Data;
                 byte bpp = inputContainer.BytesPerPixel;
 
                 int width = inputContainer.Width;
                 int height = inputContainer.Height;
 
-                int yOffset = (int)_aoiProperty.Y;
-                int xOffset = (int)_aoiProperty.X;
-                int aoiWidth = (int)_aoiProperty.Width;
-                int aoiHeight = (int)_aoiProperty.Height;
+                int yOffset = (int)Aoi.Y;
+                int xOffset = (int)Aoi.X;
+                int aoiWidth = (int)Aoi.Width;
+                int aoiHeight = (int)Aoi.Height;
 
                 int sum = 0;
                 int count = 0;
@@ -127,7 +118,7 @@ namespace ns.Plugin.Base {
                     }
                 }
 
-                _intensityProperty.Value = Math.Round((100.0 / 255.0) * (sum / count), 2);
+                Intensity.Value = Math.Round((100.0 / 255.0) * (sum / count), 2);
             } catch (Exception ex) {
                 ns.Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
                 return false;

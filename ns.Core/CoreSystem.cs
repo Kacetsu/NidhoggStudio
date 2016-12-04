@@ -1,11 +1,11 @@
-﻿using ns.Base.Extensions;
+﻿using ns.Base;
+using ns.Base.Extensions;
 using ns.Base.Manager;
 using ns.Core.Manager;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace ns.Core {
@@ -13,31 +13,25 @@ namespace ns.Core {
     /// <summary>
     /// The core, from here you should access any necessary system component.
     /// </summary>
-    public class CoreSystem {
+    public sealed class CoreSystem : Node {
         private static Lazy<CoreSystem> _lazyInstance = new Lazy<CoreSystem>(() => new CoreSystem());
-        private static List<BaseManager> _managers = new List<BaseManager>();
-        private static Processor _processor;
         private static Base.Log.TraceListener _traceListener;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CoreSystem"/> class.
+        /// Gets the data storage.
         /// </summary>
-        public CoreSystem() {
-            try {
-                CreateAssemblyResolver();
+        /// <value>
+        /// The data storage.
+        /// </value>
+        public DataStorageManager DataStorage => FindOrAdd<DataStorageManager>();
 
-                CreateTraceListener();
-
-                CreateManagers();
-
-                _processor = new Processor();
-
-                IsInitialized = true;
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex, TraceEventType.Error);
-                throw;
-            }
-        }
+        /// <summary>
+        /// Gets the devices.
+        /// </summary>
+        /// <value>
+        /// The devices.
+        /// </value>
+        public DeviceManager Devices => FindOrAdd<DeviceManager>();
 
         /// <summary>
         /// Gets the instance.
@@ -48,14 +42,6 @@ namespace ns.Core {
         public static CoreSystem Instance => _lazyInstance.Value;
 
         /// <summary>
-        /// Gets a value indicating whether this instance is initialized.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is initialized; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsInitialized { get; } = false;
-
-        /// <summary>
         /// Gets the log listener.
         /// </summary>
         /// <value>
@@ -64,59 +50,55 @@ namespace ns.Core {
         public static Base.Log.TraceListener LogListener => _traceListener;
 
         /// <summary>
+        /// Gets the plugins.
+        /// </summary>
+        /// <value>
+        /// The plugins.
+        /// </value>
+        public PluginManager Plugins => FindOrAdd<PluginManager>();
+
+        /// <summary>
         /// Gets the processor.
         /// </summary>
         /// <value>
         /// The processor.
         /// </value>
-        public static Processor Processor => _processor;
+        public Processor Processor => FindOrAdd<Processor>();
 
         /// <summary>
-        /// Adds the manager.
+        /// Gets the project.
         /// </summary>
-        /// <param name="manager">The manager.</param>
-        public static void AddManager(BaseManager manager) {
-            if (!_managers.Contains(manager)) {
-                _managers.Add(manager);
-            }
+        /// <value>
+        /// The project.
+        /// </value>
+        public ProjectManager Project => FindOrAdd<ProjectManager>();
+
+        /// <summary>
+        /// Gets the project box.
+        /// </summary>
+        /// <value>
+        /// The project box.
+        /// </value>
+        public ProjectBoxManager ProjectBox => FindOrAdd<ProjectBoxManager>();
+
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <value>
+        /// The properties.
+        /// </value>
+        public PropertyManager Properties => FindOrAdd<PropertyManager>();
+
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        public override void Initialize() {
+            base.Initialize();
+            CreateAssemblyResolver();
+            CreateTraceListener();
+            Plugins.Initialize();
+            Devices.Initialize();
         }
-
-        /// <summary>
-        /// Finalizes the CoreSystem.
-        /// </summary>
-        /// <returns>True if successful.</returns>
-        public static void Close() {
-            foreach (BaseManager manager in _managers) {
-                manager.Close();
-            }
-
-            if (_traceListener != null) {
-                _traceListener.Close();
-            }
-        }
-
-        /// <summary>
-        /// Finds the manager.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        public static T FindManager<T>(string name) where T : BaseManager {
-            foreach (T manager in _managers.Where(m => m is T)) {
-                if (manager.Name.Equals(name)) {
-                    return manager;
-                }
-            }
-
-            return default(T);
-        }
-
-        /// <summary>
-        /// Finds the manager.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T FindManager<T>() where T : BaseManager { return (T)_managers.Find(m => m is T); }
 
         private static void CreateAssemblyResolver() {
             AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args) {
@@ -139,31 +121,6 @@ namespace ns.Core {
                     throw;
                 }
             };
-        }
-
-        /// <summary>
-        /// Creates the managers.
-        /// </summary>
-        /// <exception cref="ManagerInitializeException">
-        /// </exception>
-        private static void CreateManagers() {
-            _managers.Clear();
-
-            // Default managers must be added to the CoreSystem.
-            ExtensionManager extensionManager = new ExtensionManager();
-            AddManager(extensionManager);
-            PluginManager pluginManager = new PluginManager();
-            AddManager(pluginManager);
-            PropertyManager propertyManager = new PropertyManager();
-            AddManager(propertyManager);
-            DataStorageManager dataStorageManager = new DataStorageManager();
-            AddManager(dataStorageManager);
-            DeviceManager deviceManager = new DeviceManager();
-            AddManager(deviceManager);
-            ProjectManager projectManager = new ProjectManager();
-            AddManager(projectManager);
-            ProjectBoxManager projectBoxManager = new ProjectBoxManager();
-            AddManager(projectBoxManager);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using ns.Base.Manager;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using ns.Core.Configuration;
 using System.Collections.Generic;

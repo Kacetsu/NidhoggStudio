@@ -8,14 +8,14 @@
              d:DesignHeight="620" d:DesignWidth="300" Background="{DynamicResource StandardBackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="45" />
             <RowDefinition Height="*" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <Grid Background="{DynamicResource ProjectExplorerBackgroundBrush}">
             <TextBlock Text="{DynamicResource Project_Explorer}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Margin="0,0,20,0" />
         </Grid>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{DynamicResource SecondaryBackgroundBrush}">
             <Grid Name="ContentGrid" />
         </ScrollViewer>
     </Grid>

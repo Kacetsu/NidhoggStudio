@@ -46,7 +46,7 @@ namespace ns.GUI.WPF.Controls {
             _rectangle.MouseEnter += Rectangle_MouseEnter;
             _rectangle.MouseLeave += Rectangle_MouseLeave;
 
-            if (!property.IsOutput) {
+            if (property.Direction == PropertyDirection.In) {
                 _topLeftSizeChanger = CreateSizeChanger(_property.X, _property.Y);
                 _topRightSizeChanger = CreateSizeChanger(_property.X + _rectangle.Width, _property.Y);
                 _topRightSizeChanger.Visibility = Visibility.Collapsed;
@@ -225,7 +225,7 @@ namespace ns.GUI.WPF.Controls {
                 _property.Width = _rectangle.Width;
                 _property.Height = _rectangle.Height;
 
-                if (!_property.IsOutput)
+                if (_property.Direction == PropertyDirection.In)
                     UpdateSizeChanger();
             }
         }

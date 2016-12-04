@@ -11,7 +11,7 @@ namespace ns.Communication {
 
         public static IEnumerable<Type> GetKnownTypes(ICustomAttributeProvider provider) {
             List<Type> result = new List<Type>();
-            PluginManager pluginManager = CoreSystem.FindManager<PluginManager>();
+            PluginManager pluginManager = CoreSystem.Instance.Plugins;
             if (pluginManager?.KnownTypes.Count > 0) {
                 result = new List<Type>(pluginManager?.KnownTypes);
             }

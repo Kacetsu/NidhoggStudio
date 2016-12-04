@@ -15,6 +15,8 @@ namespace ns.GUI.WPF {
     /// Interaktionslogik für Editor.xaml
     /// </summary>
     public partial class Editor : UserControl, INotifyPropertyChanged {
+        private bool _isHistogramViewVisible = false;
+        private bool _isResultsViewVisible = false;
         private string _lockedToolName = string.Empty;
         private Controls.ProjectExplorer _projectExplorer;
         private Controls.PropertyEditor _propertyEditor;
@@ -63,6 +65,8 @@ namespace ns.GUI.WPF {
         }
 
         private void Editor_Loaded(object sender, RoutedEventArgs e) {
+            ResultsView.TabButton.Click += ResultsButton_Click;
+            HistogramView.TabButton.Click += HistogramButton_Click;
             GuiHelper.DoubleAnimateControl(300, ControlGrid, WidthProperty);
 
             try {
@@ -77,6 +81,16 @@ namespace ns.GUI.WPF {
         private void FrontendManager_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName.Equals(nameof(FrontendManager.SelectedModel))) {
                 SelectedPluginName = FrontendManager.SelectedModel?.DisplayName;
+            }
+        }
+
+        private void HistogramButton_Click(object sender, RoutedEventArgs e) {
+            if (!_isHistogramViewVisible) {
+                GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
+                _isHistogramViewVisible = true;
+            } else {
+                GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
+                _isHistogramViewVisible = false;
             }
         }
 
@@ -114,22 +128,24 @@ namespace ns.GUI.WPF {
             ControlGrid.BeginAnimation(WidthProperty, animation);
         }
 
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
-            if (sender == ResultsViewToggleButton) {
+        private void ResultsButton_Click(object sender, RoutedEventArgs e) {
+            if (!_isResultsViewVisible) {
                 GuiHelper.DoubleAnimateControl(200, ResultsView, HeightProperty);
-            } else if (sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(200, HistogramView, HeightProperty);
-            } else if (sender == LoopExecutionToggleButton) {
+                _isResultsViewVisible = true;
+            } else {
+                GuiHelper.DoubleAnimateControl(0, ResultsView, HeightProperty);
+                _isResultsViewVisible = false;
+            }
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e) {
+            if (sender == LoopExecutionToggleButton) {
                 ClientCommunicationManager.ProcessorService.Start();
             }
         }
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e) {
-            if (sender == ResultsViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, ResultsView, HeightProperty);
-            } else if (sender == HistogramViewToggleButton) {
-                GuiHelper.DoubleAnimateControl(0, HistogramView, HeightProperty);
-            } else if (sender == LoopExecutionToggleButton) {
+            if (sender == LoopExecutionToggleButton) {
                 ClientCommunicationManager.ProcessorService.Stop();
             }
         }

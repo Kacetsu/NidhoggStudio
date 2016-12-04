@@ -14,7 +14,7 @@ namespace ns.Communication.Services {
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
         /// </summary>
         public PluginService() {
-            _pluginManager = CoreSystem.FindManager<PluginManager>();
+            _pluginManager = CoreSystem.Instance.Plugins;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace ns.Communication.Services {
         public List<PluginModel> GetAvailablePlugins() {
             List<PluginModel> result = new List<PluginModel>();
 
-            foreach (Plugin plugin in _pluginManager.Nodes) {
+            foreach (Plugin plugin in _pluginManager.Items.Values) {
                 result.Add(new PluginModel(plugin));
             }
 
@@ -38,7 +38,7 @@ namespace ns.Communication.Services {
         public List<ToolModel> GetAvailableTools() {
             List<ToolModel> result = new List<ToolModel>();
 
-            foreach (Tool tool in _pluginManager.Nodes.Where(t => t is Tool)) {
+            foreach (Tool tool in _pluginManager.Items.Values.Where(t => t is Tool)) {
                 result.Add(new ToolModel(tool));
             }
 

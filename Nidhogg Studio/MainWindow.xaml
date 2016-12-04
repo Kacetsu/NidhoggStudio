@@ -17,7 +17,7 @@
                 <ColumnDefinition x:Name="NavigationColumn" Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Controls:NavigationMenu x:Name="Navigation" Width="60" />
+            <Controls:NavigationMenu x:Name="Navigation" Width="45" />
             <Grid Name="ContentGird" Grid.Column="1" />
         </Grid>
         <WPF:StatusBar Grid.Row="1" />

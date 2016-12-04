@@ -1,11 +1,11 @@
 ﻿using ns.Base.Manager;
 using ns.Base.Manager.ProjectBox;
-using ns.Base.Plugins;
 using ns.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace ns.Core.Manager {
 
@@ -14,7 +14,13 @@ namespace ns.Core.Manager {
         public const string PROJECTBOX_NAME = "ProjectBox";
         public const string PROJECTFILE_NAME = "Project";
 
-        public ProjectBoxManager() : base() {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectBoxManager"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <exception cref="System.IO.DirectoryNotFoundException">
+        /// </exception>
+        public ProjectBoxManager([CallerMemberName] string name = null) : base(name) {
             Configuration = new ProjectBoxConfiguration();
             string path = ProjectsDirectory;
             if (!Base.FileInfo.CreateDirectory(path)) {
@@ -78,7 +84,7 @@ namespace ns.Core.Manager {
         /// <param name="path">The path.</param>
         /// <returns></returns>
         public void LoadProject(string path) {
-            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
+            ProjectManager projectManager = CoreSystem.Instance.Project;
             projectManager.Load(path);
             projectManager.InitializeOperations();
             SetUsedProject(path);
@@ -99,7 +105,7 @@ namespace ns.Core.Manager {
         public void SaveProject() {
             string path = Configuration.LastUsedProjectPath;
             bool wasDefault = false;
-            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
+            ProjectManager projectManager = CoreSystem.Instance.Project;
 
             if (path.Equals(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML)) {
                 path = ProjectsDirectory + PROJECTFILE_NAME + "_" + DateTime.Now.ToFileTime().ToString() + Path.DirectorySeparatorChar + PROJECTFILE_NAME + EXTENSION_XML;
@@ -161,7 +167,7 @@ namespace ns.Core.Manager {
         }
 
         private void SaveDefaultProject() {
-            ProjectManager projectManager = CoreSystem.FindManager<ProjectManager>();
+            ProjectManager projectManager = CoreSystem.Instance.Project;
             projectManager.CreateDefaultProject();
             projectManager.Save(DefaultProjectDirectory + PROJECTFILE_NAME + EXTENSION_XML);
         }

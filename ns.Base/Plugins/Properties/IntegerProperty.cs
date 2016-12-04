@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -9,7 +10,8 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
         /// </summary>
-        public IntegerProperty() : base() {
+        public IntegerProperty()
+            : base() {
             Max = int.MaxValue;
             Min = int.MinValue;
         }
@@ -18,33 +20,29 @@ namespace ns.Base.Plugins.Properties {
         /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
         /// </summary>
         /// <param name="other">The other.</param>
-        public IntegerProperty(IntegerProperty other) : base(other) { }
+        public IntegerProperty(IntegerProperty other)
+            : base(other) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="value">The value.</param>
-        public IntegerProperty(string name, int value) : base(name, value, int.MinValue, int.MaxValue) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
-        public IntegerProperty(string name, bool isOutput) : base(name, 0, int.MinValue, int.MaxValue) {
-            IsOutput = isOutput;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
-        public IntegerProperty(string name, int value, int min, int max) : base(name, value, min, max) {
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        public IntegerProperty(int value, int min = int.MinValue, int max = int.MaxValue, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, min, max, direction, name) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntegerProperty"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        public IntegerProperty(int value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, int.MinValue, int.MaxValue, direction, name) {
         }
 
         /// <summary>

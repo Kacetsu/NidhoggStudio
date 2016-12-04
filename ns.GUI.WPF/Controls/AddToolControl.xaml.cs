@@ -14,6 +14,7 @@ namespace ns.GUI.WPF.Controls {
     /// Logic for <see cref="AddToolControl"/>
     /// </summary>
     public partial class AddToolControl : UserControl, INotifyPropertyChanged, IDisposable {
+        private const double MinControlHeight = 45d;
         private bool _isCollapsed = true;
         private Task _task;
         private Thickness _toggleButtonMargin = new Thickness(0, 12, 0, 0);
@@ -26,7 +27,7 @@ namespace ns.GUI.WPF.Controls {
             Loaded += HandleLoaded;
             Unloaded += HandleUnloaded;
             ToggleButton.DataContext = this;
-            Height = 60d;
+            Height = MinControlHeight;
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace ns.GUI.WPF.Controls {
                 ToggleButtonUp.Visibility = Visibility.Hidden;
                 ToggleButtonMargin = new Thickness(0);
             } else {
-                GuiHelper.DoubleAnimateControl(60d, this, HeightProperty);
+                GuiHelper.DoubleAnimateControl(MinControlHeight, this, HeightProperty);
                 _isCollapsed = true;
                 ToggleButtonDown.Visibility = Visibility.Hidden;
                 ToggleButtonUp.Visibility = Visibility.Visible;

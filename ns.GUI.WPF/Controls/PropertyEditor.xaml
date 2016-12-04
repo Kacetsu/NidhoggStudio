@@ -8,18 +8,18 @@
              d:DesignHeight="620" d:DesignWidth="300" Background="{DynamicResource StandardBackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="45" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Background="{DynamicResource PropertyEditorHeaderBackgroundBrush}" MinWidth="240">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button Name="CloseButton">
                 <Button.Content>
-                    <TextBlock Text="x" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="36" Margin="0,-1,0,0" />
+                    <TextBlock Text="x" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="36" Margin="0,-8,0,0" />
                 </Button.Content>
             </Button>
             <TextBox Text="{Binding Path=DisplayName}" Foreground="{DynamicResource HalfTransparentForegroundBrush}" Background="Transparent" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Grid.Column="1" Margin="0,0,20,0" />

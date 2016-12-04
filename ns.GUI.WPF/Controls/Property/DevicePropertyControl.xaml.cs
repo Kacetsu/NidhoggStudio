@@ -1,5 +1,6 @@
 ﻿using ns.Base.Log;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Client;
 using System;
@@ -40,14 +41,14 @@ namespace ns.GUI.WPF.Controls.Property {
             Device device = null;
 
             if (_property.Value == null) {
-                if ((device = _property.Items.Find(d => d.Name.Contains("ImageFileDevice")) as Device) != null) {
+                if ((device = _property.Items.Values.FirstOrDefault(d => d.Name.Contains("ImageFileDevice")) as Device) != null) {
                     SelectDevice(device);
                 }
             } else {
                 device = _property.Value as Device;
                 if (device == null) {
-                    if ((device = _property.Items.Find(d => d.Name.Contains("ImageFileDevice")) as Device) == null) {
-                        device = _property.Items.FirstOrDefault(d => d is Device) as Device;
+                    if ((device = _property.Items.Values.FirstOrDefault(d => d.Name.Contains("ImageFileDevice")) as Device) == null) {
+                        device = _property.Items.Values.FirstOrDefault(d => d is Device) as Device;
                     }
                 }
                 SelectDevice(_property?.Value);

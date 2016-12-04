@@ -1,5 +1,6 @@
 ﻿using ns.Base;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using ns.Communication.Client;
 using ns.Communication.Models;
@@ -161,14 +162,14 @@ namespace ns.GUI.WPF.Controls {
                 AddListProperty(ContentGrid, property, true);
             }
 
-            foreach (Node childNode in property.Items) {
+            foreach (Node childNode in property.Items.Values) {
                 if (childNode is Base.Plugins.Properties.Property) {
                     Base.Plugins.Properties.Property childProperty = childNode as Base.Plugins.Properties.Property;
-                    if (!childProperty.IsOutput) {
+                    if (childProperty.Direction == PropertyDirection.In) {
                         UpdateContenGridByProperty(childProperty);
                     }
                 } else if (childNode is Device) {
-                    foreach (Base.Plugins.Properties.Property child in childNode.Items.Where(c => c is Base.Plugins.Properties.Property && !(c as Base.Plugins.Properties.Property).IsOutput)) {
+                    foreach (Base.Plugins.Properties.Property child in childNode.Items.Values.Where(c => c is Base.Plugins.Properties.Property && (c as Base.Plugins.Properties.Property).Direction == PropertyDirection.In)) {
                         UpdateContenGridByProperty(child);
                     }
                 }
@@ -183,11 +184,11 @@ namespace ns.GUI.WPF.Controls {
 
             foreach (PropertyModel propertyModel in configModel.Properties) {
                 Base.Plugins.Properties.Property property = propertyModel.Property;
-                if (!property.IsOutput) {
+                if (property.Direction == PropertyDirection.In) {
                     UpdateContenGridByProperty(property);
                     DeviceContainerProperty deviceProperty = property as DeviceContainerProperty;
                     if (deviceProperty?.Value == null) continue;
-                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.Value.Items.Where(p => !(p as Base.Plugins.Properties.Property).IsOutput)) {
+                    foreach (Base.Plugins.Properties.Property dp in deviceProperty.Value.Items.Values.Where(p => (p as Base.Plugins.Properties.Property).Direction == PropertyDirection.In)) {
                         UpdateContenGridByProperty(dp);
                     }
                 }

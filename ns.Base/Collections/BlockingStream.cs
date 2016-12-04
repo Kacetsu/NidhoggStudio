@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 
-namespace ns.Base {
+namespace ns.Base.Collections {
 
     public class BlockingStream : Stream {
-        private readonly System.Collections.Concurrent.BlockingCollection<byte[]> _blocks;
+        private readonly BlockingCollection<byte[]> _blocks;
         private byte[] _currentBlock;
         private int _currentBlockIndex;
 
@@ -15,7 +15,7 @@ namespace ns.Base {
         /// </summary>
         /// <param name="streamWriteCountCache">The stream write count cache.</param>
         public BlockingStream(int streamWriteCountCache) {
-            _blocks = new System.Collections.Concurrent.BlockingCollection<byte[]>(streamWriteCountCache);
+            _blocks = new BlockingCollection<byte[]>(streamWriteCountCache);
         }
 
         /// <summary>

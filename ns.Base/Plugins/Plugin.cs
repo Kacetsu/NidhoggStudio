@@ -1,10 +1,12 @@
-﻿using ns.Base.Plugins.Properties;
-using System.Collections.Generic;
+﻿using ns.Base.Plugins.Devices;
+using ns.Base.Plugins.Properties;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins {
@@ -13,7 +15,11 @@ namespace ns.Base.Plugins {
     /// Base Class used for all Plugins (Tools, Devices, Extensions, Operations).
     /// Creates additional to the BaseNode the following fields: AssemblyFile and Version.
     /// </summary>
-    [DataContract(IsReference = true), KnownType(typeof(Operation)), KnownType(typeof(Tool)), KnownType(typeof(Device))]
+    [DataContract(IsReference = true)]
+    [KnownType(typeof(Operation))]
+    [KnownType(typeof(Tool))]
+    [KnownType(typeof(Device))]
+    [KnownType(typeof(Factory))]
     public class Plugin : Node, IPlugin {
         private string _assemblyFile = string.Empty;
         private string _displayName = string.Empty;
@@ -55,9 +61,7 @@ namespace ns.Base.Plugins {
         /// Gets or sets the Description.
         /// The Description is used for the Application User to visualize a human readable Name.
         /// </summary>
-        public virtual string Description {
-            get { return string.Empty; }
-        }
+        public virtual string Description => string.Empty;
 
         /// <summary>
         /// Gets the DisplayName.
@@ -118,61 +122,46 @@ namespace ns.Base.Plugins {
         public override Node Clone() => new Plugin(this);
 
         /// <summary>
-        /// Gets the properties.
+        /// Finds the or add.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public IEnumerable<T> GetProperties<T>() where T : Property {
-            List<T> result = new List<T>();
-
-            foreach (T property in Items.Where(p => p is T)) {
-                result.Add(property);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the properties.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
-        /// <returns></returns>
-        public IEnumerable<T> GetProperties<T>(bool isOutput) where T : Property {
-            List<T> result = new List<T>();
-
-            foreach (T property in Items.Where(p => (p as T)?.IsOutput == isOutput)) {
-                result.Add(property);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the property.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TType">The type of the type.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="direction">The direction.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public T GetProperty<T>(string name) where T : Property {
-            T result = null;
-
-            foreach (T property in Items.Where(p => p is T)) {
-                if (property.Name == name) {
-                    result = property;
-                    break;
-                }
+        public TType FindOrAdd<TType, TValue>(TValue value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null) where TType
+            : GenericProperty<TValue> {
+            TType node = Items.FirstOrDefault(i => string.Equals(i.Value.Name, name, StringComparison.Ordinal)).Value as TType;
+            if (node == null) {
+                node = Activator.CreateInstance(typeof(TType), value, direction, name) as TType;
+                Items.TryAdd(node.Id, node);
             }
 
-            return result;
+            return node;
         }
 
         /// <summary>
-        /// Gets the property.
+        /// Finds the or add.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TType">The type of the type.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">The maximum.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
         /// <returns></returns>
-        public T GetProperty<T>() where T : Property => (T)Items.First(p => p is T);
+        public TType FindOrAdd<TType, TValue>(TValue value, TValue min, TValue max, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null) where TType
+            : GenericProperty<TValue> {
+            TType node = Items.FirstOrDefault(i => string.Equals(i.Value.Name, name, StringComparison.Ordinal)).Value as TType;
+            if (node == null) {
+                node = Activator.CreateInstance(typeof(TType), value, min, max, direction, name) as TType;
+                Items.TryAdd(node.Id, node);
+            }
+
+            return node;
+        }
 
         /// <summary>
         /// Called when [finished].
@@ -192,9 +181,7 @@ namespace ns.Base.Plugins {
         /// Terminates this instance.
         /// </summary>
         /// <returns></returns>
-        public virtual bool Terminate() {
-            return true;
-        }
+        public virtual bool Terminate() => true;
 
         /// <summary>
         /// Tries the get property.
@@ -203,7 +190,7 @@ namespace ns.Base.Plugins {
         /// <param name="property">The property.</param>
         /// <returns></returns>
         public bool TryGetProperty<T>(out T property) where T : Property {
-            property = (T)Items.FirstOrDefault(p => p is T);
+            property = (T)Items.Values.FirstOrDefault(p => p is T);
             return property != null;
         }
 
@@ -229,9 +216,7 @@ namespace ns.Base.Plugins {
         /// Run the Plugin.
         /// </summary>
         /// <returns>Success of the Operation.</returns>
-        public virtual bool TryRun() {
-            return true;
-        }
+        public virtual bool TryRun() => true;
 
         /// <summary>
         /// Runs the childs.
@@ -240,7 +225,7 @@ namespace ns.Base.Plugins {
         public virtual bool TryRunChilds() {
             bool result = true;
             lock (Items) {
-                foreach (Tool child in Items.Where(p => p is Tool)) {
+                foreach (Tool child in Items.Values.OfType<Tool>()) {
                     if (child.TryPreRun() == false) {
                         Log.Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Tool {0} pre run failed!", child.Name), TraceEventType.Error);
                         result = false;
@@ -252,7 +237,7 @@ namespace ns.Base.Plugins {
                         result = false;
                     }
 
-                    foreach (Property property in child.Items) {
+                    foreach (Property property in child.Items.Values) {
                         ITolerance tolerancProperty = property as ITolerance;
                         if (tolerancProperty == null || tolerancProperty.IsToleranceEnabled == false) continue;
 

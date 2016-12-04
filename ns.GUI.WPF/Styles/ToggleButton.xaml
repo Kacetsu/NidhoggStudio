@@ -4,26 +4,26 @@
 
     <Style x:Key="{x:Type ToggleButton}" TargetType="{x:Type ToggleButton}">
         <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
-        <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="5">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="2">
                         <Grid Name="Grid"  Margin="1">
                             <ContentPresenter Margin="0,0" Height="{TemplateBinding Height}" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonCheckedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonCheckedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />
@@ -36,7 +36,7 @@
 
     <Style x:Key="ContentToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
-        <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template">
@@ -44,31 +44,31 @@
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="Transparent" CornerRadius="0">
                         <Grid Name="Grid"  Margin="1">
-                            <Path 
+                            <Path
                               x:Name="ArrowDown"
-                              Grid.Column="1"     
+                              Grid.Column="1"
                               Fill="{StaticResource GlyphBrush}"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
-                              Data="M 0 0 L 4 4 L 8 0 Z"/>
-                            <Path 
+                              Data="M 0 0 L 4 4 L 8 0 Z" />
+                            <Path
                               x:Name="ArrowUp"
-                              Grid.Column="1"     
+                              Grid.Column="1"
                               Fill="{StaticResource GlyphBrush}"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
-                              Data="M 0 4 L 4 0 L 8 4 Z" Visibility="Hidden"/>
+                              Data="M 0 4 L 4 0 L 8 4 Z" Visibility="Hidden" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonCheckedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ToggleButtonCheckedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                             <Setter TargetName="ArrowDown" Property="Visibility" Value="Hidden" />
                             <Setter TargetName="ArrowUp" Property="Visibility" Value="Visible" />
                         </Trigger>
@@ -80,5 +80,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

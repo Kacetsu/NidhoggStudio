@@ -23,7 +23,7 @@ namespace ns.Communication.Models {
             Version = tool.Version;
             ParentId = tool.Parent == null ? Guid.Empty : tool.Parent.Id;
 
-            foreach (Property property in tool.Items.Where(p => p is Property)) {
+            foreach (Property property in tool.Items.Values.Where(p => p is Property)) {
                 Properties.Add(new PropertyModel(property));
             }
         }

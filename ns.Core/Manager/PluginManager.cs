@@ -1,11 +1,14 @@
 ﻿using ns.Base;
 using ns.Base.Manager;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Core.Manager {
@@ -16,15 +19,18 @@ namespace ns.Core.Manager {
         private static string _pluginPath = AssemblyPath + "\\Plugins";
 
         private List<Assembly> _assemblyList = new List<Assembly>();
-        private ExtensionManager _extensionManager;
         private List<string> _fileList = new List<string>();
         private List<LibraryInformation> _libraryInformations = new List<LibraryInformation>();
         private List<Plugin> _plugins = new List<Plugin>();
 
-        public PluginManager() : base() {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginManager"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <exception cref="Exception">Could not get any plugins!</exception>
+        public PluginManager([CallerMemberName] string name = null) : base(name) {
             try {
                 Base.Log.Trace.WriteLine("Initialize PluginManager ...", TraceEventType.Information);
-                _extensionManager = CoreSystem.FindManager<ExtensionManager>();
 
                 if (!UpdatePlugins()) {
                     throw new Exception("Could not get any plugins!");
@@ -35,6 +41,12 @@ namespace ns.Core.Manager {
             }
         }
 
+        /// <summary>
+        /// Gets the known types.
+        /// </summary>
+        /// <value>
+        /// The known types.
+        /// </value>
         public List<Type> KnownTypes { get; } = new List<Type>();
 
         /// <summary>
@@ -63,7 +75,6 @@ namespace ns.Core.Manager {
                     Base.Log.Trace.WriteLine("No plugins to load!", TraceEventType.Warning);
                 } else {
                     _fileList.Clear();
-                    _extensionManager.Nodes.Clear();
 
                     // Add the Plugins here!
                     Operation baseOperation = new Operation();
@@ -96,21 +107,46 @@ namespace ns.Core.Manager {
                             object probalePlugin = assembly.CreateInstance(type.ToString());
 
                             Plugin plugin = probalePlugin as Plugin;
-                            Extension extension = probalePlugin as Extension;
                             if (plugin == null) continue;
 
-                            if (extension != null) _extensionManager.Add(extension);
-                            else Add(plugin);
+                            Device device = plugin as Device;
+                            Tool tool = plugin as Tool;
+                            Operation operation = plugin as Operation;
+                            Factory factory = plugin as Factory;
+
+                            if (device != null && !ValidateDevice(device)) {
+                                continue;
+                            } else if (tool != null && !ValidateTool(tool)) {
+                                continue;
+                            } else if (operation != null && !ValidateOperation(operation)) {
+                                continue;
+                            } else if (factory != null) {
+                                factory.Initialize();
+                                foreach (Device d in factory.Items.Values.Where(i => i is Device).Cast<Device>()) {
+                                    if (!ValidateDevice(d)) {
+                                        continue;
+                                    }
+
+                                    Add(d);
+                                    if (!KnownTypes.Contains(d.GetType())) {
+                                        KnownTypes.Add(d.GetType());
+                                    }
+                                    _plugins.Add(d);
+                                }
+
+                                continue;
+                            } else if (device == null && tool == null && operation == null) {
+                                Base.Log.Trace.WriteLine(string.Format("Unknown plugin {0}!", plugin.GetType().Name), TraceEventType.Error);
+                                continue;
+                            }
+
+                            Add(plugin);
 
                             KnownTypes.Add(plugin.GetType());
                             _plugins.Add(plugin);
                         }
                     }
                 }
-
-                Base.Log.Trace.WriteLine("System contains " + (_plugins.Count - 1) + " Plugins:\n\t"
-                    + Nodes.Count + " Plugin(s)\n\t"
-                    + _extensionManager.Nodes.Count + " Extension(s)", TraceEventType.Verbose);
 
                 result = true;
             } catch (Exception ex) {
@@ -130,25 +166,6 @@ namespace ns.Core.Manager {
 
             try {
                 if (ValidatePlugin(device) == true) {
-                    result = true;
-                }
-            } catch (Exception ex) {
-                Base.Log.Trace.WriteLine(ex.Message, ex.StackTrace, TraceEventType.Error);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Validates the extension.
-        /// </summary>
-        /// <param name="extension">The extension.</param>
-        /// <returns></returns>
-        private bool ValidateExtension(Extension extension) {
-            bool result = false;
-
-            try {
-                if (ValidatePlugin(extension) == true) {
                     result = true;
                 }
             } catch (Exception ex) {

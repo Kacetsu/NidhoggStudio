@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace ns.Core.Manager {
 
@@ -16,27 +17,20 @@ namespace ns.Core.Manager {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyManager"/> class.
         /// </summary>
-        public PropertyManager() : base() {
-            _pluginManager = CoreSystem.FindManager<PluginManager>();
+        /// <param name="name">The name.</param>
+        public PropertyManager([CallerMemberName] string name = null) : base(name) {
+            _pluginManager = CoreSystem.Instance.Plugins;
         }
 
         /// <summary>
         /// Adds the specified node.
         /// </summary>
-        /// <param name="node">The node.</param>
-        public override void Add(Property node) {
-            if (!Nodes.Contains(node)) {
-                if (node is DeviceContainerProperty) {
-                    List<Device> devices = new List<Device>();
-                    DeviceContainerProperty deviceProperty = node as DeviceContainerProperty;
-                    foreach (Device device in _pluginManager.Nodes.Where(n => n is Device)) {
-                        deviceProperty.Items.Add(device.Clone());
-                    }
-                }
-
-                Nodes.Add(node);
-                Base.Log.Trace.WriteLine("Property added: " + node.ToString(), TraceEventType.Verbose);
-                OnNodeAdded(node);
+        /// <param name="property">The node.</param>
+        public override void Add(Property property) {
+            if (!Items.ContainsKey(property.Id)) {
+                Items.TryAdd(property.Id, property);
+                Base.Log.Trace.WriteLine("Property added: " + property.ToString(), TraceEventType.Verbose);
+                OnNodeAdded(property);
             }
         }
 
@@ -45,11 +39,11 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public void ConnectPropertiesByNode(Node node) {
-            foreach (Node c in node.Items) {
+            foreach (Node c in node.Items.Values) {
                 if (c is Property) {
                     Property child = c as Property;
                     if (!Guid.Empty.Equals(child.ConnectedId)) {
-                        Property parent = Nodes.First(p => p.Id == child.ConnectedId) as Property;
+                        Property parent = Items.Values.OfType<Property>().First(p => p.Id == child.ConnectedId);
                         if (parent != null)
                             child.Connect(parent);
                     }
@@ -104,7 +98,7 @@ namespace ns.Core.Manager {
         /// </summary>
         /// <param name="node">The node.</param>
         public override void Remove(Property node) {
-            foreach (Property child in node.Items.Where(p => p is Property)) {
+            foreach (Property child in node.Items.Values.OfType<Property>()) {
                 Remove(child);
             }
 
@@ -121,12 +115,12 @@ namespace ns.Core.Manager {
         private List<Property> GetTargetProperties(Property property, Tool targetTool, Node parent) {
             List<Property> properties = new List<Property>();
 
-            foreach (Node node in parent.Items) {
+            foreach (Node node in parent.Items.Values) {
                 if (node == targetTool) break;
 
                 if (node is Property) {
                     Property prop = node as Property;
-                    if (prop.IsOutput && (prop.Parent is Tool || prop.Parent is Operation) && property.GetType() == prop.GetType())
+                    if (prop.Direction == PropertyDirection.Out && (prop.Parent is Tool || prop.Parent is Operation) && property.GetType() == prop.GetType())
                         properties.Add(prop);
                 }
 

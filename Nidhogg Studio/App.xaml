@@ -6,7 +6,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Languages/en_US.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Accents/Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Accents/Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/ns.GUI.WPF;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

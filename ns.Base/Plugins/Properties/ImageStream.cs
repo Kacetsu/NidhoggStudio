@@ -1,13 +1,20 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using ns.Base.Collections;
+using System;
 
 namespace ns.Base.Plugins.Properties {
 
     public class ImageStream : Node, IDisposable {
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageStream"/> class.
+        /// </summary>
         public ImageStream() : base() {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageStream"/> class.
+        /// </summary>
+        /// <param name="imageContainer">The image container.</param>
         public ImageStream(ImageContainer imageContainer) : this() {
             Width = imageContainer.Width;
             Height = imageContainer.Height;

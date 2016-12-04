@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckIntensity.cs" />
+    <Compile Include="FileDeviceFactory.cs" />
     <Compile Include="Grayscale.cs" />
     <Compile Include="ImageFileDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

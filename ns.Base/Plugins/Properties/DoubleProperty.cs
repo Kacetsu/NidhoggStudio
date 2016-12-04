@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
 
-    [Serializable, DataContract]
+    [DataContract]
     public class DoubleProperty : NumberProperty<double> {
 
         /// <summary>
@@ -16,7 +16,8 @@ namespace ns.Base.Plugins.Properties {
         /// <summary>
         /// Initializes a new instance of the <see cref="DoubleProperty"/> class.
         /// </summary>
-        public DoubleProperty() : base() {
+        public DoubleProperty()
+            : base() {
             Max = double.MaxValue;
             Min = double.MinValue;
         }
@@ -26,26 +27,20 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public DoubleProperty(string name, double value) : base(name, value, double.MinValue, double.MaxValue) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DoubleProperty"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
-        public DoubleProperty(string name, bool isOutput) : base(name, 0, double.MinValue, double.MaxValue) {
-            IsOutput = isOutput;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DoubleProperty"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="value">The value.</param>
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
-        public DoubleProperty(string name, double value, double min, double max) : base(name, value, min, max) {
+        public DoubleProperty(double value, double min = double.MinValue, double max = double.MaxValue, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, min, max, direction, name) {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DoubleProperty"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="name">The name.</param>
+        public DoubleProperty(double value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, double.MinValue, double.MaxValue, direction, name) {
         }
 
         /// <summary>

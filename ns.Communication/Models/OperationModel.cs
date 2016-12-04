@@ -19,11 +19,11 @@ namespace ns.Communication.Models {
             Description = operation.Description;
             Version = operation.Version;
 
-            foreach (Tool tool in operation.Items.Where(t => t is Tool)) {
+            foreach (Tool tool in operation.Items.Values.Where(i => i is Tool)) {
                 ChildTools.Add(new ToolModel(tool));
             }
 
-            foreach (Property property in operation.Items.Where(p => p is Property)) {
+            foreach (Property property in operation.Items.Values.Where(i => i is Property)) {
                 Properties.Add(new PropertyModel(property));
             }
         }

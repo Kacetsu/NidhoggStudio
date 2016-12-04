@@ -1,4 +1,6 @@
-﻿using ns.Base.Plugins.Properties;
+﻿using ns.Base.Collections;
+using ns.Base.Plugins.Devices;
+using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,29 +13,18 @@ namespace ns.Base.Plugins {
     /// Base Class for all Operations.
     /// Instead of all other Base Classes this one can be used directly as a functional Operation.
     /// </summary>
-    [DataContract(IsReference = true), KnownType(typeof(OperationTrigger))]
+    [DataContract(IsReference = true)]
+    [KnownType(typeof(OperationTrigger))]
     public class Operation : Plugin {
-        private Device _captureDevice;
-        private IntegerProperty _elapsedMsProperty;
-        private IntegerProperty _iterationProperty;
-        private ImageProperty _outImageProperty;
+        private ImageDevice _captureDevice;
 
         /// <summary>
         /// Base Class for all Operations.
         /// Instead of all other Base Classes this one can be used directly as a functional Operation.
         /// </summary>
-        public Operation() : base() {
+        public Operation()
+            : base() {
             DisplayName = "Operation";
-            AddChild(new DeviceContainerProperty(nameof(CaptureDevice)));
-            AddChild(new StringProperty("LinkedOperation", false));
-            AddChild(new ListProperty("Trigger", Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList()));
-            IntegerProperty elapsedMsProperty = new IntegerProperty("ElapsedMs", true);
-            elapsedMsProperty.Tolerance = new Tolerance<int>(0, 10000);
-            AddChild(elapsedMsProperty);
-            IntegerProperty iterationProperty = new IntegerProperty("Iterations", true);
-            iterationProperty.Tolerance = new Tolerance<int>(0, int.MaxValue);
-            AddChild(iterationProperty);
-            AddChild(new ImageProperty("OutImage", true));
         }
 
         /// <summary>
@@ -41,7 +32,8 @@ namespace ns.Base.Plugins {
         /// Instead of all other Base Classes this one can be used directly as a functional Operation.
         /// </summary>
         /// <param name="name">The name of the Operation.</param>
-        public Operation(string name) : this() {
+        public Operation(string name)
+            : this() {
             Name = name;
         }
 
@@ -49,10 +41,9 @@ namespace ns.Base.Plugins {
         /// Initializes a new instance of the <see cref="Operation"/> class.
         /// </summary>
         /// <param name="other">The other.</param>
-        public Operation(Operation other) : base(other) {
+        public Operation(Operation other)
+            : base(other) {
             if (other == null) throw new ArgumentNullException(nameof(other));
-
-            CaptureDevice = other.CaptureDevice;
         }
 
         /// <summary>
@@ -61,40 +52,78 @@ namespace ns.Base.Plugins {
         /// <value>
         /// The capture device.
         /// </value>
-        public Device CaptureDevice {
+        public ImageDevice CaptureDevice {
             get { return _captureDevice; }
             set {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-
-                if (_captureDevice?.Id.Equals(value.Id) != true) {
-                    Device tmpDevice = new Device(value);
-                    tmpDevice.Id = value.Id;
-                    tmpDevice.Items.Clear();
-
-                    foreach (Node node in value.Items) {
-                        tmpDevice.Items.Add(node);
-                    }
-
+                if (_captureDevice != value) {
                     _captureDevice = value;
-                    _captureDevice.Parent = this;
-                    DeviceContainerProperty deviceProperty = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice));
-                    if (deviceProperty == null) {
-                        throw new MemberAccessException(nameof(DeviceContainerProperty));
-                    }
-                    deviceProperty.Value = tmpDevice;
                     OnPropertyChanged();
                 }
             }
         }
 
         /// <summary>
-        /// Adds the device list.
+        /// Gets the execution time ms.
         /// </summary>
-        /// <param name="devices">The devices.</param>
-        public void AddDeviceList(ICollection<Device> devices) {
-            DeviceContainerProperty container = GetProperty<DeviceContainerProperty>();
-            container.AddDevices(devices);
+        /// <value>
+        /// The execution time ms.
+        /// </value>
+        public IntegerProperty ExecutionTimeMs {
+            get {
+                IntegerProperty property = FindOrAdd<IntegerProperty, int>(0, PropertyDirection.Out);
+                property.Tolerance = new Tolerance<int>(0, 10000);
+                return property;
+            }
         }
+
+        /// <summary>
+        /// Gets the iterations.
+        /// </summary>
+        /// <value>
+        /// The iterations.
+        /// </value>
+        public IntegerProperty Iterations => FindOrAdd<IntegerProperty, int>(0, 0, int.MaxValue, PropertyDirection.Out);
+
+        /// <summary>
+        /// Gets or sets the known devices.
+        /// </summary>
+        /// <value>
+        /// The known devices.
+        /// </value>
+        public ObservableConcurrentDictionary<Guid, string> KnownDevices { get; set; }
+
+        /// <summary>
+        /// Gets the linked operation.
+        /// </summary>
+        /// <value>
+        /// The linked operation.
+        /// </value>
+        public StringProperty LinkedOperation => FindOrAdd<StringProperty, string>(string.Empty);
+
+        /// <summary>
+        /// Gets the output image.
+        /// </summary>
+        /// <value>
+        /// The output image.
+        /// </value>
+        public ImageProperty OutputImage => FindOrAdd<ImageProperty, ImageContainer>(new ImageContainer(), PropertyDirection.Out);
+
+        /// <summary>
+        /// Gets or sets the selected device.
+        /// </summary>
+        /// <value>
+        /// The selected device.
+        /// </value>
+        [DataMember]
+        public Guid SelectedDevice { get; set; }
+
+        /// <summary>
+        /// Gets the triggers.
+        /// </summary>
+        /// <value>
+        /// The triggers.
+        /// </value>
+        public ListProperty Triggers => FindOrAdd<ListProperty, List<object>>(Enum.GetValues(typeof(OperationTrigger)).Cast<object>().ToList());
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -119,29 +148,19 @@ namespace ns.Base.Plugins {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Initialize() {
-            bool result = base.Initialize();
+        public override void Initialize() {
+            base.Initialize();
+            PropertyChanged -= Operation_PropertyChanged;
+            PropertyChanged += Operation_PropertyChanged;
 
-            DeviceContainerProperty deviceProperty = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice));
-
-            if (deviceProperty != null) {
-                deviceProperty.PropertyChanged += DeviceProperty_PropertyChanged;
-                CaptureDevice?.Close();
-                CaptureDevice = deviceProperty.SelectedDevice;
-                CaptureDevice?.Initialize();
+            if (CaptureDevice != null) {
+                CaptureDevice.Close();
+                CaptureDevice.Initialize();
             }
 
-            _outImageProperty = GetProperty<ImageProperty>("OutImage");
-            _elapsedMsProperty = GetProperty<IntegerProperty>("ElapsedMs");
-            _iterationProperty = GetProperty<IntegerProperty>("Iterations");
-
-            foreach (Tool tool in Items.Where(t => t is Tool)) {
-                if (!(result = tool.Initialize())) {
-                    break;
-                }
+            foreach (Tool tool in Items.Values.OfType<Tool>()) {
+                tool.Initialize();
             }
-
-            return result;
         }
 
         /// <summary>
@@ -156,24 +175,25 @@ namespace ns.Base.Plugins {
 
             if (result) {
                 CaptureDevice.TryRun();
-                ImageProperty deviceImage = CaptureDevice.GetProperty<ImageProperty>();
-                _outImageProperty.Value = deviceImage.Value;
+                ImageProperty deviceImage = CaptureDevice.OutputImage;
+                OutputImage.Value = deviceImage.Value;
                 result = TryRunChilds();
             }
 
             result = CaptureDevice?.TryPostRun() == true;
-            _elapsedMsProperty.Value = (int)stopwatch.ElapsedMilliseconds;
-            if (_iterationProperty.Value < int.MaxValue) {
-                _iterationProperty.Value++;
+            ExecutionTimeMs.Value = (int)stopwatch.ElapsedMilliseconds;
+            if (Iterations.Value < int.MaxValue) {
+                Iterations.Value++;
             } else {
-                _iterationProperty.Value = 0;
+                Iterations.Value = 0;
             }
             return result;
         }
 
-        private void DeviceProperty_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            if (e.PropertyName.Equals(nameof(DeviceContainerProperty.Value))) {
-                CaptureDevice = GetProperty<DeviceContainerProperty>(nameof(CaptureDevice))?.Value;
+        private void Operation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName.Equals(nameof(CaptureDevice), StringComparison.Ordinal)) {
+                Close();
+                Initialize();
             }
         }
     }

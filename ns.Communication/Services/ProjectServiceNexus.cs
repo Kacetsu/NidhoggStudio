@@ -41,13 +41,14 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find operation with UID {0}.", parentId));
             }
 
-            Tool tool = _instance.Value._pluginManager.Nodes.First(t => t.Fullname.Equals(model.Fullname)) as Tool;
+            Tool tool = _instance.Value._pluginManager.Items.Values.First(t => t.Fullname.Equals(model.Fullname)) as Tool;
 
             if (tool == null) {
                 throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
             }
 
             Tool copyTool = tool.Clone() as Tool;
+            copyTool.Initialize();
             _instance.Value._projectManager.Add(copyTool, operation);
 
             // Notify clients.
@@ -261,7 +262,7 @@ namespace ns.Communication.Services {
                 throw new FaultException(string.Format("Could not find tool {0}.", toolId));
             }
 
-            foreach (Property property in tool.Items.Where(p => p is Property)) {
+            foreach (Property property in tool.Items.Values.Where(p => p is Property)) {
                 properties.Add(new PropertyModel(property));
             }
 
@@ -287,15 +288,10 @@ namespace ns.Communication.Services {
 
             Operation operation = _instance.Value._projectManager.Configuration.Operations.Find(o => o.Id.Equals(model.ParentId));
             if (operation == null) {
-                throw new FaultException(string.Format("Could not find operation with UID {0}.", model.ParentId));
+                throw new FaultException(string.Format("Could not find operation with ID {0}.", model.ParentId));
             }
 
-            Tool tool = operation.Items.Find(t => t.Id.Equals(model.Id)) as Tool;
-
-            if (tool == null) {
-                throw new FaultException(string.Format("Could not find tool {0}.", model.Fullname));
-            }
-
+            Tool tool = operation.Items[model.Id] as Tool;
             _instance.Value._projectManager.Remove(tool);
 
             // Notify clients.
@@ -316,14 +312,14 @@ namespace ns.Communication.Services {
         /// Saves the project.
         /// </summary>
         public static void SaveProject() {
-            ProcessorState lastState = CoreSystem.Processor.State;
+            ProcessorState lastState = CoreSystem.Instance.Processor.State;
             if (lastState == ProcessorState.Running) {
-                CoreSystem.Processor.Stop();
+                CoreSystem.Instance.Processor.Stop();
             }
 
             _instance.Value._projectBoxManager.SaveProject();
             if (lastState == ProcessorState.Running) {
-                CoreSystem.Processor.Start();
+                CoreSystem.Instance.Processor.Start();
             }
         }
     }

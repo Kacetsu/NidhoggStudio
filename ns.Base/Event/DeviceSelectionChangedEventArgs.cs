@@ -1,13 +1,18 @@
-﻿using ns.Base.Plugins;
+﻿using ns.Base.Plugins.Devices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ns.Base.Event {
+
     public class DeviceSelectionChangedEventArgs : EventArgs {
         private Device _device;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceSelectionChangedEventArgs"/> class.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        public DeviceSelectionChangedEventArgs(Device device) {
+            _device = device;
+        }
 
         /// <summary>
         /// Gets the device.
@@ -17,14 +22,6 @@ namespace ns.Base.Event {
         /// </value>
         public Device Device {
             get { return _device; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceSelectionChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        public DeviceSelectionChangedEventArgs(Device device) {
-            _device = device;
         }
     }
 }

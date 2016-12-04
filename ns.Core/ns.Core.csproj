@@ -183,7 +183,6 @@
     <Compile Include="Manager\ProjectBoxManager.cs" />
     <Compile Include="Manager\ProjectManager.cs" />
     <Compile Include="CoreSystem.cs" />
-    <Compile Include="Manager\ExtensionManager.cs" />
     <Compile Include="Manager\PluginManager.cs" />
     <Compile Include="AsyncNanoProcessor.cs" />
     <Compile Include="Processor.cs" />

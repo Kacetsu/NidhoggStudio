@@ -4,6 +4,7 @@ using ns.Base.Manager.DataStorage;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ns.Core.Manager {
@@ -12,6 +13,12 @@ namespace ns.Core.Manager {
         private const int MaxBagSize = 100;
         private ConcurrentQueue<DataContainer> _operationContainers = new ConcurrentQueue<DataContainer>();
         private ConcurrentQueue<ToolDataContainer> _toolContainers = new ConcurrentQueue<ToolDataContainer>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataStorageManager"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public DataStorageManager([CallerMemberName] string name = null) : base(name) { }
 
         /// <summary>
         /// Occurs when [data storage collection changed].

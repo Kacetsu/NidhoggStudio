@@ -1,5 +1,6 @@
-﻿using ns.Base;
+﻿using ns.Base.Collections;
 using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using System.Runtime.Serialization;
 
@@ -7,6 +8,15 @@ namespace ns.Core.Configuration {
 
     [DataContract]
     public class ProjectConfiguration : IProjectConfiguration {
+
+        /// <summary>
+        /// Gets or sets the devices.
+        /// </summary>
+        /// <value>
+        /// The devices.
+        /// </value>
+        [DataMember]
+        public ObservableList<Device> Devices { get; set; } = new ObservableList<Device>();
 
         /// <summary>
         /// Gets or sets the file.

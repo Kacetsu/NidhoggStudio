@@ -6,7 +6,7 @@ namespace ns.Base.Plugins.Properties {
     /// <summary>
     /// Data structur containing image informations.
     /// </summary>
-    [Serializable, DataContract]
+    [DataContract]
     public struct ImageContainer : IEquatable<ImageContainer> {
 
         /// <summary>

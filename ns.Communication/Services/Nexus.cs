@@ -18,10 +18,10 @@ namespace ns.Communication.Services {
         /// Initializes a new instance of the <see cref="Nexus"/> class.
         /// </summary>
         protected Nexus() {
-            _projectManager = CoreSystem.FindManager<ProjectManager>();
-            _projectBoxManager = CoreSystem.FindManager<ProjectBoxManager>();
-            _pluginManager = CoreSystem.FindManager<PluginManager>();
-            _dataStorageManager = CoreSystem.FindManager<DataStorageManager>();
+            _projectManager = CoreSystem.Instance.Project;
+            _projectBoxManager = CoreSystem.Instance.ProjectBox;
+            _pluginManager = CoreSystem.Instance.Plugins;
+            _dataStorageManager = CoreSystem.Instance.DataStorage;
         }
 
         /// <summary>

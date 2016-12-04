@@ -1,6 +1,6 @@
 ﻿using ns.Base;
 using ns.Base.Manager;
-using ns.Base.Plugins;
+using ns.Base.Plugins.Devices;
 using ns.Base.Plugins.Properties;
 using System;
 using System.Collections.Generic;
@@ -14,23 +14,17 @@ using System.Threading;
 
 namespace ns.Plugin.Base {
 
-    [Visible, DataContract]
+    [DataContract]
     public sealed class ImageFileDevice : ImageDevice {
         private List<Bitmap> _bitmaps;
-        private string _directory = string.Empty;
-        private DoubleProperty _framerate = null;
         private int _imageIndex = 0;
-        private ImageProperty _imageProperty;
         private List<string> _openImageFilenames;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFileDevice"/> class.
         /// </summary>
-        public ImageFileDevice() {
+        public ImageFileDevice() : base() {
             DisplayName = "Image File Device";
-            AddChild(new StringProperty("Directory", BaseManager.DocumentsPath + "Images"));
-            AddChild(new DoubleProperty("Framerate", 30.0));
-            AddChild(new ImageProperty("Image", true));
         }
 
         /// <summary>
@@ -38,6 +32,22 @@ namespace ns.Plugin.Base {
         /// </summary>
         /// <param name="other">The other.</param>
         public ImageFileDevice(ImageFileDevice other) : base(other) { }
+
+        /// <summary>
+        /// Gets the directory.
+        /// </summary>
+        /// <value>
+        /// The directory.
+        /// </value>
+        public StringProperty DirectoryPath => FindOrAdd<StringProperty, string>(string.Concat(BaseManager.DocumentsPath, "Images"));
+
+        /// <summary>
+        /// Gets the framerate.
+        /// </summary>
+        /// <value>
+        /// The framerate.
+        /// </value>
+        public DoubleProperty Framerate => FindOrAdd<DoubleProperty, double>(30d);
 
         /// <summary>
         /// Clones the Node with all its Members.
@@ -69,21 +79,19 @@ namespace ns.Plugin.Base {
         /// <returns>
         /// Success of the Operation.
         /// </returns>
-        public override bool Initialize() {
+        public override void Initialize() {
+            base.Initialize();
             _openImageFilenames = new List<string>();
             _bitmaps = new List<Bitmap>();
-            _directory = GetProperty<StringProperty>("Directory").Value;
-            _imageProperty = GetProperty<ImageProperty>("Image");
-            _framerate = GetProperty<DoubleProperty>("Framerate");
 
-            if (!Directory.Exists(_directory)) {
-                ns.Base.Log.Trace.WriteLine("[" + Name + "] directory " + _directory + " does not exist, will create it now!", TraceEventType.Warning);
-                Directory.CreateDirectory(_directory);
+            if (!Directory.Exists(DirectoryPath.Value)) {
+                ns.Base.Log.Trace.WriteLine(string.Concat("[", Name, "] directory ", DirectoryPath.Value, " does not exist, will create it now!"), TraceEventType.Warning);
+                Directory.CreateDirectory(DirectoryPath.Value);
             }
 
             int imageCount = UpdateImageFiles();
 
-            FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(_directory);
+            FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(DirectoryPath.Value);
             fileSystemWatcher.Changed += new FileSystemEventHandler(OnChanged);
             fileSystemWatcher.Created += new FileSystemEventHandler(OnChanged);
             fileSystemWatcher.Deleted += new FileSystemEventHandler(OnChanged);
@@ -91,10 +99,8 @@ namespace ns.Plugin.Base {
             fileSystemWatcher.EnableRaisingEvents = true;
 
             if (imageCount == 0) {
-                ns.Base.Log.Trace.WriteLine("No images found in " + _directory, TraceEventType.Warning);
+                ns.Base.Log.Trace.WriteLine("No images found in " + DirectoryPath.Value, TraceEventType.Warning);
             }
-
-            return true;
         }
 
         /// <summary>
@@ -105,7 +111,7 @@ namespace ns.Plugin.Base {
         /// </returns>
         public override bool TryRun() {
             Stopwatch stopwatch = Stopwatch.StartNew();
-            while (stopwatch.ElapsedMilliseconds < (1000.0 / _framerate.Value)) {
+            while (stopwatch.ElapsedMilliseconds < (1000.0 / Framerate.Value)) {
                 Thread.Sleep(1);
             }
 
@@ -121,7 +127,7 @@ namespace ns.Plugin.Base {
 
             int stride = 0;
             byte[] data = ImageToByteArray(bitmap, bpp, out stride);
-            _imageProperty.SetValue(data, bitmap.Width, bitmap.Height, stride, (byte)bpp);
+            OutputImage.SetValue(data, bitmap.Width, bitmap.Height, stride, (byte)bpp);
             _imageIndex++;
 
             return true;
@@ -155,7 +161,7 @@ namespace ns.Plugin.Base {
         private int UpdateImageFiles() {
             int imageCount = 0;
 
-            string[] filenames = Directory.GetFiles(_directory);
+            string[] filenames = Directory.GetFiles(DirectoryPath.Value);
 
             foreach (string filename in filenames) {
                 if (filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture)

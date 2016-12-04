@@ -21,7 +21,7 @@ namespace ns.Base.Manager.DataStorage {
             if (plugin == null) throw new ArgumentNullException(nameof(plugin));
 
             ParentId = plugin.Id;
-            Properties = new List<Property>(plugin.GetProperties<Property>(true));
+            Properties = plugin.Items.OfType<Property>().Where(p => p.Direction == PropertyDirection.Out).ToList();
 
             ImageProperty outImageProperty = Properties.FirstOrDefault(p => p is ImageProperty) as ImageProperty;
             if (outImageProperty == null) {

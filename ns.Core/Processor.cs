@@ -7,16 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace ns.Core {
 
     /// <summary>
     /// Handles the use of all operations.
     /// </summary>
-    public class Processor : NotifiableObject {
-        private ExtensionManager _extensionManager;
+    public class Processor : Node {
         private bool _isFinalize = false;
         private List<AsyncNanoProcessor> _nexuses;
         private ProjectManager _projectManager;
@@ -25,10 +24,10 @@ namespace ns.Core {
         /// <summary>
         /// Initializes a new instance of the <see cref="Processor"/> class.
         /// </summary>
-        public Processor() {
-            _projectManager = CoreSystem.FindManager<ProjectManager>();
-            _propertyManager = CoreSystem.FindManager<PropertyManager>();
-            _extensionManager = CoreSystem.FindManager<ExtensionManager>();
+        public Processor([CallerMemberName] string name = null) : base() {
+            Name = name;
+            _projectManager = CoreSystem.Instance.Project;
+            _propertyManager = CoreSystem.Instance.Properties;
             _nexuses = new List<AsyncNanoProcessor>();
         }
 
@@ -101,7 +100,8 @@ namespace ns.Core {
         private bool InitializeOperations() {
             _isFinalize = false;
             foreach (Operation operation in _projectManager.Configuration.Operations) {
-                if (operation.Items.Count < 1 || operation.Initialize() == false) {
+                operation.Initialize();
+                if (operation.Items.Count < 1) {
                     Base.Log.Trace.WriteLine("Cannot start operation [" + operation.Name + "]!"
                         + Environment.NewLine + "May the operation is empty or something happend while initializing it.", TraceEventType.Warning);
                     return false;
@@ -128,7 +128,7 @@ namespace ns.Core {
             List<Operation> connectedOperations = new List<Operation>();
 
             foreach (Operation o in _projectManager.Configuration.Operations) {
-                Property linkedProperty = o.GetProperty<Property>("LinkedOperation");
+                Property linkedProperty = o.LinkedOperation;
                 if (linkedProperty.ConnectedId.Equals(operation.Id))
                     connectedOperations.Add(o);
             }
@@ -139,11 +139,11 @@ namespace ns.Core {
                 if (_nexuses.Count > 0) {
                     AsyncNanoProcessor executionContext = _nexuses.Find(o => o != null && o.Operation == operation) as AsyncNanoProcessor;
                     if (executionContext != null && _nexuses.Contains(executionContext)) {
-                        ListProperty triggerList = operation.GetProperty<ListProperty>("Trigger");
+                        ListProperty triggerList = operation.Triggers;
                         string trigger = triggerList.Value.ToString();
 
                         foreach (Operation o in connectedOperations) {
-                            Property triggerProperty = o.GetProperty<Property>("Trigger");
+                            Property triggerProperty = o.Triggers;
                             if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Finished.GetDescription()) {
                                 NanoProcessor nanoProcessor = new NanoProcessor(o);
                                 nanoProcessor.Start();
@@ -152,12 +152,12 @@ namespace ns.Core {
                     } else
                         Base.Log.Trace.WriteLine("Unknown execution context! Careful this could end in memory leak!", TraceEventType.Error);
                 }
-                _extensionManager.RunAll();
+
                 break;
 
                 case PluginStatus.Started:
                 foreach (Operation o in connectedOperations) {
-                    Property triggerProperty = o.GetProperty<Property>("Trigger");
+                    Property triggerProperty = o.Triggers;
                     if ((triggerProperty as IValue<object>)?.Value.ToString() == OperationTrigger.Started.GetDescription()) {
                         NanoProcessor nanoProcessor = new NanoProcessor(o);
                         nanoProcessor.Start();

@@ -9,7 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="4" />
+            <RowDefinition Height="2" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -17,10 +17,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource StandardBorderBrush}">
-                <TextBox Text="{Binding Path=Index,FallbackValue=-1}" ToolTip="{Binding Path=Path,Mode=OneWay}" Background="Transparent" IsEnabled="True" IsReadOnly="True" />
+                <TextBox Style="{DynamicResource ProjectSelectionContainerTextBox}" Text="{Binding Path=Index,FallbackValue=-1}" ToolTip="{Binding Path=Path,Mode=OneWay}" IsEnabled="True" IsReadOnly="True" />
             </Border>
-            <TextBox Grid.Column="1" Text="{Binding Path=Name,FallbackValue=UNKNOWN}" Background="Transparent" />
+            <TextBox Style="{DynamicResource ProjectSelectionContainerTextBox}" Grid.Column="1" Text="{Binding Path=Name,FallbackValue=UNKNOWN}" IsReadOnly="True" />
         </Grid>
-        <Border Grid.Row="1" Name="UsedBorder" Background="{DynamicResource SecondaryBackgroundBrush}" BorderThickness="0" Opacity="0.1" />
+        <Border Grid.Row="1" Name="UsedBorder" Background="{DynamicResource AccentBackgroundBrush}" BorderThickness="0" Opacity="1" />
     </Grid>
 </UserControl>

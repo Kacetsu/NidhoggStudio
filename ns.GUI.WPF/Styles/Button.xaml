@@ -17,10 +17,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />
@@ -46,10 +46,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />
@@ -62,25 +62,23 @@
 
     <Style x:Key="NavigationButton" TargetType="{x:Type Button}">
         <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
-        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid Name="Grid" Background="{TemplateBinding Background}">
-                            <ContentPresenter Margin="0,0" Height="{TemplateBinding Height}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            <ContentPresenter Margin="0,0" Height="{TemplateBinding Height}" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />
@@ -92,25 +90,25 @@
     </Style>
 
     <Style x:Key="AddToolNodeButton" TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{DynamicResource SecondaryButtonForegroundBrush}" />
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SecondaryButtonBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="26">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="2">
                         <Grid Name="Grid">
-                            <Path Margin="10" Stroke="White" Data="M0,5 H10 M5,5 V10Z"  StrokeThickness="2" Height="10" Width="10" />
+                            <Path Margin="10" Stroke="{DynamicResource ControlForeground}" Data="M0,10 H20 M10,5 V20Z"  StrokeThickness="4" Height="20" Width="20" />
                             <ContentPresenter Margin="2" Height="{TemplateBinding Height}" VerticalAlignment="Center" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource SecondaryButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource SecondaryButtonPressedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />
@@ -122,7 +120,7 @@
     </Style>
 
     <Style x:Key="RemoveToolNodeButton" TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{DynamicResource SecondaryButtonForegroundBrush}" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="Background" Value="{DynamicResource CriticalBackgroundBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{DynamicResource SecondaryButtonBorderBrush}" />
@@ -136,10 +134,38 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource CriticalHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource CriticalHoverBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource CriticalPressedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource CriticalPressedBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.25" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TabButton" TargetType="{x:Type Button}">
+        <Setter Property="Foreground" Value="{DynamicResource ControlForeground}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="2,2,0,0">
+                        <Grid Name="Grid">
+                            <ContentPresenter Margin="2" Height="{TemplateBinding Height}" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource ControlHoverBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource ControlPressedBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.25" />

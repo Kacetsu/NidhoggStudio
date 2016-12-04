@@ -5,14 +5,6 @@ namespace ns.Base.Manager {
     public interface INodeManager<T> : IManager where T : Node {
 
         /// <summary>
-        /// Gets the nodes.
-        /// </summary>
-        /// <value>
-        /// The nodes.
-        /// </value>
-        ICollection<T> Nodes { get; }
-
-        /// <summary>
         /// Adds the specified node.
         /// </summary>
         /// <param name="node">The node.</param>

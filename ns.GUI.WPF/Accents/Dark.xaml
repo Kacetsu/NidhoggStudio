@@ -3,32 +3,54 @@
      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Common -->
-    <SolidColorBrush x:Key="Foreground" Color="Black" />
-    <SolidColorBrush x:Key="ControlForeground" Color="#FF858E96" />
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF43484C" />
-    <SolidColorBrush x:Key="ControlHoverBackgroundBrush" Color="#FF383D42" />
-    <SolidColorBrush x:Key="ControlPressedBackgroundBrush" Color="#FF303438" />
-    <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF50565B" />
-    <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76" />
-    <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76" />
-    <SolidColorBrush x:Key="NormalBrush" Color="White" />
-    <SolidColorBrush x:Key="StandardBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="Foreground" Color="White" />
+    <SolidColorBrush x:Key="NormalBrush" Color="#1e1e1e" />
+    <SolidColorBrush x:Key="StandardBackgroundBrush" Color="#1e1e1e" />
     <Color x:Key="StandardBackgroundColor" A="#FF" R="#FF" G="#FF" B="#FF" />
-    <SolidColorBrush x:Key="StandardBorderBrush" Color="#FFEAEAEA" />
+    <SolidColorBrush x:Key="StandardBorderBrush" Color="#2d2d30" />
     <SolidColorBrush x:Key="HalfTransparentForegroundBrush" Color="#7F000000" />
     <SolidColorBrush x:Key="QuarterTransparentForegroundBrush" Color="#BF000000" />
     <SolidColorBrush x:Key="StatusBarForeground" Color="White" />
     <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#007acc" />
 
     <!-- Secondary -->
-    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#007acc" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#1a1a1a" />
+    <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="#515151" />
+    <SolidColorBrush x:Key="SecondaryButtonBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="SecondaryButtonHoverBackgroundBrush" Color="#c9c9c9" />
+    <SolidColorBrush x:Key="SecondaryButtonPressedBackgroundBrush" Color="#adadad" />
     <SolidColorBrush x:Key="SecondaryReadOnlyBackgroundBrush" Color="#007acc" />
     <Color x:Key="SecondaryReadOnlyBackgroundColor" A="#FF" R="0" G="122" B="204" />
     <SolidColorBrush x:Key="SecondaryDisabledBackgroundBrush" Color="#007acc" />
     <Color x:Key="SecondaryDisabledBackgroundColor" A="#FF" R="0" G="122" B="204" />
 
+    <!-- Control -->
+    <SolidColorBrush x:Key="ControlForeground" Color="#FF858E96" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#2d2d30" />
+    <SolidColorBrush x:Key="ControlBorderBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ControlHoverBackgroundBrush" Color="#353538" />
+    <SolidColorBrush x:Key="ControlPressedBackgroundBrush" Color="#3c3c40" />
+    <SolidColorBrush x:Key="ControlDisabledBackgroundBrush" Color="#FF50565B" />
+    <Color x:Key="ControlDisabledBackgroundColor" A="#FF" R="67" G="72" B="76" />
+    <Color x:Key="ControlReadOnlyBackgroundColor" A="#FF" R="67" G="72" B="76" />
+
+    <!-- Accent -->
+    <SolidColorBrush x:Key="AccentBackgroundBrush" Color="#007acc" />
+    <SolidColorBrush x:Key="AccentForegroundBrush" Color="#3FFFFFFF" />
+    <SolidColorBrush x:Key="AccentBackgroundBrush2" Color="#FF96AA39" />
+    <LinearGradientBrush x:Key="AccentLinearBackgroundBrush" StartPoint="0,0" EndPoint="1,0.001">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#007acc" Offset="0.0" />
+                <GradientStop Color="#007acc" Offset="0.5" />
+                <GradientStop Color="Transparent" Offset="1.0" />
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
     <!-- Critical -->
     <SolidColorBrush x:Key="CriticalBackgroundBrush" Color="#FFB84432" />
+    <SolidColorBrush x:Key="CriticalForegroundBrush" Color="#FFB84432" />
     <SolidColorBrush x:Key="CriticalHoverBackgroundBrush" Color="#FFAA3E2D" />
     <SolidColorBrush x:Key="CriticalPressedBackgroundBrush" Color="#FF9B3929" />
 
@@ -38,12 +60,6 @@
     <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="Transparent" />
     <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#19000000" />
     <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#33000000" />
-
-    <!-- Secondary Button-->
-    <SolidColorBrush x:Key="SecondaryButtonBorderBrush" Color="Transparent" />
-    <SolidColorBrush x:Key="SecondaryButtonForegroundBrush" Color="#3FFFFFFF" />
-    <SolidColorBrush x:Key="SecondaryButtonHoverBackgroundBrush" Color="#FF0070BB" />
-    <SolidColorBrush x:Key="SecondaryButtonPressedBackgroundBrush" Color="#FF0062A4" />
 
     <!-- ToggleButton -->
     <SolidColorBrush x:Key="ToggleButtonHoverBackgroundBrush" Color="#FF24262B" />
@@ -70,7 +86,6 @@
 
     <!-- Add Tool -->
     <SolidColorBrush x:Key="AddToolHeaderBackgroundBrush" Color="#FF96AA39" />
-    <SolidColorBrush x:Key="AddToolBackgroundBrush" Color="LightGray" />
 
     <!-- Add Tool Node -->
     <SolidColorBrush x:Key="AddToolNodeBackgroundBrush" Color="White" />
@@ -83,6 +98,9 @@
 
     <!-- Log Project XML -->
     <SolidColorBrush x:Key="ProjectXMLHeaderBackgroundBrush" Color="#FF96AA39" />
+    <SolidColorBrush x:Key="InfoColorBrush" Color="#007acc" />
+    <SolidColorBrush x:Key="WarningColorBrush" Color="Orange" />
+    <SolidColorBrush x:Key="ErrorColorBrush" Color="Red" />
 
     <!-- Project View -->
     <SolidColorBrush x:Key="ProjectHeaderBackgroundBrush" Color="#FF96AA39" />

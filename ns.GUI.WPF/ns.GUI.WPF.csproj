@@ -234,8 +234,8 @@
     <Compile Include="Controls\Property\RectanglePropertyControl.xaml.cs">
       <DependentUpon>RectanglePropertyControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ConfirmButton .xaml.cs">
-      <DependentUpon>ConfirmButton .xaml</DependentUpon>
+    <Compile Include="Controls\ConfirmButton.xaml.cs">
+      <DependentUpon>ConfirmButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RemoveButton.xaml.cs">
       <DependentUpon>RemoveButton.xaml</DependentUpon>
@@ -294,7 +294,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Accents\Light.xaml">
+    <Page Include="Accents\Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -370,7 +370,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ConfirmButton .xaml">
+    <Page Include="Controls\ConfirmButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -611,6 +611,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewContainers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

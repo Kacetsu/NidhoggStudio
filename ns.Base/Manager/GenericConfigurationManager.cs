@@ -2,17 +2,18 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Xml;
 
 namespace ns.Base.Manager {
 
-    public class GenericConfigurationManager<T> : BaseManager, IGenericConfigurationManager<T> where T : IBaseConfiguration {
+    public abstract class GenericConfigurationManager<T> : BaseManager, IGenericConfigurationManager<T> where T : IBaseConfiguration {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericConfigurationManager{T}"/> class.
         /// </summary>
-        public GenericConfigurationManager() : base() {
+        public GenericConfigurationManager([CallerMemberName] string name = null) : base(name) {
         }
 
         /// <summary>

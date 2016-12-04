@@ -27,6 +27,7 @@ namespace Nidhogg.Service {
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             Title = Title + " (" + version.ToString() + ")";
             Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                CoreSystem.Instance.TryInitialize();
                 if (!CoreSystem.Instance.IsInitialized) {
                     throw new TypeInitializationException(nameof(CoreSystem), null);
                 }

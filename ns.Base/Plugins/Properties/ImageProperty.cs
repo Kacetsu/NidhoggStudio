@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ns.Base.Plugins.Properties {
@@ -26,16 +27,8 @@ namespace ns.Base.Plugins.Properties {
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public ImageProperty(string name, ImageContainer value) : base(name, value) {
-            CanAutoConnect = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageProperty"/> class.
-        /// </summary>
-        /// <param name="name">Name of the property.</param>
-        /// <param name="isOutput">True if the property is a output.</param>
-        public ImageProperty(string name, bool isOutput) : base(name, isOutput) {
+        public ImageProperty(ImageContainer value, PropertyDirection direction = PropertyDirection.In, [CallerMemberName] string name = null)
+            : base(value, direction, name) {
             CanAutoConnect = true;
         }
 
@@ -66,7 +59,7 @@ namespace ns.Base.Plugins.Properties {
             set {
                 if (_isVisible != value) {
                     _isVisible = value;
-                    OnPropertyChanged("IsVisible");
+                    OnPropertyChanged();
                 }
             }
         }

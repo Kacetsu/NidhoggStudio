@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ns.GUI.WPF"
              mc:Ignorable="d"
-             d:DesignHeight="720" d:DesignWidth="1280" MinWidth="500" MinHeight="300" Background="{DynamicResource ControlBackgroundBrush}">
+             d:DesignHeight="600" d:DesignWidth="1280" MinWidth="500" MinHeight="300" Background="{DynamicResource ControlBackgroundBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -16,63 +16,48 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid Name="HeaderGrid" Background="{DynamicResource ControlBackgroundBrush}" Height="60">
+            <Grid Name="HeaderGrid" Background="{DynamicResource StandardBackgroundBrush}" Height="45">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="33*" MinWidth="100" />
                     <ColumnDefinition Width="33*" />
                     <ColumnDefinition Width="33*" MinWidth="300" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="0,10">
-                    <ToggleButton Name="LoopExecutionToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" IsChecked="{Binding Path=IsRunning,Mode=OneWay}">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="6">
+                    <ToggleButton Name="LoopExecutionToggleButton" Margin="0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" IsChecked="{Binding Path=IsRunning,Mode=OneWay}" MinWidth="130">
                         <ToggleButton.Content>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="Images/Loop.png" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="2" />
+                                </Grid.RowDefinitions>
+                                <Image Source="Images/Loop.png" Margin="0,2" />
                                 <TextBlock Grid.Column="1" Text="{DynamicResource Loop}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0" />
+                                <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource AccentBackgroundBrush}" />
                             </Grid>
                         </ToggleButton.Content>
                     </ToggleButton>
                 </StackPanel>
-                <TextBlock Grid.Column="1" Name="_pluginName" Text="{Binding Path=SelectedPluginName, FallbackValue=UNKNOWN}" Foreground="{DynamicResource HeaderForegroundBrush}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="4,0" />
-                <StackPanel Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,10">
-                    <ToggleButton Name="ResultsViewToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight">
-                        <ToggleButton.Content>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Image Source="Images/Check.png" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource Results}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0" />
-                            </Grid>
-                        </ToggleButton.Content>
-                    </ToggleButton>
-                    <ToggleButton Name="HistogramViewToggleButton" Margin="10,0" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" FlowDirection="LeftToRight" Visibility="Hidden">
-                        <ToggleButton.Content>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Image Source="Images/Histogram.png" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource Histogram}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0" />
-                            </Grid>
-                        </ToggleButton.Content>
-                    </ToggleButton>
-                </StackPanel>
+                <TextBlock Grid.Column="1" Name="_pluginName" Text="{Binding Path=SelectedPluginName, FallbackValue=UNKNOWN}" Foreground="{DynamicResource ControlForeground}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="4,0" />
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <local:EditorDisplay Grid.Row="0" />
-                <Controls:HistogramControl x:Name="HistogramView" Grid.Row="1" Height="0" />
-                <Controls:ResultsView x:Name="ResultsView" Grid.Row="2" Height="0" />
+                <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <Button Name="ResultsButton" Grid.Row="0" Style="{DynamicResource TabButton}" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="200" Margin="4,0,0,0" Click="ResultsButton_Click">
+                        <TextBlock Grid.Column="1" Text="{DynamicResource Results}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                    </Button>
+                    <Button Name="HistogramButton" Grid.Row="0" Style="{DynamicResource TabButton}" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="200" Margin="4,0,0,0" Click="HistogramButton_Click" Visibility="Visible">
+                        <TextBlock Grid.Column="1" Text="{DynamicResource Histogram}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
+                    </Button>
+                </StackPanel>
+                <Controls:HistogramControl x:Name="HistogramView" Grid.Row="0" Height="0" VerticalAlignment="Bottom" />
+                <Controls:ResultsView x:Name="ResultsView" Grid.Row="0" Height="0" VerticalAlignment="Bottom" />
             </Grid>
         </Grid>
         <Grid Name="ControlGrid" Grid.Column="1" Width="0">
